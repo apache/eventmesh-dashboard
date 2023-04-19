@@ -17,6 +17,11 @@
 
 github:
   description: EventMesh dashboard
+  features:
+    # Enable issue management
+    issues: true
+    # Enable wiki
+    wiki: true
   homepage: https://eventmesh.apache.org/
   labels:
     - pubsub
