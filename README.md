@@ -18,6 +18,26 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
+## Getting Started with Docker
+
+Pull the image and run the container by following commands:
+
+```
+docker pull apache/eventmesh-dashboard:latest
+```
+
+```
+docker run -d --name eventmesh-dashboard -p 8080:80 -t apache/eventmesh-dashboard:latest
+```
+
+Open [http://localhost:8080](http://localhost:8080) in your browser to see the result.
+
+You can also build a mirror of your own by executing the following command in the root of your git repository:
+
+```
+docker build -t <your-name>/eventmesh-dashboard:latest -f docker/Dockerfile .
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
