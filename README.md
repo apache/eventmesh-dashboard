@@ -3,22 +3,22 @@
 ## Build on source code
 
 ```
-cd eventmesh-console
+cd eventmesh-dashboard
 ./gradlew clean bootJar
 ```
 
 ```
-java -jar build/libs/eventmesh-console-0.0.1-SNAPSHOT.jar
+java -jar build/libs/eventmesh-dashboard-0.0.1-SNAPSHOT.jar
 ```
 
 ## Build and Run with Docker
 
 ```
-cd eventmesh-console
+cd eventmesh-dashboard
 ./gradlew clean bootJar
-docker build -t yourname/eventmesh-console -f docker/Dockerfile .
+docker build -t yourname/eventmesh-dashboard -f docker/Dockerfile .
 ```
 
 ```
-docker run -d --name eventmesh-console -p 8080:8080 yourname/eventmesh-console
+docker run -d --name eventmesh-dashboard -p 8080:8080 yourname/eventmesh-dashboard
 ```
