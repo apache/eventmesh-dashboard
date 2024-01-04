@@ -19,7 +19,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/eventmesh-dashboard?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+      url: jdbc:mysql://localhost:3306/eventmesh-dashboard?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
       username: root
       password:
 
@@ -39,7 +39,7 @@ spring:
       filter:
         wall:
           config:
-            multi-statement-allow: true # corresponding to allowMultiQueries=true
+            multi-statement-allow: true # corresponds to allowMultiQueries
 
 eventmesh:
   meta:
