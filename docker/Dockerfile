@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM openjdk:8-jre-alpine
+FROM openjdk:8-jdk
 VOLUME /tmp
 COPY build/libs/eventmesh-dashboard-*.jar eventmesh-dashboard.jar
 ENV JAVA_OPTS=""
