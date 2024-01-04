@@ -43,7 +43,6 @@ repositories {
 ext {
     // utility
     commonsLang3Version = '3.13.0'
-    guavaVersion = '32.1.2-jre' // not used for now
     fastjsonVersion = '2.0.40'
     // swagger
     springdocVersion = '1.7.0'
@@ -64,13 +63,20 @@ dependencies {
 
     // utility
     implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
-    implementation("com.alibaba.fastjson2:fastjson2:${fastjsonVersion}")
+    implementation "com.alibaba.fastjson2:fastjson2:${fastjsonVersion}"
     // swagger
     implementation "org.springdoc:springdoc-openapi-ui:${springdocVersion}"
     implementation "org.springdoc:springdoc-openapi-javadoc:${springdocVersion}"
     annotationProcessor 'com.github.therapi:therapi-runtime-javadoc-scribe:0.15.0'
     // unit test
-    testImplementation("org.mockito:mockito-core:${mockitoVersion}")
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
     // meta
-    implementation("com.alibaba.nacos:nacos-client:${nacosVersion}")
+    implementation "com.alibaba.nacos:nacos-client:${nacosVersion}"
+    // Event Store
+    implementation 'org.apache.rocketmq:rocketmq-client:4.9.7'
+
+    // Database
+    implementation 'com.alibaba:druid-spring-boot-starter:1.2.21'
+    implementation 'com.baomidou:mybatis-plus-boot-starter:3.5.5'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 }

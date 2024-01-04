@@ -19,7 +19,9 @@ package org.apache.eventmesh.dashboard;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 
+@ServletComponentScan // Druid Monitor
 @SpringBootApplication
 public class EventMeshDashboardApplication {
 
