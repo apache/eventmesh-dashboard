@@ -7,9 +7,12 @@ build/
 ### STS ###
 .apt_generated
 .classpath
+./**/.classpath
 .factorypath
 .project
+./**/.project
 .settings
+./**/.settings/
 .springBeans
 .sts4-cache
 bin/
@@ -34,3 +37,49 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Mac OS ###
+.DS_Store
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+org.eclipse.core.resources.prefs
+org.eclipse.jdt.core.prefs
+org.eclipse.m2e.core.prefs
+org.eclipse.wst.common.component
+org.eclipse.wst.common.project.facet.core.xml
+*.prefs
+
+### Java ###
+*.class
+*.trc
+
+### Package Files ###
+*.jar
+*.war
+*.ear
+
+### Maven ###
+.target
+target/
+./**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+### Log Files ###
+*.log
+logs/
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*

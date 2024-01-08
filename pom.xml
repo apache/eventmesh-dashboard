@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+
+  <modelVersion>4.0.0</modelVersion>
+  <packaging>pom</packaging>
+
+  <parent>
+    <groupId>org.apache</groupId>
+    <artifactId>apache</artifactId>
+    <version>23</version>
+  </parent>
+
+  <groupId>org.apache.eventmesh.dashboard</groupId>
+  <artifactId>eventmesh-dashboard</artifactId>
+
+  <version>0.0.1</version>
+
+  <name>eventmesh-dashboard</name>
+  <description>eventmesh-dashboard</description>
+  <url>https://github.com/apache/pulsar</url>
+
+  <organization>
+    <name>Apache Software Foundation</name>
+    <url>http://www.apache.org/</url>
+  </organization>
+  <inceptionYear>2017</inceptionYear>
+
+  <developers>
+    <developer>
+      <organization>Apache eventmesh developers</organization>
+      <organizationUrl>http://eventmesh.apache.org/</organizationUrl>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+    <scm>
+    <url>https://github.com/apache/eventmesh-dashboard</url>
+    <connection>scm:git:https://github.com/apache/eventmesh-dashboard.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:apache/eventmesh-dashboard.git</developerConnection>
+  </scm>
+
+  <ciManagement>
+    <system>GitHub Actions</system>
+    <url>https://github.com/apache/puleventmesh-dashboardsar/actions</url>
+  </ciManagement>
+
+  <issueManagement>
+    <system>Github</system>
+    <url>https://github.com/apache/eventmesh-dashboard/issues</url>
+  </issueManagement>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+  </properties>
+  <modules>
+    <module>eventmesh-dashboard-console</module>
+    <module>eventmesh-dashboard-observe</module>
+    <module>eventmesh-dashboard-core</module>
+    <module>eventmesh-dashboard-service</module>
+    <module>eventmesh-dashboard-common</module>
+  </modules>
+
+
+</project>
