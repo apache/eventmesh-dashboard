@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard;
+package org.apache.eventmesh.dashboard.core;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 
-@SpringBootTest
-class EventMeshDashboardApplicationTests {
+@ServletComponentScan // Druid Monitor
+@SpringBootApplication
+public class EventMeshDashboardApplication {
 
-    @Test
-    void contextLoads() {
+    public static void main(String[] args) {
+        SpringApplication.run(EventMeshDashboardApplication.class, args);
     }
 
 }
