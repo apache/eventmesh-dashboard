@@ -23,7 +23,6 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-
   <modelVersion>4.0.0</modelVersion>
   <packaging>pom</packaging>
 
@@ -40,21 +39,19 @@
 
   <name>eventmesh-dashboard</name>
   <description>eventmesh-dashboard</description>
-  <url>https://github.com/apache/pulsar</url>
+  <url>https://github.com/apache/eventmesh-dashboard</url>
 
   <organization>
     <name>Apache Software Foundation</name>
-    <url>http://www.apache.org/</url>
+    <url>https://www.apache.org/</url>
   </organization>
-  <inceptionYear>2017</inceptionYear>
-
+  <inceptionYear>2021</inceptionYear>
   <developers>
     <developer>
-      <organization>Apache eventmesh developers</organization>
-      <organizationUrl>http://eventmesh.apache.org/</organizationUrl>
+      <organization>Apache EventMesh developers</organization>
+      <organizationUrl>https://eventmesh.apache.org/</organizationUrl>
     </developer>
   </developers>
-
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -62,7 +59,7 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-    <scm>
+  <scm>
     <url>https://github.com/apache/eventmesh-dashboard</url>
     <connection>scm:git:https://github.com/apache/eventmesh-dashboard.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:apache/eventmesh-dashboard.git</developerConnection>
@@ -70,7 +67,7 @@
 
   <ciManagement>
     <system>GitHub Actions</system>
-    <url>https://github.com/apache/puleventmesh-dashboardsar/actions</url>
+    <url>https://github.com/apache/eventmesh-dashboard/actions</url>
   </ciManagement>
 
   <issueManagement>
@@ -79,11 +76,11 @@
   </issueManagement>
 
   <properties>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
   </properties>
+
   <modules>
     <module>eventmesh-dashboard-console</module>
     <module>eventmesh-dashboard-observe</module>
@@ -91,6 +88,4 @@
     <module>eventmesh-dashboard-service</module>
     <module>eventmesh-dashboard-common</module>
   </modules>
-
-
 </project>
