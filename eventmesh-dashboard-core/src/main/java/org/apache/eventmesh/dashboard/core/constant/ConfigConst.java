@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.constant;
+package org.apache.eventmesh.dashboard.core.constant;
 
 public class ConfigConst {
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.exception;
+package org.apache.eventmesh.dashboard.core.exception;
 
 /**
  * EventMesh Runtime side exception

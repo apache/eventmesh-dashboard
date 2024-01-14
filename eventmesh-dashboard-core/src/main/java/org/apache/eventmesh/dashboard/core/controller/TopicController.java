@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.controller;
+package org.apache.eventmesh.dashboard.core.controller;
 
-import org.apache.eventmesh.dashboard.dto.CreateTopicRequest;
-import org.apache.eventmesh.dashboard.dto.DeleteTopicRequest;
-import org.apache.eventmesh.dashboard.dto.Result;
-import org.apache.eventmesh.dashboard.model.TopicProperties;
-import org.apache.eventmesh.dashboard.service.TopicService;
+import org.apache.eventmesh.dashboard.core.dto.CreateTopicRequest;
+import org.apache.eventmesh.dashboard.core.dto.DeleteTopicRequest;
+import org.apache.eventmesh.dashboard.core.dto.Result;
+import org.apache.eventmesh.dashboard.core.model.TopicProperties;
+import org.apache.eventmesh.dashboard.core.service.TopicService;
 
 import java.util.List;
 

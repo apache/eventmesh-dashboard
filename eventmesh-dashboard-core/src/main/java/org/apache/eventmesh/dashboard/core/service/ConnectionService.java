@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service;
+package org.apache.eventmesh.dashboard.core.service;
 
 /**
  * "Connection" refers to the subscription relationship between connectors.

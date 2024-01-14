@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.config;
+package org.apache.eventmesh.dashboard.core.config;
 
-import org.apache.eventmesh.dashboard.constant.ConfigConst;
+import org.apache.eventmesh.dashboard.core.constant.ConfigConst;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

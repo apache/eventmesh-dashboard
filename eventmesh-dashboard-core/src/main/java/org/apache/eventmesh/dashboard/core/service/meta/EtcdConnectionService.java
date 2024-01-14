@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.meta;
+package org.apache.eventmesh.dashboard.core.service.meta;
 
-import org.apache.eventmesh.dashboard.service.ConnectionService;
+import org.apache.eventmesh.dashboard.core.service.ConnectionService;
 
 import org.springframework.stereotype.Service;
 

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.controller;
+package org.apache.eventmesh.dashboard.core.controller;
 
-import org.apache.eventmesh.dashboard.service.ConnectionService;
+import org.apache.eventmesh.dashboard.core.service.ConnectionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

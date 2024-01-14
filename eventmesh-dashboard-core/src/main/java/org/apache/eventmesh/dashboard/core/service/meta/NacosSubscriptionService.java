@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.meta;
+package org.apache.eventmesh.dashboard.core.service.meta;
 
-import static org.apache.eventmesh.dashboard.enums.Status.NACOS_EMPTY_RESP_ERR;
-import static org.apache.eventmesh.dashboard.enums.Status.NACOS_GET_CONFIGS_ERR;
-import static org.apache.eventmesh.dashboard.enums.Status.NACOS_LOGIN_EMPTY_RESP_ERR;
-import static org.apache.eventmesh.dashboard.enums.Status.NACOS_LOGIN_ERR;
-import static org.apache.eventmesh.dashboard.enums.Status.NACOS_SDK_CONFIG_ERR;
+import static org.apache.eventmesh.dashboard.core.enums.Status.NACOS_EMPTY_RESP_ERR;
+import static org.apache.eventmesh.dashboard.core.enums.Status.NACOS_GET_CONFIGS_ERR;
+import static org.apache.eventmesh.dashboard.core.enums.Status.NACOS_LOGIN_EMPTY_RESP_ERR;
+import static org.apache.eventmesh.dashboard.core.enums.Status.NACOS_LOGIN_ERR;
+import static org.apache.eventmesh.dashboard.core.enums.Status.NACOS_SDK_CONFIG_ERR;
 
-import org.apache.eventmesh.dashboard.config.AdminProperties;
-import org.apache.eventmesh.dashboard.constant.ConfigConst;
-import org.apache.eventmesh.dashboard.constant.NacosConst;
-import org.apache.eventmesh.dashboard.dto.Result;
-import org.apache.eventmesh.dashboard.exception.EventMeshAdminException;
-import org.apache.eventmesh.dashboard.exception.MetaException;
-import org.apache.eventmesh.dashboard.model.SubscriptionInfo;
-import org.apache.eventmesh.dashboard.service.SubscriptionService;
+import org.apache.eventmesh.dashboard.core.config.AdminProperties;
+import org.apache.eventmesh.dashboard.core.constant.ConfigConst;
+import org.apache.eventmesh.dashboard.core.constant.NacosConst;
+import org.apache.eventmesh.dashboard.core.dto.Result;
+import org.apache.eventmesh.dashboard.core.exception.EventMeshAdminException;
+import org.apache.eventmesh.dashboard.core.exception.MetaException;
+import org.apache.eventmesh.dashboard.core.model.SubscriptionInfo;
+import org.apache.eventmesh.dashboard.core.service.SubscriptionService;
 
 import java.util.ArrayList;
 import java.util.Base64;
