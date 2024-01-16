@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.dto;
+package org.apache.eventmesh.dashboard.core.dto;
 
-import static org.apache.eventmesh.dashboard.enums.Status.SUCCESS;
+import static org.apache.eventmesh.dashboard.core.enums.Status.SUCCESS;
 
-import org.apache.eventmesh.dashboard.enums.Status;
-import org.apache.eventmesh.dashboard.exception.BaseException;
+import org.apache.eventmesh.dashboard.core.enums.Status;
+import org.apache.eventmesh.dashboard.core.exception.BaseException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

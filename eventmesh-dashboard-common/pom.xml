@@ -6,15 +6,15 @@
     <parent>
         <groupId>org.apache.eventmesh.dashboard</groupId>
         <artifactId>eventmesh-dashboard</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.eventmesh.dashboard.common</groupId>
     <artifactId>eventmesh-dashboard-common</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.util;
+package org.apache.eventmesh.dashboard.core.util;
 
 public class ExceptionUtil {
 

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.enums;
+package org.apache.eventmesh.dashboard.core.enums;
 
-import static org.apache.eventmesh.dashboard.constant.ConfigConst.COLON;
+import static org.apache.eventmesh.dashboard.core.constant.ConfigConst.COLON;
 
 import org.springframework.http.HttpStatus;
 

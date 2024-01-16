@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.config;
+package org.apache.eventmesh.dashboard.core.config;
 
-import org.apache.eventmesh.dashboard.constant.ConfigConst;
-import org.apache.eventmesh.dashboard.service.ConnectionService;
-import org.apache.eventmesh.dashboard.service.SubscriptionService;
-import org.apache.eventmesh.dashboard.service.TopicService;
-import org.apache.eventmesh.dashboard.service.meta.EtcdConnectionService;
-import org.apache.eventmesh.dashboard.service.meta.EtcdSubscriptionService;
-import org.apache.eventmesh.dashboard.service.meta.NacosConnectionService;
-import org.apache.eventmesh.dashboard.service.meta.NacosSubscriptionService;
-import org.apache.eventmesh.dashboard.service.store.RocketmqTopicService;
+import org.apache.eventmesh.dashboard.core.constant.ConfigConst;
+import org.apache.eventmesh.dashboard.core.service.ConnectionService;
+import org.apache.eventmesh.dashboard.core.service.SubscriptionService;
+import org.apache.eventmesh.dashboard.core.service.TopicService;
+import org.apache.eventmesh.dashboard.core.service.meta.EtcdConnectionService;
+import org.apache.eventmesh.dashboard.core.service.meta.EtcdSubscriptionService;
+import org.apache.eventmesh.dashboard.core.service.meta.NacosConnectionService;
+import org.apache.eventmesh.dashboard.core.service.meta.NacosSubscriptionService;
+import org.apache.eventmesh.dashboard.core.service.store.RocketmqTopicService;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

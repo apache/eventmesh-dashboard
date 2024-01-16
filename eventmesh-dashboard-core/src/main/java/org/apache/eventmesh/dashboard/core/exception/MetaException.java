@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.exception;
+package org.apache.eventmesh.dashboard.core.exception;
 
-import org.apache.eventmesh.dashboard.enums.Status;
+import org.apache.eventmesh.dashboard.core.enums.Status;
 
 /**
  * Meta side exception with EventMeshAdmin Application

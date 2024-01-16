@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.model;
+package org.apache.eventmesh.dashboard.core.model;
 
 import lombok.Builder;
 import lombok.Data;

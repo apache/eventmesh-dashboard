@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.core.service.store;
 
-import org.apache.eventmesh.dashboard.config.AdminProperties;
-import org.apache.eventmesh.dashboard.model.TopicProperties;
-import org.apache.eventmesh.dashboard.service.TopicService;
+import org.apache.eventmesh.dashboard.core.config.AdminProperties;
+import org.apache.eventmesh.dashboard.core.model.TopicProperties;
+import org.apache.eventmesh.dashboard.core.service.TopicService;
 
 import java.util.List;
 

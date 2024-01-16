@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.exception;
+package org.apache.eventmesh.dashboard.core.exception;
 
-import org.apache.eventmesh.dashboard.dto.Result;
-import org.apache.eventmesh.dashboard.dto.Result.StatusMessage;
+import org.apache.eventmesh.dashboard.core.dto.Result;
+import org.apache.eventmesh.dashboard.core.dto.Result.StatusMessage;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class, in conjunction with {@linkplain org.apache.eventmesh.dashboard.enums.Status Status} and {@link BaseException},
+ * This class, in conjunction with {@linkplain org.apache.eventmesh.dashboard.core.enums.Status Status} and {@link BaseException},
  * collectively implements customized error reporting.
  */
 

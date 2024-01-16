@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.meta;
+package org.apache.eventmesh.dashboard.core.service.meta;
 
-import org.apache.eventmesh.dashboard.dto.Result;
-import org.apache.eventmesh.dashboard.model.SubscriptionInfo;
-import org.apache.eventmesh.dashboard.service.SubscriptionService;
+import org.apache.eventmesh.dashboard.core.dto.Result;
+import org.apache.eventmesh.dashboard.core.model.SubscriptionInfo;
+import org.apache.eventmesh.dashboard.core.service.SubscriptionService;
 
 import java.util.List;
 

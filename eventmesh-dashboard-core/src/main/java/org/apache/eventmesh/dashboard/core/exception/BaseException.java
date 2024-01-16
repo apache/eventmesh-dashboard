@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.exception;
+package org.apache.eventmesh.dashboard.core.exception;
 
-import static org.apache.eventmesh.dashboard.constant.ConfigConst.COLON;
+import static org.apache.eventmesh.dashboard.core.constant.ConfigConst.COLON;
 
-import org.apache.eventmesh.dashboard.enums.Status;
-import org.apache.eventmesh.dashboard.util.ExceptionUtil;
+import org.apache.eventmesh.dashboard.core.enums.Status;
+import org.apache.eventmesh.dashboard.core.util.ExceptionUtil;
 
 import lombok.Getter;
 
