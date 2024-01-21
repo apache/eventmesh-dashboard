@@ -74,14 +74,13 @@
     <url>https://github.com/apache/eventmesh-dashboard/issues</url>
   </issueManagement>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-boot.version>2.7.6</spring-boot.version>
-        <mybatis-spring-boot.version>2.3.2</mybatis-spring-boot.version>
-        <nacos.version>2.1.2</nacos.version>
-    </properties>
+  <properties>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring-boot.version>2.7.6</spring-boot.version>
+    <mybatis-spring-boot.version>2.3.2</mybatis-spring-boot.version>
+  </properties>
 
   <modules>
     <module>eventmesh-dashboard-console</module>
@@ -90,7 +89,6 @@
     <module>eventmesh-dashboard-service</module>
     <module>eventmesh-dashboard-common</module>
   </modules>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -105,37 +103,6 @@
         <artifactId>mybatis-spring-boot-starter</artifactId>
         <version>${mybatis-spring-boot.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.mybatis.spring.boot</groupId>
-        <artifactId>mybatis-spring-boot-starter-test</artifactId>
-        <version>${mybatis-spring-boot.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.3.1</version>
-        <configuration>
-          <configLocation>style/checkStyle.xml</configLocation>
-          <consoleOutput>true</consoleOutput>
-          <failsOnError>true</failsOnError>
-          <linkXRef>false</linkXRef>
-          <propertyExpansion>config_loc=style</propertyExpansion>
-        </configuration>
-        <executions>
-          <execution>
-            <id>validate</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
