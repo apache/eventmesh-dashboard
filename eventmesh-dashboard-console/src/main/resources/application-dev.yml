@@ -29,37 +29,23 @@ spring:
     name: eventmesh-console
   datasource:
     name: eventmesh-console
-    url: jdbc:mysql://${EVENTMESH_CONSOLE_DB_HOST}/eventmesh-dashboard?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
-    username: ${EVENTMESH_CONSOLE_DB_USERNAME}
-    password: ${EVENTMESH_CONSOLE_DB_PASSWORD}
-    # using druid data source
     type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    maxActive: 20
-    initialSize: 1
-    maxWait: 60000
-    minIdle: 1
-    timeBetweenEvictionRunsMillis: 60000
-    minEvictableIdleTimeMillis: 300000
-    validationQuery: select 'x'
-    testWhileIdle: true
-    testOnBorrow: false
-    testOnReturn: false
-    poolPreparedStatements: true
-    maxOpenPreparedStatements: 20
-    # encrypt password
-    filters: config
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/eventmesh-dashboard?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+      username: root
+      password: root
 
-mybatis:
-  checkConfig-location: false
-  configuration:
-    useGeneratedKeys: true
-    mapUnderscoreToCamelCase: true
+      initial-size: 1
+      max-active: 50
+      min-idle: 5
+      max-wait: 6000
+      validation-query: select 'x'
+      validation-query-timeout: 15
+      test-on-borrow: false
+      test-while-idle: true
+      min-evictable-idle-time-millis: 300000
 
-pagehelper:
-  helperDialect: mysql
-  reasonable: true
-  supportMethodsArguments: true
-  params: count=countSql
+
 
 
