@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.controller;
+package org.apache.eventmesh.dashboard.console.controller;
 
 import org.apache.eventmesh.dashboard.core.dto.CreateTopicRequest;
 import org.apache.eventmesh.dashboard.core.dto.DeleteTopicRequest;

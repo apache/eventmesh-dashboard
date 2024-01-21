@@ -21,7 +21,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://localhost:3306/eventmesh-dashboard?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
       username: root
-      password:
+      password: root
 
       initial-size: 1
       max-active: 50

@@ -15,37 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.controller;
+package org.apache.eventmesh.dashboard.console.controller;
 
-import org.apache.eventmesh.dashboard.core.service.ConnectionService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
+import com.alibaba.druid.stat.DruidStatManagerFacade;
 
-@Slf4j
 @RestController
-public class ConnectionController {
-
-    @Autowired
-    ConnectionService connectionService;
-
-    /**
-     * Query Connection List
-     * <p>
-     * The subscription information of SourceConnector and SinkConnector reported by EventMesh Runtime to the meta,
-     * containing the configuration of each connection.
-     *
-     * @param page the page number
-     * @param size the page size
-     * @return A paged list of connection configuration and total number of pages
-     */
-    @GetMapping("/connection")
-    public String listConnections(@RequestParam("page") Integer page, @RequestParam("size") String size) {
-        return null;
+public class MetricsController {
+    @GetMapping("/druid/stat")
+    public Object druidStat() {
+        return DruidStatManagerFacade.getInstance().getDataSourceStatDataList();
     }
-
 }
