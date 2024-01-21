@@ -20,19 +20,3 @@ spring:
     name: eventmesh-dashboard
   profiles:
     active: dev
-
-logging:
-  config: classpath:logback.xml
-
-mybatis:
-  checkConfig-location: false
-  configuration:
-    useGeneratedKeys: true
-    mapUnderscoreToCamelCase: true
-
-
-pagehelper:
-  helperDialect: mysql
-  reasonable: true
-  supportMethodsArguments: true
-  params: count=countSql
