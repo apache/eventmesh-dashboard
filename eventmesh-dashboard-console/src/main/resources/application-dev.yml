@@ -14,12 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+server:
+  port: 9898
+  servlet:
+    context-path: "/eventmesh"
+
 spring:
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+  application:
+    name: eventmesh-console
   datasource:
+    name: eventmesh-console
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/eventmesh-dashboard?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+      url: jdbc:mysql://localhost:3306/eventmesh-dashboard?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
       username: root
       password: root
 
@@ -33,43 +46,6 @@ spring:
       test-while-idle: true
       min-evictable-idle-time-millis: 300000
 
-      stat-view-servlet:
-        enabled: true
-        url-pattern: /druid/*
-      filter:
-        wall:
-          config:
-            multi-statement-allow: true # corresponds to allowMultiQueries
 
-eventmesh:
-  meta:
-    # registry type: nacos, etcd
-    type: nacos
-    nacos:
-      addr: 127.0.0.1:8848
-      namespace: # namespace id, empty by default
-      authEnabled: false
-      protocol: http # http or https
-      username:
-      password:
-      # Alibaba Cloud MSE Nacos auth, not nacos.token.secret.key
-      accessKey:
-      secretKey:
-    etcd:
-      addr: # TODO
-    # timeout for admin client
-    timeoutMs: 5000
-  store:
-    # Event Store type, should be consistent with the EventMesh Runtime configuration.
-    type: rocketmq
-    standalone:
-    # TODO
-    rocketmq:
-      namesrvAddr: 127.0.0.1:9876;127.0.0.1:9876
-      clusterName: DefaultCluster
-      accessKey: '********'
-      secretKey: '********'
-    kafka:
-      namesrvAddr: localhost:9092;localhost:9092
-      partitions: 1
-      replicationFactors: 1
+
+

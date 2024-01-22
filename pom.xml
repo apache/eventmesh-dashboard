@@ -78,6 +78,8 @@
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring-boot.version>2.7.6</spring-boot.version>
+    <mybatis-spring-boot.version>2.3.2</mybatis-spring-boot.version>
   </properties>
 
   <modules>
@@ -87,4 +89,20 @@
     <module>eventmesh-dashboard-service</module>
     <module>eventmesh-dashboard-common</module>
   </modules>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis.spring.boot</groupId>
+        <artifactId>mybatis-spring-boot-starter</artifactId>
+        <version>${mybatis-spring-boot.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>
