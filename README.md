@@ -18,7 +18,7 @@
 
 1. eventmesh-dashboard-console  业务模块的代码，调用service接口
 2. eventmesh-dashboard-observe  监控模块的代码
-3. eventmesh-dashboard-core     对eventmesh以及相关组件的代码，提供service实现
+3. eventmesh-dashboard-core     对EventMesh Runtime, Meta以及相关组件的代码，提供service实现
 4. eventmesh-dashboard-service  公用API接口，对core的抽象
 5. eventmesh-dashboard-common   公共模块的代码
 6. eventmesh-dashboard-view     前端代码

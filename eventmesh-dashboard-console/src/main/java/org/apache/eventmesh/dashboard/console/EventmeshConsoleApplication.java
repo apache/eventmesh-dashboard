@@ -17,10 +17,11 @@
 
 package org.apache.eventmesh.dashboard.console;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootApplication
@@ -28,11 +29,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class EventmeshConsoleApplication {
 
     public static void main(String[] args) {
-        try {
-            SpringApplication.run(EventmeshConsoleApplication.class, args);
-            log.info("{} Successfully booted.", EventmeshConsoleApplication.class.getSimpleName());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
+        SpringApplication.run(EventmeshConsoleApplication.class, args);
+        log.info("{} Successfully booted.", EventmeshConsoleApplication.class.getSimpleName());
     }
 }
