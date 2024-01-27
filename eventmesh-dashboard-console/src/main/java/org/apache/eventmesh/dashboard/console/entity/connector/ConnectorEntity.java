@@ -23,23 +23,25 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ConnectorEntity extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8226303660232951326L;
 
     @Schema(name = "id", description = "primary key")
     private Long id;
 
-    private Long connectClusterId;
+    private String name;
 
-    private String connectorName;
+    private String className;
 
-    private String connectorClassName;
+    private String type;
 
-    private String connectorType;
+    private String status;
 
-    private String state;
+    private Integer podState;
 
-    private String topics;
-
-    private Integer taskCount;
-
+    /**
+     * csv format config id list.<br>
+     * Example value: 1,2,7<br>
+     * This field is updated when the configuration is modified via the web API, but is not used during the configuration retrieval process.
+     */
+    private String configIds;
 }

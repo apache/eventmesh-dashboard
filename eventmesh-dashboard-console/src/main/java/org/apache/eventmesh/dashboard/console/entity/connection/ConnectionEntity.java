@@ -19,6 +19,7 @@ package org.apache.eventmesh.dashboard.console.entity.connection;
 
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,28 +33,21 @@ import lombok.Data;
 @Data
 public class ConnectionEntity extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 6565578252656944905L;
     @Schema(name = "id", description = "primary key")
     private Long id;
 
+    /**
+     * The type of source. Possible values are "connector" or "client".
+     */
     @Schema(name = "sourceType", defaultValue = "connector", allowableValues = {"connector", "client"})
     private String sourceType;
 
-    /**
-     * The type of source. Possible values are "connector" and "client".
-     */
     @Schema(name = "sourceId", description = "connectorId or clientId")
     private Long sourceId;
 
     /**
-     * 0: not active, 1: active
-     */
-    @Schema(name = "sourceStatus", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
-    private Integer sourceStatus;
-
-    /**
-     * The type of sink. Possible values are "connector" and "client".
+     * The type of sink. Possible values are "connector" or "client".
      */
     @Schema(name = "sinkType", defaultValue = "connector", allowableValues = {"connector", "client"})
     private String sinkType;
@@ -61,23 +55,16 @@ public class ConnectionEntity extends BaseEntity {
     @Schema(name = "sinkId", description = "connectorId or clientId")
     private Long sinkId;
 
-    /**
-     * 0: not active, 1: active
-     */
-    @Schema(name = "sinkStatus", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
-    private Integer sinkStatus;
-
     private Long runtimeId;
 
-    @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
+    @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")
     private Integer status;
 
-    @Schema(name = "topic", description = "related topic name from storage")
     private String topic;
 
     private Long groupId;
 
-    private String groupName;
+    private Timestamp endTime;
 
     private String description;
 
@@ -92,18 +79,12 @@ public class ConnectionEntity extends BaseEntity {
         ConnectionEntity that = (ConnectionEntity) o;
         return Objects.equals(sourceType, that.sourceType)
             && Objects.equals(sourceId, that.sourceId)
-            && Objects.equals(sourceStatus, that.sourceStatus)
 
             && Objects.equals(sinkType, that.sinkType)
             && Objects.equals(sinkId, that.sinkId)
-            && Objects.equals(sinkStatus, that.sinkStatus)
 
             && Objects.equals(runtimeId, that.runtimeId)
             && Objects.equals(status, that.status)
-
-            && Objects.equals(topic, that.topic)
-            && Objects.equals(groupId, that.groupId)
-            && Objects.equals(groupName, that.groupName)
 
             && Objects.equals(description, that.description);
     }

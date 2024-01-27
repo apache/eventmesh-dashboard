@@ -15,24 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.base;
+package org.apache.eventmesh.dashboard.console.entity.health;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.Data;
 
 @Data
-@Schema(name = "BaseEntity", description = "Base entity")
-public class BaseEntity implements Serializable {
+@Schema(name = "HealthCheckResultEntity", description = "Health check result entity")
+public class HealthCheckResultEntity extends BaseEntity {
 
-    private static final long serialVersionUID = -2697805837923579585L;
+    private static final long serialVersionUID = -7350585209577598040L;
+    @Schema(name = "id", description = "primary key")
+    private Long id;
 
-    private Long clusterId;
+    @Schema(description = "Dimension of Health Check;0:Unknown, 1:Cluster, 2:Runtime, 3:Topic, 4:Group", defaultValue = "0", allowableValues = {"0",
+        "1", "2", "3", "4"})
+    private Integer dimension;
 
-    protected Timestamp createTime;
+    private String configName;
 
-    protected Timestamp updateTime;
+    private String resName;
+
+    private Integer passed;
+
+    public HealthCheckResultEntity() {
+    }
+
 }

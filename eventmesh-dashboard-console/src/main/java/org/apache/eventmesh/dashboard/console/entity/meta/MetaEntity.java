@@ -15,9 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common;
+package org.apache.eventmesh.dashboard.console.entity.meta;
 
-public class Main {
-    public static void main(String[] args) {
-    }
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import lombok.Data;
+
+@Data
+public class MetaEntity extends BaseEntity {
+
+    private static final long serialVersionUID = 7176263169716424469L;
+
+    /**
+     * Primary key
+     */
+    @Schema(name = "id", description = "Primary key")
+    private Long id;
+
+    private String name;
+
+    private String type;
+
+    private String version;
+
+    private Long clusterId;
+
+    private String host;
+
+    private Integer port;
+
+    private String role;
+
+    private String username;
+
+    private String params;
+
+    private Integer status;
 }

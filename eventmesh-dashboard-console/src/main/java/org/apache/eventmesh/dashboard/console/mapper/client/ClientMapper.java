@@ -31,19 +31,29 @@ import org.apache.ibatis.annotations.Update;
  */
 @Mapper
 public interface ClientMapper {
-    @Select("SELECT * FROM client WHERE id = #{id}")
-    ClientEntity selectById(ClientEntity clientEntity);
 
-    @Select("SELECT * FROM client WHERE cluster_phy_id = #{clusterPhyId}")
-    ClientEntity selectByClusterPhyId(ClientEntity clientEntity);
+    @Select("SELECT * FROM `client` WHERE `id` = #{id}")
+    ClientEntity selectById(Long id);
 
-    @Delete("DELETE FROM client WHERE id = #{id}")
-    void deleteById(ClientEntity clientEntity);
-
-    @Update("UPDATE client SET status = #{status} WHERE id = #{id}")
-    void updateStatusById(ClientEntity clientEntity);
+    @Select("SELECT * FROM `client` WHERE `cluster_id` = #{clusterId}")
+    ClientEntity selectByClusterId(Long clusterId);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("INSERT INTO client (cluster_phy_id, name, eventmesh_address, platform, language, pid, host, port, protocol, status, description) VALUES ( #{clusterPhyId}, #{name}, #{eventmeshAddress}, #{platform}, #{language}, #{pid}, #{host}, #{port}, #{protocol}, #{status}, #{description})")
+    @Insert(
+        "INSERT INTO `client` (`cluster_id`, `name`, `platform`,"
+            + " `language`, `pid`, `host`, `port`, `protocol`,"
+            + " `status`, `config_ids`, `description`, `end_time`) "
+            + "VALUES (#{clusterId}, #{name}, #{platform},"
+            + " #{language}, #{pid}, #{host}, #{port}, #{protocol},"
+            + " #{status}, #{configIds}, #{description}, #{endTime})")
     void insert(ClientEntity clientEntity);
+
+    @Update("UPDATE `client` SET status = #{status}, end_time = NOW() WHERE id = #{id}")
+    void deActive(ClientEntity clientEntity);
+
+    @Update("UPDATE `client` SET status = #{status} WHERE id = #{id}")
+    void updateStatus(ClientEntity clientEntity);
+
+    @Delete("DELETE FROM `client` WHERE id = #{id}")
+    void deleteById(Long id);
 }

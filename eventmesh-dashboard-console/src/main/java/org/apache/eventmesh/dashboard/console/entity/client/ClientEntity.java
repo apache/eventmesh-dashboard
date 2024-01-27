@@ -19,18 +19,17 @@ package org.apache.eventmesh.dashboard.console.entity.client;
 
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
+import java.sql.Timestamp;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class ClientEntity extends BaseEntity {
 
-    private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 8204133370609215856L;
     @Schema(name = "id", description = "primary key")
     private Long id;
 
     private String name;
-
-    private String eventmeshAddress;
 
     private String platform;
 
@@ -50,6 +49,10 @@ public class ClientEntity extends BaseEntity {
     @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
     private Integer status;
 
+    private String configIds;
+
     private String description;
+
+    private Timestamp endTime;
 }
     

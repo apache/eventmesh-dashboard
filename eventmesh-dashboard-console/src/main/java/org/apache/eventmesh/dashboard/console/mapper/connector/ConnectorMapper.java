@@ -19,6 +19,8 @@ package org.apache.eventmesh.dashboard.console.mapper.connector;
 
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,19 +33,50 @@ import org.apache.ibatis.annotations.Update;
  */
 @Mapper
 public interface ConnectorMapper {
+
     @Select("SELECT * FROM connector WHERE id = #{id}")
-    ConnectorEntity selecyById(Long id);
+    ConnectorEntity selectById(ConnectorEntity connectorEntity);
 
-    @Select("SELECT * FROM connector WHERE connect_cluster_id = #{connectClusterId}")
-    ConnectorEntity selectByConnectClusterId(Long connectClusterId);
-
-    @Delete("DELETE FROM connector WHERE id = #{id}")
-    void deleteById(Long id);
-
-    @Update("UPDATE connector SET state = #{state} WHERE id = #{id}")
-    void updateStateById(ConnectorEntity connectorEntity);
+    @Select("SELECT * FROM connector WHERE cluster_id = #{clusterId}")
+    ConnectorEntity selectByClusterId(ConnectorEntity connectorEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("INSERT INTO connector (connect_cluster_id, connector_name, connector_class_name, connector_type, state, topics, task_count) VALUES (#{connectClusterId}, #{connectorName}, #{connectorClassName}, #{connectorType}, #{state}, #{topics}, #{taskCount})")
+    @Insert("INSERT INTO connector (cluster_id, name, class_name, type, status, pod_state, config_ids) "
+        + "VALUES (#{connectClusterId}, #{name}, #{className}, #{type}, #{status}, #{podState}, #{configIds})")
     void insert(ConnectorEntity connectorEntity);
+
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    @Insert("<script>"
+        + "INSERT INTO connector (cluster_id, name, class_name, type, status, pod_state, config_ids) VALUES "
+        +
+        "<foreach collection='list' item='connectorEntity' index='index' separator=','>"
+        + "(#{connectorEntity.connectClusterId}, #{connectorEntity.name}, #{connectorEntity.className},"
+        + " #{connectorEntity.type}, #{connectorEntity.status}, #{connectorEntity.podState}, #{connectorEntity.configIds})"
+        + "</foreach>"
+        + "</script>")
+    void batchInsert(List<ConnectorEntity> connectorEntityList);
+
+    @Update("UPDATE connector SET status = #{status} WHERE id = #{id}")
+    void updateStatus(ConnectorEntity connectorEntity);
+
+    @Update("UPDATE connector SET pod_state = #{podState} WHERE id = #{id}")
+    void updatePodState(ConnectorEntity connectorEntity);
+
+    @Update("UPDATE connector SET config_ids = #{configIds} WHERE id = #{id}")
+    void updateConfigIds(ConnectorEntity connectorEntity);
+
+    @Delete("DELETE FROM connector WHERE id = #{id}")
+    void deleteById(ConnectorEntity connectorEntity);
+
+    @Delete("DELETE FROM connector WHERE cluster_id = #{clusterId}")
+    void deleteByClusterId(ConnectorEntity connectorEntity);
+
+    @Delete("<script>"
+        + "DELETE FROM connector WHERE id IN "
+        +
+        "<foreach collection='list' item='connectorEntity' index='index' open='(' separator=',' close=')'>"
+        + "#{connectorEntity.id}"
+        + "</foreach>"
+        + "</script>")
+    void batchDelete(List<ConnectorEntity> connectorEntities);
 }

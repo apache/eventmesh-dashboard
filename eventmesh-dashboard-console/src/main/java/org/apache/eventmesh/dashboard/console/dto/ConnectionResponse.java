@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.connection;
+package org.apache.eventmesh.dashboard.console.dto;
 
 import java.io.Serializable;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 
-public class ConnectionResponseEntity implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class ConnectionResponse implements Serializable {
 
-    @Schema(name = "id", description = "primary key")
+    private static final long serialVersionUID = -7317308457824435889L;
+
+    @Schema(name = "id", description = "primary key of table connection")
     private Long id;
 
     @Schema(name = "sourceType", defaultValue = "connector", allowableValues = {"connector", "client"})
@@ -37,6 +38,9 @@ public class ConnectionResponseEntity implements Serializable {
     @Schema(name = "sourceStatus", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
     private Integer sourceStatus;
 
+    @Schema(name = "sourceConfigList", description = "source config list")
+    private List<ConfigEntity> sourceConfigList;
+
     @Schema(name = "sinkType", defaultValue = "connector", allowableValues = {"connector", "client"})
     private String sinkType;
 
@@ -45,6 +49,9 @@ public class ConnectionResponseEntity implements Serializable {
 
     @Schema(name = "sinkStatus", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
     private Integer sinkStatus;
+
+    @Schema(name = "sinkConfigList", description = "sink config list")
+    private List<ConfigEntity> sinkConfigList;
 
     private Long runtimeId;
 

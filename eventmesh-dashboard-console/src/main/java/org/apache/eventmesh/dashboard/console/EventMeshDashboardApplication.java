@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.base;
+package org.apache.eventmesh.dashboard.console;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.extern.slf4j.Slf4j;
 
-import lombok.Data;
+@Slf4j
+@SpringBootApplication
+@EnableScheduling
+@ComponentScan({"org.apache.eventmesh.dashboard.service", "org.apache.eventmesh.dashboard.console"})
+public class EventMeshDashboardApplication {
 
-@Data
-@Schema(name = "BaseEntity", description = "Base entity")
-public class BaseEntity implements Serializable {
-
-    private static final long serialVersionUID = -2697805837923579585L;
-
-    private Long clusterId;
-
-    protected Timestamp createTime;
-
-    protected Timestamp updateTime;
+    public static void main(String[] args) {
+        SpringApplication.run(EventMeshDashboardApplication.class, args);
+        log.info("{} Successfully booted.", EventMeshDashboardApplication.class.getSimpleName());
+    }
 }

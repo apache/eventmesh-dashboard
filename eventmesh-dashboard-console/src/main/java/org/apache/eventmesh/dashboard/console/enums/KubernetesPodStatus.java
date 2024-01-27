@@ -15,25 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.enums;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.scheduling.annotation.EnableScheduling;
+public enum KubernetesPodStatus {
+    PENDING(0, "pending"),
+    RUNNING(1, "running"),
+    SUCCEEDED(2, "succeeded"),
+    FAILED(3, "failed"),
+    UNKNOWN(4, "unknown");
 
-import lombok.extern.slf4j.Slf4j;
-
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@SpringBootApplication
-@EnableScheduling
-@ComponentScan({"org.apache.eventmesh.dashboard.service", "org.apache.eventmesh.dashboard.console"})
-public class EventmeshConsoleApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(EventmeshConsoleApplication.class, args);
-        log.info("{} Successfully booted.", EventmeshConsoleApplication.class.getSimpleName());
+    KubernetesPodStatus(Integer number, String status) {
     }
 }

@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.base;
+package org.apache.eventmesh.dashboard.console.enums.health;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
+public enum HealthCheckDimensionEnum {
+    UNKNOWN(0, "unknown"),
 
-import io.swagger.v3.oas.annotations.media.Schema;
+    CLUSTER(1, "cluster"),
 
-import lombok.Data;
+    RUNTIME(2, "runtime"),
 
-@Data
-@Schema(name = "BaseEntity", description = "Base entity")
-public class BaseEntity implements Serializable {
+    TOPIC(3, "topic"),
 
-    private static final long serialVersionUID = -2697805837923579585L;
+    GROUP(4, "group");
 
-    private Long clusterId;
-
-    protected Timestamp createTime;
-
-    protected Timestamp updateTime;
+    HealthCheckDimensionEnum(Integer dimensionId, String dimensionName) {
+    }
 }

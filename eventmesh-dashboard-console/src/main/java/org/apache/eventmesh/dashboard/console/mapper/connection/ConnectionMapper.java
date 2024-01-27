@@ -24,6 +24,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -39,25 +40,35 @@ public interface ConnectionMapper {
     @Select("SELECT * FROM connection")
     List<ConnectionEntity> selectAll();
 
-    @Select("SELECT * FROM connection WHERE cluster_phy_id = #{clusterPhyId}")
-    List<ConnectionEntity> selectByClusterPhyId(ConnectionEntity connectionEntity);
+    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId}")
+    List<ConnectionEntity> selectByClusterId(ConnectionEntity connectionEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("INSERT INTO connection (cluster_phy_id, source_type, source_id, source_status, sink_type, sink_id, sink_status, runtime_id, status, topic, group_id, group_name, description) VALUES ( #{clusterPhyId}, #{sourceType}, #{sourceId}, #{sourceStatus}, #{sinkType}, #{sinkId}, #{sinkStatus}, #{runtimeId}, #{status}, #{topic}, #{groupId}, #{groupName}, #{description})")
+    @Insert("INSERT INTO connection (cluster_id, source_type, source_id,"
+        + " sink_type, sink_id, runtime_id, status, topic, group_id, description)"
+        + " VALUES ( #{clusterId}, #{sourceType}, #{sourceId}, "
+        + " #{sinkType}, #{sinkId},  #{runtimeId}, #{status}, #{topic}, #{groupId}, #{description})")
     void insert(ConnectionEntity connectionEntity);
 
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("<script>"
-        + "INSERT INTO connection (cluster_phy_id, source_type, source_id, source_status, sink_type, sink_id, sink_status, runtime_id, status, topic, group_id, group_name, description) VALUES "
+        + "INSERT INTO connection (cluster_id, source_type, source_id,"
+        + " sink_type, sink_id, runtime_id, status,"
+        + " topic, group_id, description) VALUES "
         +
         "<foreach collection='list' item='connectionEntity' index='index' separator=','>"
-        + "(#{connectionEntity.clusterPhyId}, #{connectionEntity.sourceType}, #{connectionEntity.sourceId}, #{connectionEntity.sourceStatus}, #{connectionEntity.sinkType}, #{connectionEntity.sinkId}, #{connectionEntity.sinkStatus}, #{connectionEntity.runtimeId}, #{connectionEntity.status}, #{connectionEntity.topic}, #{connectionEntity.groupId}, #{connectionEntity.groupName}, #{connectionEntity.description})"
+        + "(#{connectionEntity.clusterId}, #{connectionEntity.sourceType}, #{connectionEntity.sourceId},"
+        + " #{connectionEntity.sinkType}, #{connectionEntity.sinkId}, #{connectionEntity.runtimeId}, #{connectionEntity.status},"
+        + " #{connectionEntity.topic}, #{connectionEntity.groupId}, #{connectionEntity.description})"
         + "</foreach>"
         + "</script>")
     void batchInsert(List<ConnectionEntity> connectionEntityList);
 
+    @Update("UPDATE connection SET status = #{status}, end_time = NOW() WHERE id = #{id}")
+    void endConnectionById(ConnectionEntity connectionEntity);
 
-    @Delete("DELETE FROM connection WHERE cluster_phy_id = #{clusterPhyId}")
-    void deleteAllByClusterPhyId(ConnectionEntity connectionEntity);
+    @Delete("DELETE FROM connection WHERE cluster_id = #{clusterId}")
+    void deleteAllByClusterId(ConnectionEntity connectionEntity);
 
     @Delete("DELETE FROM connection WHERE id = #{id}")
     void deleteById(ConnectionEntity connectionEntity);

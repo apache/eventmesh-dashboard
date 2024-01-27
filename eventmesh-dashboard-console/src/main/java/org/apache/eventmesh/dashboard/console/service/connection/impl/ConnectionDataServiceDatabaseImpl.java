@@ -38,8 +38,8 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
 
     public List<ConnectionEntity> getAllConnectionsByClusterId(Long clusterId) {
         ConnectionEntity connectionEntity = new ConnectionEntity();
-        connectionEntity.setClusterPhyId(clusterId);
-        return connectionMapper.selectByClusterPhyId(connectionEntity);
+        connectionEntity.setClusterId(clusterId);
+        return connectionMapper.selectByClusterId(connectionEntity);
     }
 
 
@@ -52,13 +52,13 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
     @Override
     @Transactional
     public void replaceAllConnections(List<ConnectionEntity> connectionEntityList) {
-        Map<Long, List<ConnectionEntity>> connectionsGroupedByClusterPhyId = connectionEntityList.stream()
-            .collect(Collectors.groupingBy(ConnectionEntity::getClusterPhyId));
+        Map<Long, List<ConnectionEntity>> connectionsGroupedByClusterId = connectionEntityList.stream()
+            .collect(Collectors.groupingBy(ConnectionEntity::getClusterId));
 
-        connectionsGroupedByClusterPhyId.forEach((clusterPhyId, newConnections) -> {
+        connectionsGroupedByClusterId.forEach((clusterId, newConnections) -> {
             ConnectionEntity connectionEntity = new ConnectionEntity();
-            connectionEntity.setClusterPhyId(clusterPhyId);
-            List<ConnectionEntity> existingConnections = connectionMapper.selectByClusterPhyId(connectionEntity);
+            connectionEntity.setClusterId(clusterId);
+            List<ConnectionEntity> existingConnections = connectionMapper.selectByClusterId(connectionEntity);
 
             // Collect connections that are not in the new list
             List<ConnectionEntity> connectionsToDelete = existingConnections.stream()

@@ -44,10 +44,6 @@ spring:
       test-while-idle: true
       min-evictable-idle-time-millis: 300000
 
-logging:
-  level:
-    root: info
-
 # cron job config, use cron expression
 cron:
     #health check job

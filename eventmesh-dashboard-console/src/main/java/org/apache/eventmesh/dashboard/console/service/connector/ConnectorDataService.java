@@ -15,24 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.base;
+package org.apache.eventmesh.dashboard.console.service.connector;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
+/**
+ * Service providing data of connectors.
+ */
+public interface ConnectorDataService {
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import lombok.Data;
-
-@Data
-@Schema(name = "BaseEntity", description = "Base entity")
-public class BaseEntity implements Serializable {
-
-    private static final long serialVersionUID = -2697805837923579585L;
-
-    private Long clusterId;
-
-    protected Timestamp createTime;
-
-    protected Timestamp updateTime;
 }
