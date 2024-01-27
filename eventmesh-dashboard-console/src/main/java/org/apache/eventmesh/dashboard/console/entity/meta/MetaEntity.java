@@ -15,21 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.entity.meta;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
-import lombok.extern.slf4j.Slf4j;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-@Slf4j
-@SpringBootApplication
-@ComponentScan({"org.apache.eventmesh.dashboard.service", "org.apache.eventmesh.dashboard.console"})
-public class EventmeshConsoleApplication {
+import lombok.Data;
 
-    public static void main(String[] args) {
-        SpringApplication.run(EventmeshConsoleApplication.class, args);
-        log.info("{} Successfully booted.", EventmeshConsoleApplication.class.getSimpleName());
-    }
+@Data
+public class MetaEntity extends BaseEntity {
+
+    private static final long serialVersionUID = 7176263169716424469L;
+
+    /**
+     * Primary key
+     */
+    @Schema(name = "id", description = "Primary key")
+    private Long id;
+
+    private String name;
+
+    private String type;
+
+    private String version;
+
+    private Long clusterId;
+
+    private String host;
+
+    private Integer port;
+
+    private String role;
+
+    private String username;
+
+    private String params;
+
+    private Integer status;
 }
