@@ -69,6 +69,14 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>5.1.2.RELEASE</version>
+        </dependency>
+
+
     </dependencies>
 
 </project>

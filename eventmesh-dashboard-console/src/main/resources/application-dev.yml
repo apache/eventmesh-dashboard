@@ -34,7 +34,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://localhost:3306/eventmesh-dashboard?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
       username: root
-      password: root
+      password: 123456
 
       initial-size: 1
       max-active: 50
@@ -45,6 +45,10 @@ spring:
       test-on-borrow: false
       test-while-idle: true
       min-evictable-idle-time-millis: 300000
+
+mybatis:
+  type-aliases-package: org.apache.eventmesh.dashboard.console.entity
+
 
 
 
