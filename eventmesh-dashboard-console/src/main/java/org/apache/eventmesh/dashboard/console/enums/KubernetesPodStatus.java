@@ -15,15 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core;
+package org.apache.eventmesh.dashboard.console.enums;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@SpringBootTest
-class EventMeshDashboardApplicationTest {
+@Getter
+@AllArgsConstructor
+public enum KubernetesPodStatus {
+    PENDING(0, "Pending"),
+    RUNNING(1, "Running"),
+    SUCCEEDED(2, "Succeeded"),
+    FAILED(3, "Failed"),
+    UNKNOWN(4, "Unknown"),
+    TERMINATING(5, "Terminating"),
+    TERMINATED(6, "Terminated");
 
-//    @Test
-//    void contextLoads() {
-//    }
-
+    private final Integer number;
+    private final String name;
 }

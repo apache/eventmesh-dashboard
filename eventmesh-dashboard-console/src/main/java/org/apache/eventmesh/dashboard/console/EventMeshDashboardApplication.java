@@ -15,15 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core;
+package org.apache.eventmesh.dashboard.console;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootTest
-class EventMeshDashboardApplicationTest {
+import lombok.extern.slf4j.Slf4j;
 
-//    @Test
-//    void contextLoads() {
-//    }
+@Slf4j
+@SpringBootApplication
+@EnableScheduling
+@ComponentScan({"org.apache.eventmesh.dashboard.service", "org.apache.eventmesh.dashboard.console"})
+public class EventMeshDashboardApplication {
 
+    public static void main(String[] args) {
+        SpringApplication.run(EventMeshDashboardApplication.class, args);
+        log.info("{} Successfully booted.", EventMeshDashboardApplication.class.getSimpleName());
+    }
 }

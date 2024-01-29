@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core;
+package org.apache.eventmesh.dashboard.console.scheduler.health;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.stereotype.Component;
 
-@SpringBootTest
-class EventMeshDashboardApplicationTest {
+import lombok.extern.slf4j.Slf4j;
 
-//    @Test
-//    void contextLoads() {
-//    }
+@Slf4j
+@Component
+public class HealthCheckScheduler {
 
 }

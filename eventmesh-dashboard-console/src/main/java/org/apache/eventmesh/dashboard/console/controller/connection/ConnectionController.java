@@ -15,15 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core;
+package org.apache.eventmesh.dashboard.console.controller.connection;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootTest
-class EventMeshDashboardApplicationTest {
-
-//    @Test
-//    void contextLoads() {
-//    }
+@RestController
+public class ConnectionController {
 
 }

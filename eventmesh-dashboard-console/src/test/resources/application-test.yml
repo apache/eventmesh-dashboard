@@ -15,22 +15,13 @@
 # limitations under the License.
 #
 
-server:
-  port: 9898
-
 spring:
-  servlet:
-    multipart:
-      max-file-size: 500MB
-      max-request-size: 500MB
-  application:
-    name: eventmesh-console
   datasource:
     name: eventmesh-console
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/eventmesh-dashboard?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://localhost:3306/eventmesh-dashboard-test?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
       username: root
       password: root
 
@@ -43,10 +34,3 @@ spring:
       test-on-borrow: false
       test-while-idle: true
       min-evictable-idle-time-millis: 300000
-
-# cron job config, use cron expression
-cron:
-    #health check job
-    health: "0/15 * * * * ? *"
-
-

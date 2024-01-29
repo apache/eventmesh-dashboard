@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core;
+package org.apache.eventmesh.dashboard.console.config;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.stereotype.Component;
 
-@SpringBootTest
-class EventMeshDashboardApplicationTest {
+@Component
+public class SchedulerConfig {
 
-//    @Test
-//    void contextLoads() {
-//    }
-
+    @Bean
+    public ThreadPoolTaskScheduler taskScheduler() {
+        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(5);
+        return taskScheduler;
+    }
 }

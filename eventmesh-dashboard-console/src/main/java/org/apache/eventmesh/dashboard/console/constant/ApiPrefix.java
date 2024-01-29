@@ -15,15 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core;
+package org.apache.eventmesh.dashboard.console.constant;
 
-import org.springframework.boot.test.context.SpringBootTest;
+public class ApiPrefix {
+    public static final String API_PREFIX = "/eventmesh-dashboard/";
 
-@SpringBootTest
-class EventMeshDashboardApplicationTest {
-
-//    @Test
-//    void contextLoads() {
-//    }
-
+    public static final String API_V1_PREFIX = API_PREFIX + "v1/";
 }

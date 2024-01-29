@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core;
+package org.apache.eventmesh.dashboard.console.enums;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@SpringBootTest
-class EventMeshDashboardApplicationTest {
+@Getter
+@AllArgsConstructor
+public enum StatusEnum {
+    INACTIVE(0, "Inactive"),
+    ACTIVE(1, "Active");
 
-//    @Test
-//    void contextLoads() {
-//    }
-
+    private final Integer number;
+    private final String name;
 }

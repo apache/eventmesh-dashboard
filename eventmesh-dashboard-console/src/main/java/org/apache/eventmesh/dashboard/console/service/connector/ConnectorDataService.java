@@ -15,15 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core;
+package org.apache.eventmesh.dashboard.console.service.connector;
 
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class EventMeshDashboardApplicationTest {
-
-//    @Test
-//    void contextLoads() {
-//    }
+/**
+ * Service providing data of connectors.
+ */
+public interface ConnectorDataService {
 
 }

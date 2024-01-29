@@ -15,15 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core;
+package org.apache.eventmesh.dashboard.console.entity.base;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
-@SpringBootTest
-class EventMeshDashboardApplicationTest {
+import io.swagger.v3.oas.annotations.media.Schema;
 
-//    @Test
-//    void contextLoads() {
-//    }
+import lombok.Data;
 
+@Data
+@Schema(name = "BaseEntity", description = "Base entity")
+public class BaseEntity implements Serializable {
+
+    private static final long serialVersionUID = -2697805837923579585L;
+
+    private Long clusterId;
+
+    protected Timestamp createTime;
+
+    protected Timestamp updateTime;
 }
