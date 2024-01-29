@@ -22,7 +22,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum KubernetesPodStatusEnum {
+public enum KubernetesPodStatus {
     PENDING(0, "Pending"),
     RUNNING(1, "Running"),
     SUCCEEDED(2, "Succeeded"),
