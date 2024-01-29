@@ -15,9 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service;
+package org.apache.eventmesh.dashboard.console.enums;
 
-public class Main {
-    public static void main(String[] args) {
-    }
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public enum KubernetesPodStatus {
+    PENDING(0, "Pending"),
+    RUNNING(1, "Running"),
+    SUCCEEDED(2, "Succeeded"),
+    FAILED(3, "Failed"),
+    UNKNOWN(4, "Unknown"),
+    TERMINATING(5, "Terminating"),
+    TERMINATED(6, "Terminated");
+
+    private final Integer number;
+    private final String name;
 }

@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service;
+package org.apache.eventmesh.dashboard.console.constant;
 
-public class Main {
-    public static void main(String[] args) {
-    }
+public class ApiPrefix {
+    public static final String API_PREFIX = "/eventmesh-dashboard/";
+
+    public static final String API_V1_PREFIX = API_PREFIX + "v1/";
 }

@@ -15,9 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service;
+package org.apache.eventmesh.dashboard.console.service.connection;
 
-public class Main {
-    public static void main(String[] args) {
-    }
+import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
+
+import java.util.List;
+
+/**
+ * Service providing data of connections.
+ */
+public interface ConnectionDataService {
+    List<ConnectionEntity> getAllConnections();
+
+    void replaceAllConnections(List<ConnectionEntity> connectionEntityList);
 }

@@ -15,9 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service;
+package org.apache.eventmesh.dashboard.console.enums;
 
-public class Main {
-    public static void main(String[] args) {
-    }
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public enum StatusEnum {
+    INACTIVE(0, "Inactive"),
+    ACTIVE(1, "Active");
+
+    private final Integer number;
+    private final String name;
 }

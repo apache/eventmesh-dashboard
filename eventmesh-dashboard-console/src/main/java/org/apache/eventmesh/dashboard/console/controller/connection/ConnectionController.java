@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service;
+package org.apache.eventmesh.dashboard.console.controller.connection;
 
-public class Main {
-    public static void main(String[] args) {
-    }
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ConnectionController {
+
 }

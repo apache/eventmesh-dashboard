@@ -15,9 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service;
+package org.apache.eventmesh.dashboard.console.scheduler.health;
 
-public class Main {
-    public static void main(String[] args) {
-    }
+import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Component
+public class HealthCheckScheduler {
+
 }

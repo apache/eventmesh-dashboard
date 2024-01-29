@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service;
+package org.apache.eventmesh.dashboard.console.service.client;
 
-public class Main {
-    public static void main(String[] args) {
-    }
+/**
+ * Service providing data of clients.
+ */
+public interface ClientDataService {
+
 }
