@@ -38,8 +38,8 @@ public class ConnectionResponse implements Serializable {
     @Schema(name = "sourceStatus", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
     private Integer sourceStatus;
 
-    @Schema(name = "sourceConfigList", description = "source config list")
-    private List<ConfigEntity> sourceConfigList;
+    //    @Schema(name = "sourceConfigList", description = "source config list")
+    //    private List<ConfigEntity> sourceConfigList;
 
     @Schema(name = "sinkType", defaultValue = "connector", allowableValues = {"connector", "client"})
     private String sinkType;
@@ -50,8 +50,8 @@ public class ConnectionResponse implements Serializable {
     @Schema(name = "sinkStatus", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
     private Integer sinkStatus;
 
-    @Schema(name = "sinkConfigList", description = "sink config list")
-    private List<ConfigEntity> sinkConfigList;
+    //    @Schema(name = "sinkConfigList", description = "sink config list")
+    //    private List<ConfigEntity> sinkConfigList;
 
     private Long runtimeId;
 

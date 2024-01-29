@@ -18,9 +18,18 @@
 package org.apache.eventmesh.dashboard.console.entity.connector;
 
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+import org.apache.eventmesh.dashboard.console.enums.KubernetesPodStatusEnum;
+import org.apache.eventmesh.dashboard.console.enums.StatusEnum;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ConnectorEntity extends BaseEntity {
 
     private static final long serialVersionUID = -8226303660232951326L;
@@ -34,14 +43,32 @@ public class ConnectorEntity extends BaseEntity {
 
     private String type;
 
-    private String status;
+    /**
+     * 0: not active, 1: active
+     *
+     * @see StatusEnum
+     */
+    @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")
+    private Integer status;
 
+    /**
+     * @see KubernetesPodStatusEnum
+     */
+    @Schema(name = "podState", defaultValue = "0", allowableValues = {"0", "1", "2", "3", "4", "5",
+        "6"}, description = "0:Pending, 1:Running, 2:Succeeded, 3:Failed, 4:Unknown, 5:Terminating, 6:Terminated")
     private Integer podState;
 
     /**
-     * csv format config id list.<br>
-     * Example value: 1,2,7<br>
-     * This field is updated when the configuration is modified via the web API, but is not used during the configuration retrieval process.
+     * csv format config id list.<br> Example value: 1,2,7<br> This field is updated when the configuration is modified via the web API, but is not
+     * used during the configuration retrieval process.
      */
     private String configIds;
+
+    public void setStatusEnum(StatusEnum statusEnum) {
+        this.status = statusEnum.getNumber();
+    }
+
+    public void setKubernetesPodStatusEnum(KubernetesPodStatusEnum kubernetesPodStatusEnum) {
+        this.podState = kubernetesPodStatusEnum.getNumber();
+    }
 }

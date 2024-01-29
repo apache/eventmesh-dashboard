@@ -19,7 +19,7 @@ DROP TABLE IF EXISTS `client`;
 CREATE TABLE `client`
 (
     `id`             bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id` bigint(20)          NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
+    `cluster_id` bigint(20)          NOT NULL DEFAULT '-1' COMMENT '集群ID',
     `name`           varchar(192)        NOT NULL DEFAULT '' COMMENT '客户端名称',
     `platform`       varchar(192)        NOT NULL DEFAULT '' COMMENT '客户端平台',
     `language`       varchar(192)        NOT NULL DEFAULT '' COMMENT '客户端语言',
@@ -45,7 +45,7 @@ DROP TABLE IF EXISTS `connector`;
 CREATE TABLE `connector`
 (
     `id`                 bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id`     bigint(20)          NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
+    `cluster_id`     bigint(20)          NOT NULL DEFAULT '-1' COMMENT '集群ID',
     `name`               varchar(512)        NOT NULL DEFAULT '' COMMENT 'Connector名称',
     `class_name`         varchar(512)        NOT NULL DEFAULT '' COMMENT 'Connector类',
     `type`               varchar(32)         NOT NULL DEFAULT '' COMMENT 'Connector类型',
@@ -63,7 +63,7 @@ DROP TABLE IF EXISTS `connection`;
 CREATE TABLE `connection`
 (
     `id`             bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id` bigint(20)          NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
+    `cluster_id` bigint(20)          NOT NULL DEFAULT '-1' COMMENT '集群ID',
     `source_type`    varchar(64)         NOT NULL DEFAULT '' COMMENT 'source类型,可以为client或source connector',
     `source_id`      bigint(20)          NOT NULL DEFAULT '-1' COMMENT 'client或source connector ID',
     `sink_type`      varchar(64)         NOT NULL DEFAULT '' COMMENT 'sink类型,可以为client或sink connector',
@@ -92,7 +92,7 @@ CREATE TABLE `health_check_result`
     `id`             bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
     `dimension`      int(11)             NOT NULL DEFAULT '0' COMMENT '检查维度(0:未知，1:Cluster，2:Runtime，3:Topic，4:Group)',
     `config_name`    varchar(192)        NOT NULL DEFAULT '' COMMENT '配置名',
-    `cluster_id` bigint(20)          NOT NULL DEFAULT '0' COMMENT '物理集群ID',
+    `cluster_id` bigint(20)          NOT NULL DEFAULT '0' COMMENT '集群ID',
     `res_name`       varchar(192)        NOT NULL DEFAULT '' COMMENT '资源名称',
     `passed`         tinyint(4)          NOT NULL DEFAULT '0' COMMENT '检查通过(0:未通过，1:通过)',
     `create_time`    timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

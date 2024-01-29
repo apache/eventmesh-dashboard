@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.enums.health;
+package org.apache.eventmesh.dashboard.console.enums;
 
-public enum HealthCheckDimensionEnum {
-    UNKNOWN(0, "unknown"),
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-    CLUSTER(1, "cluster"),
+@Getter
+@AllArgsConstructor
+public enum KubernetesPodStatusEnum {
+    PENDING(0, "Pending"),
+    RUNNING(1, "Running"),
+    SUCCEEDED(2, "Succeeded"),
+    FAILED(3, "Failed"),
+    UNKNOWN(4, "Unknown"),
+    TERMINATING(5, "Terminating"),
+    TERMINATED(6, "Terminated");
 
-    RUNTIME(2, "runtime"),
-
-    TOPIC(3, "topic"),
-
-    GROUP(4, "group");
-
-    HealthCheckDimensionEnum(Integer dimensionId, String dimensionName) {
-    }
+    private final Integer number;
+    private final String name;
 }

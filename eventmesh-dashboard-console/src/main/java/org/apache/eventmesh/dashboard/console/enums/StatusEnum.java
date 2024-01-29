@@ -17,13 +17,15 @@
 
 package org.apache.eventmesh.dashboard.console.enums;
 
-public enum KubernetesPodStatus {
-    PENDING(0, "pending"),
-    RUNNING(1, "running"),
-    SUCCEEDED(2, "succeeded"),
-    FAILED(3, "failed"),
-    UNKNOWN(4, "unknown");
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-    KubernetesPodStatus(Integer number, String status) {
-    }
+@Getter
+@AllArgsConstructor
+public enum StatusEnum {
+    INACTIVE(0, "Inactive"),
+    ACTIVE(1, "Active");
+
+    private final Integer number;
+    private final String name;
 }
