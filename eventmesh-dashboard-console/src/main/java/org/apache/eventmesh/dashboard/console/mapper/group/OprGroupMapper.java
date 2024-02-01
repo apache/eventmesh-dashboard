@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.group;
 
-import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -36,8 +36,7 @@ public interface OprGroupMapper {
 
     @Insert("INSERT INTO `group` (cluster_id, name, member_count, members, type, state)"
         + "VALUE (#{clusterId},#{name},#{memberCount},#{members},#{type},#{state}) "
-        + "on duplicate key update is_delete=0"
-    )
+        + "on duplicate key update is_delete=0")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroup(GroupEntity groupEntity);
 

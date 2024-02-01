@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.log;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
-import org.apache.eventmesh.dashboard.console.entity.LogEntity;
+import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
 import org.apache.eventmesh.dashboard.console.service.log.LogService;
 
 import java.lang.reflect.Field;
@@ -67,8 +67,9 @@ public class OprLog implements Ordered, ApplicationContextAware {
         LogEntity logEntity = this.productLoEntity(declaredAnnotation, joinPoint);
         logService.addLog(logEntity);
         logEntity.setEndTime(new Timestamp(System.currentTimeMillis()));
+        Object proceed = null;
         try {
-            Object proceed = joinPoint.proceed();
+            proceed = joinPoint.proceed();
             logEntity.setStatus(2);
             logEntity.setResultContent(Objects.isNull(proceed) ? "" : proceed.toString());
             return proceed;
@@ -76,6 +77,7 @@ public class OprLog implements Ordered, ApplicationContextAware {
             logEntity.setStatus(3);
             throw new RuntimeException(e);
         } finally {
+            logEntity.setResultContent(proceed.toString());
             logService.updateLog(logEntity);
         }
 
@@ -94,7 +96,7 @@ public class OprLog implements Ordered, ApplicationContextAware {
         logEntity.setClusterId(opClusterPhyId);
         logEntity.setDescription(model.toString());
         logEntity.setOperationType(declaredAnnotation.OprType());
-        logEntity.setOperationTarget(declaredAnnotation.OprTarget());
+        logEntity.setTargetType(declaredAnnotation.OprTarget());
         logEntity.setStatus(1);
         logEntity.setCreateTime(new Timestamp(System.currentTimeMillis()));
         return logEntity;

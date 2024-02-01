@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity;
+package org.apache.eventmesh.dashboard.console.entity.topic;
 
 import java.sql.Timestamp;
 
@@ -26,22 +26,25 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupMemberEntity {
+public class TopicEntity {
     private Long id;
 
     private Long clusterId;
 
     private String topicName;
 
-    private String groupName;
+    private String runtimeId;
 
-    private String eventMeshUser;
+    private String storageId;
 
-    private String state;
+    private Long retentionMs;
+
+    private Integer type;
+
+    private String description;
 
     private Timestamp createTime;
 
     private Timestamp updateTime;
-
 
 }
