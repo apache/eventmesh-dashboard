@@ -18,83 +18,105 @@
 package org.apache.eventmesh.dashboard.console.log;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
-import org.apache.eventmesh.dashboard.console.entity.LogEntity;
-import org.apache.eventmesh.dashboard.console.log.service.LogService;
+import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
+import org.apache.eventmesh.dashboard.console.service.log.LogService;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 
 @Aspect
 @Service
-public class OprLog implements Ordered {
+public class OprLog implements Ordered, ApplicationContextAware {
 
     private int order = LOWEST_PRECEDENCE - 1000; // Specify the order of execution
 
-    @Autowired
     private LogService logService;
+
+    private ApplicationContext applicationContext;
+
 
     @Pointcut("within(org.apache.eventmesh.dashboard.console.service..*)")
     public void pointCut() {
     }
 
+
     @Around("pointCut()")
     public Object logStart(ProceedingJoinPoint joinPoint) throws Throwable {
+        if (Objects.isNull(this.logService)) {
+            this.logService = applicationContext.getBean(LogService.class);
+        }
+        EmLog declaredAnnotation = this.getTargetEmlog(joinPoint);
+        //Get the Emlog annotation on the method
+        if (Objects.isNull(declaredAnnotation)) {
+            return joinPoint.proceed();
+        }
+        LogEntity logEntity = this.productLoEntity(declaredAnnotation, joinPoint);
+        logService.addLog(logEntity);
+        logEntity.setEndTime(new Timestamp(System.currentTimeMillis()));
+        Object proceed = null;
+        try {
+            proceed = joinPoint.proceed();
+            logEntity.setStatus(2);
+            logEntity.setResultContent(Objects.isNull(proceed) ? "" : proceed.toString());
+            return proceed;
+        } catch (Throwable e) {
+            logEntity.setStatus(3);
+            throw new RuntimeException(e);
+        } finally {
+            logEntity.setResultContent(proceed.toString());
+            logService.updateLog(logEntity);
+        }
+
+
+    }
+
+    public LogEntity productLoEntity(EmLog declaredAnnotation, ProceedingJoinPoint joinPoint) throws NoSuchFieldException, IllegalAccessException {
         LogEntity logEntity = new LogEntity();
+        Object[] args = joinPoint.getArgs();
+        Object model = args[0];
+        //Obtaining the Input Parameter of the Operation Method (Specified as the First)
+        Field clusterPhyId = model.getClass().getDeclaredField("clusterId");
+        clusterPhyId.setAccessible(true);
+        Long opClusterPhyId = (Long) clusterPhyId.get(model);
+        //The clusterId is obtained from the parameter object, and the operation is described as the object itself
+        logEntity.setClusterId(opClusterPhyId);
+        logEntity.setDescription(model.toString());
+        logEntity.setOperationType(declaredAnnotation.OprType());
+        logEntity.setTargetType(declaredAnnotation.OprTarget());
+        logEntity.setStatus(1);
+        logEntity.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        return logEntity;
+    }
+
+    public EmLog getTargetEmlog(ProceedingJoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         Method mostSpecificMethod = ClassUtils.getMostSpecificMethod(method, joinPoint.getTarget().getClass());
         EmLog declaredAnnotation = mostSpecificMethod.getAnnotation(EmLog.class);
-        //Get the Emlog annotation on the method
-        if (declaredAnnotation != null) {
-            //It is a method of operation
-            logEntity.setOperationType(declaredAnnotation.OprType());
-            logEntity.setOperationType(declaredAnnotation.OprTarget());
-            Object[] args = joinPoint.getArgs();
-            Object model = args[0];
-            //Obtaining the Input Parameter of the Operation Method (Specified as the First)
-            Field clusterPhyId = model.getClass().getDeclaredField("clusterId");
-            clusterPhyId.setAccessible(true);
-            Long opClusterPhyId = (Long) clusterPhyId.get(model);
-            String opDescription = model.toString();
-            logEntity.setClusterId(opClusterPhyId);
-            logEntity.setDescription(opDescription);
-            //The clusterId is obtained from the parameter object, and the operation is described as the object itself
-            logEntity.setStatus(1);
-            logEntity.setCreateTime(new Timestamp(System.currentTimeMillis()));
-            logService.addLog(logEntity);
-            Object proceed = joinPoint.proceed();
-            if (proceed == null)  {
-                //An exception occurred with the target method
-                logEntity.setStatus(3);
-                logEntity.setEndTime(new Timestamp(System.currentTimeMillis()));
-                Integer integer1 = logService.updateLog(logEntity);
-                return proceed;
-            } else {
-                //The target approach is successful
-                logEntity.setEndTime(new Timestamp(System.currentTimeMillis()));
-                logEntity.setStatus(2);
-                Integer integer1 = logService.updateLog(logEntity);
-                return proceed;
-            }
-        } else {
-            //It is not part of the operation method
-            return joinPoint.proceed();
-        }
+        return declaredAnnotation;
     }
 
     @Override
     public int getOrder() {
         return order;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

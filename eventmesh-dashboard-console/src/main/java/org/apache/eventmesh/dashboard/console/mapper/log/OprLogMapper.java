@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.log;
 
-import org.apache.eventmesh.dashboard.console.entity.LogEntity;
+import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -36,22 +36,25 @@ public interface OprLogMapper {
     @Select("<script>"
         + "select * from operation_log"
         + "<where>"
-        + "<if test='targetType != null'>"
+        + "<if test='targetType!=null'>"
         + "target_type=#{targetType}"
         + "</if>"
-        + "<if test='clusterId != null'>"
-        + "cluster_id=#{clusterId}"
+        + "<if test='operationUser!=null'>"
+        + "and operation_user=#{operationUser}"
         + "</if>"
-        + "<if test='operationUser != null'>"
-        + "operation_user=#{operationUser}"
-        + "</if></where></script>")
+        + "<if test='clusterId!=null'>"
+        + "and cluster_id=#{clusterId} "
+        + "</if>"
+        + "and is_delete=0"
+        + "</where>"
+        + "</script>")
     List<LogEntity> getLogList(LogEntity logEntity);
 
-    @Insert("insert into operation_log ( cluster_id, operation_type,operation_target, description,operation_user)"
-        + "VALUE (#{clusterId},#{operationType},#{operationTarget},#{description},#{operationUser})")
+    @Insert("insert into operation_log ( cluster_id, operation_type,target_Type, description,operation_user,result_content)"
+        + "VALUE (#{clusterId},#{operationType},#{targetType},#{description},#{operationUser},#{resultContent})")
     @SelectKey(keyColumn = "id", statement = {" select last_insert_id()"}, keyProperty = "id", before = false, resultType = Long.class)
     Long addLog(LogEntity logEntity);
 
-    @Update("update operation_log set status=#{status} where id=#{id}")
+    @Update("update operation_log set status=#{status} ,result_content=#{resultContent} where id=#{id}")
     Integer updateLog(LogEntity logEntity);
 }

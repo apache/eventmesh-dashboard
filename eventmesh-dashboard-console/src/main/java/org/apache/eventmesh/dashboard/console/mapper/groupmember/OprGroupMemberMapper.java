@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.mapper.groupmember;
 
 
-import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -39,24 +39,24 @@ public interface OprGroupMemberMapper {
     @Select("select * from group_member where cluster_id=#{clusterId} and is_delete=0")
     List<GroupMemberEntity> getGroupByClusterId(GroupMemberEntity groupMemberEntity);
 
-    @Insert("insert into group_member (cluster_id, topic_name, group_name, eventmesh_user)"
-        + " VALUE (#{clusterId},#{topicName},#{groupName},#{eventMeshUser})"
+    @Insert("insert into group_member (cluster_id, topic_name, group_name, eventmesh_user,state)"
+        + " VALUE (#{clusterId},#{topicName},#{groupName},#{eventMeshUser},#{state})"
         + "on duplicate key update is_delete=0")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    GroupMemberEntity addGroupMember(GroupMemberEntity groupMemberEntity);
+    void addGroupMember(GroupMemberEntity groupMemberEntity);
 
     @Update("update group_member set state=#{state} where id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    GroupMemberEntity updateGroupMember(GroupMemberEntity groupMemberEntity);
+    void updateGroupMember(GroupMemberEntity groupMemberEntity);
 
     @Delete("update group_member set is_delete=1 where id=#{id} ")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Select("select * from group_member where cluster_id=#{clusterId} and group_name=#{groupName} and topic_name=#{topicName}")
+    @Select("select * from group_member where cluster_id=#{clusterId} and group_name=#{groupName} and topic_name=#{topicName} and is_delete=0")
     GroupMemberEntity selectGroupMemberByUnique(GroupMemberEntity groupMemberEntity);
 
-    @Select("select * from group_member where id=#{id}")
+    @Select("select * from group_member where id=#{id} and is_delete=0")
     GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 
     @Select("<script>"
@@ -72,9 +72,10 @@ public interface OprGroupMemberMapper {
         + "and topic_name=#{topicName}"
         + "</if>"
         + "</where>"
+        + "and is_delete=0"
         + "</script>")
     List<GroupMemberEntity> selectAllMemberByDynamic(GroupMemberEntity groupMemberEntity);
 
     @Update("update group_member set state=#{state} where topic_name=#{topicName}")
-    GroupMemberEntity updateMemberByTopic(GroupMemberEntity groupMemberEntity);
+    void updateMemberByTopic(GroupMemberEntity groupMemberEntity);
 }

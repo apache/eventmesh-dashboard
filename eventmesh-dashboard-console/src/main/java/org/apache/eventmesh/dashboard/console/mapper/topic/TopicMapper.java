@@ -18,11 +18,12 @@
 package org.apache.eventmesh.dashboard.console.mapper.topic;
 
 
-import org.apache.eventmesh.dashboard.console.entity.TopicEntity;
+import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -38,25 +39,28 @@ public interface TopicMapper {
     @Select("<script>"
         + "select * from topic"
         + "<where>"
-        + "<if test='clusterId != null'>"
-        + "cluster_id=#{clusterId}"
+        + "<if test='topicName!=null'>"
+        + "and topic_name=#{topicName}"
         + "</if>"
-        + "<if test='topicName != null'>"
-        + "topic_name=#{topicName}"
+        + "<if test='clusterId!=null'>"
+        + "and cluster_id=#{clusterId} "
         + "</if>"
+        + "and is_delete=0"
         + "</where>"
         + "</script>")
-    List<TopicEntity> getTopicListByClusterId(TopicEntity topicEntity);
+    List<TopicEntity> getTopicListByDynamic(TopicEntity topicEntity);
 
     @Insert("INSERT INTO topic (cluster_id, topic_name, runtime_id, storage_id, retention_ms, type, description) "
-        + "VALUE (#{clusterId},#{topicName},#{runtimeId},#{storageId},#{retentionMs},#{type},#{description})")
-    TopicEntity addTopic(TopicEntity topicEntity);
+        + "VALUE (#{clusterId},#{topicName},#{runtimeId},#{storageId},#{retentionMs},#{type},#{description})"
+        + "on duplicate key update is_delete = 0")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void addTopic(TopicEntity topicEntity);
 
     @Update("update topic set type=#{type},description=#{description} where id=#{id}")
-    TopicEntity updateTopic(TopicEntity topicEntity);
+    void updateTopic(TopicEntity topicEntity);
 
     @Delete("update `topic` set is_delete=1 where id=#{id}")
-    TopicEntity deleteTopic(TopicEntity topicEntity);
+    void deleteTopic(TopicEntity topicEntity);
 
     @Select("select * from topic where cluster_id=#{clusterId} and topic_name=#{topicName}")
     TopicEntity selectTopicByUnique(TopicEntity topicEntity);
