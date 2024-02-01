@@ -2,7 +2,7 @@ package org.apache.eventmesh.dashboard.console.unit.topic;
 
 import org.apache.eventmesh.dashboard.console.EventmeshConsoleApplication;
 import org.apache.eventmesh.dashboard.console.entity.TopicEntity;
-import org.apache.eventmesh.dashboard.console.mapper.TopicDao;
+import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
 
 import java.sql.Timestamp;
 
@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class testTopicDao {
 
     @Autowired
-    private TopicDao topicDao;
+    private TopicMapper topicDao;
     @Test
     public void testSelectTopicByClusterId(){
         TopicEntity topicEntity = new TopicEntity();

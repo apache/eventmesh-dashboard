@@ -20,7 +20,7 @@ public class TestGroupDao {
 
     @Autowired
     private OprGroupMapper groupDao;
-
+    
     public List<GroupEntity> insertGroupData(String name) {
         List<GroupEntity> groupEntities = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -95,7 +95,7 @@ public class TestGroupDao {
 
     @Test
     public void test_selectGroupByDynamic() {
-        List<GroupEntity> groupEntities = this.insertGroupData("selectByDynamic");
-        Assert.assertEquals(groupEntities, this.getRemovedTimeList("Dynamic"));
+        List<GroupEntity> groupEntities = this.insertGroupData("selectByDynamic1");
+        Assert.assertEquals(groupEntities, this.getRemovedTimeList("Dynamic1"));
     }
 }
