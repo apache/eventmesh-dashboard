@@ -1,14 +1,13 @@
 package org.apache.eventmesh.dashboard.console.unit.groupmember;
 
 import org.apache.eventmesh.dashboard.console.EventmeshConsoleApplication;
-import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
-import org.apache.eventmesh.dashboard.console.mapper.OprGroupMemberDao;
+import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.mapper.groupmember.OprGroupMemberMapper;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,80 +19,123 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class testGroupMemberDao {
 
     @Autowired
-    OprGroupMemberDao groupMemberDao;
+    OprGroupMemberMapper groupMemberDao;
 
-    public List<GroupMemberEntity> insertGroupData(String topicName,String groupName){
+    public List<GroupMemberEntity> insertGroupData(String topicName, String groupName) {
         List<GroupMemberEntity> groupMemberEntities = new ArrayList<>();
-        for(int i=0;i<10;i++){
-            GroupMemberEntity groupMemberEntity = new GroupMemberEntity(null,(long)i,topicName,groupName,"admin","active",null,null);
+        for (int i = 0; i < 10; i++) {
+            GroupMemberEntity groupMemberEntity = new GroupMemberEntity(null, (long) i, topicName, groupName, "admin", "active", null, null);
             groupMemberDao.addGroupMember(groupMemberEntity);
             groupMemberEntities.add(groupMemberEntity);
         }
         return groupMemberEntities;
     }
 
-    public List<GroupMemberEntity> getRemovedTimeList(String topicName,String groupName){
+    public List<GroupMemberEntity> getRemovedTimeList(String topicName, String groupName) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicName);
         groupMemberEntity.setGroupName(groupName);
         List<GroupMemberEntity> groupEntities = groupMemberDao.selectAllMemberByDynamic(groupMemberEntity);
-        for(GroupMemberEntity groupEntity1:groupEntities){
+        for (GroupMemberEntity groupEntity1 : groupEntities) {
             groupEntity1.setCreateTime(null);
             groupEntity1.setUpdateTime(null);
         }
         return groupEntities;
     }
+
     @Test
-    public void testAddGroupMember(){
-        GroupMemberEntity groupMemberEntity = new GroupMemberEntity(1L,1L,"test_GroupMember","z1","admin","active",new Timestamp(System.currentTimeMillis()),new Timestamp(System.currentTimeMillis()));
-        groupMemberDao.addGroupMember(groupMemberEntity);
-    }
-    @Test
-    public void testGetGroupMemberByClusterId(){
-        GroupMemberEntity groupMemberEntity=new GroupMemberEntity();
-        groupMemberEntity.setClusterId(1L);
-        System.out.println(groupMemberDao.getGroupByClusterId(groupMemberEntity));
-    }
-    @Test
-   public void testDeleteGroupMemberById(){
-       GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
-       groupMemberEntity.setId(1L);
-       groupMemberDao.deleteGroupMember(groupMemberEntity);
-   }
-    @Test
-    public void testUpdateGroupMemberById(){
-        GroupMemberEntity groupMemberEntity = new GroupMemberEntity(1L,1L,"test_GroupMember","z1","admin","active",new Timestamp(System.currentTimeMillis()),new Timestamp(System.currentTimeMillis()));
-        groupMemberDao.updateGroupMember(groupMemberEntity);
-    }
-    @Test
-    public void testSelectGroupMemberByUnique(){
-        GroupMemberEntity groupMemberEntity = new GroupMemberEntity(1L,1L,"test_GroupMember","z1","admin","active",new Timestamp(System.currentTimeMillis()),new Timestamp(System.currentTimeMillis()));
-        System.out.println(groupMemberDao.selectGroupMemberByUnique(groupMemberEntity));
-    }
-    @Test
-    public void testSelectGroupMemberByGroup(){
-        GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
-        groupMemberEntity.setClusterId(1L);
-        groupMemberEntity.setGroupName("z1");
-        System.out.println(groupMemberDao.selectAllMemberByDynamic(groupMemberEntity));
+    public void test_addGroupMember() {
+        List<GroupMemberEntity> add1 = this.insertGroupData("add1", "groupMember");
+        Assert.assertEquals(add1, this.getRemovedTimeList("add1", "groupMember"));
     }
 
     @Test
-    public void testSelectGroupMemberByTopic(){
+    public void test_getGroupMemberByClusterId() {
+        List<GroupMemberEntity> add1 = this.insertGroupData("getByCluster", "groupMember");
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
-        groupMemberEntity.setTopicName("test_GroupMember");
-        System.out.println(groupMemberDao.selectAllMemberByDynamic(groupMemberEntity));
+        groupMemberEntity.setClusterId(add1.get(1).getClusterId());
+        List<GroupMemberEntity> groupByClusterId = groupMemberDao.getGroupByClusterId(groupMemberEntity);
+        GroupMemberEntity groupMemberEntity1 = groupByClusterId.get(0);
+        groupMemberEntity1.setCreateTime(null);
+        groupMemberEntity1.setUpdateTime(null);
+        Assert.assertEquals(1, groupByClusterId.size());
+        Assert.assertEquals(add1.get(1), groupMemberEntity1);
     }
+
     @Test
-    public void testUpdateGroupMemberByTopic(){
+    public void test_deleteGroupMemberById() {
+        List<GroupMemberEntity> add1 = this.insertGroupData("getById", "groupMember");
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
-        groupMemberEntity.setTopicName("test_GroupMember");
+        groupMemberEntity.setId(add1.get(2).getId());
+        GroupMemberEntity groupMemberEntity1 = groupMemberDao.selectGroupMemberById(groupMemberEntity);
+        groupMemberEntity1.setUpdateTime(null);
+        groupMemberEntity1.setCreateTime(null);
+        Assert.assertEquals(groupMemberEntity1, add1.get(2));
+    }
+
+    @Test
+    public void test_updateGroupMemberById() {
+        List<GroupMemberEntity> add1 = this.insertGroupData("updateById", "groupMember");
+        GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
+        add1.get(1).setState("fail1");
+        groupMemberEntity.setState("fail1");
+        groupMemberEntity.setId(add1.get(1).getId());
+        groupMemberDao.updateGroupMember(groupMemberEntity);
+        GroupMemberEntity groupMemberEntity1 = groupMemberDao.selectGroupMemberById(add1.get(1));
+        groupMemberEntity1.setUpdateTime(null);
+        groupMemberEntity1.setCreateTime(null);
+        Assert.assertEquals(groupMemberEntity1, add1.get(1));
+    }
+
+    @Test
+    public void test_selectGroupMemberByUnique() {
+        List<GroupMemberEntity> groupMemberEntities = this.insertGroupData("selectByUnique", "groupMember");
+        GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
+        groupMemberEntity.setClusterId(groupMemberEntities.get(1).getClusterId());
+        groupMemberEntity.setTopicName(groupMemberEntities.get(1).getTopicName());
+        groupMemberEntity.setGroupName(groupMemberEntities.get(1).getGroupName());
+        GroupMemberEntity groupMemberEntity1 = groupMemberDao.selectGroupMemberByUnique(groupMemberEntity);
+        groupMemberEntity1.setUpdateTime(null);
+        groupMemberEntity1.setCreateTime(null);
+        Assert.assertEquals(groupMemberEntity1, groupMemberEntities.get(1));
+    }
+
+    @Test
+    public void test_selectGroupMemberByGroup() {
+        List<GroupMemberEntity> groupMemberEntities = this.insertGroupData("selectByGroup1", "groupMember1");
+        List<GroupMemberEntity> removedTimeList = this.getRemovedTimeList(null, "groupMember1");
+        Assert.assertEquals(groupMemberEntities, removedTimeList);
+    }
+
+    @Test
+    public void test_selectGroupMemberByTopic() {
+        List<GroupMemberEntity> groupMemberEntities = this.insertGroupData("selectByTopic1", "groupMember2");
+        List<GroupMemberEntity> removedTimeList = this.getRemovedTimeList("selectByTopic1", null);
+        Assert.assertEquals(groupMemberEntities, removedTimeList);
+    }
+
+    @Test
+    public void test_updateGroupMemberByTopic() {
+        List<GroupMemberEntity> groupMemberEntities = this.insertGroupData("updateByTopic1", "groupMember2");
+        for (GroupMemberEntity groupMemberEntity : groupMemberEntities) {
+            groupMemberEntity.setState("fail2");
+        }
+        GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
+        groupMemberEntity.setState("fail2");
+        groupMemberEntity.setTopicName("updateByTopic1");
         groupMemberDao.updateMemberByTopic(groupMemberEntity);
+        Assert.assertEquals(this.getRemovedTimeList("updateByTopic1", null), groupMemberEntities);
     }
+
     @Test
-    public void test_selectGroupMemberById(){
-        GroupMemberEntity groupMemberEntity = new GroupMemberEntity(1L,1L,"test_GroupMember","z1","admin","active",new Timestamp(System.currentTimeMillis()),new Timestamp(System.currentTimeMillis()));
-        System.out.println(groupMemberDao.selectGroupMemberById(groupMemberEntity));
+    public void test_selectGroupMemberById() {
+        List<GroupMemberEntity> groupMemberEntities = this.insertGroupData("updateById1", "groupMember2");
+        GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
+        groupMemberEntity.setId(groupMemberEntities.get(5).getId());
+        GroupMemberEntity groupMemberEntity1 = groupMemberDao.selectGroupMemberById(groupMemberEntity);
+        groupMemberEntity1.setCreateTime(null);
+        groupMemberEntity1.setUpdateTime(null);
+        Assert.assertEquals(groupMemberEntity1, groupMemberEntities.get(5));
     }
 
 }

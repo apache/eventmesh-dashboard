@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.service.topic;
 
-import org.apache.eventmesh.dashboard.console.entity.TopicEntity;
+import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 
 import java.util.List;
 
@@ -27,15 +27,15 @@ import java.util.List;
 public interface TopicService {
     List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
-    TopicEntity addTopic_plus(TopicEntity topicEntity);
+    void addTopic_plus(TopicEntity topicEntity);
 
-    TopicEntity updateTopic(TopicEntity topicEntity);
+    void updateTopic(TopicEntity topicEntity);
 
-    TopicEntity deleteTopic(TopicEntity topicEntity);
+    void deleteTopic(TopicEntity topicEntity);
 
     TopicEntity selectTopicById(TopicEntity topicEntity);
 
     TopicEntity selectTopicByUnique(TopicEntity topicEntity);
 
-    TopicEntity deleteTopic_plus(TopicEntity topicEntity);
+    void deleteTopic_plus(TopicEntity topicEntity);
 }

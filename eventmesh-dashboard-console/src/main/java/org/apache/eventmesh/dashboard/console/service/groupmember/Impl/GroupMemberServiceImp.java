@@ -18,8 +18,8 @@
 package org.apache.eventmesh.dashboard.console.service.groupmember.Impl;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
-import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
 import org.apache.eventmesh.dashboard.console.mapper.groupmember.OprGroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.service.groupmember.GroupMemberService;
 
@@ -52,13 +52,13 @@ public class GroupMemberServiceImp implements GroupMemberService {
 
     @Override
     @EmLog(OprType = "add", OprTarget = "GroupMember")
-    public GroupMemberEntity addGroupMember(GroupMemberEntity groupMemberEntity) {
-        return oprGroupMemberMapper.addGroupMember(groupMemberEntity);
+    public void addGroupMember(GroupMemberEntity groupMemberEntity) {
+        oprGroupMemberMapper.addGroupMember(groupMemberEntity);
     }
 
     @Override
-    public GroupMemberEntity updateGroupMember(GroupMemberEntity groupMemberEntity) {
-        return oprGroupMemberMapper.updateGroupMember(groupMemberEntity);
+    public void updateGroupMember(GroupMemberEntity groupMemberEntity) {
+        oprGroupMemberMapper.updateGroupMember(groupMemberEntity);
     }
 
     @Override

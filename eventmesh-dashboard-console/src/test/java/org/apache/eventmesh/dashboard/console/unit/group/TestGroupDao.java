@@ -1,7 +1,7 @@
 package org.apache.eventmesh.dashboard.console.unit.group;
 
 import org.apache.eventmesh.dashboard.console.EventmeshConsoleApplication;
-import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
 import org.apache.eventmesh.dashboard.console.mapper.group.OprGroupMapper;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class TestGroupDao {
 
     @Autowired
     private OprGroupMapper groupDao;
-    
+
     public List<GroupEntity> insertGroupData(String name) {
         List<GroupEntity> groupEntities = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
