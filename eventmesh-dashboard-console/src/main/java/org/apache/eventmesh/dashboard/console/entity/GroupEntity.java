@@ -35,6 +35,7 @@ public class GroupEntity {
 
     private Integer memberCount;
 
+
     private String members;
 
     private Integer type;

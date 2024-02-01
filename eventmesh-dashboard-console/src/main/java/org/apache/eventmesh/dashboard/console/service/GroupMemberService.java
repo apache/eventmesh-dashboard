@@ -15,34 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity;
+package org.apache.eventmesh.dashboard.console.service;
 
-import java.sql.Timestamp;
+import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class LogEntity {
+/**
+ * Service About GroupMember
+ */
+public interface GroupMemberService {
 
-    private Long id;
+    List<GroupMemberEntity> getGroupMember(GroupMemberEntity groupMemberEntity);
 
-    private Long clusterId;
+    Integer addGroupMember(GroupMemberEntity groupMemberEntity);
 
-    private String operationType;
+    Integer updateGroupMember(GroupMemberEntity groupMemberEntity);
 
-    private String operationTarget;
+    Integer deleteGroupMember(Long id);
 
-    private Integer status;
+    GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 
-    private String description;
+    List<GroupMemberEntity> selectGroupMemberByGroup(GroupEntity groupEntity);
 
-    private Timestamp createTime;
-
-    private Timestamp endTime;
-
+    List<GroupMemberEntity> selectAllMemberByTopic(GroupMemberEntity groupMemberEntity);
 
 }

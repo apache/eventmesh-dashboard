@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.log.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.apache.eventmesh.dashboard.console.entity.LogEntity;
 
-@Slf4j
-@SpringBootApplication
-@ComponentScan({"org.apache.eventmesh.dashboard.service", "org.apache.eventmesh.dashboard.console"})
-public class EventmeshConsoleApplication {
+import java.util.List;
 
-    public static void main(String[] args) {
-        try {
-            SpringApplication.run(EventmeshConsoleApplication.class, args);
-            log.info("{} Successfully booted.", EventmeshConsoleApplication.class.getSimpleName());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
+/**
+ *
+ * operation service
+ *
+ */
+
+public interface LogService {
+
+    List<LogEntity> getLogListByCluster();
+
+    Long addLog(LogEntity logEntity);
+
+    Integer updateLog(LogEntity logEntity);
+
 }
