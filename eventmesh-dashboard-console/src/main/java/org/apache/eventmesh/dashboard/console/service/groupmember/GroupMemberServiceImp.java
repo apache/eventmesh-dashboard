@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.Impl;
+package org.apache.eventmesh.dashboard.console.service.groupmember;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
-import org.apache.eventmesh.dashboard.console.mapper.OprGroupMemberDao;
-import org.apache.eventmesh.dashboard.console.service.GroupMemberService;
+import org.apache.eventmesh.dashboard.console.mapper.groupmember.OprGroupMemberMapper;
 
 import java.util.List;
 
@@ -32,33 +31,33 @@ import org.springframework.stereotype.Service;
 public class GroupMemberServiceImp implements GroupMemberService {
 
     @Autowired
-    OprGroupMemberDao oprGroupMemberDao;
+    OprGroupMemberMapper oprGroupMemberMapper;
 
     @Override
     @EmLog(OprType = "View", OprTarget = "GroupMember")
-    public List<GroupMemberEntity> getGroupMember(GroupMemberEntity groupMemberEntity) {
-        return oprGroupMemberDao.getGroupList(groupMemberEntity);
+    public List<GroupMemberEntity> getGroupMemberByClusterId(GroupMemberEntity groupMemberEntity) {
+        return oprGroupMemberMapper.getGroupByClusterId(groupMemberEntity);
     }
 
     @Override
     @EmLog(OprType = "add", OprTarget = "GroupMember")
-    public Integer addGroupMember(GroupMemberEntity groupMemberEntity) {
-        return oprGroupMemberDao.addGroupMember(groupMemberEntity);
+    public GroupMemberEntity addGroupMember(GroupMemberEntity groupMemberEntity) {
+        return oprGroupMemberMapper.addGroupMember(groupMemberEntity);
     }
 
     @Override
-    public Integer updateGroupMember(GroupMemberEntity groupMemberEntity) {
-        return oprGroupMemberDao.updateGroupMember(groupMemberEntity);
+    public GroupMemberEntity updateGroupMember(GroupMemberEntity groupMemberEntity) {
+        return oprGroupMemberMapper.updateGroupMember(groupMemberEntity);
     }
 
     @Override
-    public Integer deleteGroupMember(Long id) {
-        return oprGroupMemberDao.deleteGroupMember(id);
+    public GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity) {
+        return oprGroupMemberMapper.deleteGroupMember(groupMemberEntity);
     }
 
     @Override
     public GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity) {
-        return oprGroupMemberDao.selectGroupMemberById(groupMemberEntity);
+        return oprGroupMemberMapper.selectGroupMemberById(groupMemberEntity);
     }
 
     @Override
@@ -67,12 +66,12 @@ public class GroupMemberServiceImp implements GroupMemberService {
         groupMemberEntity.setGroupName(groupEntity.getName());
         groupMemberEntity.setClusterId(groupEntity.getClusterId());
         //Obtain a member who meets the conditions of a group
-        return oprGroupMemberDao.selectAllMemberByUnique(groupMemberEntity);
+        return oprGroupMemberMapper.selectAllMemberByDynamic(groupMemberEntity);
     }
 
     @Override
     public List<GroupMemberEntity> selectAllMemberByTopic(GroupMemberEntity groupMemberEntity) {
-        List<GroupMemberEntity> groupMemberEntities = oprGroupMemberDao.selectAllMemberByTopic(groupMemberEntity);
+        List<GroupMemberEntity> groupMemberEntities = oprGroupMemberMapper.selectAllMemberByDynamic(groupMemberEntity);
         return groupMemberEntities;
     }
 

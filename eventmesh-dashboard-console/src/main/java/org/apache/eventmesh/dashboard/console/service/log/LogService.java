@@ -15,38 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.log.service.Impl;
+package org.apache.eventmesh.dashboard.console.service.log;
 
 import org.apache.eventmesh.dashboard.console.entity.LogEntity;
-import org.apache.eventmesh.dashboard.console.log.service.LogService;
-import org.apache.eventmesh.dashboard.console.mapper.OprLogDao;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+/**
+ *
+ * operation service
+ *
+ */
 
-@Service
-public class LogServiceImpl implements LogService {
+public interface LogService {
 
-    @Autowired
-    OprLogDao oprLogDao;
+    List<LogEntity> getLogListByCluster(LogEntity logEntity);
 
-    @Override
-    public List<LogEntity> getLogListByCluster() {
+    Long addLog(LogEntity logEntity);
 
-        return oprLogDao.getLogList();
-    }
+    Integer updateLog(LogEntity logEntity);
 
-    @Override
-    public Long addLog(LogEntity logEntity) {
-
-        return oprLogDao.addLog(logEntity);
-    }
-
-    @Override
-    public Integer updateLog(LogEntity logEntity) {
-
-        return oprLogDao.updateLog(logEntity);
-    }
 }

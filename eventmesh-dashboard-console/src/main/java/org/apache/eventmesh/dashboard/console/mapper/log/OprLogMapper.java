@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.mapper;
+package org.apache.eventmesh.dashboard.console.mapper.log;
 
 import org.apache.eventmesh.dashboard.console.entity.LogEntity;
 
@@ -28,19 +28,30 @@ import org.apache.ibatis.annotations.Update;
 import java.util.List;
 
 /**
- operate operationLog mapper
+ * operate operationLog mapper
  **/
 @Mapper
-public interface OprLogDao {
+public interface OprLogMapper {
 
-    @Select("select * from operation_log where cluster_id")
-    List<LogEntity> getLogList();
+    @Select("<script>"
+        + "select * from operation_log"
+        + "<where>"
+        + "<if test='targetType != null'>"
+        + "target_type=#{targetType}"
+        + "</if>"
+        + "<if test='clusterId != null'>"
+        + "cluster_id=#{clusterId}"
+        + "</if>"
+        + "<if test='operationUser != null'>"
+        + "operation_user=#{operationUser}"
+        + "</if></where></script>")
+    List<LogEntity> getLogList(LogEntity logEntity);
 
-    @Insert("insert into operation_log ( cluster_id, operation_type, status, description, create_time) "
-        + "VALUE (#{clusterId},#{operationType},#{status},#{description},#{createTime})")
-    @SelectKey(keyColumn = "id", statement =  {" select last_insert_id()"}, keyProperty = "id", before = false, resultType = Long.class)
+    @Insert("insert into operation_log ( cluster_id, operation_type,operation_target, description,operation_user)"
+        + "VALUE (#{clusterId},#{operationType},#{operationTarget},#{description},#{operationUser})")
+    @SelectKey(keyColumn = "id", statement = {" select last_insert_id()"}, keyProperty = "id", before = false, resultType = Long.class)
     Long addLog(LogEntity logEntity);
 
-    @Update("update operation_log set status=#{status},end_time=#{endTime} where id=#{id}")
+    @Update("update operation_log set status=#{status} where id=#{id}")
     Integer updateLog(LogEntity logEntity);
 }

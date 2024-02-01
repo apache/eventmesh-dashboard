@@ -15,27 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service;
+package org.apache.eventmesh.dashboard.console.service.log;
 
-import org.apache.eventmesh.dashboard.console.entity.TopicEntity;
+import org.apache.eventmesh.dashboard.console.entity.LogEntity;
+import org.apache.eventmesh.dashboard.console.mapper.log.OprLogMapper;
 
 import java.util.List;
 
-/**
- * Service about Topic
- */
-public interface TopicService {
-    List<TopicEntity> getTopicList(TopicEntity topicEntity);
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-    Integer addTopic_plus(TopicEntity topicEntity);
+@Service
+public class LogServiceImpl implements LogService {
 
-    Integer updateTopic(TopicEntity topicEntity);
+    @Autowired
+    OprLogMapper oprLogMapper;
 
-    Integer deleteTopic(Long id);
+    @Override
+    public List<LogEntity> getLogListByCluster(LogEntity logEntity) {
 
-    TopicEntity selectTopicById(TopicEntity topicEntity);
+        return oprLogMapper.getLogList(logEntity);
+    }
 
-    TopicEntity selectTopicByUnique(TopicEntity topicEntity);
+    @Override
+    public Long addLog(LogEntity logEntity) {
 
-    Integer deleteTopic_plus(TopicEntity topicEntity);
+        return oprLogMapper.addLog(logEntity);
+    }
+
+    @Override
+    public Integer updateLog(LogEntity logEntity) {
+
+        return oprLogMapper.updateLog(logEntity);
+    }
 }

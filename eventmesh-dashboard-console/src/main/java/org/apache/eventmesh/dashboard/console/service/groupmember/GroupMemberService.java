@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service;
+package org.apache.eventmesh.dashboard.console.service.groupmember;
 
 import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
@@ -27,13 +27,13 @@ import java.util.List;
  */
 public interface GroupMemberService {
 
-    List<GroupMemberEntity> getGroupMember(GroupMemberEntity groupMemberEntity);
+    List<GroupMemberEntity> getGroupMemberByClusterId(GroupMemberEntity groupMemberEntity);
 
-    Integer addGroupMember(GroupMemberEntity groupMemberEntity);
+    GroupMemberEntity addGroupMember(GroupMemberEntity groupMemberEntity);
 
-    Integer updateGroupMember(GroupMemberEntity groupMemberEntity);
+    GroupMemberEntity updateGroupMember(GroupMemberEntity groupMemberEntity);
 
-    Integer deleteGroupMember(Long id);
+    GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
 
     GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 

@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.Impl;
+package org.apache.eventmesh.dashboard.console.service.topic;
 
 import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
 import org.apache.eventmesh.dashboard.console.entity.TopicEntity;
-import org.apache.eventmesh.dashboard.console.mapper.OprGroupMemberDao;
-import org.apache.eventmesh.dashboard.console.mapper.TopicDao;
-import org.apache.eventmesh.dashboard.console.service.TopicService;
+import org.apache.eventmesh.dashboard.console.mapper.groupmember.OprGroupMemberMapper;
+import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
 
 import java.util.List;
 
@@ -32,52 +31,52 @@ import org.springframework.stereotype.Service;
 public class TopicServiceImpl implements TopicService {
 
     @Autowired
-    TopicDao topicDao;
+    TopicMapper topicMapper;
 
     @Autowired
-    OprGroupMemberDao oprGroupMemberDao;
+    OprGroupMemberMapper oprGroupMemberMapper;
 
 
     @Override
     public List<TopicEntity> getTopicList(TopicEntity topicEntity) {
-        return topicDao.getTopicList(topicEntity);
+        return topicMapper.getTopicListByClusterId(topicEntity);
     }
 
     @Override
-    public Integer addTopic_plus(TopicEntity topicEntity) {
+    public TopicEntity addTopic_plus(TopicEntity topicEntity) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicEntity.getTopicName());
         groupMemberEntity.setState("active");
-        oprGroupMemberDao.updateMemberByTopic(groupMemberEntity);
-        return topicDao.addTopic(topicEntity);
+        oprGroupMemberMapper.updateMemberByTopic(groupMemberEntity);
+        return topicMapper.addTopic(topicEntity);
     }
 
     @Override
-    public Integer updateTopic(TopicEntity topicEntity) {
-        return topicDao.updateTopic(topicEntity);
+    public TopicEntity updateTopic(TopicEntity topicEntity) {
+        return topicMapper.updateTopic(topicEntity);
     }
 
     @Override
-    public Integer deleteTopic(Long id) {
-        return topicDao.deleteTopic(id);
+    public TopicEntity deleteTopic(TopicEntity topicEntity) {
+        return topicMapper.deleteTopic(topicEntity);
     }
 
     @Override
     public TopicEntity selectTopicById(TopicEntity topicEntity) {
-        return topicDao.selectTopicById(topicEntity);
+        return topicMapper.selectTopicById(topicEntity);
     }
 
     @Override
     public TopicEntity selectTopicByUnique(TopicEntity topicEntity) {
-        return topicDao.selectTopicByUnique(topicEntity);
+        return topicMapper.selectTopicByUnique(topicEntity);
     }
 
     @Override
-    public Integer deleteTopic_plus(TopicEntity topicEntity) {
+    public TopicEntity deleteTopic_plus(TopicEntity topicEntity) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicEntity.getTopicName());
         groupMemberEntity.setState("empty");
-        oprGroupMemberDao.updateMemberByTopic(groupMemberEntity);
-        return topicDao.deleteTopic(topicEntity.getId());
+        oprGroupMemberMapper.updateMemberByTopic(groupMemberEntity);
+        return topicMapper.deleteTopic(topicEntity);
     }
 }

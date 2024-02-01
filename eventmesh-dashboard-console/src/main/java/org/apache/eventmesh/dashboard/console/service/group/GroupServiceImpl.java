@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.Impl;
+package org.apache.eventmesh.dashboard.console.service.group;
 
+import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
-import org.apache.eventmesh.dashboard.console.mapper.OprGroupDao;
-import org.apache.eventmesh.dashboard.console.service.GroupMemberService;
-import org.apache.eventmesh.dashboard.console.service.GroupService;
+import org.apache.eventmesh.dashboard.console.mapper.group.OprGroupMapper;
+import org.apache.eventmesh.dashboard.console.service.groupmember.GroupMemberService;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -33,35 +33,37 @@ import org.springframework.stereotype.Service;
 public class GroupServiceImpl implements GroupService {
 
     @Autowired
-    OprGroupDao oprGroupDao;
+    OprGroupMapper oprGroupMapper;
 
     @Autowired
     GroupMemberService groupMemberService;
 
+    @EmLog(OprType = "search", OprTarget = "Group")
     @Override
-    public List<GroupEntity> getGroupList(GroupEntity groupEntity) {
-        return oprGroupDao.getGroupList(groupEntity);
+    public List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity) {
+        return oprGroupMapper.selectGroupByDynamic(groupEntity);
 
     }
 
     @Override
-    public Integer addGroup(GroupEntity groupEntity) {
-        return oprGroupDao.addGroup(groupEntity);
+    public GroupEntity addGroup(GroupEntity groupEntity) {
+        oprGroupMapper.addGroup(groupEntity);
+        return groupEntity;
     }
 
     @Override
-    public Integer updateGroup(GroupEntity groupEntity) {
-        return oprGroupDao.updateGroup(groupEntity);
+    public void updateGroup(GroupEntity groupEntity) {
+        oprGroupMapper.updateGroup(groupEntity);
     }
 
     @Override
-    public Integer deleteGroup(Long id) {
-        return oprGroupDao.deleteGroup(id);
+    public Integer deleteGroup(GroupEntity groupEntity) {
+        return oprGroupMapper.deleteGroup(groupEntity);
     }
 
     @Override
     public GroupEntity selectGroup(GroupEntity groupEntity) {
-        return oprGroupDao.selectGroupById(groupEntity);
+        return oprGroupMapper.selectGroupById(groupEntity);
     }
 
     @Override
@@ -70,28 +72,30 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(groupMemberEntity.getGroupName());
         groupEntity.setClusterId(groupMemberEntity.getClusterId());
-        GroupEntity groupEntity1 = oprGroupDao.selectGroupByUnique(groupEntity);
+        GroupEntity groupEntity1 = oprGroupMapper.selectGroupByUnique(groupEntity);
         //^Obtain the group to which the member belongs
         groupEntity1.setMembers(groupMemberEntity.getId() + "" + "," + groupEntity1.getMembers());
         //Concatenate the members of the group
         groupEntity1.setMemberCount(groupEntity1.getMemberCount() + 1);
         groupEntity1.setUpdateTime(new Timestamp(System.currentTimeMillis()));
-        return oprGroupDao.updateGroup(groupEntity1);
+        oprGroupMapper.updateGroup(groupEntity1);
+        return 1;
         //Modify the group member information
     }
 
     @Override
     public Integer deleteMemberFromGroup_plus(GroupMemberEntity groupMemberEntity) {
-        groupMemberService.deleteGroupMember(groupMemberEntity.getId());
+        groupMemberService.deleteGroupMember(groupMemberEntity);
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(groupMemberEntity.getGroupName());
         groupEntity.setClusterId(groupMemberEntity.getClusterId());
-        GroupEntity groupEntity1 = oprGroupDao.selectGroupByUnique(groupEntity);
+        GroupEntity groupEntity1 = oprGroupMapper.selectGroupByUnique(groupEntity);
         //^Obtain the group to which the member belongs
         groupEntity1.setMembers(groupEntity1.getMembers().replaceAll(groupMemberEntity.getId() + "" + ",", ""));
         groupEntity1.setMemberCount(groupEntity1.getMemberCount() - 1);
         groupEntity1.setUpdateTime(new Timestamp(System.currentTimeMillis()));
-        return oprGroupDao.updateGroup(groupEntity1);
+        oprGroupMapper.updateGroup(groupEntity1);
+        return 1;
     }
 
 
