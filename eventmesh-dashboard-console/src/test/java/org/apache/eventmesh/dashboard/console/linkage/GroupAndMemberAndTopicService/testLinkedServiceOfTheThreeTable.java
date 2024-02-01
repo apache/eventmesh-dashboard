@@ -3,9 +3,10 @@ package org.apache.eventmesh.dashboard.console.linkage.GroupAndMemberAndTopicSer
 import org.apache.eventmesh.dashboard.console.EventmeshConsoleApplication;
 import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
 import org.apache.eventmesh.dashboard.console.entity.TopicEntity;
-import org.apache.eventmesh.dashboard.console.service.GroupMemberService;
-import org.apache.eventmesh.dashboard.console.service.GroupService;
-import org.apache.eventmesh.dashboard.console.service.TopicService;
+import org.apache.eventmesh.dashboard.console.service.group.GroupService;
+import org.apache.eventmesh.dashboard.console.service.groupmember.GroupMemberService;
+import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
+
 
 import java.sql.Timestamp;
 
