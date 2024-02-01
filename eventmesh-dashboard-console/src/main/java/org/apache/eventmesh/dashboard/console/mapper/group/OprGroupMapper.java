@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.group;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -36,51 +36,39 @@ public interface OprGroupMapper {
 
     @Insert("INSERT INTO `group` (cluster_id, name, member_count, members, type, state)"
         + "VALUE (#{clusterId},#{name},#{memberCount},#{members},#{type},#{state}) "
-        + "ON DUPLICATE KEY UPDATE status=1")
+        + "on duplicate key update is_delete=0"
+    )
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroup(GroupEntity groupEntity);
 
-    @Insert({
-        "<script>",
-        "   INSERT INTO `group` (cluster_id, name, member_count, members, type, state) VALUES ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "   (#{c.clusterId},#{c.name},#{c.memberCount},#{c.members},#{c.type},#{c.state})",
-        "   </foreach>",
-        "</script>"})
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<GroupEntity> groupEntities);
-
-    @Select("SELECT * FROM `group` WHERE status=1")
-    List<GroupEntity> selectAll();
-
-    @Update("UPDATE `group` SET member_count=#{memberCount},"
-        + "members=#{members},type=#{type},state=#{state} WHERE id=#{id}")
+    @Update("update `group`set member_count=#{memberCount},"
+        + "members=#{members},type=#{type},state=#{state} where id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer updateGroup(GroupEntity groupEntity);
 
-    @Delete("UPDATE `group` SET  status=1 WHERE id=#{id}")
+    @Delete("update `group` set  is_delete=1 where id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer deleteGroup(GroupEntity groupEntity);
 
-    @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND status=1")
+    @Select("select * from `group` where cluster_id=#{clusterId} and name=#{name} and is_delete=0")
     GroupEntity selectGroupByUnique(GroupEntity groupEntity);
 
-    @Select("SELECT * FROM `group` WHERE id=#{id} AND status=1")
+    @Select("select * from `group` where id=#{id} and is_delete=0")
     GroupEntity selectGroupById(GroupEntity groupEntity);
 
-    @Select({
-        "<script>",
-        "   SELECT * FROM `group`",
-        "   <where>",
-        "       <if test='clusterId != null'>",
-        "           cluster_id=#{clusterId}",
-        "       </if>",
-        "       <if test='name != null'>",
-        "           AND name LIKE concat('%',#{name},'%')",
-        "       </if>",
-        "       AND status=1",
-        "   </where>",
-        "</script>"})
-    List<GroupEntity> selectGroup(GroupEntity groupEntity);
+    @Select("<script>"
+        + "select * from `group`"
+        + "<where>"
+        + "<if test='clusterId != null'>"
+        + "cluster_id=#{clusterId}"
+        + "</if>"
+        + "<if test='name != null'>"
+        + "and name like concat('%',#{name},'%')"
+        + "</if>"
+        + "and is_delete=0"
+        + "</where>"
+        + "</script>")
+    List<GroupEntity> selectGroupByDynamic(GroupEntity groupEntity);
+
 
 }

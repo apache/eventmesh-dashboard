@@ -18,12 +18,11 @@
 package org.apache.eventmesh.dashboard.console.mapper.topic;
 
 
-import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+import org.apache.eventmesh.dashboard.console.entity.TopicEntity;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -35,56 +34,34 @@ import java.util.List;
 @Mapper
 public interface TopicMapper {
 
-    @Select("SELECT * FROM topic WHERE status=1")
-    List<TopicEntity> selectAll();
 
-    @Insert({
-        "<script>",
-        "INSERT INTO topic (cluster_id, topic_name, runtime_id, storage_id, retention_ms, type, description) VALUES ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "       (#{c.clusterId},#{c.topicName},#{c.runtimeId},#{c.storageId},#{c.retentionMs},#{c.type},#{c.description})",
-        "   </foreach>",
-        "</script>"})
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<TopicEntity> topicEntities);
-
-    @Select("SELECT count(*) FROM topic WHERE cluster_id=#{clusterId}")
-    Integer selectTopicNumByCluster(TopicEntity topicEntity);
-
-    @Select({
-        "<script>",
-        "   SELECT * FROM topic",
-        "   <where>",
-        "       <if test='topicName!=null'>",
-        "           AND topic_name=#{topicName}",
-        "       </if>",
-        "       <if test='clusterId!=null'>",
-        "           AND cluster_id=#{clusterId} ",
-        "       </if>",
-        "       AND is_delete=0",
-        "   </where>",
-        "</script>"})
-    List<TopicEntity> getTopicList(TopicEntity topicEntity);
+    @Select("<script>"
+        + "select * from topic"
+        + "<where>"
+        + "<if test='clusterId != null'>"
+        + "cluster_id=#{clusterId}"
+        + "</if>"
+        + "<if test='topicName != null'>"
+        + "topic_name=#{topicName}"
+        + "</if>"
+        + "</where>"
+        + "</script>")
+    List<TopicEntity> getTopicListByClusterId(TopicEntity topicEntity);
 
     @Insert("INSERT INTO topic (cluster_id, topic_name, runtime_id, storage_id, retention_ms, type, description) "
-        + "VALUE (#{clusterId},#{topicName},#{runtimeId},#{storageId},#{retentionMs},#{type},#{description})"
-        + "ON DUPLICATE KEY UPDATE status = 1")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addTopic(TopicEntity topicEntity);
+        + "VALUE (#{clusterId},#{topicName},#{runtimeId},#{storageId},#{retentionMs},#{type},#{description})")
+    TopicEntity addTopic(TopicEntity topicEntity);
 
-    @Update("UPDATE topic SET type=#{type},description=#{description} WHERE id=#{id}")
-    void updateTopic(TopicEntity topicEntity);
+    @Update("update topic set type=#{type},description=#{description} where id=#{id}")
+    TopicEntity updateTopic(TopicEntity topicEntity);
 
-    @Delete("UPDATE `topic` SET status=0 WHERE id=#{id}")
-    void deleteTopic(TopicEntity topicEntity);
+    @Delete("update `topic` set is_delete=1 where id=#{id}")
+    TopicEntity deleteTopic(TopicEntity topicEntity);
 
-    @Select("SELECT * FROM topic WHERE cluster_id=#{clusterId} AND topic_name=#{topicName}")
+    @Select("select * from topic where cluster_id=#{clusterId} and topic_name=#{topicName}")
     TopicEntity selectTopicByUnique(TopicEntity topicEntity);
 
-    @Select("SELECT * FROM topic WHERE id=#{id}")
+    @Select("select * from topic where id=#{id}")
     TopicEntity selectTopicById(TopicEntity topicEntity);
-
-    @Select("SELECT * FROM topic WHERE cluster_id=#{clusterId}")
-    List<TopicEntity> selectTopicByCluster(TopicEntity topicEntity);
 
 }

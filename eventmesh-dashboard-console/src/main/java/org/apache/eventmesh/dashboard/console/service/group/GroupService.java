@@ -17,9 +17,31 @@
 
 package org.apache.eventmesh.dashboard.console.service.group;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/EventMeshDashboardApplication.java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+========
+import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
+>>>>>>>> 3391325 (first improve):eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/group/GroupService.java
 
+
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/EventMeshDashboardApplication.java
+@Slf4j
+@SpringBootApplication
+@EnableTransactionManagement
+public class EventMeshDashboardApplication {
+
+    public static void main(String[] args) {
+        try {
+            SpringApplication.run(EventMeshDashboardApplication.class, args);
+            log.info("{} Boot Successful!", EventMeshDashboardApplication.class.getSimpleName());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+========
 import java.util.List;
 
 /**
@@ -42,7 +64,8 @@ public interface GroupService {
 
     GroupEntity selectGroup(GroupEntity groupEntity);
 
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
+    Integer insertMemberToGroup_plus(GroupMemberEntity groupMemberEntity);
 
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    Integer deleteMemberFromGroup_plus(GroupMemberEntity groupMemberEntity);
+>>>>>>>> 3391325 (first improve):eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/group/GroupService.java
 }

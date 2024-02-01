@@ -18,8 +18,8 @@
 package org.apache.eventmesh.dashboard.console.service.group.Impl;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
 import org.apache.eventmesh.dashboard.console.mapper.group.OprGroupMapper;
 import org.apache.eventmesh.dashboard.console.service.group.GroupService;
 import org.apache.eventmesh.dashboard.console.service.groupmember.GroupMemberService;
@@ -52,11 +52,10 @@ public class GroupServiceImpl implements GroupService {
     @EmLog(OprType = "search", OprTarget = "Group")
     @Override
     public List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity) {
-        return oprGroupMapper.selectGroup(groupEntity);
+        return oprGroupMapper.selectGroupByDynamic(groupEntity);
 
     }
 
-    @EmLog(OprType = "add", OprTarget = "Group")
     @Override
     public GroupEntity addGroup(GroupEntity groupEntity) {
         oprGroupMapper.addGroup(groupEntity);
@@ -79,7 +78,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity) {
+    public Integer insertMemberToGroup_plus(GroupMemberEntity groupMemberEntity) {
         groupMemberService.addGroupMember(groupMemberEntity);
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(groupMemberEntity.getGroupName());
@@ -96,7 +95,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity) {
+    public Integer deleteMemberFromGroup_plus(GroupMemberEntity groupMemberEntity) {
         groupMemberService.deleteGroupMember(groupMemberEntity);
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(groupMemberEntity.getGroupName());

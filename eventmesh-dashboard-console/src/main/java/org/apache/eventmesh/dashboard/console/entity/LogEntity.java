@@ -44,5 +44,7 @@ public class LogEntity {
 
     private Timestamp endTime;
 
+    private String operationUser;
 
+    private String resultContent;
 }

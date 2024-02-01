@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.service.topic;
 
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
-import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.groupmember.OprGroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
 
@@ -38,44 +38,27 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Override
-    public void batchInsert(List<TopicEntity> topicEntities) {
-        topicMapper.batchInsert(topicEntities);
-    }
-
-    @Override
-    public List<TopicEntity> selectAll() {
-        return topicMapper.selectAll();
-    }
-
-    @Override
-    public Integer selectTopicNumByCluster(Long clusterId) {
-        TopicEntity topicEntity = new TopicEntity();
-        topicEntity.setClusterId(clusterId);
-        return topicMapper.selectTopicNumByCluster(topicEntity);
-    }
-
-    @Override
     public List<TopicEntity> getTopicList(TopicEntity topicEntity) {
-        return topicMapper.getTopicList(topicEntity);
+        return topicMapper.getTopicListByClusterId(topicEntity);
     }
 
     @Override
-    public void addTopic(TopicEntity topicEntity) {
+    public TopicEntity addTopic_plus(TopicEntity topicEntity) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicEntity.getTopicName());
         groupMemberEntity.setState("active");
         oprGroupMemberMapper.updateMemberByTopic(groupMemberEntity);
-        topicMapper.addTopic(topicEntity);
+        return topicMapper.addTopic(topicEntity);
     }
 
     @Override
-    public void updateTopic(TopicEntity topicEntity) {
-        topicMapper.updateTopic(topicEntity);
+    public TopicEntity updateTopic(TopicEntity topicEntity) {
+        return topicMapper.updateTopic(topicEntity);
     }
 
     @Override
-    public void deleteTopicById(TopicEntity topicEntity) {
-        topicMapper.deleteTopic(topicEntity);
+    public TopicEntity deleteTopic(TopicEntity topicEntity) {
+        return topicMapper.deleteTopic(topicEntity);
     }
 
     @Override
@@ -89,20 +72,11 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public void deleteTopic(TopicEntity topicEntity) {
+    public TopicEntity deleteTopic_plus(TopicEntity topicEntity) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicEntity.getTopicName());
         groupMemberEntity.setState("empty");
         oprGroupMemberMapper.updateMemberByTopic(groupMemberEntity);
-        topicMapper.deleteTopic(topicEntity);
+        return topicMapper.deleteTopic(topicEntity);
     }
-
-    @Override
-    public List<TopicEntity> selectTopiByCluster(Long clusterId) {
-        TopicEntity topicEntity = new TopicEntity();
-        topicEntity.setClusterId(clusterId);
-        return topicMapper.selectTopicByCluster(topicEntity);
-    }
-
-
 }

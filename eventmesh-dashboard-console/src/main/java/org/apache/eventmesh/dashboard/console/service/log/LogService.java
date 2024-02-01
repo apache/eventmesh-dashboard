@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.service.log;
 
-import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
+import org.apache.eventmesh.dashboard.console.entity.LogEntity;
 
 import java.util.List;
 

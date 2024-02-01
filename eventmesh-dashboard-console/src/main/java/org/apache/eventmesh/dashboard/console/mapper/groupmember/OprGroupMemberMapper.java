@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.mapper.groupmember;
 
 
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -36,60 +36,45 @@ import java.util.List;
 @Mapper
 public interface OprGroupMemberMapper {
 
-    @Select("SELECT * FROM group_member WHERE status=1")
-    List<GroupMemberEntity> selectAll();
-
-    @Insert({
-        "<script>",
-        "   INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user, state) VALUES ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "(#{c.clusterId},#{c.topicName},#{c.groupName},#{c.eventMeshUser},#{c.state})",
-        "   </foreach>",
-        "</script>"})
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<GroupMemberEntity> groupMemberEntities);
-
-    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND status=1")
+    @Select("select * from group_member where cluster_id=#{clusterId} and is_delete=0")
     List<GroupMemberEntity> getGroupByClusterId(GroupMemberEntity groupMemberEntity);
 
-    @Insert("INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user,state)"
-        + " VALUE (#{clusterId},#{topicName},#{groupName},#{eventMeshUser},#{state})"
-        + "ON DUPLICATE KEY UPDATE status=0")
+    @Insert("insert into group_member (cluster_id, topic_name, group_name, eventmesh_user)"
+        + " VALUE (#{clusterId},#{topicName},#{groupName},#{eventMeshUser})"
+        + "on duplicate key update is_delete=0")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addGroupMember(GroupMemberEntity groupMemberEntity);
+    GroupMemberEntity addGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Update("UPDATE group_member SET state=#{state} WHERE id=#{id}")
+    @Update("update group_member set state=#{state} where id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void updateGroupMember(GroupMemberEntity groupMemberEntity);
+    GroupMemberEntity updateGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Delete("UPDATE group_member SET is_delete=1 WHERE id=#{id} ")
+    @Delete("update group_member set is_delete=1 where id=#{id} ")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND group_name=#{groupName} AND topic_name=#{topicName} AND is_delete=0")
+    @Select("select * from group_member where cluster_id=#{clusterId} and group_name=#{groupName} and topic_name=#{topicName}")
     GroupMemberEntity selectGroupMemberByUnique(GroupMemberEntity groupMemberEntity);
 
-    @Select("SELECT * FROM group_member WHERE id=#{id} AND is_delete=0")
+    @Select("select * from group_member where id=#{id}")
     GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 
-    @Select({
-        "<script>",
-        "   SELECT * FROM group_member",
-        "   <where>",
-        "       <if test='clusterId != null'>",
-        "           cluster_id=#{clusterId}",
-        "       </if>",
-        "       <if test='groupName != null'>",
-        "           AND group_name=#{groupName}",
-        "       </if>",
-        "       <if test='topicName != null'>",
-        "           AND topic_name=#{topicName}",
-        "       </if>",
-        "    </where>",
-        "   AND is_delete=0",
-        "</script>"})
-    List<GroupMemberEntity> selectMember(GroupMemberEntity groupMemberEntity);
+    @Select("<script>"
+        + "select * from group_member"
+        + "<where>"
+        + "<if test='clusterId != null'>"
+        + "cluster_id=#{clusterId}"
+        + "</if>"
+        + "<if test='groupName != null'>"
+        + "and group_name=#{groupName}"
+        + "</if>"
+        + "<if test='topicName != null'>"
+        + "and topic_name=#{topicName}"
+        + "</if>"
+        + "</where>"
+        + "</script>")
+    List<GroupMemberEntity> selectAllMemberByDynamic(GroupMemberEntity groupMemberEntity);
 
-    @Update("UPDATE group_member SET state=#{state} WHERE topic_name=#{topicName}")
-    void updateMemberByTopic(GroupMemberEntity groupMemberEntity);
+    @Update("update group_member set state=#{state} where topic_name=#{topicName}")
+    GroupMemberEntity updateMemberByTopic(GroupMemberEntity groupMemberEntity);
 }

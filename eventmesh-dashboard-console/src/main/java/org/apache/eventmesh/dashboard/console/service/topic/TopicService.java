@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.service.topic;
 
-import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+import org.apache.eventmesh.dashboard.console.entity.TopicEntity;
 
 import java.util.List;
 
@@ -25,26 +25,17 @@ import java.util.List;
  * Service about Topic
  */
 public interface TopicService {
-
-    void batchInsert(List<TopicEntity> topicEntities);
-
-    List<TopicEntity> selectAll();
-
-    Integer selectTopicNumByCluster(Long clusterId);
-
     List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
-    void addTopic(TopicEntity topicEntity);
+    TopicEntity addTopic_plus(TopicEntity topicEntity);
 
-    void updateTopic(TopicEntity topicEntity);
+    TopicEntity updateTopic(TopicEntity topicEntity);
 
-    void deleteTopicById(TopicEntity topicEntity);
+    TopicEntity deleteTopic(TopicEntity topicEntity);
 
     TopicEntity selectTopicById(TopicEntity topicEntity);
 
     TopicEntity selectTopicByUnique(TopicEntity topicEntity);
 
-    void deleteTopic(TopicEntity topicEntity);
-
-    List<TopicEntity> selectTopiByCluster(Long clusterId);
+    TopicEntity deleteTopic_plus(TopicEntity topicEntity);
 }
