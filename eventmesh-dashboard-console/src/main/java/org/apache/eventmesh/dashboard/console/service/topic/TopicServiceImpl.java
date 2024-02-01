@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.service.topic;
 
-import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
-import org.apache.eventmesh.dashboard.console.entity.TopicEntity;
+import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.groupmember.OprGroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
 
@@ -39,26 +39,26 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public List<TopicEntity> getTopicList(TopicEntity topicEntity) {
-        return topicMapper.getTopicListByClusterId(topicEntity);
+        return topicMapper.getTopicListByDynamic(topicEntity);
     }
 
     @Override
-    public TopicEntity addTopic_plus(TopicEntity topicEntity) {
+    public void addTopic_plus(TopicEntity topicEntity) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicEntity.getTopicName());
         groupMemberEntity.setState("active");
         oprGroupMemberMapper.updateMemberByTopic(groupMemberEntity);
-        return topicMapper.addTopic(topicEntity);
+        topicMapper.addTopic(topicEntity);
     }
 
     @Override
-    public TopicEntity updateTopic(TopicEntity topicEntity) {
-        return topicMapper.updateTopic(topicEntity);
+    public void updateTopic(TopicEntity topicEntity) {
+        topicMapper.updateTopic(topicEntity);
     }
 
     @Override
-    public TopicEntity deleteTopic(TopicEntity topicEntity) {
-        return topicMapper.deleteTopic(topicEntity);
+    public void deleteTopic(TopicEntity topicEntity) {
+        topicMapper.deleteTopic(topicEntity);
     }
 
     @Override
@@ -72,11 +72,11 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public TopicEntity deleteTopic_plus(TopicEntity topicEntity) {
+    public void deleteTopic_plus(TopicEntity topicEntity) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicEntity.getTopicName());
         groupMemberEntity.setState("empty");
         oprGroupMemberMapper.updateMemberByTopic(groupMemberEntity);
-        return topicMapper.deleteTopic(topicEntity);
+        topicMapper.deleteTopic(topicEntity);
     }
 }

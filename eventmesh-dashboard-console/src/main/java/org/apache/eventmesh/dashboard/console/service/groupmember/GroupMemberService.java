@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.service.groupmember;
 
-import org.apache.eventmesh.dashboard.console.entity.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
 
 import java.util.List;
 
@@ -29,9 +29,9 @@ public interface GroupMemberService {
 
     List<GroupMemberEntity> getGroupMemberByClusterId(GroupMemberEntity groupMemberEntity);
 
-    GroupMemberEntity addGroupMember(GroupMemberEntity groupMemberEntity);
+    void addGroupMember(GroupMemberEntity groupMemberEntity);
 
-    GroupMemberEntity updateGroupMember(GroupMemberEntity groupMemberEntity);
+    void updateGroupMember(GroupMemberEntity groupMemberEntity);
 
     GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
 
