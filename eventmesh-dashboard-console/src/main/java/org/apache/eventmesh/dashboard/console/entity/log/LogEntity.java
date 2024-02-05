@@ -38,7 +38,7 @@ public class LogEntity {
 
     private Integer status;
 
-    private String description;
+    private String content;
 
     private Timestamp createTime;
 
@@ -46,6 +46,6 @@ public class LogEntity {
 
     private String operationUser;
 
-    private String resultContent;
+    private String result;
 
 }
