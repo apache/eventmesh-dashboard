@@ -35,8 +35,7 @@ import java.util.List;
 @Mapper
 public interface TopicMapper {
 
-    @Select(
-        "<script>"
+    @Select("<script>"
         + "select * from topic"
         + "<where>"
         + "<if test='topicName!=null'>"
