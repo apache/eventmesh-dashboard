@@ -40,16 +40,14 @@ public class LogEntity extends BaseEntity {
 
     private Integer state;
 
-    private String description;
+    private String content;
 
     private Timestamp createTime;
 
     private Timestamp endTime;
 
+    private String operationUser;
 
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/LogEntity.java
-========
-    private String resultContent;
+    private String result;
 
->>>>>>>> a6b5caa (fourth improve):eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/log/LogEntity.java
 }
