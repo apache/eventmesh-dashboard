@@ -44,6 +44,9 @@ spring:
       test-while-idle: true
       min-evictable-idle-time-millis: 300000
 
+mybatis:
+  type-aliases-package: org.apache.eventmesh.dashboard.console.entity
+
 # cron job config, use cron expression
 cron:
   #health check job
