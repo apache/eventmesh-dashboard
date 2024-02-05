@@ -95,7 +95,7 @@ public class TestGroupMapper {
     }
 
     @Test
-    public void testSelectGroupByDynamic() {
+    public void testSelectGroup() {
         List<GroupEntity> groupEntities = this.insertGroupData("selectByDynamic1");
         Assert.assertEquals(groupEntities, this.getRemovedTimeList("Dynamic1"));
     }

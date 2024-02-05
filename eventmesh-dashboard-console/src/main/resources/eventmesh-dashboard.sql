@@ -61,7 +61,7 @@ CREATE TABLE `operation_log`
     `cluster_id`     bigint          NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
     `operation_type` varchar(192)    NOT NULL DEFAULT '' COMMENT '操作类型,如:启动，停止，重启，添加，删除，修改',
     `status`         int             NOT NULL DEFAULT '0' COMMENT '操作状态 0:未知，1:执行中，2:成功，3:失败',
-    `contain`    text COMMENT '备注信息',
+    `content`    text COMMENT '备注信息',
     `create_time`    timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `end_time`       timestamp       NULL     DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
     `operation_user` varchar(192)             DEFAULT NULL,
