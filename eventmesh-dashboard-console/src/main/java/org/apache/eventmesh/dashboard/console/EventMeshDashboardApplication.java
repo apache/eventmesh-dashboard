@@ -30,8 +30,8 @@ public class EventMeshDashboardApplication {
 
     public static void main(String[] args) {
         try {
-            SpringApplication.run(EventmeshConsoleApplication.class, args);
-            log.info("{} Successfully booted.", EventmeshConsoleApplication.class.getSimpleName());
+            SpringApplication.run(EventMeshDashboardApplication.class, args);
+            log.info("{} Successfully booted.", EventMeshDashboardApplication.class.getSimpleName());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

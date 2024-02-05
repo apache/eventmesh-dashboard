@@ -1,6 +1,6 @@
 package org.apache.eventmesh.dashboard.console.unit.topic;
 
-import org.apache.eventmesh.dashboard.console.EventmeshConsoleApplication;
+import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
 
@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EventmeshConsoleApplication.class)
+@SpringBootTest(classes = EventMeshDashboardApplication.class)
 public class testTopicDao {
 
     @Autowired

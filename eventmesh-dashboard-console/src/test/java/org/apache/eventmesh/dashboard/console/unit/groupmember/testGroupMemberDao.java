@@ -1,6 +1,6 @@
 package org.apache.eventmesh.dashboard.console.unit.groupmember;
 
-import org.apache.eventmesh.dashboard.console.EventmeshConsoleApplication;
+import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
 import org.apache.eventmesh.dashboard.console.mapper.groupmember.OprGroupMemberMapper;
 
@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EventmeshConsoleApplication.class)
+@SpringBootTest(classes = EventMeshDashboardApplication.class)
 public class testGroupMemberDao {
 
     @Autowired
