@@ -17,15 +17,16 @@
 
 package org.apache.eventmesh.dashboard.console;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootApplication
-@ComponentScan({"org.apache.eventmesh.dashboard.service", "org.apache.eventmesh.dashboard.console"})
-public class EventmeshConsoleApplication {
+@EnableTransactionManagement
+public class EventMeshDashboardApplication {
 
     public static void main(String[] args) {
         try {
