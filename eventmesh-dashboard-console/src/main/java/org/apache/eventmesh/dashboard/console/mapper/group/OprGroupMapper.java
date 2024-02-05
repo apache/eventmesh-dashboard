@@ -67,7 +67,7 @@ public interface OprGroupMapper {
         + "and is_delete=0"
         + "</where>"
         + "</script>")
-    List<GroupEntity> selectGroupByDynamic(GroupEntity groupEntity);
+    List<GroupEntity> selectGroup(GroupEntity groupEntity);
 
 
 }

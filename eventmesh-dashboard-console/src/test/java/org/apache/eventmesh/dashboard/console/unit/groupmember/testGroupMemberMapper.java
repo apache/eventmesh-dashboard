@@ -35,7 +35,7 @@ public class testGroupMemberMapper {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicName);
         groupMemberEntity.setGroupName(groupName);
-        List<GroupMemberEntity> groupEntities = groupMemberMapper.selectAllMemberByDynamic(groupMemberEntity);
+        List<GroupMemberEntity> groupEntities = groupMemberMapper.selectMember(groupMemberEntity);
         for (GroupMemberEntity groupEntity1 : groupEntities) {
             groupEntity1.setCreateTime(null);
             groupEntity1.setUpdateTime(null);
@@ -44,13 +44,13 @@ public class testGroupMemberMapper {
     }
 
     @Test
-    public void test_addGroupMember() {
+    public void testAddGroupMember() {
         List<GroupMemberEntity> add1 = this.insertGroupData("add1", "groupMember");
         Assert.assertEquals(add1, this.getRemovedTimeList("add1", "groupMember"));
     }
 
     @Test
-    public void test_getGroupMemberByClusterId() {
+    public void testGetGroupMemberByClusterId() {
         List<GroupMemberEntity> add1 = this.insertGroupData("getByCluster", "groupMember");
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setClusterId(add1.get(1).getClusterId());
@@ -63,7 +63,7 @@ public class testGroupMemberMapper {
     }
 
     @Test
-    public void test_deleteGroupMemberById() {
+    public void testDeleteGroupMemberById() {
         List<GroupMemberEntity> add1 = this.insertGroupData("getById", "groupMember");
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setId(add1.get(2).getId());
@@ -74,7 +74,7 @@ public class testGroupMemberMapper {
     }
 
     @Test
-    public void test_updateGroupMemberById() {
+    public void testUpdateGroupMemberById() {
         List<GroupMemberEntity> add1 = this.insertGroupData("updateById", "groupMember");
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         add1.get(1).setState("fail1");
@@ -88,7 +88,7 @@ public class testGroupMemberMapper {
     }
 
     @Test
-    public void test_selectGroupMemberByUnique() {
+    public void testSelectGroupMemberByUnique() {
         List<GroupMemberEntity> groupMemberEntities = this.insertGroupData("selectByUnique", "groupMember");
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setClusterId(groupMemberEntities.get(1).getClusterId());
@@ -101,21 +101,21 @@ public class testGroupMemberMapper {
     }
 
     @Test
-    public void test_selectGroupMemberByGroup() {
+    public void testSelectGroupMemberByGroup() {
         List<GroupMemberEntity> groupMemberEntities = this.insertGroupData("selectByGroup1", "groupMember1");
         List<GroupMemberEntity> removedTimeList = this.getRemovedTimeList(null, "groupMember1");
         Assert.assertEquals(groupMemberEntities, removedTimeList);
     }
 
     @Test
-    public void test_selectGroupMemberByTopic() {
+    public void testSelectGroupMemberByTopic() {
         List<GroupMemberEntity> groupMemberEntities = this.insertGroupData("selectByTopic1", "groupMember2");
         List<GroupMemberEntity> removedTimeList = this.getRemovedTimeList("selectByTopic1", null);
         Assert.assertEquals(groupMemberEntities, removedTimeList);
     }
 
     @Test
-    public void test_updateGroupMemberByTopic() {
+    public void testUpdateGroupMemberByTopic() {
         List<GroupMemberEntity> groupMemberEntities = this.insertGroupData("updateByTopic1", "groupMember2");
         for (GroupMemberEntity groupMemberEntity : groupMemberEntities) {
             groupMemberEntity.setState("fail2");
@@ -128,7 +128,7 @@ public class testGroupMemberMapper {
     }
 
     @Test
-    public void test_selectGroupMemberById() {
+    public void testSelectGroupMemberById() {
         List<GroupMemberEntity> groupMemberEntities = this.insertGroupData("updateById1", "groupMember2");
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setId(groupMemberEntities.get(5).getId());

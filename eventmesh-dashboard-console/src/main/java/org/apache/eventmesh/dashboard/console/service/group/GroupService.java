@@ -39,7 +39,7 @@ public interface GroupService {
 
     GroupEntity selectGroup(GroupEntity groupEntity);
 
-    Integer insertMemberToGroup_plus(GroupMemberEntity groupMemberEntity);
+    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
 
-    Integer deleteMemberFromGroup_plus(GroupMemberEntity groupMemberEntity);
+    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
 }

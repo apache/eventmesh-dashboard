@@ -31,11 +31,11 @@ public interface TopicService {
 
     void updateTopic(TopicEntity topicEntity);
 
-    void deleteTopic(TopicEntity topicEntity);
+    void deleteTopicById(TopicEntity topicEntity);
 
     TopicEntity selectTopicById(TopicEntity topicEntity);
 
     TopicEntity selectTopicByUnique(TopicEntity topicEntity);
 
-    void deleteTopic_plus(TopicEntity topicEntity);
+    void deleteTopic(TopicEntity topicEntity);
 }

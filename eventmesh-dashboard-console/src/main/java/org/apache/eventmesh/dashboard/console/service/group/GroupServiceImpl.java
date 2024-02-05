@@ -41,7 +41,7 @@ public class GroupServiceImpl implements GroupService {
     @EmLog(OprType = "search", OprTarget = "Group")
     @Override
     public List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity) {
-        return oprGroupMapper.selectGroupByDynamic(groupEntity);
+        return oprGroupMapper.selectGroup(groupEntity);
 
     }
 
@@ -68,7 +68,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Integer insertMemberToGroup_plus(GroupMemberEntity groupMemberEntity) {
+    public Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity) {
         groupMemberService.addGroupMember(groupMemberEntity);
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(groupMemberEntity.getGroupName());
@@ -85,7 +85,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Integer deleteMemberFromGroup_plus(GroupMemberEntity groupMemberEntity) {
+    public Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity) {
         groupMemberService.deleteGroupMember(groupMemberEntity);
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(groupMemberEntity.getGroupName());

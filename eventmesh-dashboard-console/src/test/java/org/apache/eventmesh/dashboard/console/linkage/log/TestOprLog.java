@@ -26,11 +26,11 @@ public class TestOprLog {
     private LogService logService;
 
     @Test
-    public void test_groupService_OprLog() {
+    public void testGroupServiceOprLog() {
         GroupEntity groupEntity = new GroupEntity(null, 1L, "logTest", 0, null, 1, "OK", null, null);
         GroupEntity groupEntity1 = groupService.addGroup(groupEntity);
         LogEntity logEntity = new LogEntity(null, 1L, "add", "Group", 2, groupEntity1.toString(), null, null, null, null);
-        logEntity.setResultContent(groupEntity.toString());
+        logEntity.setResult(groupEntity.toString());
         logEntity.setId(groupEntity1.getId());
         List<LogEntity> logListByCluster = logService.getLogListByCluster(logEntity);
         logListByCluster.get(0).setId(null);

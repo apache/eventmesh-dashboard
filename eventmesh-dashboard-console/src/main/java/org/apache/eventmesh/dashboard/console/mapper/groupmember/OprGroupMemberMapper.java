@@ -74,7 +74,7 @@ public interface OprGroupMemberMapper {
         + "</where>"
         + "and is_delete=0"
         + "</script>")
-    List<GroupMemberEntity> selectAllMemberByDynamic(GroupMemberEntity groupMemberEntity);
+    List<GroupMemberEntity> selectMember(GroupMemberEntity groupMemberEntity);
 
     @Update("update group_member set state=#{state} where topic_name=#{topicName}")
     void updateMemberByTopic(GroupMemberEntity groupMemberEntity);

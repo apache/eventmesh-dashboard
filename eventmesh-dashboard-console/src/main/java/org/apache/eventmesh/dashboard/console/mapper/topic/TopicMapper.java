@@ -35,8 +35,8 @@ import java.util.List;
 @Mapper
 public interface TopicMapper {
 
-
-    @Select("<script>"
+    @Select(
+        "<script>"
         + "select * from topic"
         + "<where>"
         + "<if test='topicName!=null'>"
@@ -48,7 +48,7 @@ public interface TopicMapper {
         + "and is_delete=0"
         + "</where>"
         + "</script>")
-    List<TopicEntity> getTopicListByDynamic(TopicEntity topicEntity);
+    List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
     @Insert("INSERT INTO topic (cluster_id, topic_name, runtime_id, storage_id, retention_ms, type, description) "
         + "VALUE (#{clusterId},#{topicName},#{runtimeId},#{storageId},#{retentionMs},#{type},#{description})"

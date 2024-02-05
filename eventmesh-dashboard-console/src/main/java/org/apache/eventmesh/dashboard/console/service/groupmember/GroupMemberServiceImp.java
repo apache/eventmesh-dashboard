@@ -66,12 +66,12 @@ public class GroupMemberServiceImp implements GroupMemberService {
         groupMemberEntity.setGroupName(groupEntity.getName());
         groupMemberEntity.setClusterId(groupEntity.getClusterId());
         //Obtain a member who meets the conditions of a group
-        return oprGroupMemberMapper.selectAllMemberByDynamic(groupMemberEntity);
+        return oprGroupMemberMapper.selectMember(groupMemberEntity);
     }
 
     @Override
     public List<GroupMemberEntity> selectAllMemberByTopic(GroupMemberEntity groupMemberEntity) {
-        List<GroupMemberEntity> groupMemberEntities = oprGroupMemberMapper.selectAllMemberByDynamic(groupMemberEntity);
+        List<GroupMemberEntity> groupMemberEntities = oprGroupMemberMapper.selectMember(groupMemberEntity);
         return groupMemberEntities;
     }
 

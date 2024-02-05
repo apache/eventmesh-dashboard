@@ -35,7 +35,7 @@ public class testTopicMapper {
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setTopicName(topicName);
         topicEntity.setClusterId(clusterId);
-        List<TopicEntity> topicEntities = topicMapper.getTopicListByDynamic(topicEntity);
+        List<TopicEntity> topicEntities = topicMapper.getTopicList(topicEntity);
         for (TopicEntity topic : topicEntities) {
             topic.setCreateTime(null);
             topic.setUpdateTime(null);
@@ -44,11 +44,11 @@ public class testTopicMapper {
     }
 
     @Test
-    public void test_selectTopicByClusterId() {
+    public void testSelectTopicByClusterId() {
         List<TopicEntity> topicEntities = this.insertGroupData("SelectById111");
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setClusterId(topicEntities.get(9).getClusterId());
-        List<TopicEntity> topicEntity1 = topicMapper.getTopicListByDynamic(topicEntity);
+        List<TopicEntity> topicEntity1 = topicMapper.getTopicList(topicEntity);
         topicEntity1.get(0).setCreateTime(null);
         topicEntity1.get(0).setUpdateTime(null);
         Assert.assertEquals(topicEntity1.get(0), topicEntities.get(9));
@@ -56,14 +56,14 @@ public class testTopicMapper {
     }
 
     @Test
-    public void test_addTopic() {
+    public void testAddTopic() {
         List<TopicEntity> topicEntities = this.insertGroupData("add111");
         List<TopicEntity> add111 = this.getRemovedTimeList("add111", null);
         Assert.assertEquals(add111, topicEntities);
     }
 
     @Test
-    public void test_UpdateTopic() {
+    public void testUpdateTopic() {
         List<TopicEntity> topicEntities = this.insertGroupData("update2");
         topicEntities.get(5).setDescription("updateTest1");
         topicEntities.get(5).setType(-1);
@@ -79,19 +79,19 @@ public class testTopicMapper {
     }
 
     @Test
-    public void test_DeleteTopic() {
+    public void testDeleteTopic() {
         List<TopicEntity> topicEntities = this.insertGroupData("update72");
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setId(topicEntities.get(5).getId());
         topicEntity.setClusterId(topicEntities.get(5).getClusterId());
         topicEntity.setTopicName("update72");
         topicMapper.deleteTopic(topicEntity);
-        List<TopicEntity> topicEntity1 = topicMapper.getTopicListByDynamic(topicEntity);
+        List<TopicEntity> topicEntity1 = topicMapper.getTopicList(topicEntity);
         Assert.assertEquals(true, topicEntity1.isEmpty());
     }
 
     @Test
-    public void test_selectTopicByUnique() {
+    public void testSelectTopicByUnique() {
         List<TopicEntity> topicEntities = this.insertGroupData("unique11");
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setTopicName("unique11");
@@ -103,7 +103,7 @@ public class testTopicMapper {
     }
 
     @Test
-    public void test_selectTopicById() {
+    public void testSelectTopicById() {
         List<TopicEntity> topicEntities = this.insertGroupData("id1");
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setId(topicEntities.get(2).getId());

@@ -35,7 +35,7 @@ public class TestGroupMapper {
     public List<GroupEntity> getRemovedTimeList(String name) {
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(name);
-        List<GroupEntity> groupEntities = groupMapper.selectGroupByDynamic(groupEntity);
+        List<GroupEntity> groupEntities = groupMapper.selectGroup(groupEntity);
         for (GroupEntity groupEntity1 : groupEntities) {
             groupEntity1.setCreateTime(null);
             groupEntity1.setUpdateTime(null);
@@ -44,16 +44,16 @@ public class TestGroupMapper {
     }
 
     @Test
-    public void test_addGroup() {
+    public void testAddGroup() {
         List<GroupEntity> groupEntities = this.insertGroupData("addGroup");
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName("addGroup");
-        List<GroupEntity> groupEntities1 = groupMapper.selectGroupByDynamic(groupEntity);
+        List<GroupEntity> groupEntities1 = groupMapper.selectGroup(groupEntity);
         Assert.assertEquals(groupEntities, this.getRemovedTimeList("addGroup"));
     }
 
     @Test
-    public void test_updateGroupById() {
+    public void testUpdateGroupById() {
         List<GroupEntity> groupEntities = this.insertGroupData("updateById2");
         GroupEntity groupEntity = groupEntities.get(9);
         groupEntity.setType(3);
@@ -65,7 +65,7 @@ public class TestGroupMapper {
     }
 
     @Test
-    public void test_deleteGroupById() {
+    public void testDeleteGroupById() {
         List<GroupEntity> groupEntities = this.insertGroupData("deleteById");
         GroupEntity groupEntity = groupEntities.get(9);
         groupMapper.deleteGroup(groupEntity);
@@ -74,7 +74,7 @@ public class TestGroupMapper {
     }
 
     @Test
-    public void test_selectGroupById() {
+    public void testSelectGroupById() {
         List<GroupEntity> groupEntities = this.insertGroupData("selectById");
         GroupEntity groupEntity = groupMapper.selectGroupById(groupEntities.get(0));
         groupEntity.setCreateTime(null);
@@ -83,7 +83,7 @@ public class TestGroupMapper {
     }
 
     @Test
-    public void test_selectGroupByClusterId() {
+    public void testSelectGroupByClusterId() {
         List<GroupEntity> groupEntities = this.insertGroupData("selectByUnique");
         GroupEntity groupEntity1 = new GroupEntity();
         groupEntity1.setClusterId(groupEntities.get(0).getClusterId());
@@ -95,7 +95,7 @@ public class TestGroupMapper {
     }
 
     @Test
-    public void test_selectGroupByDynamic() {
+    public void testSelectGroupByDynamic() {
         List<GroupEntity> groupEntities = this.insertGroupData("selectByDynamic1");
         Assert.assertEquals(groupEntities, this.getRemovedTimeList("Dynamic1"));
     }

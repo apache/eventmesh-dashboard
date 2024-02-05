@@ -39,7 +39,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public List<TopicEntity> getTopicList(TopicEntity topicEntity) {
-        return topicMapper.getTopicListByDynamic(topicEntity);
+        return topicMapper.getTopicList(topicEntity);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public void deleteTopic(TopicEntity topicEntity) {
+    public void deleteTopicById(TopicEntity topicEntity) {
         topicMapper.deleteTopic(topicEntity);
     }
 
@@ -72,7 +72,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public void deleteTopic_plus(TopicEntity topicEntity) {
+    public void deleteTopic(TopicEntity topicEntity) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicEntity.getTopicName());
         groupMemberEntity.setState("empty");
