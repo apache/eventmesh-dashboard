@@ -61,7 +61,7 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
             List<ConnectionEntity> existingConnections = connectionMapper.selectByClusterId(connectionEntity);
 
             // Collect connections that are not in the new list
-            List<ConnectionEntity> connectionsToDelete = existingConnections.stream()
+            List<ConnectionEntity> connectionsToInactive = existingConnections.stream()
                 .filter(existingConnection -> !newConnections.contains(existingConnection))
                 .collect(Collectors.toList());
 
@@ -71,8 +71,8 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
                 .collect(Collectors.toList());
 
             // Delete connections in batch
-            if (!connectionsToDelete.isEmpty()) {
-                connectionMapper.batchDelete(connectionsToDelete);
+            if (!connectionsToInactive.isEmpty()) {
+                connectionMapper.batchEndConnectionById(connectionsToInactive);
             }
 
             // Insert new connections in batch

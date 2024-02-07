@@ -19,12 +19,13 @@ package org.apache.eventmesh.dashboard.console.mapper.client;
 
 import org.apache.eventmesh.dashboard.console.entity.client.ClientEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
 
 /**
  * Mybatis Mapper for the table of client.
@@ -33,10 +34,10 @@ import org.apache.ibatis.annotations.Update;
 public interface ClientMapper {
 
     @Select("SELECT * FROM `client` WHERE `id` = #{id}")
-    ClientEntity selectById(Long id);
+    ClientEntity selectById(ClientEntity clientEntity);
 
     @Select("SELECT * FROM `client` WHERE `cluster_id` = #{clusterId}")
-    ClientEntity selectByClusterId(Long clusterId);
+    List<ClientEntity> selectByClusterId(ClientEntity clientEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert(
@@ -48,12 +49,7 @@ public interface ClientMapper {
             + " #{status}, #{configIds}, #{description}, #{endTime})")
     void insert(ClientEntity clientEntity);
 
-    @Update("UPDATE `client` SET status = #{status}, end_time = NOW() WHERE id = #{id}")
+    @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE id = #{id}")
     void deActive(ClientEntity clientEntity);
 
-    @Update("UPDATE `client` SET status = #{status} WHERE id = #{id}")
-    void updateStatus(ClientEntity clientEntity);
-
-    @Delete("DELETE FROM `client` WHERE id = #{id}")
-    void deleteById(Long id);
 }

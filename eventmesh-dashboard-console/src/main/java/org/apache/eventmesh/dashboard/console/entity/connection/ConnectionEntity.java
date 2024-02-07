@@ -25,13 +25,17 @@ import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 /**
  * A Connection is a link from a source to a sink.
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ConnectionEntity extends BaseEntity {
 
     private static final long serialVersionUID = 6565578252656944905L;
@@ -41,6 +45,12 @@ public class ConnectionEntity extends BaseEntity {
      */
     @Schema(name = "id", description = "primary key")
     private Long id;
+
+    /**
+     * Runtime cluster id
+     */
+    @Schema(name = "clusterId", description = "runtime cluster id")
+    private Long clusterId;
 
     /**
      * The type of source. Possible values are "connector" or "client".
