@@ -14,15 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+DELETE FROM `eventmesh-dashboard-test`.health_check_result WHERE TRUE;
+ALTER TABLE `eventmesh-dashboard-test`.health_check_result AUTO_INCREMENT = 1;
 
-package org.apache.eventmesh.dashboard.console.scheduler.health;
-
-import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@Component
-public class HealthCheckScheduler {
-
-}
+insert into `eventmesh-dashboard-test`.health_check_result (id, type, type_id, cluster_id, status, result_desc, create_time, update_time)
+values  (1, 1, 1, 1, 0, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
+    (2, 2, 2, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
+    (3, 3, 3, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
+    (4, 4, 4, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
+    (5, 1, 2, 1, 1, '', '2024-02-04 18:56:50', '2024-02-02 19:33:13'),
+    (6, 4, 2, 2, 0, '', '2024-02-04 18:56:50', '2024-02-02 19:33:13');

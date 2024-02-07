@@ -19,13 +19,14 @@ package org.apache.eventmesh.dashboard.console.mapper.connection;
 
 import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -34,14 +35,27 @@ import java.util.List;
 @Mapper
 public interface ConnectionMapper {
 
-    @Select("SELECT * FROM connection WHERE id = #{id}")
-    ConnectionEntity selectById(ConnectionEntity connectionEntity);
-
     @Select("SELECT * FROM connection")
     List<ConnectionEntity> selectAll();
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId}")
     List<ConnectionEntity> selectByClusterId(ConnectionEntity connectionEntity);
+
+    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND source_id = #{sourceId} AND source_type = #{sourceType}")
+    public List<ConnectionEntity> selectByClusterIdSourceTypeAndSourceId(ConnectionEntity connectionEntity);
+
+    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND sink_id = #{sinkId} AND sink_type = #{sinkType}")
+    public List<ConnectionEntity> selectByClusterIdSinkTypeAndSinkId(ConnectionEntity connectionEntity);
+
+    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND source_id = #{sourceId} AND source_type = #{sourceType} "
+        + "AND create_time > #{startTime} AND create_time < #{endTime}")
+    public List<ConnectionEntity> selectByClusterIdSourceTypeAndSourceIdAndCreateTimeRange(ConnectionEntity connectionEntity,
+        @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
+
+    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND sink_id = #{sinkId} AND sink_type = #{sinkType} "
+        + "AND create_time > #{startTime} AND create_time < #{endTime}")
+    public List<ConnectionEntity> selectByClusterIdSinkTypeAndSinkIdAndCreateTimeRange(ConnectionEntity connectionEntity,
+        @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO connection (cluster_id, source_type, source_id,"
@@ -64,21 +78,14 @@ public interface ConnectionMapper {
         + "</script>")
     void batchInsert(List<ConnectionEntity> connectionEntityList);
 
-    @Update("UPDATE connection SET status = #{status}, end_time = NOW() WHERE id = #{id}")
+    @Update("UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{id}")
     void endConnectionById(ConnectionEntity connectionEntity);
 
-    @Delete("DELETE FROM connection WHERE cluster_id = #{clusterId}")
-    void deleteAllByClusterId(ConnectionEntity connectionEntity);
-
-    @Delete("DELETE FROM connection WHERE id = #{id}")
-    void deleteById(ConnectionEntity connectionEntity);
-
-    @Delete("<script>"
-        + "DELETE FROM connection WHERE id IN "
-        + "<foreach item='item' index='index' collection='list' open='(' separator=',' close=')'>"
-        + "#{item.id}"
-        + "</foreach>"
-        + "</script>")
-    void batchDelete(List<ConnectionEntity> connectionEntityList);
+    //batch end
+    @Update({
+        "<script><foreach collection='list' item='connectionEntity' index='index' separator=';'>",
+        "UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{connectionEntity.id}",
+        "</foreach></script>"})
+    void batchEndConnectionById(List<ConnectionEntity> connectionEntityList);
 
 }

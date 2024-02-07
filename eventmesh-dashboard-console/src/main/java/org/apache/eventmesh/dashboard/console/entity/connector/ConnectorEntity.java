@@ -37,6 +37,8 @@ public class ConnectorEntity extends BaseEntity {
     @Schema(name = "id", description = "primary key")
     private Long id;
 
+    private Long clusterId;
+
     private String name;
 
     private String className;
