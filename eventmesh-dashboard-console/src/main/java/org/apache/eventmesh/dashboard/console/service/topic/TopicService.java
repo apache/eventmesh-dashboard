@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.service.topic;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
-@Slf4j
-@SpringBootApplication
-@EnableTransactionManagement
-public class EventMeshDashboardApplication {
+/**
+ * Service about Topic
+ */
+public interface TopicService {
+    List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
-    public static void main(String[] args) {
-        try {
-            SpringApplication.run(EventMeshDashboardApplication.class, args);
-            log.info("{} Successfully booted.", EventMeshDashboardApplication.class.getSimpleName());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
+    void addTopic_plus(TopicEntity topicEntity);
+
+    void updateTopic(TopicEntity topicEntity);
+
+    void deleteTopicById(TopicEntity topicEntity);
+
+    TopicEntity selectTopicById(TopicEntity topicEntity);
+
+    TopicEntity selectTopicByUnique(TopicEntity topicEntity);
+
+    void deleteTopic(TopicEntity topicEntity);
 }

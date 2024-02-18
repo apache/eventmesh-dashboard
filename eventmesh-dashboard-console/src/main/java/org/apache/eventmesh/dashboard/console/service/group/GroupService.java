@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.service.group;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-@SpringBootApplication
-@EnableTransactionManagement
-public class EventMeshDashboardApplication {
+import java.util.List;
 
-    public static void main(String[] args) {
-        try {
-            SpringApplication.run(EventMeshDashboardApplication.class, args);
-            log.info("{} Successfully booted.", EventMeshDashboardApplication.class.getSimpleName());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
+/**
+ * operate Group Service
+ */
+
+public interface GroupService {
+
+    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
+
+    GroupEntity addGroup(GroupEntity groupEntity);
+
+    void updateGroup(GroupEntity groupEntity);
+
+    Integer deleteGroup(GroupEntity groupEntity);
+
+    GroupEntity selectGroup(GroupEntity groupEntity);
+
+    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
+
+    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
 }

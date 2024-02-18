@@ -15,25 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.entity.topic;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import java.sql.Timestamp;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Slf4j
-@SpringBootApplication
-@EnableTransactionManagement
-public class EventMeshDashboardApplication {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class TopicEntity {
+    private Long id;
 
-    public static void main(String[] args) {
-        try {
-            SpringApplication.run(EventMeshDashboardApplication.class, args);
-            log.info("{} Successfully booted.", EventMeshDashboardApplication.class.getSimpleName());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
+    private Long clusterId;
+
+    private String topicName;
+
+    private String runtimeId;
+
+    private String storageId;
+
+    private Long retentionMs;
+
+    private Integer type;
+
+    private String description;
+
+    private Timestamp createTime;
+
+    private Timestamp updateTime;
+
 }

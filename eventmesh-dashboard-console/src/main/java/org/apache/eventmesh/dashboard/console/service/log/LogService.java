@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.service.log;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
-@Slf4j
-@SpringBootApplication
-@EnableTransactionManagement
-public class EventMeshDashboardApplication {
+/**
+ *
+ * operation service
+ *
+ */
 
-    public static void main(String[] args) {
-        try {
-            SpringApplication.run(EventMeshDashboardApplication.class, args);
-            log.info("{} Successfully booted.", EventMeshDashboardApplication.class.getSimpleName());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
+public interface LogService {
+
+    List<LogEntity> getLogListByCluster(LogEntity logEntity);
+
+    Long addLog(LogEntity logEntity);
+
+    Integer updateLog(LogEntity logEntity);
+
 }
