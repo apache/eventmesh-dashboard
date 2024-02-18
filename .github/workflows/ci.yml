@@ -37,7 +37,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
-      DB_DATABASE: eventmesh-dashboard
+      DB_DATABASE: EVENTMESH_DASHBOARD
       DB_USER: root
       DB_PASSWORD: root
 
