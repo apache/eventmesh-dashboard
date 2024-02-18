@@ -39,7 +39,7 @@ jobs:
     env:
       DB_DATABASE: eventmesh-dashboard
       DB_USER: root
-      DB_PASSWORD: password
+      DB_PASSWORD: root
 
     steps:
       - name: Checkout repository
