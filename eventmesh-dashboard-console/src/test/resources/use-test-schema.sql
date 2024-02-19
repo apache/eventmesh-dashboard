@@ -15,4 +15,5 @@
  * limitations under the License.
  */
 
-USE `eventmesh-dashboard-test`
+CREATE DATABASE IF NOT EXISTS `eventmesh_dashboard_test`;
+USE `eventmesh_dashboard_test`

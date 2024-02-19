@@ -16,12 +16,12 @@
  */
 
 DELETE
-FROM `eventmesh-dashboard-test`.client
+FROM `eventmesh_dashboard_test`.client
 WHERE TRUE;
-ALTER TABLE `eventmesh-dashboard-test`.client
+ALTER TABLE `eventmesh_dashboard_test`.client
     AUTO_INCREMENT = 1;
 
-insert into `eventmesh-dashboard-test`.client (id, cluster_id, name, platform, language, pid, host, port, protocol, status, config_ids, description,
+insert into `eventmesh_dashboard_test`.client (id, cluster_id, name, platform, language, pid, host, port, protocol, status, config_ids, description,
                                                create_time, end_time, update_time)
 values (1, 3, '', '', 'java', -1, '', -1, '', 1, '', '', '2024-02-02 15:15:15', '2024-02-02 15:15:15', '2024-02-02 15:15:15'),
        (2, 3, '', '', 'java', -1, '', -1, '', 1, '', '', '2024-02-02 15:15:15', '2024-02-02 15:15:15', '2024-02-02 15:15:15'),

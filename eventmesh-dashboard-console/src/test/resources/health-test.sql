@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-DELETE FROM `eventmesh-dashboard-test`.health_check_result WHERE TRUE;
-ALTER TABLE `eventmesh-dashboard-test`.health_check_result AUTO_INCREMENT = 1;
+DELETE FROM `eventmesh_dashboard_test`.health_check_result WHERE TRUE;
+ALTER TABLE `eventmesh_dashboard_test`.health_check_result AUTO_INCREMENT = 1;
 
-insert into `eventmesh-dashboard-test`.health_check_result (id, type, type_id, cluster_id, status, result_desc, create_time, update_time)
+insert into `eventmesh_dashboard_test`.health_check_result (id, type, type_id, cluster_id, status, result_desc, create_time, update_time)
 values  (1, 1, 1, 1, 0, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
     (2, 2, 2, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
     (3, 3, 3, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
