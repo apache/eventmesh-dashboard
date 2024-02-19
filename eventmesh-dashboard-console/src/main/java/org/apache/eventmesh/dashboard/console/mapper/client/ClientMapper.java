@@ -43,10 +43,10 @@ public interface ClientMapper {
     @Insert(
         "INSERT INTO `client` (`cluster_id`, `name`, `platform`,"
             + " `language`, `pid`, `host`, `port`, `protocol`,"
-            + " `status`, `config_ids`, `description`, `end_time`) "
+            + " `status`, `config_ids`, `description`) "
             + "VALUES (#{clusterId}, #{name}, #{platform},"
             + " #{language}, #{pid}, #{host}, #{port}, #{protocol},"
-            + " #{status}, #{configIds}, #{description}, #{endTime})")
+            + " #{status}, #{configIds}, #{description})")
     void insert(ClientEntity clientEntity);
 
     @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE id = #{id}")
