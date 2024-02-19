@@ -36,6 +36,19 @@ jobs:
         language: ['java']
     runs-on: ${{ matrix.os }}
 
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          # The MySQL docker container requires these environment variables to be set, so we can create and migrate the test database.
+          MYSQL_DATABASE: EVENTMESH_DASHBOARD
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          # https://docs.github.com/en/actions/using-containerized-services/about-service-containers
+          - 3306:3306
+        # Set health checks to wait until MySQL has started
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
