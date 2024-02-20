@@ -45,14 +45,14 @@ public interface ConnectorMapper {
     void insert(ConnectorEntity connectorEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("<script>"
-        + "INSERT INTO connector (cluster_id, name, class_name, type, status, pod_state, config_ids) VALUES "
-        +
-        "<foreach collection='list' item='connectorEntity' index='index' separator=','>"
-        + "(#{connectorEntity.clusterId}, #{connectorEntity.name}, #{connectorEntity.className},"
-        + " #{connectorEntity.type}, #{connectorEntity.status}, #{connectorEntity.podState}, #{connectorEntity.configIds})"
-        + "</foreach>"
-        + "</script>")
+    @Insert({
+        "<script>",
+        "   INSERT INTO connector (cluster_id, name, class_name, type, status, pod_state, config_ids) VALUES ",
+        "   <foreach collection='list' item='connectorEntity' index='index' separator=','>",
+        "       (#{connectorEntity.clusterId}, #{connectorEntity.name}, #{connectorEntity.className},",
+        "       #{connectorEntity.type}, #{connectorEntity.status}, #{connectorEntity.podState}, #{connectorEntity.configIds})",
+        "   </foreach>",
+        "</script>"})
     void batchInsert(List<ConnectorEntity> connectorEntityList);
 
     @Update("UPDATE connector SET status = #{status} WHERE id = #{id}")
@@ -69,11 +69,11 @@ public interface ConnectorMapper {
 
     @Update({
         "<script>",
-        "update connector set status = 0 ",
-        "where id in ",
-        "<foreach collection='list' item='item' index='index' open='(' separator=',' close=')'>",
-        "#{item.id}",
-        "</foreach>",
+        "   update connector set status = 0 ",
+        "   where id in ",
+        "   <foreach collection='list' item='item' index='index' open='(' separator=',' close=')'>",
+        "       #{item.id}",
+        "   </foreach>",
         "</script>"
     })
     void batchDeActive(List<ConnectorEntity> connectorEntities);

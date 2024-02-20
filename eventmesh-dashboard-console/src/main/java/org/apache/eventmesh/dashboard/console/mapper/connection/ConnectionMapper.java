@@ -58,24 +58,22 @@ public interface ConnectionMapper {
         @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("INSERT INTO connection (cluster_id, source_type, source_id,"
-        + " sink_type, sink_id, runtime_id, status, topic, group_id, description)"
+    @Insert("INSERT INTO connection (cluster_id, source_type, source_id," + " sink_type, sink_id, runtime_id, status, topic, group_id, description)"
         + " VALUES ( #{clusterId}, #{sourceType}, #{sourceId}, "
         + " #{sinkType}, #{sinkId},  #{runtimeId}, #{status}, #{topic}, #{groupId}, #{description})")
     void insert(ConnectionEntity connectionEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("<script>"
-        + "INSERT INTO connection (cluster_id, source_type, source_id,"
-        + " sink_type, sink_id, runtime_id, status,"
-        + " topic, group_id, description) VALUES "
-        +
-        "<foreach collection='list' item='connectionEntity' index='index' separator=','>"
-        + "(#{connectionEntity.clusterId}, #{connectionEntity.sourceType}, #{connectionEntity.sourceId},"
-        + " #{connectionEntity.sinkType}, #{connectionEntity.sinkId}, #{connectionEntity.runtimeId}, #{connectionEntity.status},"
-        + " #{connectionEntity.topic}, #{connectionEntity.groupId}, #{connectionEntity.description})"
-        + "</foreach>"
-        + "</script>")
+    @Insert({
+        "<script>",
+        "   INSERT INTO connection (cluster_id, source_type, source_id," + " sink_type, sink_id, runtime_id, status,",
+        "   topic, group_id, description) VALUES ",
+        "   <foreach collection='list' item='connectionEntity' index='index' separator=','>",
+        "       (#{connectionEntity.clusterId}, #{connectionEntity.sourceType}, #{connectionEntity.sourceId},",
+        "       #{connectionEntity.sinkType}, #{connectionEntity.sinkId}, #{connectionEntity.runtimeId}, #{connectionEntity.status},",
+        "       #{connectionEntity.topic}, #{connectionEntity.groupId}, #{connectionEntity.description})",
+        "   </foreach>",
+        "</script>"})
     void batchInsert(List<ConnectionEntity> connectionEntityList);
 
     @Update("UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{id}")
@@ -83,9 +81,11 @@ public interface ConnectionMapper {
 
     //batch end
     @Update({
-        "<script><foreach collection='list' item='connectionEntity' index='index' separator=';'>",
-        "UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{connectionEntity.id}",
-        "</foreach></script>"})
+        "<script>",
+        "   <foreach collection='list' item='connectionEntity' index='index' separator=';'>",
+        "       UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{connectionEntity.id}",
+        "   </foreach>",
+        "</script>"})
     void batchEndConnectionById(List<ConnectionEntity> connectionEntityList);
 
 }

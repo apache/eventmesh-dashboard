@@ -35,18 +35,19 @@ import java.util.List;
 @Mapper
 public interface TopicMapper {
 
-    @Select("<script>"
-        + "select * from topic"
-        + "<where>"
-        + "<if test='topicName!=null'>"
-        + "and topic_name=#{topicName}"
-        + "</if>"
-        + "<if test='clusterId!=null'>"
-        + "and cluster_id=#{clusterId} "
-        + "</if>"
-        + "and is_delete=0"
-        + "</where>"
-        + "</script>")
+    @Select({
+        "<script>",
+        "   select * from topic",
+        "   <where>",
+        "       <if test='topicName!=null'>",
+        "           and topic_name=#{topicName}",
+        "       </if>",
+        "       <if test='clusterId!=null'>",
+        "           and cluster_id=#{clusterId} ",
+        "       </if>",
+        "       and is_delete=0",
+        "   </where>",
+        "</script>"})
     List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
     @Insert("INSERT INTO topic (cluster_id, topic_name, runtime_id, storage_id, retention_ms, type, description) "

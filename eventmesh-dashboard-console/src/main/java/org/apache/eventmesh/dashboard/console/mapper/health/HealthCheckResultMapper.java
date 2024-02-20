@@ -55,11 +55,11 @@ public interface HealthCheckResultMapper {
 
     @Insert({
         "<script>",
-        "INSERT INTO health_check_result(type, type_id, cluster_id, status, result_desc) VALUES ",
-        "<foreach collection='list' item='healthCheckResultEntity' index='index' separator=','>",
-        "(#{healthCheckResultEntity.type}, #{healthCheckResultEntity.typeId}, #{healthCheckResultEntity.clusterId},",
-        " #{healthCheckResultEntity.status}, #{healthCheckResultEntity.resultDesc})",
-        "</foreach>",
+        "   INSERT INTO health_check_result(type, type_id, cluster_id, status, result_desc) VALUES ",
+        "   <foreach collection='list' item='healthCheckResultEntity' index='index' separator=','>",
+        "       (#{healthCheckResultEntity.type}, #{healthCheckResultEntity.typeId}, #{healthCheckResultEntity.clusterId},",
+        "       #{healthCheckResultEntity.status}, #{healthCheckResultEntity.resultDesc})",
+        "   </foreach>",
         "</script>"
     })
     void batchInsert(List<HealthCheckResultEntity> healthCheckResultEntityList);
@@ -68,10 +68,12 @@ public interface HealthCheckResultMapper {
     void update(HealthCheckResultEntity healthCheckResultEntity);
 
     @Update({
-        "<script><foreach collection='list' item='healthCheckResultEntity' index='index' separator=';'>",
-        "UPDATE health_check_result SET status = #{healthCheckResultEntity.status},",
-        "result_desc = #{healthCheckResultEntity.resultDesc} WHERE id = #{healthCheckResultEntity.id}",
-        "</foreach></script>"})
+        "<script>",
+        "   <foreach collection='list' item='healthCheckResultEntity' index='index' separator=';'>",
+        "       UPDATE health_check_result SET status = #{healthCheckResultEntity.status},",
+        "       result_desc = #{healthCheckResultEntity.resultDesc} WHERE id = #{healthCheckResultEntity.id}",
+        "   </foreach>",
+        "</script>"})
     void batchUpdate(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     @Select({

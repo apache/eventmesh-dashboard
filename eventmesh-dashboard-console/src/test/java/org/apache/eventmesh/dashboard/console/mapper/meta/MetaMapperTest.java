@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.meta;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.meta.MetaEntity;
 import org.junit.jupiter.api.Test;
@@ -26,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 

@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-public enum HealthCheckTypeEnum {
+public enum HealthCheckType {
     UNKNOWN(0, "unknown"),
 
     CLUSTER(1, "cluster"),
@@ -38,7 +38,7 @@ public enum HealthCheckTypeEnum {
     private final String name;
 
     public static Integer toNumber(String name) {
-        for (HealthCheckTypeEnum healthCheckTypeEnum : HealthCheckTypeEnum.values()) {
+        for (HealthCheckType healthCheckTypeEnum : HealthCheckType.values()) {
             if (healthCheckTypeEnum.name.equals(name)) {
                 return healthCheckTypeEnum.number;
             }
@@ -47,7 +47,7 @@ public enum HealthCheckTypeEnum {
     }
 
     public static String toName(Integer number) {
-        for (HealthCheckTypeEnum healthCheckTypeEnum : HealthCheckTypeEnum.values()) {
+        for (HealthCheckType healthCheckTypeEnum : HealthCheckType.values()) {
             if (healthCheckTypeEnum.number.equals(number)) {
                 return healthCheckTypeEnum.name;
             }
