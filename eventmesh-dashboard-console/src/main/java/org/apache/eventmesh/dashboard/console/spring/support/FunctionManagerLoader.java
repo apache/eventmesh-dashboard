@@ -15,19 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.config;
+package org.apache.eventmesh.dashboard.console.spring.support;
 
+import org.apache.eventmesh.dashboard.console.health.HealthService;
+import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SchedulerConfig {
+public class FunctionManagerLoader {
+
+    private FunctionManager functionManager;
+
+    private FunctionManagerProperties properties;
+
+    @Autowired
+    private HealthDataService healthDataService;
 
     @Bean
-    public ThreadPoolTaskScheduler taskScheduler() {
-        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(5);
-        return taskScheduler;
+    public HealthService getHealthService() {
+        return functionManager.getHealthService();
+    }
+
+    @PostConstruct
+    void initManager() {
+        functionManager = new FunctionManager();
+        functionManager.setProperties(properties);
+        functionManager.setHealthDataService(healthDataService);
+        functionManager.initFunctionManager();
     }
 }
