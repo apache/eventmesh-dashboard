@@ -34,7 +34,7 @@ public interface MetaMapper {
     @Select("SELECT * FROM meta WHERE id = #{id}")
     MetaEntity selectById(MetaEntity metaEntity);
 
-    @Select("SELECT * FROM meta WHERE cluster_id = #{clusterId}")
+    @Select("SELECT * FROM meta WHERE cluster_id = #{clusterId} LIMIT 1")
     MetaEntity selectByClusterId(MetaEntity metaEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")

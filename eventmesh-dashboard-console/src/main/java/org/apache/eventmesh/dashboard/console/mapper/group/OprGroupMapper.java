@@ -55,19 +55,19 @@ public interface OprGroupMapper {
     @Select("select * from `group` where id=#{id} and is_delete=0")
     GroupEntity selectGroupById(GroupEntity groupEntity);
 
-    @Select("<script>"
-        + "select * from `group`"
-        + "<where>"
-        + "<if test='clusterId != null'>"
-        + "cluster_id=#{clusterId}"
-        + "</if>"
-        + "<if test='name != null'>"
-        + "and name like concat('%',#{name},'%')"
-        + "</if>"
-        + "and is_delete=0"
-        + "</where>"
-        + "</script>")
+    @Select({
+        "<script>",
+        "   select * from `group`",
+        "   <where>",
+        "       <if test='clusterId != null'>",
+        "           cluster_id=#{clusterId}",
+        "       </if>",
+        "       <if test='name != null'>",
+        "           and name like concat('%',#{name},'%')",
+        "       </if>",
+        "       and is_delete=0",
+        "   </where>",
+        "</script>"})
     List<GroupEntity> selectGroup(GroupEntity groupEntity);
-
 
 }

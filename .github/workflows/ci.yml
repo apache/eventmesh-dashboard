@@ -38,10 +38,10 @@ jobs:
 
     services:
       mysql:
-        image: mysql:8
+        image: mysql:8.0
         env:
           # The MySQL docker container requires these environment variables to be set, so we can create and migrate the test database.
-          MYSQL_DATABASE: EVENTMESH_DASHBOARD
+          MYSQL_DATABASE: eventmesh_dashboard_test
           MYSQL_ROOT_PASSWORD: password
         ports:
           # https://docs.github.com/en/actions/using-containerized-services/about-service-containers
