@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.health;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import org.apache.eventmesh.dashboard.console.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
@@ -36,8 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * HealthService is the manager of all health check services. It is responsible for creating, deleting and executing health check services.<br> In
- * this class has a {@link HealthExecutor} which is used to execute health check services, and also a map to store all health check services. when the
- * function executeAll is called, health check service will be executed by {@link HealthExecutor}.
+ * this class there is a {@link HealthExecutor} which is used to execute health check services, and also a map to store all health check services.
+ * when the function executeAll is called, health check service will be executed by {@link HealthExecutor}.
  */
 @Slf4j
 public class HealthService {
@@ -66,6 +68,8 @@ public class HealthService {
      * @see AbstractHealthCheckService
      */
     private Map<String, Map<Long, AbstractHealthCheckService>> checkServiceMap = new ConcurrentHashMap<>();
+
+    private ScheduledThreadPoolExecutor scheduledExecutor;
 
     public void insertCheckService(List<HealthCheckObjectConfig> configList) {
         configList.forEach(this::insertCheckService);
@@ -140,5 +144,24 @@ public class HealthService {
         throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Constructor<?> constructor = clazz.getConstructor(HealthCheckObjectConfig.class);
         return (AbstractHealthCheckService) constructor.newInstance(config);
+    }
+
+    /**
+     * start scheduled execution of health check services
+     *
+     * @param initialDelay unit is second
+     * @param period       unit is second
+     */
+    public void startScheduledExecution(long initialDelay, long period) {
+        if (scheduledExecutor == null) {
+            scheduledExecutor = new ScheduledThreadPoolExecutor(1);
+        }
+        scheduledExecutor.scheduleAtFixedRate(this::executeAll, initialDelay, period, TimeUnit.SECONDS);
+    }
+
+    public void stopScheduledExecution() {
+        if (scheduledExecutor != null) {
+            scheduledExecutor.shutdown();
+        }
     }
 }

@@ -50,6 +50,8 @@ public class HealthExecutor {
 
     public void execute(AbstractHealthCheckService service) {
         final long startTime = System.currentTimeMillis();
+        //TODO: execute is called by a ScheduledThreadPoolExecutor,
+        // when called, it should check if current service should doCheck(check service check rate can be dynamically configured).
         try {
             memoryCache.update(service.getConfig().getHealthCheckResourceType(), service.getConfig().getInstanceId(), HealthCheckStatus.CHECKING, "",
                 null, service.getConfig());
