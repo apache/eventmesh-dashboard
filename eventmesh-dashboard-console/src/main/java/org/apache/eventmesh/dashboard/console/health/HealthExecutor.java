@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.console.health;
 
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
-import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckTypeEnum;
+import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.health.CheckResultCache.CheckResult;
 import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
@@ -27,6 +27,7 @@ import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import java.util.ArrayList;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,6 +40,7 @@ public class HealthExecutor {
     /**
      * memory cache is used to store real-time health check result.
      */
+    @Getter
     @Setter
     private CheckResultCache memoryCache;
 
@@ -127,7 +129,7 @@ public class HealthExecutor {
     private void addToResultList(CheckResult result, ArrayList<HealthCheckResultEntity> resultList) {
         HealthCheckResultEntity newEntity = new HealthCheckResultEntity();
         newEntity.setClusterId(result.getConfig().getClusterId());
-        newEntity.setType(HealthCheckTypeEnum.toNumber(result.getConfig().getHealthCheckResourceType()));
+        newEntity.setType(HealthCheckType.toNumber(result.getConfig().getHealthCheckResourceType()));
         newEntity.setTypeId(result.getConfig().getInstanceId());
         newEntity.setResultDesc(result.getResultDesc());
         newEntity.setStatus(result.getStatus().getNumber());

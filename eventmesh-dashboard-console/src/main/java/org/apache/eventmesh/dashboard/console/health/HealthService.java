@@ -17,8 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.health;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import org.apache.eventmesh.dashboard.console.health.CheckResultCache.CheckResult;
 import org.apache.eventmesh.dashboard.console.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
@@ -33,6 +32,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,6 +71,10 @@ public class HealthService {
     private Map<String, Map<Long, AbstractHealthCheckService>> checkServiceMap = new ConcurrentHashMap<>();
 
     private ScheduledThreadPoolExecutor scheduledExecutor;
+
+    public Map<String, HashMap<Long, CheckResult>> getCheckResultCacheMap() {
+        return healthExecutor.getMemoryCache().getCacheMap();
+    }
 
     public void insertCheckService(List<HealthCheckObjectConfig> configList) {
         configList.forEach(this::insertCheckService);

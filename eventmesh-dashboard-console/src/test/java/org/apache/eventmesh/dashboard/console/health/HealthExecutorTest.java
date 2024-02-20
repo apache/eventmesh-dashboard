@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
-import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckTypeEnum;
+import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
@@ -128,7 +128,7 @@ class HealthExecutorTest {
         healthExecutor.endExecute();
         HealthCheckResultEntity query = new HealthCheckResultEntity();
         query.setClusterId(1L);
-        query.setType(HealthCheckTypeEnum.STORAGE.getNumber());
+        query.setType(HealthCheckType.STORAGE.getNumber());
         query.setTypeId(2L);
         assertNotNull(healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getStatus());
     }
@@ -142,7 +142,7 @@ class HealthExecutorTest {
         healthExecutor.startExecute();
         HealthCheckResultEntity query = new HealthCheckResultEntity();
         query.setClusterId(1L);
-        query.setType(HealthCheckTypeEnum.STORAGE.getNumber());
+        query.setType(HealthCheckType.STORAGE.getNumber());
         query.setTypeId(1L);
         assertEquals(1, healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getStatus());
     }
@@ -155,7 +155,7 @@ class HealthExecutorTest {
 
         HealthCheckResultEntity query = new HealthCheckResultEntity();
         query.setClusterId(1L);
-        query.setType(HealthCheckTypeEnum.STORAGE.getNumber());
+        query.setType(HealthCheckType.STORAGE.getNumber());
         query.setTypeId(1L);
         assertEquals(HealthCheckStatus.TIMEOUT.getNumber(),
             healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getStatus());
@@ -174,7 +174,7 @@ class HealthExecutorTest {
         healthExecutor.endExecute();
         HealthCheckResultEntity query = new HealthCheckResultEntity();
         query.setClusterId(1L);
-        query.setType(HealthCheckTypeEnum.STORAGE.getNumber());
+        query.setType(HealthCheckType.STORAGE.getNumber());
         query.setTypeId(1L);
         assertEquals(2, healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).size());
     }

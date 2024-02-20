@@ -17,9 +17,11 @@
 
 package org.apache.eventmesh.dashboard.console.spring.support;
 
-import javax.annotation.PostConstruct;
 import org.apache.eventmesh.dashboard.console.health.HealthService;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;

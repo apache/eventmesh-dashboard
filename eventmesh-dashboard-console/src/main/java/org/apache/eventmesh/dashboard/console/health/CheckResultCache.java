@@ -19,21 +19,19 @@ package org.apache.eventmesh.dashboard.console.health;
 
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
 import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
-import org.apache.eventmesh.dashboard.console.health.service.RealTimeHealthCheckResultService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-public class CheckResultCache implements RealTimeHealthCheckResultService {
+public class CheckResultCache {
 
-    @Getter
     private final HashMap<String, HashMap<Long, CheckResult>> cacheMap = new HashMap<>();
 
     public void update(String type, Long typeId, HealthCheckStatus status, String resultDesc, Long latency) {
@@ -43,8 +41,8 @@ public class CheckResultCache implements RealTimeHealthCheckResultService {
             cacheMap.put(type, subMap);
         }
         CheckResult oldResult = subMap.get(typeId);
-        String oldDesc = Objects.isNull(oldResult.getResultDesc()) ? "" : oldResult.getResultDesc();
-        CheckResult result = new CheckResult(status, oldDesc + "\n" + resultDesc, LocalDateTime.now(),
+        String oldDesc = Objects.isNull(oldResult.getResultDesc()) ? "" : oldResult.getResultDesc() + "\n";
+        CheckResult result = new CheckResult(status, oldDesc + resultDesc, LocalDateTime.now(),
             latency, oldResult.getConfig());
         subMap.put(typeId, result);
     }
@@ -59,18 +57,8 @@ public class CheckResultCache implements RealTimeHealthCheckResultService {
         subMap.put(typeId, new CheckResult(status, resultDesc, LocalDateTime.now(), latency, config));
     }
 
-    @Override
-    public CheckResult get(String type, Long typeId) {
-        return cacheMap.get(type).get(typeId);
-    }
-
-    @Override
-    public List<CheckResult> getAll() {
-        List<CheckResult> results = new ArrayList<>();
-        for (HashMap<Long, CheckResult> subMap : cacheMap.values()) {
-            results.addAll(subMap.values());
-        }
-        return results;
+    public Map<String, HashMap<Long, CheckResult>> getCacheMap() {
+        return Collections.unmodifiableMap(cacheMap);
     }
 
     @Getter

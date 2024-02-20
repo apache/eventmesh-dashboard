@@ -17,11 +17,11 @@
 
 package org.apache.eventmesh.dashboard.console.spring.support;
 
-import lombok.Getter;
 import org.apache.eventmesh.dashboard.console.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.health.HealthService;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
+import lombok.Getter;
 import lombok.Setter;
 
 /**
