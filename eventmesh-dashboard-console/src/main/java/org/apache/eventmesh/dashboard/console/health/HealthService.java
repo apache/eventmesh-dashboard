@@ -68,7 +68,7 @@ public class HealthService {
      *
      * @see AbstractHealthCheckService
      */
-    private Map<String, Map<Long, AbstractHealthCheckService>> checkServiceMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<Long, AbstractHealthCheckService>> checkServiceMap = new ConcurrentHashMap<>();
 
     private ScheduledThreadPoolExecutor scheduledExecutor;
 
@@ -87,10 +87,13 @@ public class HealthService {
             if (Objects.nonNull(config.getSimpleClassName())) {
                 Class<?> clazz = HEALTH_CHECK_CLASS_CACHE.get(config.getSimpleClassName());
                 healthCheckService = createCheckService(clazz, config);
-                //if simpleClassName is null, use type(storage) and subType(redis) to create healthCheckService
+                // you can pass an object to create a HealthCheckService(not commonly used)
+            } else if (Objects.nonNull(config.getCheckClass())) {
+                healthCheckService = createCheckService(config.getCheckClass(), config);
+                //if simpleClassName and CheckClass are both null, use type(storage) and subType(redis) to create healthCheckService
+                //This is the default create method.
                 //healthCheckService is annotated with @HealthCheckType(type = "storage", subType = "redis")
-            } else if (Objects.isNull(config.getSimpleClassName())
-                && Objects.nonNull(config.getHealthCheckResourceType()) && Objects.nonNull(
+            } else if (Objects.nonNull(config.getHealthCheckResourceType()) && Objects.nonNull(
                 config.getHealthCheckResourceSubType())) {
                 for (Entry<String, Class<?>> entry : HEALTH_CHECK_CLASS_CACHE.entrySet()) {
                     Class<?> clazz = entry.getValue();
@@ -101,9 +104,6 @@ public class HealthService {
                         break;
                     }
                 }
-                // you can pass an object to create a HealthCheckService(not commonly used)
-            } else if (Objects.nonNull(config.getCheckClass())) {
-                healthCheckService = createCheckService(config.getCheckClass(), config);
             }
         } catch (Exception e) {
             log.error("create healthCheckService failed, healthCheckObjectConfig:{}", config, e);
@@ -113,6 +113,13 @@ public class HealthService {
         if (Objects.isNull(healthCheckService)) {
             throw new RuntimeException("No construct method of Health Check Service is found, config is {}" + config);
         }
+        insertCheckService(healthCheckService);
+    }
+
+    public void insertCheckService(AbstractHealthCheckService checkService) {
+        Map<Long, AbstractHealthCheckService> subMap = checkServiceMap.computeIfAbsent(checkService.getConfig().getHealthCheckResourceType(),
+            k -> new ConcurrentHashMap<>());
+        subMap.put(checkService.getConfig().getInstanceId(), checkService);
     }
 
     public void deleteCheckService(String resourceType, Long resourceId) {

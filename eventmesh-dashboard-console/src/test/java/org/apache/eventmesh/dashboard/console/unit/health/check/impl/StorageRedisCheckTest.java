@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health.check.impl;
+package org.apache.eventmesh.dashboard.console.unit.health.check.impl;
 
 import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
 import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
+import org.apache.eventmesh.dashboard.console.health.check.impl.StorageRedisCheck;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

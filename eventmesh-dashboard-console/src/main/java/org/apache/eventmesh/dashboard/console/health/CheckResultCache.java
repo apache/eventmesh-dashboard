@@ -41,8 +41,10 @@ public class CheckResultCache {
             cacheMap.put(type, subMap);
         }
         CheckResult oldResult = subMap.get(typeId);
-        String oldDesc = Objects.isNull(oldResult.getResultDesc()) ? "" : oldResult.getResultDesc() + "\n";
-        CheckResult result = new CheckResult(status, oldDesc + resultDesc, LocalDateTime.now(),
+        String oldDesc = Objects.isNull(oldResult.getResultDesc()) || oldResult.getResultDesc().isEmpty() ? "" : oldResult.getResultDesc() + "\n";
+        String description = oldDesc + resultDesc;
+        description += " Latency: " + latency.toString() + "ms";
+        CheckResult result = new CheckResult(status, description, LocalDateTime.now(),
             latency, oldResult.getConfig());
         subMap.put(typeId, result);
     }

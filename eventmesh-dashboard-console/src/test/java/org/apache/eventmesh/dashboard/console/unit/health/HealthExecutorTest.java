@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health;
+package org.apache.eventmesh.dashboard.console.unit.health;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -27,6 +27,8 @@ import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType;
+import org.apache.eventmesh.dashboard.console.health.CheckResultCache;
+import org.apache.eventmesh.dashboard.console.health.HealthExecutor;
 import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
@@ -113,9 +115,10 @@ class HealthExecutorTest {
     }
 
     @Test
-    public void testExecute() {
+    public void testExecute() throws InterruptedException {
         healthExecutor.execute(successHealthCheckService);
         healthExecutor.execute(failHealthCheckService);
+        Thread.sleep(1000);
         assertEquals(2, memoryCache.getCacheMap().get("storage").size());
         assertNotEquals(memoryCache.getCacheMap().get("storage").get(1L).getStatus(), memoryCache.getCacheMap().get("storage").get(2L).getStatus());
     }

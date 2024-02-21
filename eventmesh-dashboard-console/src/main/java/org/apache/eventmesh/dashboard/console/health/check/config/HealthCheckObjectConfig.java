@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.health.check.config;
 
+import java.util.Properties;
+
 import lombok.Data;
 
 @Data
@@ -31,6 +33,8 @@ public class HealthCheckObjectConfig {
     private String simpleClassName;
 
     private Class<?> checkClass;
+
+    private Properties eventmeshProperties;
 
     private Long clusterId;
 
