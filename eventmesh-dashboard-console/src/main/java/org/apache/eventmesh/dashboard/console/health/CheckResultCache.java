@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.health;
 
+import static org.apache.eventmesh.dashboard.console.constant.HealthConstant.HEALTH_NEW_LINE_ENDING;
+
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
 import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
 
@@ -41,7 +43,8 @@ public class CheckResultCache {
             cacheMap.put(type, subMap);
         }
         CheckResult oldResult = subMap.get(typeId);
-        String oldDesc = Objects.isNull(oldResult.getResultDesc()) || oldResult.getResultDesc().isEmpty() ? "" : oldResult.getResultDesc() + "\n";
+        String oldDesc = Objects.isNull(oldResult.getResultDesc()) || oldResult.getResultDesc().isEmpty() ? ""
+            : oldResult.getResultDesc() + HEALTH_NEW_LINE_ENDING;
         String description = oldDesc + resultDesc;
         description += " Latency: " + latency.toString() + "ms";
         CheckResult result = new CheckResult(status, description, LocalDateTime.now(),
