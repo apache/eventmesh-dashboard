@@ -18,5 +18,5 @@
 package org.apache.eventmesh.dashboard.console.constant;
 
 public class HealthConstant {
-    public static final String HEALTH_NEW_LINE_ENDING = "\n";
+    public static final String NEW_LINE_ENDING = "\n";
 }
