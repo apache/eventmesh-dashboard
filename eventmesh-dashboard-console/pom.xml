@@ -90,6 +90,12 @@
         </dependency>
         <!-- health check client end -->
 
+        <!-- Unit Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- TODO: remove junit4 dependency -->
         <dependency>
