@@ -15,44 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.store;
+package org.apache.eventmesh.dashboard.core.meta;
 
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.store.TopicService;
-
-import java.util.List;
+import org.apache.eventmesh.dashboard.service.meta.ConnectionCore;
 
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * TODO implement methods from storage-plugin.admin
- */
-
 @Slf4j
 @Service
-public class RocketmqTopicService implements TopicService {
+public class EtcdConnectionCore implements ConnectionCore {
 
-    AdminProperties adminProperties;
-
-    public RocketmqTopicService(AdminProperties adminProperties) {
-        this.adminProperties = adminProperties;
-    }
-
-    @Override
-    public List<TopicProperties> getTopic() {
-        return null;
-    }
-
-    @Override
-    public void createTopic(String topicName) {
-
-    }
-
-    @Override
-    public void deleteTopic(String topicName) {
-
-    }
 }

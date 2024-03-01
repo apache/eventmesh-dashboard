@@ -17,20 +17,12 @@
 
 package org.apache.eventmesh.dashboard.service.meta;
 
-import org.apache.eventmesh.dashboard.common.dto.Result;
-import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
-
-import java.util.List;
-
 /**
- * "Subscription" refers to the traditional MQ producer-consumer topic subscription relationship,
- * emphasizing the subscription relationship between EventMesh clients (including SDK and connectors) and topics,
- * reported by the EventMesh runtime.
+ * "Connection" refers to the subscription relationship between connectors.
+ * It focuses on the configuration deployed on the source and sink connectors themselves,
+ * reported by the connector.
  */
 
-public interface SubscriptionService {
+public interface ConnectionCore {
 
-    String retrieveConfig(String dataId, String group);
-
-    Result<List<SubscriptionInfo>> retrieveConfigs(Integer page, Integer size, String dataId, String group);
 }

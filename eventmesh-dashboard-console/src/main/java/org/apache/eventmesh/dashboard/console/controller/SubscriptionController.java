@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.console.controller;
 
 import org.apache.eventmesh.dashboard.common.dto.Result;
 import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
-import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
+import org.apache.eventmesh.dashboard.service.meta.SubscriptionCore;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SubscriptionController {
 
     @Autowired
-    SubscriptionService subscriptionService;
+    SubscriptionCore subscriptionCore;
 
     // the subscription dataId naming pattern of EventMesh clients: ip-protocol
     private static final String CLIENT_DATA_ID_PATTERN = "*.*.*.*-*";
@@ -48,7 +48,7 @@ public class SubscriptionController {
      */
     @GetMapping("/subscription")
     public Result<String> retrieveSubscription(@RequestParam("dataId") String dataId, @RequestParam("group") String group) {
-        return Result.success(subscriptionService.retrieveConfig(dataId, group));
+        return Result.success(subscriptionCore.retrieveConfig(dataId, group));
     }
 
     /**
@@ -66,7 +66,7 @@ public class SubscriptionController {
         @RequestParam(name = "size", defaultValue = "10") Integer size,
         @RequestParam(name = "dataId", defaultValue = CLIENT_DATA_ID_PATTERN) String dataId,
         @RequestParam(name = "group", defaultValue = "") String group) {
-        return Result.success(subscriptionService.retrieveConfigs(page, size, dataId, group));
+        return Result.success(subscriptionCore.retrieveConfigs(page, size, dataId, group));
     }
 
 }

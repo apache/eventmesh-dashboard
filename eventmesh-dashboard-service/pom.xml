@@ -19,6 +19,7 @@
     </properties>
 
     <dependencies>
+        <!-- EventMesh Dashboard modules -->
         <dependency>
             <groupId>org.apache.eventmesh.dashboard.common</groupId>
             <artifactId>eventmesh-dashboard-common</artifactId>

@@ -21,7 +21,7 @@ import org.apache.eventmesh.dashboard.common.dto.Result;
 import org.apache.eventmesh.dashboard.common.model.TopicProperties;
 import org.apache.eventmesh.dashboard.console.dto.CreateTopicRequest;
 import org.apache.eventmesh.dashboard.console.dto.DeleteTopicRequest;
-import org.apache.eventmesh.dashboard.service.store.TopicService;
+import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TopicController {
 
     @Autowired
-    TopicService topicService;
+    TopicCore topicCore;
 
     /**
      * TODO Is OPTIONS method and @CrossOrigin necessary?
@@ -60,7 +60,7 @@ public class TopicController {
     @CrossOrigin
     @GetMapping
     public Result<List<TopicProperties>> getList() {
-        List<TopicProperties> topicList = topicService.getTopic();
+        List<TopicProperties> topicList = topicCore.getTopic();
         return Result.success(topicList);
     }
 
@@ -68,7 +68,7 @@ public class TopicController {
     @PostMapping
     public Result<Object> create(@RequestBody CreateTopicRequest createTopicRequest) {
         String topicName = createTopicRequest.getName();
-        topicService.createTopic(topicName);
+        topicCore.createTopic(topicName);
         return Result.success();
     }
 
@@ -76,7 +76,7 @@ public class TopicController {
     @DeleteMapping
     public Result<Object> delete(@RequestBody DeleteTopicRequest deleteTopicRequest) {
         String topicName = deleteTopicRequest.getName();
-        topicService.deleteTopic(topicName);
+        topicCore.deleteTopic(topicName);
         return Result.success();
     }
 }

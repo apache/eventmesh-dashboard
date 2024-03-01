@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.controller;
 
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+import org.apache.eventmesh.dashboard.service.meta.ConnectionCore;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ConnectionController {
 
     @Autowired
-    ConnectionService connectionService;
+    ConnectionCore connectionCore;
 
     /**
      * Query Connection List

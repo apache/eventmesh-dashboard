@@ -24,14 +24,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"org.apache.eventmesh.dashboard.console", "org.apache.eventmesh.dashboard.core"})
 @EnableTransactionManagement
 public class EventMeshDashboardApplication {
 
     public static void main(String[] args) {
         try {
             SpringApplication.run(EventMeshDashboardApplication.class, args);
-            log.info("{} Successfully booted.", EventMeshDashboardApplication.class.getSimpleName());
+            log.info("{} Boot Successful!", EventMeshDashboardApplication.class.getSimpleName());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

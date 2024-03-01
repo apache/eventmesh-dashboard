@@ -30,7 +30,7 @@ import org.apache.eventmesh.dashboard.common.exception.EventMeshAdminException;
 import org.apache.eventmesh.dashboard.common.exception.MetaException;
 import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
 import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
+import org.apache.eventmesh.dashboard.service.meta.SubscriptionCore;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -58,7 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class NacosSubscriptionService implements SubscriptionService {
+public class NacosSubscriptionCore implements SubscriptionCore {
 
     AdminProperties adminProperties;
 
@@ -68,7 +68,7 @@ public class NacosSubscriptionService implements SubscriptionService {
 
     private static String HTTP_PREFIX = ConfigConst.HTTP_PREFIX;
 
-    public NacosSubscriptionService(AdminProperties adminProperties) {
+    public NacosSubscriptionCore(AdminProperties adminProperties) {
         this.adminProperties = adminProperties;
 
         nacosProps.setProperty(PropertyKeyConst.SERVER_ADDR, adminProperties.getMeta().getNacos().getAddr());

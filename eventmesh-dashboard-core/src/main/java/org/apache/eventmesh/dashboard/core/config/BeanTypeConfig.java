@@ -18,14 +18,14 @@
 package org.apache.eventmesh.dashboard.core.config;
 
 import org.apache.eventmesh.dashboard.common.constant.ConfigConst;
-import org.apache.eventmesh.dashboard.core.meta.EtcdConnectionService;
-import org.apache.eventmesh.dashboard.core.meta.EtcdSubscriptionService;
-import org.apache.eventmesh.dashboard.core.meta.NacosConnectionService;
-import org.apache.eventmesh.dashboard.core.meta.NacosSubscriptionService;
-import org.apache.eventmesh.dashboard.core.store.RocketmqTopicService;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
-import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
-import org.apache.eventmesh.dashboard.service.store.TopicService;
+import org.apache.eventmesh.dashboard.core.meta.EtcdConnectionCore;
+import org.apache.eventmesh.dashboard.core.meta.EtcdSubscriptionCore;
+import org.apache.eventmesh.dashboard.core.meta.NacosConnectionCore;
+import org.apache.eventmesh.dashboard.core.meta.NacosSubscriptionCore;
+import org.apache.eventmesh.dashboard.core.store.RocketmqTopicCore;
+import org.apache.eventmesh.dashboard.service.meta.ConnectionCore;
+import org.apache.eventmesh.dashboard.service.meta.SubscriptionCore;
+import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,36 +46,36 @@ public class BeanTypeConfig {
     }
 
     @Bean
-    public ConnectionService connectionService() {
+    public ConnectionCore connectionCore() {
         switch (adminProperties.getMeta().getType()) {
             case ConfigConst.META_TYPE_NACOS:
-                return new NacosConnectionService(adminProperties);
+                return new NacosConnectionCore(adminProperties);
             case ConfigConst.META_TYPE_ETCD:
-                return new EtcdConnectionService();
+                return new EtcdConnectionCore();
             default:
                 throw new IllegalArgumentException("Unsupported EventMesh Meta type: " + adminProperties.getMeta().getType());
         }
     }
 
     @Bean
-    public SubscriptionService subscriptionService() {
+    public SubscriptionCore subscriptionCore() {
         switch (adminProperties.getMeta().getType()) {
             case ConfigConst.META_TYPE_NACOS:
-                return new NacosSubscriptionService(adminProperties);
+                return new NacosSubscriptionCore(adminProperties);
             case ConfigConst.META_TYPE_ETCD:
-                return new EtcdSubscriptionService();
+                return new EtcdSubscriptionCore();
             default:
                 throw new IllegalArgumentException("Unsupported EventMesh Meta type: " + adminProperties.getMeta().getType());
         }
     }
 
     @Bean
-    public TopicService topicService() {
+    public TopicCore topicCore() {
         switch (adminProperties.getStore().getType()) {
             case ConfigConst.STORE_TYPE_STANDALONE:
                 return null; // TODO StandaloneTopicService
             case ConfigConst.STORE_TYPE_ROCKETMQ:
-                return new RocketmqTopicService(adminProperties);
+                return new RocketmqTopicCore(adminProperties);
             case ConfigConst.STORE_TYPE_KAFKA:
                 return null; // TODO KafkaTopicService
             default:

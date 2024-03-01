@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.core.meta;
 
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+import org.apache.eventmesh.dashboard.common.dto.Result;
+import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
+import org.apache.eventmesh.dashboard.service.meta.SubscriptionCore;
 
 import java.util.List;
 
-/**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
- */
+import org.springframework.stereotype.Service;
 
-public interface TopicService {
+import lombok.extern.slf4j.Slf4j;
 
-    /**
-     * TODO rename to getTopics after being implemented
-     */
-    List<TopicProperties> getTopic();
+@Slf4j
+@Service
+public class EtcdSubscriptionCore implements SubscriptionCore {
 
-    void createTopic(String topicName);
+    @Override
+    public String retrieveConfig(String dataId, String group) {
+        return null;
+    }
 
-    void deleteTopic(String topicName);
+    @Override
+    public Result<List<SubscriptionInfo>> retrieveConfigs(Integer page, Integer size, String dataId, String group) {
+        return null;
+    }
 }

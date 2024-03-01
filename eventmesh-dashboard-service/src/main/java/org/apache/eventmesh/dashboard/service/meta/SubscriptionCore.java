@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.meta;
+package org.apache.eventmesh.dashboard.service.meta;
 
 import org.apache.eventmesh.dashboard.common.dto.Result;
 import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
-import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+/**
+ * "Subscription" refers to the traditional MQ producer-consumer topic subscription relationship,
+ * emphasizing the subscription relationship between EventMesh clients (including SDK and connectors) and topics,
+ * reported by the EventMesh runtime.
+ */
 
-import lombok.extern.slf4j.Slf4j;
+public interface SubscriptionCore {
 
-@Slf4j
-@Service
-public class EtcdSubscriptionService implements SubscriptionService {
+    String retrieveConfig(String dataId, String group);
 
-    @Override
-    public String retrieveConfig(String dataId, String group) {
-        return null;
-    }
-
-    @Override
-    public Result<List<SubscriptionInfo>> retrieveConfigs(Integer page, Integer size, String dataId, String group) {
-        return null;
-    }
+    Result<List<SubscriptionInfo>> retrieveConfigs(Integer page, Integer size, String dataId, String group);
 }

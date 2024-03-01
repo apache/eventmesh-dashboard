@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.core.meta;
 
 import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+import org.apache.eventmesh.dashboard.service.meta.ConnectionCore;
 
 import org.springframework.stereotype.Service;
 
@@ -26,9 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class NacosConnectionService implements ConnectionService {
+public class NacosConnectionCore implements ConnectionCore {
 
-    public NacosConnectionService(AdminProperties adminProperties) {
+    public NacosConnectionCore(AdminProperties adminProperties) {
     }
 
 }

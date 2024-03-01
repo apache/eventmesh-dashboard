@@ -15,14 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.meta;
+package org.apache.eventmesh.dashboard.service.store;
+
+import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+
+import java.util.List;
 
 /**
- * "Connection" refers to the subscription relationship between connectors.
- * It focuses on the configuration deployed on the source and sink connectors themselves,
- * reported by the connector.
+ * Manage topics of eventmesh-storage-plugin (EventMesh Store).
  */
 
-public interface ConnectionService {
+public interface TopicCore {
 
+    /**
+     * TODO rename to getTopics after being implemented
+     */
+    List<TopicProperties> getTopic();
+
+    void createTopic(String topicName);
+
+    void deleteTopic(String topicName);
 }
