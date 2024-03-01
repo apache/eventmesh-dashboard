@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.store;
+package org.apache.eventmesh.dashboard.core.meta;
 
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.store.TopicService;
+import org.apache.eventmesh.dashboard.common.dto.Result;
+import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
+import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
 
 import java.util.List;
 
@@ -27,32 +27,17 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * TODO implement methods from storage-plugin.admin
- */
-
 @Slf4j
 @Service
-public class RocketmqTopicService implements TopicService {
-
-    AdminProperties adminProperties;
-
-    public RocketmqTopicService(AdminProperties adminProperties) {
-        this.adminProperties = adminProperties;
-    }
+public class EtcdSubscriptionService implements SubscriptionService {
 
     @Override
-    public List<TopicProperties> getTopic() {
+    public String retrieveConfig(String dataId, String group) {
         return null;
     }
 
     @Override
-    public void createTopic(String topicName) {
-
-    }
-
-    @Override
-    public void deleteTopic(String topicName) {
-
+    public Result<List<SubscriptionInfo>> retrieveConfigs(Integer page, Integer size, String dataId, String group) {
+        return null;
     }
 }

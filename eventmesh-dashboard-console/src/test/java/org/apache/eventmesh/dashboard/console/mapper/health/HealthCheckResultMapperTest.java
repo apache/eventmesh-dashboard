@@ -19,14 +19,16 @@ package org.apache.eventmesh.dashboard.console.mapper.health;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
+import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
-import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 
-import java.util.concurrent.CompletableFuture;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
@@ -31,6 +30,9 @@ import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallbac
 import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
 import org.apache.eventmesh.dashboard.console.service.health.impl.HealthDataServiceDatabaseImpl;
+
+import java.util.concurrent.CompletableFuture;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

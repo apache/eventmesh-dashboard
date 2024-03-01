@@ -20,7 +20,6 @@ package org.apache.eventmesh.dashboard.console.service.group;
 import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
 
-
 import java.util.List;
 
 /**

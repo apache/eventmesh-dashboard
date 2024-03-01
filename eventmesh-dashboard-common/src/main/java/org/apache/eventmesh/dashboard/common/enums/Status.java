@@ -74,7 +74,7 @@ public enum Status {
 
         SUCCESS("Successfully received and processed"),
 
-        SDK_CONFIG_ERR("The Meta SDK config in EventMeshAdmin application.yml error"),
+        SDK_CONFIG_ERR("Meta SDK config error"),
 
         META_COM_ERR("Network communication to Meta error"),
         ;

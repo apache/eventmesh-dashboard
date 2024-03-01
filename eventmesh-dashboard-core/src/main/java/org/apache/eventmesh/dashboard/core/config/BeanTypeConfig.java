@@ -18,11 +18,11 @@
 package org.apache.eventmesh.dashboard.core.config;
 
 import org.apache.eventmesh.dashboard.common.constant.ConfigConst;
-import org.apache.eventmesh.dashboard.core.service.meta.EtcdConnectionService;
-import org.apache.eventmesh.dashboard.core.service.meta.EtcdSubscriptionService;
-import org.apache.eventmesh.dashboard.core.service.meta.NacosConnectionService;
-import org.apache.eventmesh.dashboard.core.service.meta.NacosSubscriptionService;
-import org.apache.eventmesh.dashboard.core.service.store.RocketmqTopicService;
+import org.apache.eventmesh.dashboard.core.meta.EtcdConnectionService;
+import org.apache.eventmesh.dashboard.core.meta.EtcdSubscriptionService;
+import org.apache.eventmesh.dashboard.core.meta.NacosConnectionService;
+import org.apache.eventmesh.dashboard.core.meta.NacosSubscriptionService;
+import org.apache.eventmesh.dashboard.core.store.RocketmqTopicService;
 import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
 import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
 import org.apache.eventmesh.dashboard.service.store.TopicService;

@@ -15,15 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core;
+package org.apache.eventmesh.dashboard.console.dto;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@SpringBootTest
-class EventMeshDashboardApplicationTest {
+import lombok.Data;
 
-//    @Test
-//    void contextLoads() {
-//    }
+/**
+ * TODO this class is copied from storage plugin, needs update
+ */
 
+@Data
+public class DeleteTopicRequest {
+
+    private String name;
+
+    @JsonCreator
+    public DeleteTopicRequest(@JsonProperty("name") String name) {
+        super();
+        this.name = name;
+    }
 }

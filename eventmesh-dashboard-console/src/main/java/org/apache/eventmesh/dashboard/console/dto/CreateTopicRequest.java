@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.console.dto;
 
-import org.apache.eventmesh.dashboard.common.dto.Result;
-import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
-import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
+import lombok.Data;
 
-import org.springframework.stereotype.Service;
+/**
+ * TODO this class is copied from storage plugin, needs update
+ */
 
-import lombok.extern.slf4j.Slf4j;
+@Data
+public class CreateTopicRequest {
 
-@Slf4j
-@Service
-public class EtcdSubscriptionService implements SubscriptionService {
+    private String name;
 
-    @Override
-    public String retrieveConfig(String dataId, String group) {
-        return null;
-    }
-
-    @Override
-    public Result<List<SubscriptionInfo>> retrieveConfigs(Integer page, Integer size, String dataId, String group) {
-        return null;
+    @JsonCreator
+    public CreateTopicRequest(@JsonProperty("name") String name) {
+        super();
+        this.name = name;
     }
 }

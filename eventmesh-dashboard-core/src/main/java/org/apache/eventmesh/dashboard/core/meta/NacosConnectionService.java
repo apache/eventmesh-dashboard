@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.dto;
+package org.apache.eventmesh.dashboard.core.meta;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.eventmesh.dashboard.core.config.AdminProperties;
+import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
 
-import lombok.Data;
+import org.springframework.stereotype.Service;
 
-@Data
-public class DeleteTopicRequest {
+import lombok.extern.slf4j.Slf4j;
 
-    private String name;
+@Slf4j
+@Service
+public class NacosConnectionService implements ConnectionService {
 
-    @JsonCreator
-    public DeleteTopicRequest(@JsonProperty("name") String name) {
-        super();
-        this.name = name;
+    public NacosConnectionService(AdminProperties adminProperties) {
     }
+
 }

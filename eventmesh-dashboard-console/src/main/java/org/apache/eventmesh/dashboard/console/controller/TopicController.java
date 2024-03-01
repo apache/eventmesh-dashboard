@@ -17,10 +17,10 @@
 
 package org.apache.eventmesh.dashboard.console.controller;
 
-import org.apache.eventmesh.dashboard.common.dto.CreateTopicRequest;
-import org.apache.eventmesh.dashboard.common.dto.DeleteTopicRequest;
 import org.apache.eventmesh.dashboard.common.dto.Result;
 import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+import org.apache.eventmesh.dashboard.console.dto.CreateTopicRequest;
+import org.apache.eventmesh.dashboard.console.dto.DeleteTopicRequest;
 import org.apache.eventmesh.dashboard.service.store.TopicService;
 
 import java.util.List;

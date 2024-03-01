@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.core.meta;
 
 import static org.apache.eventmesh.dashboard.common.enums.Status.NACOS_EMPTY_RESP_ERR;
 import static org.apache.eventmesh.dashboard.common.enums.Status.NACOS_GET_CONFIGS_ERR;
