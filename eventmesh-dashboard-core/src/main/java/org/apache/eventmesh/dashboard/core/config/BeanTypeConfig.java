@@ -18,14 +18,14 @@
 package org.apache.eventmesh.dashboard.core.config;
 
 import org.apache.eventmesh.dashboard.common.constant.ConfigConst;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
-import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
-import org.apache.eventmesh.dashboard.service.store.TopicService;
 import org.apache.eventmesh.dashboard.core.service.meta.EtcdConnectionService;
 import org.apache.eventmesh.dashboard.core.service.meta.EtcdSubscriptionService;
 import org.apache.eventmesh.dashboard.core.service.meta.NacosConnectionService;
 import org.apache.eventmesh.dashboard.core.service.meta.NacosSubscriptionService;
 import org.apache.eventmesh.dashboard.core.service.store.RocketmqTopicService;
+import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
+import org.apache.eventmesh.dashboard.service.store.TopicService;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +33,9 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Use different registry SDK depending on the configured meta type;
  * Use different storage SDK depending on the configured storage type.
+ * TODO get configs from DB (console module's work)
  */
+@Deprecated
 @Configuration
 public class BeanTypeConfig {
 

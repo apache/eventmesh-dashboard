@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.exception;
+package org.apache.eventmesh.dashboard.console.exception;
 
-import org.apache.eventmesh.dashboard.common.enums.Status;
 import org.apache.eventmesh.dashboard.common.dto.Result;
 import org.apache.eventmesh.dashboard.common.dto.Result.StatusMessage;
+import org.apache.eventmesh.dashboard.common.enums.Status;
+import org.apache.eventmesh.dashboard.common.exception.BaseException;
 
 import javax.servlet.http.HttpServletRequest;
 

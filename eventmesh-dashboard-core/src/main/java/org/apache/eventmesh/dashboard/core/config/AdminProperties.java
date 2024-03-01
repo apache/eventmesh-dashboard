@@ -24,6 +24,11 @@ import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
+/**
+ * TODO get configs from DB (console module's work)
+ */
+
+@Deprecated
 @Data
 @Component
 @ConfigurationProperties(prefix = ConfigConst.ADMIN_PROPS_PREFIX)
