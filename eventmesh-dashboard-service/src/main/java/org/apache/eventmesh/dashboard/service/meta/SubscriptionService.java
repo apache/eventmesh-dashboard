@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.service.meta;
 
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+import org.apache.eventmesh.dashboard.common.dto.Result;
+import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+/**
+ * "Subscription" refers to the traditional MQ producer-consumer topic subscription relationship,
+ * emphasizing the subscription relationship between EventMesh clients (including SDK and connectors) and topics,
+ * reported by the EventMesh runtime.
+ */
 
-@Slf4j
-@Service
-public class NacosConnectionService implements ConnectionService {
+public interface SubscriptionService {
 
-    public NacosConnectionService(AdminProperties adminProperties) {
-    }
+    String retrieveConfig(String dataId, String group);
 
+    Result<List<SubscriptionInfo>> retrieveConfigs(Integer page, Integer size, String dataId, String group);
 }

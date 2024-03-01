@@ -17,9 +17,9 @@
 
 package org.apache.eventmesh.dashboard.core.service.meta;
 
-import org.apache.eventmesh.dashboard.core.dto.Result;
-import org.apache.eventmesh.dashboard.core.model.SubscriptionInfo;
-import org.apache.eventmesh.dashboard.core.service.SubscriptionService;
+import org.apache.eventmesh.dashboard.common.dto.Result;
+import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
+import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
 
 import java.util.List;
 

@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.common.model;
 
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+import lombok.Builder;
+import lombok.Data;
 
-import org.springframework.stereotype.Service;
+@Data
+@Builder
+public class SubscriptionInfo {
 
-import lombok.extern.slf4j.Slf4j;
+    // client name
+    private String clientName;
 
-@Slf4j
-@Service
-public class NacosConnectionService implements ConnectionService {
+    // group name
+    private String group;
 
-    public NacosConnectionService(AdminProperties adminProperties) {
-    }
-
+    // config content
+    private String subscription;
 }

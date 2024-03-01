@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.service.meta;
 
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+/**
+ * "Connection" refers to the subscription relationship between connectors.
+ * It focuses on the configuration deployed on the source and sink connectors themselves,
+ * reported by the connector.
+ */
 
-import org.springframework.stereotype.Service;
-
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@Service
-public class NacosConnectionService implements ConnectionService {
-
-    public NacosConnectionService(AdminProperties adminProperties) {
-    }
+public interface ConnectionService {
 
 }

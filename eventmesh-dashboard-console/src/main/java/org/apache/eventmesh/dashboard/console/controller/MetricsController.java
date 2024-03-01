@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.console.controller;
 
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.stereotype.Service;
+import com.alibaba.druid.stat.DruidStatManagerFacade;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@Service
-public class NacosConnectionService implements ConnectionService {
-
-    public NacosConnectionService(AdminProperties adminProperties) {
+@RestController
+public class MetricsController {
+    @GetMapping("/druid/stat")
+    public Object druidStat() {
+        return DruidStatManagerFacade.getInstance().getDataSourceStatDataList();
     }
-
 }

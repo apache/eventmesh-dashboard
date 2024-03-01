@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.service.store;
 
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+import org.apache.eventmesh.dashboard.common.model.TopicProperties;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+/**
+ * Manage topics of eventmesh-storage-plugin (EventMesh Store).
+ */
 
-@Slf4j
-@Service
-public class NacosConnectionService implements ConnectionService {
+public interface TopicService {
 
-    public NacosConnectionService(AdminProperties adminProperties) {
-    }
+    /**
+     * TODO rename to getTopics after being implemented
+     */
+    List<TopicProperties> getTopic();
 
+    void createTopic(String topicName);
+
+    void deleteTopic(String topicName);
 }

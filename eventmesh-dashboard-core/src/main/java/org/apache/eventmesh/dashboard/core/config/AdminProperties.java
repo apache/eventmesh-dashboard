@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.core.config;
 
-import org.apache.eventmesh.dashboard.core.constant.ConfigConst;
+import org.apache.eventmesh.dashboard.common.constant.ConfigConst;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.core.service.meta;
 
-import org.apache.eventmesh.dashboard.core.service.ConnectionService;
+import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
 
 import org.springframework.stereotype.Service;
 

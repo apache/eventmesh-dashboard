@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.common.exception;
 
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+/**
+ * EventMesh Runtime side exception
+ */
 
-import org.springframework.stereotype.Service;
+public class EventMeshException extends BaseException {
 
-import lombok.extern.slf4j.Slf4j;
+    private static final long serialVersionUID = 5648256502005456586L;
 
-@Slf4j
-@Service
-public class NacosConnectionService implements ConnectionService {
-
-    public NacosConnectionService(AdminProperties adminProperties) {
+    public EventMeshException(String message) {
+        super(message);
     }
-
 }

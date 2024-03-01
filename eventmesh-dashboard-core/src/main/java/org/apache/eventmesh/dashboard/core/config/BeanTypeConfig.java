@@ -17,10 +17,10 @@
 
 package org.apache.eventmesh.dashboard.core.config;
 
-import org.apache.eventmesh.dashboard.core.constant.ConfigConst;
-import org.apache.eventmesh.dashboard.core.service.ConnectionService;
-import org.apache.eventmesh.dashboard.core.service.SubscriptionService;
-import org.apache.eventmesh.dashboard.core.service.TopicService;
+import org.apache.eventmesh.dashboard.common.constant.ConfigConst;
+import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+import org.apache.eventmesh.dashboard.service.meta.SubscriptionService;
+import org.apache.eventmesh.dashboard.service.store.TopicService;
 import org.apache.eventmesh.dashboard.core.service.meta.EtcdConnectionService;
 import org.apache.eventmesh.dashboard.core.service.meta.EtcdSubscriptionService;
 import org.apache.eventmesh.dashboard.core.service.meta.NacosConnectionService;

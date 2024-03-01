@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.common.util;
 
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+public class ExceptionUtil {
 
-import org.springframework.stereotype.Service;
-
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@Service
-public class NacosConnectionService implements ConnectionService {
-
-    public NacosConnectionService(AdminProperties adminProperties) {
+    /**
+     * Remove the last period of exception description.
+     */
+    public static String trimDesc(String desc) {
+        if (desc == null) {
+            return "";
+        }
+        if (desc.charAt(desc.length() - 1) == '.') {
+            return desc.substring(0, desc.length() - 1);
+        }
+        return desc;
     }
 
 }

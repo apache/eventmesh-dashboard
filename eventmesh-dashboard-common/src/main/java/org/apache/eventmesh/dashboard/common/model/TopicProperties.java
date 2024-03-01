@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.common.model;
 
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.springframework.stereotype.Service;
+/**
+ * One record displayed in 'Topic' page.
+ */
 
-import lombok.extern.slf4j.Slf4j;
+public class TopicProperties {
 
-@Slf4j
-@Service
-public class NacosConnectionService implements ConnectionService {
+    public String name;
+    public long messageCount;
 
-    public NacosConnectionService(AdminProperties adminProperties) {
+    @JsonCreator
+    public TopicProperties(
+        @JsonProperty("name") String name,
+        @JsonProperty("messageCount") long messageCount) {
+        super();
+        this.name = name;
+        this.messageCount = messageCount;
     }
-
 }

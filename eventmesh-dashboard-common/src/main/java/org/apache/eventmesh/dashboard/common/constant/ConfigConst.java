@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.service.meta;
+package org.apache.eventmesh.dashboard.common.constant;
 
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
-import org.apache.eventmesh.dashboard.service.meta.ConnectionService;
+public class ConfigConst {
 
-import org.springframework.stereotype.Service;
+    // yml config
+    public static final String ADMIN_PROPS_PREFIX = "eventmesh";
+    public static final String META_TYPE_NACOS = "nacos";
+    public static final String META_TYPE_ETCD = "etcd";
+    public static final String STORE_TYPE_STANDALONE = "standalone";
+    public static final String STORE_TYPE_ROCKETMQ = "rocketmq";
+    public static final String STORE_TYPE_KAFKA = "kafka";
 
-import lombok.extern.slf4j.Slf4j;
+    // Open-API
+    public static final String HTTP_PREFIX = "http://";
+    public static final String HTTPS_PREFIX = "https://";
 
-@Slf4j
-@Service
-public class NacosConnectionService implements ConnectionService {
-
-    public NacosConnectionService(AdminProperties adminProperties) {
-    }
+    // common
+    /**
+     * colon with space
+     */
+    public static final String COLON = ": ";
 
 }
