@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.health;
 
+import org.apache.eventmesh.dashboard.console.constant.HealthConstant;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
 import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
 
@@ -41,8 +42,12 @@ public class CheckResultCache {
             cacheMap.put(type, subMap);
         }
         CheckResult oldResult = subMap.get(typeId);
-        String oldDesc = Objects.isNull(oldResult.getResultDesc()) ? "" : oldResult.getResultDesc() + "\n";
-        CheckResult result = new CheckResult(status, oldDesc + resultDesc, LocalDateTime.now(),
+        String description = resultDesc;
+        if (oldResult.getResultDesc() != null && !oldResult.getResultDesc().isEmpty()) {
+            description = oldResult.getResultDesc() + HealthConstant.NEW_LINE_ENDING + resultDesc;
+        }
+        description += " Latency: " + latency.toString() + "ms";
+        CheckResult result = new CheckResult(status, description, LocalDateTime.now(),
             latency, oldResult.getConfig());
         subMap.put(typeId, result);
     }
@@ -53,7 +58,6 @@ public class CheckResultCache {
             subMap = new HashMap<>();
             cacheMap.put(type, subMap);
         }
-        CheckResult resultToUpdate = subMap.get(typeId);
         subMap.put(typeId, new CheckResult(status, resultDesc, LocalDateTime.now(), latency, config));
     }
 

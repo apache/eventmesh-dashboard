@@ -113,9 +113,10 @@ class HealthExecutorTest {
     }
 
     @Test
-    public void testExecute() {
+    public void testExecute() throws InterruptedException {
         healthExecutor.execute(successHealthCheckService);
         healthExecutor.execute(failHealthCheckService);
+        Thread.sleep(1000);
         assertEquals(2, memoryCache.getCacheMap().get("storage").size());
         assertNotEquals(memoryCache.getCacheMap().get("storage").get(1L).getStatus(), memoryCache.getCacheMap().get("storage").get(2L).getStatus());
     }

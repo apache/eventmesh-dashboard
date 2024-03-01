@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.dashboard.console.health;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
@@ -60,6 +58,8 @@ class HealthServiceTest {
         HealthCheckObjectConfig config = new HealthCheckObjectConfig();
         config.setInstanceId(1L);
         config.setSimpleClassName("StorageRedisCheck");
+        config.setHealthCheckResourceType("storage");
+        config.setHealthCheckResourceSubType("redis");
         config.setClusterId(1L);
         config.setConnectUrl("redis://localhost:6379");
         healthService.insertCheckService(config);
@@ -69,6 +69,8 @@ class HealthServiceTest {
     void testInsertCheckServiceWithClass() {
         HealthCheckObjectConfig config = new HealthCheckObjectConfig();
         config.setInstanceId(1L);
+        config.setHealthCheckResourceType("storage");
+        config.setHealthCheckResourceSubType("redis");
         config.setClusterId(1L);
         config.setCheckClass(TestHealthCheckService.class);
         healthService.insertCheckService(config);

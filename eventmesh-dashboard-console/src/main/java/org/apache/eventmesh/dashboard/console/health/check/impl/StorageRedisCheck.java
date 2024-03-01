@@ -77,6 +77,6 @@ public class StorageRedisCheck extends AbstractHealthCheckService {
             }
             redisUrl = builder.build().toString();
         }
-        RedisClient redisClient = RedisClient.create(redisUrl);
+        redisClient = RedisClient.create(redisUrl);
     }
 }

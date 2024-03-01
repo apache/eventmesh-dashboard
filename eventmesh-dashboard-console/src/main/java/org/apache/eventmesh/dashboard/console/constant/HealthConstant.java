@@ -15,41 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health.check.config;
+package org.apache.eventmesh.dashboard.console.constant;
 
-import java.util.Properties;
-
-import lombok.Data;
-
-@Data
-public class HealthCheckObjectConfig {
-
-    private Long instanceId;
-
-    private String healthCheckResourceType;
-
-    private String healthCheckResourceSubType;
-
-    private String simpleClassName;
-
-    private Class<?> checkClass;
-
-    private Properties eventmeshProperties;
-
-    private Long clusterId;
-
-    private String connectUrl;
-    //mysql, redis
-    private String host;
-
-    private Integer port;
-
-    private String username;
-
-    private String password;
-
-    //mysql, redis
-    private String database;
-
-    private Long requestTimeoutMillis = Long.MAX_VALUE;
+public class HealthConstant {
+    public static final String NEW_LINE_ENDING = "\n";
 }
