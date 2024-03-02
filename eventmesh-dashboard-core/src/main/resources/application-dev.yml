@@ -19,9 +19,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/eventmesh-dashboard?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+      url: jdbc:mysql://175.27.155.139:3306/eventmesh-dashboard?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
       username: root
-      password: root
+      password: mysql123
 
       initial-size: 1
       max-active: 50
@@ -65,7 +65,7 @@ eventmesh:
     standalone:
     # TODO
     rocketmq:
-      namesrvAddr: 127.0.0.1:9876;127.0.0.1:9876
+      namesrvAddr: 175.27.155.139:9876;175.27.155.139:9876
       clusterName: DefaultCluster
       accessKey: '********'
       secretKey: '********'

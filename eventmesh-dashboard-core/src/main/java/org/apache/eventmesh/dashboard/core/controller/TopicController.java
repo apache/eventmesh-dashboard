@@ -58,23 +58,23 @@ public class TopicController {
     }
 
     @CrossOrigin
-    @GetMapping
-    public Result<List<TopicProperties>> getList() {
-        List<TopicProperties> topicList = topicService.getTopic();
+    @GetMapping("/getList")
+    public Result<List<TopicProperties>> getList() throws Exception {
+        List<TopicProperties> topicList = topicService.getTopics();
         return Result.success(topicList);
     }
 
     @CrossOrigin
-    @PostMapping
-    public Result<Object> create(@RequestBody CreateTopicRequest createTopicRequest) {
+    @PostMapping("/create")
+    public Result<Object> create(@RequestBody CreateTopicRequest createTopicRequest) throws Exception {
         String topicName = createTopicRequest.getName();
         topicService.createTopic(topicName);
         return Result.success();
     }
 
     @CrossOrigin
-    @DeleteMapping
-    public Result<Object> delete(@RequestBody DeleteTopicRequest deleteTopicRequest) {
+    @DeleteMapping("/delete")
+    public Result<Object> delete(@RequestBody DeleteTopicRequest deleteTopicRequest) throws Exception {
         String topicName = deleteTopicRequest.getName();
         topicService.deleteTopic(topicName);
         return Result.success();

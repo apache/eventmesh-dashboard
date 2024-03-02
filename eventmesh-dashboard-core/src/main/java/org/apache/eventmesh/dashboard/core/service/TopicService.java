@@ -27,12 +27,9 @@ import java.util.List;
 
 public interface TopicService {
 
-    /**
-     * TODO rename to getTopics after being implemented
-     */
-    List<TopicProperties> getTopic();
+    List<TopicProperties> getTopics() throws Exception;
 
-    void createTopic(String topicName);
+    void createTopic(String topicName) throws Exception;
 
-    void deleteTopic(String topicName);
+    void deleteTopic(String topicName) throws Exception;
 }
