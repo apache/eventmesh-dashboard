@@ -15,30 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.core.store;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+import org.apache.eventmesh.dashboard.core.config.AdminProperties;
+import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * operate Group Service
+ * TODO implement methods from storage-plugin.admin
  */
 
-public interface GroupService {
+@Slf4j
+@Service
+public class RocketmqTopicCore implements TopicCore {
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
+    AdminProperties adminProperties;
 
-    GroupEntity addGroup(GroupEntity groupEntity);
+    public RocketmqTopicCore(AdminProperties adminProperties) {
+        this.adminProperties = adminProperties;
+    }
 
-    void updateGroup(GroupEntity groupEntity);
+    @Override
+    public List<TopicProperties> getTopic() {
+        return null;
+    }
 
-    Integer deleteGroup(GroupEntity groupEntity);
+    @Override
+    public void createTopic(String topicName) {
 
-    GroupEntity selectGroup(GroupEntity groupEntity);
+    }
 
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
+    @Override
+    public void deleteTopic(String topicName) {
 
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    }
 }

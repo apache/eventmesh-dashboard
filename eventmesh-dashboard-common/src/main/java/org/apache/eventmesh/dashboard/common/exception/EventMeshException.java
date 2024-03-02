@@ -15,30 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
-
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
-
-import java.util.List;
+package org.apache.eventmesh.dashboard.common.exception;
 
 /**
- * operate Group Service
+ * EventMesh Runtime side exception
  */
 
-public interface GroupService {
+public class EventMeshException extends BaseException {
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
+    private static final long serialVersionUID = 5648256502005456586L;
 
-    GroupEntity addGroup(GroupEntity groupEntity);
-
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    public EventMeshException(String message) {
+        super(message);
+    }
 }

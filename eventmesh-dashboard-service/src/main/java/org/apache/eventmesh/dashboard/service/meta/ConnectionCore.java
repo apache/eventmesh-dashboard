@@ -15,30 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
-
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
-
-import java.util.List;
+package org.apache.eventmesh.dashboard.service.meta;
 
 /**
- * operate Group Service
+ * "Connection" refers to the subscription relationship between connectors.
+ * It focuses on the configuration deployed on the source and sink connectors themselves,
+ * reported by the connector.
  */
 
-public interface GroupService {
+public interface ConnectionCore {
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
-
-    GroupEntity addGroup(GroupEntity groupEntity);
-
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
 }

@@ -31,7 +31,7 @@ public class EventMeshDashboardApplication {
     public static void main(String[] args) {
         try {
             SpringApplication.run(EventMeshDashboardApplication.class, args);
-            log.info("{} Successfully booted.", EventMeshDashboardApplication.class.getSimpleName());
+            log.info("{} Boot Successful!", EventMeshDashboardApplication.class.getSimpleName());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

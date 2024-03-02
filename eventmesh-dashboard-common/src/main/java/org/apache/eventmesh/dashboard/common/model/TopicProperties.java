@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.common.model;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
-
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * operate Group Service
+ * One record displayed in 'Topic' page.
  */
 
-public interface GroupService {
+public class TopicProperties {
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
+    public String name;
+    public long messageCount;
 
-    GroupEntity addGroup(GroupEntity groupEntity);
-
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    @JsonCreator
+    public TopicProperties(
+        @JsonProperty("name") String name,
+        @JsonProperty("messageCount") long messageCount) {
+        super();
+        this.name = name;
+        this.messageCount = messageCount;
+    }
 }
