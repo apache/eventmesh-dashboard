@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SpringBootApplication(scanBasePackages = {"org.apache.eventmesh.dashboard.console", "org.apache.eventmesh.dashboard.core"})
+@SpringBootApplication
 @EnableTransactionManagement
 public class EventMeshDashboardApplication {
 

@@ -24,8 +24,10 @@ import com.alibaba.druid.stat.DruidStatManagerFacade;
 
 @RestController
 public class MetricsController {
+
     @GetMapping("/druid/stat")
     public Object druidStat() {
         return DruidStatManagerFacade.getInstance().getDataSourceStatDataList();
     }
+
 }

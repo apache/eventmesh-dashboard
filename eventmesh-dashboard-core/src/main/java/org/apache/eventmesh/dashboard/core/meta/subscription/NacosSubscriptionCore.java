@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.meta;
+package org.apache.eventmesh.dashboard.core.meta.subscription;
 
 import static org.apache.eventmesh.dashboard.common.enums.Status.NACOS_EMPTY_RESP_ERR;
 import static org.apache.eventmesh.dashboard.common.enums.Status.NACOS_GET_CONFIGS_ERR;
@@ -42,7 +42,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -57,7 +56,6 @@ import com.alibaba.nacos.api.config.ConfigService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
 public class NacosSubscriptionCore implements SubscriptionCore {
 
     AdminProperties adminProperties;
@@ -114,7 +112,7 @@ public class NacosSubscriptionCore implements SubscriptionCore {
 
     /**
      * Retrieve a list of configs with Nacos OpenAPI, because Nacos SDK doesn't support listing and fuzzy matching.
-     *
+     * <p>
      * TODO Granularity should be based on subscriptions rather than Runtime;
      * retrieve all subscriptions for each Runtime, rather than retrieving subscriptions for each individual Runtime.
      */

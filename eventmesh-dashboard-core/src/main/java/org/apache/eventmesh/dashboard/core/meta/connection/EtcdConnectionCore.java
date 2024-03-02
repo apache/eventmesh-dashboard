@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.meta;
+package org.apache.eventmesh.dashboard.core.meta.connection;
 
 import org.apache.eventmesh.dashboard.service.meta.ConnectionCore;
-
-import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
 public class EtcdConnectionCore implements ConnectionCore {
 
 }

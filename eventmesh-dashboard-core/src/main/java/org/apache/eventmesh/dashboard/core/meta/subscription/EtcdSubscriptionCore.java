@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.meta;
+package org.apache.eventmesh.dashboard.core.meta.subscription;
 
 import org.apache.eventmesh.dashboard.common.dto.Result;
 import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
@@ -23,12 +23,9 @@ import org.apache.eventmesh.dashboard.service.meta.SubscriptionCore;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
 public class EtcdSubscriptionCore implements SubscriptionCore {
 
     @Override
