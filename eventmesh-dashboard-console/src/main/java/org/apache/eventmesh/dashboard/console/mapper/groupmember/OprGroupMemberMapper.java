@@ -59,21 +59,22 @@ public interface OprGroupMemberMapper {
     @Select("select * from group_member where id=#{id} and is_delete=0")
     GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 
-    @Select("<script>"
-        + "select * from group_member"
-        + "<where>"
-        + "<if test='clusterId != null'>"
-        + "cluster_id=#{clusterId}"
-        + "</if>"
-        + "<if test='groupName != null'>"
-        + "and group_name=#{groupName}"
-        + "</if>"
-        + "<if test='topicName != null'>"
-        + "and topic_name=#{topicName}"
-        + "</if>"
-        + "</where>"
-        + "and is_delete=0"
-        + "</script>")
+    @Select({
+        "<script>",
+        "   select * from group_member",
+        "   <where>",
+        "       <if test='clusterId != null'>",
+        "           cluster_id=#{clusterId}",
+        "       </if>",
+        "       <if test='groupName != null'>",
+        "           and group_name=#{groupName}",
+        "       </if>",
+        "       <if test='topicName != null'>",
+        "           and topic_name=#{topicName}",
+        "       </if>",
+        "    </where>",
+        "   and is_delete=0",
+        "</script>"})
     List<GroupMemberEntity> selectMember(GroupMemberEntity groupMemberEntity);
 
     @Update("update group_member set state=#{state} where topic_name=#{topicName}")

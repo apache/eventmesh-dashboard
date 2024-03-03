@@ -30,9 +30,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/eventmesh-dashboard?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
-      username: root
-      password: 123456
+      url: jdbc:mysql://localhost:3306/eventmesh_dashboard?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
 
       initial-size: 1
       max-active: 50

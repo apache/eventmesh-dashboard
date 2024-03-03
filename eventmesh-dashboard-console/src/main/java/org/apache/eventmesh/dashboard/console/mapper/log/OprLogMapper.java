@@ -33,21 +33,22 @@ import java.util.List;
 @Mapper
 public interface OprLogMapper {
 
-    @Select("<script>"
-        + "select * from operation_log"
-        + "<where>"
-        + "<if test='targetType!=null'>"
-        + "target_type=#{targetType}"
-        + "</if>"
-        + "<if test='operationUser!=null'>"
-        + "and operation_user=#{operationUser}"
-        + "</if>"
-        + "<if test='clusterId!=null'>"
-        + "and cluster_id=#{clusterId} "
-        + "</if>"
-        + "and is_delete=0"
-        + "</where>"
-        + "</script>")
+    @Select({
+        "<script>",
+        "   select * from operation_log",
+        "   <where>",
+        "       <if test='targetType!=null'>",
+        "           target_type=#{targetType}",
+        "       </if>",
+        "       <if test='operationUser!=null'>",
+        "           and operation_user=#{operationUser}",
+        "       </if>",
+        "       <if test='clusterId!=null'>",
+        "           and cluster_id=#{clusterId} ",
+        "       </if>",
+        "       and is_delete=0",
+        "   </where>",
+        "</script>"})
     List<LogEntity> getLogList(LogEntity logEntity);
 
     @Insert("insert into operation_log ( cluster_id, operation_type,target_Type, description,operation_user,result_content)"
