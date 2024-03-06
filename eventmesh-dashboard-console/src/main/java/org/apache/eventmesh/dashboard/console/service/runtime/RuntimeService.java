@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.connector;
+package org.apache.eventmesh.dashboard.console.service.runtime;
 
-import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
+import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
 
 import java.util.List;
 
 /**
- * Service providing data of connectors.
+ * Runtime data service
  */
-public interface ConnectorDataService {
+public interface RuntimeService {
 
-    List<ConnectorEntity> selectConnectorByCluster(Long clusterId);
+    List<RuntimeEntity> getRuntimeByClusterId(Long cluster);
+
+    void addRuntime(RuntimeEntity runtimeEntity);
+
+    void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
+
+    void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
 }

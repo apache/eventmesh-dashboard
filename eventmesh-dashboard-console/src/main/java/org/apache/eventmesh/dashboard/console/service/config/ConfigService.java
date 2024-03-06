@@ -15,16 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.connector;
+package org.apache.eventmesh.dashboard.console.service.config;
 
-import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
+
+import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
 
 import java.util.List;
+import java.util.Map;
+
 
 /**
- * Service providing data of connectors.
+ * config data service
  */
-public interface ConnectorDataService {
+public interface ConfigService {
 
-    List<ConnectorEntity> selectConnectorByCluster(Long clusterId);
+    String mapToYaml(Map<String, String> stringMap);
+
+    Integer addConfig(ConfigEntity configEntity);
+
+    Integer deleteConfig(ConfigEntity configEntity);
+
+    String mapToProperties(Map<String, String> stringMap);
+
+
+    List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
+
+    List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
+
+    void updateConfig(ConfigEntity configEntity);
+
 }

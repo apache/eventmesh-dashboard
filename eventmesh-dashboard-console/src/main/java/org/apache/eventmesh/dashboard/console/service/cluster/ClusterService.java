@@ -15,16 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.connector;
+package org.apache.eventmesh.dashboard.console.service.cluster;
 
-import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 
 import java.util.List;
 
 /**
- * Service providing data of connectors.
+ * cluster data service
  */
-public interface ConnectorDataService {
+public interface ClusterService {
 
-    List<ConnectorEntity> selectConnectorByCluster(Long clusterId);
+    void addCluster(ClusterEntity cluster);
+
+    List<ClusterEntity> selectAllCluster();
+
+    ClusterEntity selectClusterById(ClusterEntity cluster);
+
+    void updateClusterById(ClusterEntity cluster);
+
+    void deleteClusterById(ClusterEntity cluster);
 }

@@ -15,16 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.connector;
+package org.apache.eventmesh.dashboard.console.service.config.instanceoperation;
 
-import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
+
+import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
 
 import java.util.List;
 
-/**
- * Service providing data of connectors.
- */
-public interface ConnectorDataService {
+import org.springframework.stereotype.Service;
 
-    List<ConnectorEntity> selectConnectorByCluster(Long clusterId);
+@Service
+public class ConnectorConfigController {
+
+    public List<ConfigEntity> getConnectorConfigFromInstance(Long clusterId, Long id) {
+        return null;
+    }
 }

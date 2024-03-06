@@ -15,16 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.connector;
+package org.apache.eventmesh.dashboard.console.entity.runtime;
 
-import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
+import java.sql.Timestamp;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * Service providing data of connectors.
- */
-public interface ConnectorDataService {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RuntimeEntity {
 
-    List<ConnectorEntity> selectConnectorByCluster(Long clusterId);
+    private Long id;
+
+    private Long clusterId;
+
+    private String host;
+
+    private Long storageClusterId;
+
+    private Integer port;
+
+    private Integer jmxPort;
+
+    private Long startTimestamp;
+
+    private String rack;
+
+    private Integer status;
+
+    private Timestamp createTime;
+
+    private Timestamp updateTime;
+
+    private String endpointMap;
 }

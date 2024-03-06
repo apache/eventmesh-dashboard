@@ -15,16 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.connector;
+package org.apache.eventmesh.dashboard.console.service.connector.Impl;
 
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
+import org.apache.eventmesh.dashboard.console.mapper.connector.ConnectorMapper;
+import org.apache.eventmesh.dashboard.console.service.connector.ConnectorDataService;
 
 import java.util.List;
 
-/**
- * Service providing data of connectors.
- */
-public interface ConnectorDataService {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-    List<ConnectorEntity> selectConnectorByCluster(Long clusterId);
+@Service
+public class ConnectorDataServiceImpl implements ConnectorDataService {
+
+    @Autowired
+    private ConnectorMapper connectorMapper;
+
+    @Override
+    public List<ConnectorEntity> selectConnectorByCluster(Long clusterId) {
+        ConnectorEntity connectorEntity = new ConnectorEntity();
+        connectorEntity.setClusterId(clusterId);
+        return connectorMapper.selectByClusterId(connectorEntity);
+    }
 }
