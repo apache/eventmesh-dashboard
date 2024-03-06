@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+DROP TABLE IF EXISTS `cluster`;
 create table cluster
 (
     id                 bigint unsigned auto_increment comment '集群id'
@@ -40,7 +41,7 @@ create index idx_uniq_name
     on cluster (name);
 
 
-
+DROP TABLE IF EXISTS `config`;
 create table config
 (
     id                bigint unsigned auto_increment
@@ -71,7 +72,7 @@ create index idx_phy_id_instance_id
     on config (cluster_id, instance_id);
 
 
-
+DROP TABLE IF EXISTS `runtime`;
 create table runtime
 (
     id                 bigint auto_increment comment 'id'
@@ -97,7 +98,7 @@ create index idx_phy_id_host_storage_id
     on runtime (cluster_id, storage_cluster_id);
 
 
-
+DROP TABLE IF EXISTS `store`;
 create table store
 (
     id              bigint unsigned auto_increment comment 'id'
