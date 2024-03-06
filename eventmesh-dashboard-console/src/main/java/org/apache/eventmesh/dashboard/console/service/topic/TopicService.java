@@ -27,15 +27,17 @@ import java.util.List;
 public interface TopicService {
     List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
-    void addTopic_plus(TopicEntity topicEntity);
+    void addTopic(TopicEntity topicEntity);
 
     void updateTopic(TopicEntity topicEntity);
 
-    void deleteTopic(TopicEntity topicEntity);
+    void deleteTopicById(TopicEntity topicEntity);
 
     TopicEntity selectTopicById(TopicEntity topicEntity);
 
     TopicEntity selectTopicByUnique(TopicEntity topicEntity);
 
-    void deleteTopic_plus(TopicEntity topicEntity);
+    void deleteTopic(TopicEntity topicEntity);
+
+    List<TopicEntity> selectTopiByCluster(Long clusterId);
 }

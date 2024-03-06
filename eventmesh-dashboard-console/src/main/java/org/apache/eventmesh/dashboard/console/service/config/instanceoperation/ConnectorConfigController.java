@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.store;
+package org.apache.eventmesh.dashboard.console.service.config.instanceoperation;
 
-import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
+
+import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
 
 import java.util.List;
 
-/**
- * store data service
- */
-public interface StoreService {
+import org.springframework.stereotype.Service;
 
-    void addStorage(StoreEntity storeEntity);
+@Service
+public class ConnectorConfigController {
 
-    void deleteStoreByUnique(StoreEntity storeEntity);
-
-    List<StoreEntity> selectStoreByCluster(StoreEntity storeEntity);
-
-    void updateStoreByUnique(StoreEntity storeEntity);
+    public List<ConfigEntity> getConnectorConfigFromInstance(Long clusterId, Long id) {
+        return null;
+    }
 }

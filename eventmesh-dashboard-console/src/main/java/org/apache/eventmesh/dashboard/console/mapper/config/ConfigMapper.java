@@ -33,44 +33,28 @@ import java.util.List;
 @Mapper
 public interface ConfigMapper {
 
-    @Select("SELECT * FROM config WHERE status=1")
-    List<ConfigEntity> selectAll();
-
-    @Insert({
-        "<script>",
-        "   INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version,",
-        "   eventmesh_version,end_version, diff_type, description, edit, is_default, is_modify) VALUES ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "   (#{c.clusterId}, #{c.businessType}, #{c.instanceType}, #{c.instanceId},#{c.configName},",
-        "   #{c.configValue}, #{c.startVersion}, #{c.eventmeshVersion},#{c.endVersion},#{c.diffType},#{c.description},",
-        "   #{c.edit},#{c.isDefault},#{c.isModify})",
-        "   </foreach>",
-        "</script>"})
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<ConfigEntity> configEntityList);
-
-    @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version, "
-        + "status, is_default, end_version, diff_type, description, edit, is_modify, eventmesh_version) VALUE "
+    @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name,"
+        + " config_value, start_version,eventmesh_version, description, edit,end_version,is_default,is_modify) VALUE "
         + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
-        + "#{configValue},#{startVersion},#{status},#{isDefault},#{endVersion},#{diffType},#{description},#{edit},#{isModify},#{eventmeshVersion})")
+        + "#{configValue},#{startVersion},#{eventmeshVersion},#{description},#{edit},#{endVersion},#{isDefault},#{isModify})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer addConfig(ConfigEntity configEntity);
 
-    @Update("UPDATE config SET status=0 WHERE id=#{id}")
+    @Update("update config set status=2 where id=#{id}")
     Integer deleteConfig(ConfigEntity configEntity);
 
-    @Update("UPDATE config SET config_value=#{configValue} WHERE status=1 AND edit=2")
+    @Update("update config set config_value=#{configValue} where status=1 and edit=2")
     void updateConfig(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE business_type=#{businessType} AND instance_type=#{instanceType} "
-        + "AND instance_id=#{instanceId}")
+    @Select("select * from config where business_type=#{businessType} and instance_type=#{instanceType} "
+        + "and instance_id=#{instanceId}")
     List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE cluster_id=-1 AND business_type=#{businessType} AND instance_type=#{instanceType}")
+    @Select("select * from config where cluster_id=-1 and business_type=#{businessType} and instance_type=#{instanceType}")
     List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
 
 
-    @Select("SELECT * FROM config WHERE cluster_id=#{clusterId} AND instance_type=#{instanceType} "
-        + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
+    @Select("select * from config where cluster_id=#{clusterId} and instance_type=#{instanceType} "
+        + "and instance_id=#{instanceId} and config_name=#{configName} and status=1")
     ConfigEntity selectByUnique(ConfigEntity configEntity);
 }

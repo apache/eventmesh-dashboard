@@ -68,4 +68,7 @@ public interface TopicMapper {
     @Select("select * from topic where id=#{id}")
     TopicEntity selectTopicById(TopicEntity topicEntity);
 
+    @Select("select * from topic where cluster_id=#{clusterId}")
+    List<TopicEntity> selectTopicByCluster(TopicEntity topicEntity);
+
 }

@@ -27,8 +27,8 @@ public class TestStoreMapper {
             new StoreEntity(null, 1l, 2, "rocketmq", "run1", 1l, "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing", 1l);
         StoreEntity storeEntity1 =
             new StoreEntity(null, 1l, 1, "rocketmq", "run1", 1l, "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing", 1l);
-        storeMapper.addStore(storeEntity);
-        storeMapper.addStore(storeEntity1);
+        storeMapper.addStorage(storeEntity);
+        storeMapper.addStorage(storeEntity1);
         List<StoreEntity> storeEntities = storeMapper.selectStoreByCluster(storeEntity);
         storeEntities.forEach(n -> {
             n.setUpdateTime(null);
@@ -42,7 +42,7 @@ public class TestStoreMapper {
     public void testDeleteStoreByUnique() {
         StoreEntity storeEntity =
             new StoreEntity(null, 1l, 2, "rocketmq", "run1", 1l, "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing", 1l);
-        storeMapper.addStore(storeEntity);
+        storeMapper.addStorage(storeEntity);
         storeMapper.deleteStoreByUnique(storeEntity);
         List<StoreEntity> storeEntities = storeMapper.selectStoreByCluster(storeEntity);
         Assert.assertEquals(storeEntities.size(), 0);
@@ -52,7 +52,7 @@ public class TestStoreMapper {
     public void testUpdateStoreByUnique() {
         StoreEntity storeEntity =
             new StoreEntity(null, 1l, 2, "rocketmq", "run1", 1l, "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing", 1l);
-        storeMapper.addStore(storeEntity);
+        storeMapper.addStorage(storeEntity);
         storeEntity.setStatus((short) 5);
         storeMapper.updateStoreByUnique(storeEntity);
         List<StoreEntity> storeEntities = storeMapper.selectStoreByCluster(storeEntity);

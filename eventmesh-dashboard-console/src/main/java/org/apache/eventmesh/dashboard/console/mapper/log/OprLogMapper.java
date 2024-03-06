@@ -21,8 +21,8 @@ import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectKey;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
@@ -33,28 +33,29 @@ import java.util.List;
 @Mapper
 public interface OprLogMapper {
 
-    @Select("<script>"
-        + "select * from operation_log"
-        + "<where>"
-        + "<if test='targetType!=null'>"
-        + "target_type=#{targetType}"
-        + "</if>"
-        + "<if test='operationUser!=null'>"
-        + "and operation_user=#{operationUser}"
-        + "</if>"
-        + "<if test='clusterId!=null'>"
-        + "and cluster_id=#{clusterId} "
-        + "</if>"
-        + "and is_delete=0"
-        + "</where>"
-        + "</script>")
+    @Select({
+        "<script>",
+        "   select * from operation_log",
+        "   <where>",
+        "       <if test='targetType!=null'>",
+        "           target_type=#{operationType}",
+        "       </if>",
+        "       <if test='operationUser!=null'>",
+        "           and operation_user=#{operationUser}",
+        "       </if>",
+        "       <if test='clusterId!=null'>",
+        "           and cluster_id=#{clusterId} ",
+        "       </if>",
+        "       and is_delete=0",
+        "   </where>",
+        "</script>"})
     List<LogEntity> getLogList(LogEntity logEntity);
 
-    @Insert("insert into operation_log ( cluster_id, operation_type,target_Type, description,operation_user,result_content)"
-        + "VALUE (#{clusterId},#{operationType},#{targetType},#{description},#{operationUser},#{resultContent})")
-    @SelectKey(keyColumn = "id", statement = {" select last_insert_id()"}, keyProperty = "id", before = false, resultType = Long.class)
+    @Insert("insert into operation_log ( cluster_id, operation_type,target_Type, content,operation_user,result)"
+        + "VALUE (#{clusterId},#{operationType},#{targetType},#{content},#{operationUser},#{result})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Long addLog(LogEntity logEntity);
 
-    @Update("update operation_log set status=#{status} ,result_content=#{resultContent} where id=#{id}")
+    @Update("update operation_log set status=#{status} ,result=#{resultContent} where id=#{id}")
     Integer updateLog(LogEntity logEntity);
 }

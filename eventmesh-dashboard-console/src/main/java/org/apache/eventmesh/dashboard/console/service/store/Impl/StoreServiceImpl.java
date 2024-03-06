@@ -33,18 +33,8 @@ public class StoreServiceImpl implements StoreService {
     private StoreMapper storeMapper;
 
     @Override
-    public List<StoreEntity> selectAll() {
-        return storeMapper.selectAll();
-    }
-
-    @Override
-    public void batchInsert(List<StoreEntity> storeEntities) {
-        storeMapper.batchInsert(storeEntities);
-    }
-
-    @Override
-    public void addStore(StoreEntity storeEntity) {
-        storeMapper.addStore(storeEntity);
+    public void addStorage(StoreEntity storeEntity) {
+        storeMapper.addStorage(storeEntity);
     }
 
     @Override
@@ -53,9 +43,7 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public List<StoreEntity> selectStoreByCluster(Long clusterId) {
-        StoreEntity storeEntity = new StoreEntity();
-        storeEntity.setClusterId(clusterId);
+    public List<StoreEntity> selectStoreByCluster(StoreEntity storeEntity) {
         return storeMapper.selectStoreByCluster(storeEntity);
     }
 
