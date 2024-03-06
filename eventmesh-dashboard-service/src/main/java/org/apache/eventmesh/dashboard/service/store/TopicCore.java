@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.service.store;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.common.model.TopicProperties;
 
 import java.util.List;
 
 /**
- * operate Group Service
+ * Manage topics of eventmesh-storage-plugin (EventMesh Store).
  */
 
-public interface GroupService {
+public interface TopicCore {
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
+    /**
+     * TODO rename to getTopics after being implemented
+     */
+    List<TopicProperties> getTopic();
 
-    GroupEntity addGroup(GroupEntity groupEntity);
+    void createTopic(String topicName);
 
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    void deleteTopic(String topicName);
 }

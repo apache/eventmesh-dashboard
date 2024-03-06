@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.common.util;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+public class ExceptionUtil {
 
-import java.util.List;
+    /**
+     * Remove the last period of exception description.
+     */
+    public static String trimDesc(String desc) {
+        if (desc == null) {
+            return "";
+        }
+        if (desc.charAt(desc.length() - 1) == '.') {
+            return desc.substring(0, desc.length() - 1);
+        }
+        return desc;
+    }
 
-/**
- * operate Group Service
- */
-
-public interface GroupService {
-
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
-
-    GroupEntity addGroup(GroupEntity groupEntity);
-
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
 }

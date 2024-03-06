@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.common.model;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import lombok.Builder;
+import lombok.Data;
 
-import java.util.List;
+@Data
+@Builder
+public class SubscriptionInfo {
 
-/**
- * operate Group Service
- */
+    // client name
+    private String clientName;
 
-public interface GroupService {
+    // group name
+    private String group;
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
-
-    GroupEntity addGroup(GroupEntity groupEntity);
-
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    // config content
+    private String subscription;
 }

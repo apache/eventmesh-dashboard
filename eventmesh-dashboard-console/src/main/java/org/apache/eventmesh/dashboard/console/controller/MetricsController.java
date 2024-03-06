@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.console.controller;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.alibaba.druid.stat.DruidStatManagerFacade;
 
-/**
- * operate Group Service
- */
+@RestController
+public class MetricsController {
 
-public interface GroupService {
+    @GetMapping("/druid/stat")
+    public Object druidStat() {
+        return DruidStatManagerFacade.getInstance().getDataSourceStatDataList();
+    }
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
-
-    GroupEntity addGroup(GroupEntity groupEntity);
-
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
 }

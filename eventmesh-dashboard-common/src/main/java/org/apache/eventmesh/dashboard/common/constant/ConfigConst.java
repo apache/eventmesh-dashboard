@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.common.constant;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+public class ConfigConst {
 
-import java.util.List;
+    // yml config
+    public static final String ADMIN_PROPS_PREFIX = "eventmesh";
+    public static final String META_TYPE_NACOS = "nacos";
+    public static final String META_TYPE_ETCD = "etcd";
+    public static final String STORE_TYPE_STANDALONE = "standalone";
+    public static final String STORE_TYPE_ROCKETMQ = "rocketmq";
+    public static final String STORE_TYPE_KAFKA = "kafka";
 
-/**
- * operate Group Service
- */
+    // Open-API
+    public static final String HTTP_PREFIX = "http://";
+    public static final String HTTPS_PREFIX = "https://";
 
-public interface GroupService {
+    // common
+    /**
+     * colon with space
+     */
+    public static final String COLON = ": ";
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
-
-    GroupEntity addGroup(GroupEntity groupEntity);
-
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
 }

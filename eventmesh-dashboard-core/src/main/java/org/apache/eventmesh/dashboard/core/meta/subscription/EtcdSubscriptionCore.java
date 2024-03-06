@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.core.meta.subscription;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.common.dto.Result;
+import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
+import org.apache.eventmesh.dashboard.service.meta.SubscriptionCore;
 
 import java.util.List;
 
-/**
- * operate Group Service
- */
+import lombok.extern.slf4j.Slf4j;
 
-public interface GroupService {
+@Slf4j
+public class EtcdSubscriptionCore implements SubscriptionCore {
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
+    @Override
+    public String retrieveConfig(String dataId, String group) {
+        return null;
+    }
 
-    GroupEntity addGroup(GroupEntity groupEntity);
-
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    @Override
+    public Result<List<SubscriptionInfo>> retrieveConfigs(Integer page, Integer size, String dataId, String group) {
+        return null;
+    }
 }

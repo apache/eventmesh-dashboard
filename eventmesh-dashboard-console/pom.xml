@@ -19,36 +19,7 @@
     </properties>
 
     <dependencies>
-        <!-- springframework dependencies -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- ASP dependency -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aspects</artifactId>
-            <version>5.1.2.RELEASE</version>
-        </dependency>
-
-        <!-- swagger -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-javadoc</artifactId>
-            <version>1.7.0</version>
-        </dependency>
-
-        <!-- eventmesh.dashboard dependency -->
+        <!-- EventMesh Dashboard modules -->
         <dependency>
             <groupId>org.apache.eventmesh.dashboard.common</groupId>
             <artifactId>eventmesh-dashboard-common</artifactId>
@@ -58,6 +29,24 @@
             <groupId>org.apache.eventmesh.dashboard.service</groupId>
             <artifactId>eventmesh-dashboard-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- AOP -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+        </dependency>
+
+        <!-- Swagger -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-javadoc</artifactId>
+            <version>1.7.0</version>
         </dependency>
 
         <!-- Database -->
@@ -77,7 +66,7 @@
         </dependency>
 
         <!-- health check client -->
-        <!-- Eventmesh SDK -->
+        <!-- EventMesh SDK -->
         <dependency>
             <groupId>org.apache.eventmesh</groupId>
             <artifactId>eventmesh-sdk-java</artifactId>
@@ -100,6 +89,12 @@
         </dependency>
         <!-- health check client end -->
 
+        <!-- Unit Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- TODO: remove junit4 dependency -->
         <dependency>

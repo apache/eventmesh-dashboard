@@ -17,8 +17,9 @@
 
 package org.apache.eventmesh.dashboard.console.health.check.impl;
 
-import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
 import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
+import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.console.dto;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
+import lombok.Data;
 
 /**
- * operate Group Service
+ * TODO this class is copied from storage plugin, needs update
  */
 
-public interface GroupService {
+@Data
+public class CreateTopicRequest {
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
+    private String name;
 
-    GroupEntity addGroup(GroupEntity groupEntity);
-
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    @JsonCreator
+    public CreateTopicRequest(@JsonProperty("name") String name) {
+        super();
+        this.name = name;
+    }
 }

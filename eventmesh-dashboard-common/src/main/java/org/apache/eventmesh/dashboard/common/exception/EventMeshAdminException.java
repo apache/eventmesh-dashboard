@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.common.exception;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
-
-import java.util.List;
+import org.apache.eventmesh.dashboard.common.enums.Status;
 
 /**
- * operate Group Service
+ * EventMeshAdmin Application side exception
  */
 
-public interface GroupService {
+public class EventMeshAdminException extends BaseException {
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
+    private static final long serialVersionUID = 2002022502005456586L;
 
-    GroupEntity addGroup(GroupEntity groupEntity);
+    public EventMeshAdminException(String message) {
+        super(message);
+    }
 
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    /**
+     * Customized error reporting using enums and exceptions
+     */
+    public EventMeshAdminException(Status status, Throwable cause) {
+        super(status, cause);
+    }
 }
