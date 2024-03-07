@@ -33,19 +33,19 @@ import java.util.List;
 @Mapper
 public interface StoreMapper {
 
-    @Insert("insert into store (cluster_id, store_id, store_type, host, runtime_id, topic_list, diff_type"
+    @Insert("INSERT INTO store (cluster_id, store_id, store_type, host, runtime_id, topic_list, diff_type"
         + ", port, jmx_port, start_timestamp, rack, status, endpoint_map ) VALUES ("
         + "#{clusterId},#{storeId},#{storeType},#{host},#{runtimeId},#{topicList},#{diffType},#{port},#{jmxPort}"
         + ",#{startTimestamp},#{rack},#{status},#{endpointMap})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addStorage(StoreEntity storeEntity);
 
-    @Update("update store set is_delete=1 where cluster_id=#{clusterId} and store_id=#{storeId}")
+    @Update("UPDATE store SET is_delete=1 WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
     void deleteStoreByUnique(StoreEntity storeEntity);
 
-    @Select("select * from store where cluster_id=#{clusterId} and is_delete=0")
+    @Select("SELECT * FROM store WHERE cluster_id=#{clusterId} AND is_delete=0")
     List<StoreEntity> selectStoreByCluster(StoreEntity storeEntity);
 
-    @Update("update store set status=#{status} where cluster_id=#{clusterId} and store_id=#{storeId}")
+    @Update("UPDATE store SET status=#{status} WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
     void updateStoreByUnique(StoreEntity storeEntity);
 }

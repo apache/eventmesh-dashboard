@@ -34,18 +34,18 @@ import java.util.List;
 @Mapper
 public interface RuntimeMapper {
 
-    @Insert("insert into runtime (cluster_id, host, storage_cluster_id, port, jmx_port, start_timestamp, rack, status, "
+    @Insert("INSERT INTO runtime (cluster_id, host, storage_cluster_id, port, jmx_port, start_timestamp, rack, status, "
         + "endpoint_map) VALUES(#{clusterId},#{host},#{storageClusterId},#{port},#{jmxPort},#{startTimestamp},#{rack},#{status},#{endpointMap})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addRuntime(RuntimeEntity runtimeEntity);
 
-    @Select("select * from runtime where cluster_id=#{clusterId} and is_delete=0")
+    @Select("SELECT * FROM runtime WHERE cluster_id=#{clusterId} AND is_delete=0")
     List<RuntimeEntity> selectRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    @Update("update runtime set port=#{port} ,jmx_port=#{jmxPort} ,status=#{status} where cluster_id=#{clusterId} and is_delete=0")
+    @Update("UPDATE runtime SET port=#{port} ,jmx_port=#{jmxPort} ,status=#{status} WHERE cluster_id=#{clusterId} AND is_delete=0")
     void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    @Delete("update runtime set is_delete=1 where cluster_id=#{clusterId}")
+    @Delete("UPDATE runtime SET is_delete=1 WHERE cluster_id=#{clusterId}")
     void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
 
 }

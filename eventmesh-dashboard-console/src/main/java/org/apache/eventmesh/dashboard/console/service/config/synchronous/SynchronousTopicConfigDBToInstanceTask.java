@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class SynchronousTopicConfigTask {
+public class SynchronousTopicConfigDBToInstanceTask {
 
     @Autowired
     private TopicService topicService;
@@ -73,7 +73,7 @@ public class SynchronousTopicConfigTask {
         }
     }
 
-    public ConcurrentHashMap<String, String> configListToMap(List<ConfigEntity> configEntityList) {
+    private ConcurrentHashMap<String, String> configListToMap(List<ConfigEntity> configEntityList) {
         ConcurrentHashMap<String, String> topicConfigMap = new ConcurrentHashMap<>();
         configEntityList.forEach(n -> {
                 topicConfigMap.put(n.getConfigName(), n.getConfigValue());
@@ -83,7 +83,7 @@ public class SynchronousTopicConfigTask {
     }
 
 
-    public ConfigEntity getConfigEntityBelongInstance(Long clusterId, Long id) {
+    private ConfigEntity getConfigEntityBelongInstance(Long clusterId, Long id) {
         ConfigEntity configEntity = new ConfigEntity();
         configEntity.setClusterId(clusterId);
         configEntity.setInstanceId(id);

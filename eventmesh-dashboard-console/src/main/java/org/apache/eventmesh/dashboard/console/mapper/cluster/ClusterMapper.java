@@ -34,25 +34,25 @@ import java.util.List;
 @Mapper
 public interface ClusterMapper {
 
-    @Select("select * from cluster where is_delete=0")
+    @Select("SELECT * FROM cluster WHERE is_delete=0")
     List<ClusterEntity> selectAllCluster();
 
-    @Select("select * from cluster where id=#{id} and is_delete=0")
+    @Select("SELECT * FROM cluster WHERE id=#{id} AND is_delete=0")
     ClusterEntity selectClusterById(ClusterEntity cluster);
 
-    @Insert("insert into cluster (name, register_name_list, bootstrap_servers, eventmesh_version, client_properties, "
-        + "jmx_properties, reg_properties, description, auth_type, run_state) values (#{name},#{registerNameList},"
+    @Insert("INSERT INTO cluster (name, register_name_list, bootstrap_servers, eventmesh_version, client_properties, "
+        + "jmx_properties, reg_properties, description, auth_type, run_state) VALUES (#{name},#{registerNameList},"
         + "#{bootstrapServers},#{eventmeshVersion},#{clientProperties},#{jmxProperties},#{regProperties},#{description},#{authType},#{runState})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addCluster(ClusterEntity cluster);
 
-    @Update("update cluster set name =#{name},reg_properties=#{regProperties},bootstrap_servers=#{bootstrapServers},"
+    @Update("UPDATE cluster SET name =#{name},reg_properties=#{regProperties},bootstrap_servers=#{bootstrapServers},"
         + "eventmesh_version=#{eventmeshVersion},client_properties=#{clientProperties},jmx_properties=#{jmxProperties},"
         + "reg_properties=#{regProperties},description=#{description},auth_type=#{authType},run_state=#{runState} ,"
-        + "register_name_list=#{registerNameList} where id=#{id}")
+        + "register_name_list=#{registerNameList} WHERE id=#{id}")
     void updateClusterById(ClusterEntity cluster);
 
-    @Delete("update cluster set is_delete=1 where id=#{id}")
+    @Delete("UPDATE cluster SET is_delete=1 WHERE id=#{id}")
     void deleteClusterById(ClusterEntity clusterEntity);
 
 }

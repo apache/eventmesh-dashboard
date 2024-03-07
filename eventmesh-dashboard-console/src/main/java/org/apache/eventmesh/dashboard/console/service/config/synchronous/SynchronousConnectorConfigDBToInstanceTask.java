@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SynchronousConnectorConfigTask {
+public class SynchronousConnectorConfigDBToInstanceTask {
 
     @Autowired
     private ConnectorDataService connectorDataService;
@@ -71,7 +71,7 @@ public class SynchronousConnectorConfigTask {
         }
     }
 
-    public ConcurrentHashMap<String, String> configListToMap(List<ConfigEntity> configEntityList) {
+    private ConcurrentHashMap<String, String> configListToMap(List<ConfigEntity> configEntityList) {
         ConcurrentHashMap<String, String> connectorConfigMap = new ConcurrentHashMap<>();
         configEntityList.forEach(n -> {
                 connectorConfigMap.put(n.getConfigName(), n.getConfigValue());
@@ -81,7 +81,7 @@ public class SynchronousConnectorConfigTask {
     }
 
 
-    public ConfigEntity getConfigEntityBelongInstance(Long clusterId, Long id) {
+    private ConfigEntity getConfigEntityBelongInstance(Long clusterId, Long id) {
         ConfigEntity configEntity = new ConfigEntity();
         configEntity.setClusterId(clusterId);
         configEntity.setInstanceId(id);

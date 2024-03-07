@@ -20,24 +20,23 @@ package org.apache.eventmesh.dashboard.console.service.config.synchronous;
 import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.service.config.ConfigService;
-import org.apache.eventmesh.dashboard.console.service.config.instanceoperation.RuntimeConfigController;
+import org.apache.eventmesh.dashboard.console.service.config.instanceoperation.StorageConfigController;
 import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SynchronousRuntimeConfigTask {
+public class SynchronousStorageConfigDBToInstanceTask {
 
     @Autowired
     private RuntimeService runtimeService;
 
     @Autowired
-    private RuntimeConfigController runtimeConfigController;
+    private StorageConfigController storageConfigController;
 
     @Autowired
     private ConfigService configService;
@@ -47,7 +46,7 @@ public class SynchronousRuntimeConfigTask {
         for (RuntimeEntity runtimeEntity : runtimeEntityList) {
 
             ConcurrentHashMap<String, String> runtimeConfigMapFromInstance = this.configListToMap(
-                runtimeConfigController.getRuntimeConfigFromInstance(clusterId, runtimeEntity.getHost()));
+                storageConfigController.getStorageConfigFromInstance(clusterId, runtimeEntity.getHost()));
 
             ConfigEntity configEntity = this.getConfigEntityBelongInstance(clusterId, runtimeEntity.getId());
 
@@ -73,7 +72,7 @@ public class SynchronousRuntimeConfigTask {
         }
     }
 
-    public ConcurrentHashMap<String, String> configListToMap(List<ConfigEntity> configEntityList) {
+    private ConcurrentHashMap<String, String> configListToMap(List<ConfigEntity> configEntityList) {
         ConcurrentHashMap<String, String> runtimeConfigMap = new ConcurrentHashMap<>();
         configEntityList.forEach(n -> {
                 runtimeConfigMap.put(n.getConfigName(), n.getConfigValue());
@@ -83,11 +82,11 @@ public class SynchronousRuntimeConfigTask {
     }
 
 
-    public ConfigEntity getConfigEntityBelongInstance(Long clusterId, Long id) {
+    private ConfigEntity getConfigEntityBelongInstance(Long clusterId, Long id) {
         ConfigEntity configEntity = new ConfigEntity();
         configEntity.setClusterId(clusterId);
         configEntity.setInstanceId(id);
-        configEntity.setInstanceType(0);
+        configEntity.setInstanceType(1);
         return configEntity;
     }
 }
