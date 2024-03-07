@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health.check;
+package org.apache.eventmesh.dashboard.console.function.health.check;
 
-import org.apache.eventmesh.dashboard.console.health.HealthExecutor;
-import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
+import org.apache.eventmesh.dashboard.console.function.health.HealthExecutor;
+import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 
 /**
  * Health check service interface.<br>
@@ -35,5 +35,7 @@ public interface HealthCheckService {
     public void doCheck(HealthCheckCallback callback);
 
     public void init();
+
+    public void destroy();
 
 }

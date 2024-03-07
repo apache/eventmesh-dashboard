@@ -15,16 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health.callback;
+package org.apache.eventmesh.dashboard.console.function.health.annotation;
 
-import org.apache.eventmesh.dashboard.console.health.HealthExecutor;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Callback used by HealthService.doCheck to notify the caller of the result of the health check.<br>
- * @see HealthExecutor
+ * This annotation is used to mark the type of health check service implement.
+ * @see org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType
  */
-public interface HealthCheckCallback {
-    public void onSuccess();
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface HealthCheckType {
+    /**
+     * type of resource. runtime, topic etc.
+     */
+    String type();
 
-    public void onFail(Exception e);
+    /**
+     * subtype of resource. For resource storage, it can be redis, rocketmq etc.
+     */
+    String subType() default "";
 }

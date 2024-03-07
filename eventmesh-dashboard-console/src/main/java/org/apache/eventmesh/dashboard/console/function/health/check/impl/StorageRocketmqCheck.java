@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health.check.impl;
+package org.apache.eventmesh.dashboard.console.function.health.check.impl;
 
 public class StorageRocketmqCheck {
 

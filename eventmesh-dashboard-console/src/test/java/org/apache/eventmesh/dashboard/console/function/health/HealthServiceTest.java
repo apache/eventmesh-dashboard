@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health;
+package org.apache.eventmesh.dashboard.console.function.health;
 
-import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
-import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
-import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
+import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
+import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +58,7 @@ class HealthServiceTest {
     void testInsertCheckServiceWithSimpleClassName() {
         HealthCheckObjectConfig config = new HealthCheckObjectConfig();
         config.setInstanceId(1L);
-        config.setSimpleClassName("StorageRedisCheck");
+        config.setSimpleClassName("RedisCheck");
         config.setHealthCheckResourceType("storage");
         config.setHealthCheckResourceSubType("redis");
         config.setClusterId(1L);
@@ -89,7 +89,7 @@ class HealthServiceTest {
     }
 
     @Test
-    void testExecuteAll(){
+    void testExecuteAll() {
         HealthCheckObjectConfig config = new HealthCheckObjectConfig();
         config.setInstanceId(1L);
         config.setHealthCheckResourceType("storage");
@@ -113,6 +113,11 @@ class HealthServiceTest {
 
         @Override
         public void init() {
+
+        }
+
+        @Override
+        public void destroy() {
 
         }
     }

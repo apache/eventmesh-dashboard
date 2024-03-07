@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health;
+package org.apache.eventmesh.dashboard.console.function.health;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -26,9 +26,9 @@ import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType;
-import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
-import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
-import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
+import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
+import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 import org.apache.eventmesh.dashboard.console.service.health.impl.HealthDataServiceDatabaseImpl;
 
 import java.util.concurrent.CompletableFuture;
@@ -77,7 +77,7 @@ class HealthExecutorTest {
         }).when(successHealthCheckService).doCheck(any(HealthCheckCallback.class));
         Mockito.lenient().doAnswer((Answer<Void>) invocation -> {
             HealthCheckCallback callback = invocation.getArgument(0);
-            callback.onFail(new RuntimeException("TestRuntimeException"));
+            callback.onFail(new RuntimeException("TestRuntimeException: This check is designed to be failed. Ignore This!"));
             return null;
         }).when(failHealthCheckService).doCheck(any(HealthCheckCallback.class));
         Mockito.lenient().doAnswer((Answer<Void>) invocation -> {
@@ -100,7 +100,7 @@ class HealthExecutorTest {
         config1.setHealthCheckResourceType("storage");
         config1.setHealthCheckResourceSubType("redis");
         config1.setConnectUrl("redis://localhost:6379");
-        config1.setSimpleClassName("StorageRedisCheck");
+        config1.setSimpleClassName("RedisCheck");
         config1.setClusterId(1L);
         Mockito.lenient().when(successHealthCheckService.getConfig()).thenReturn(config1);
         Mockito.lenient().when(timeoutHealthCheckService.getConfig()).thenReturn(config1);
@@ -109,7 +109,7 @@ class HealthExecutorTest {
         config2.setHealthCheckResourceType("storage");
         config2.setHealthCheckResourceSubType("redis");
         config2.setConnectUrl("redis://localhost:6379");
-        config2.setSimpleClassName("StorageRedisCheck");
+        config2.setSimpleClassName("RedisCheck");
         config2.setClusterId(1L);
         Mockito.lenient().when(failHealthCheckService.getConfig()).thenReturn(config2);
     }

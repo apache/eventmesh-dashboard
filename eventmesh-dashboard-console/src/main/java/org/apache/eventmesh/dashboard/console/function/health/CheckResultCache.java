@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health;
+package org.apache.eventmesh.dashboard.console.function.health;
 
-import org.apache.eventmesh.dashboard.console.constant.HealthConstant;
+import org.apache.eventmesh.dashboard.console.constant.health.HealthConstant;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
-import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import java.time.LocalDateTime;
 import java.util.Collections;

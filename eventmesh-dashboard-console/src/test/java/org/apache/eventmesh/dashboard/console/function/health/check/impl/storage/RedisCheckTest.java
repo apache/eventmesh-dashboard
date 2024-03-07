@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health.check.impl;
+package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage;
 
-import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
-import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
+import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
+
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class StorageRedisCheckTest {
+import lombok.extern.slf4j.Slf4j;
 
-    private StorageRedisCheck storageRedisCheck;
+@Slf4j
+class RedisCheckTest {
+
+    private RedisCheck redisCheck;
 
     @BeforeEach
     public void init() {
@@ -33,24 +38,28 @@ class StorageRedisCheckTest {
         config.setInstanceId(1L);
         config.setHealthCheckResourceType("storage");
         config.setHealthCheckResourceSubType("redis");
-        config.setSimpleClassName("StorageRedisCheck");
+        config.setSimpleClassName("RedisCheck");
         config.setClusterId(1L);
-        config.setConnectUrl("redis://localhost:6379");
-        storageRedisCheck = new StorageRedisCheck(config);
+        config.setConnectUrl("redis://127.0.0.1:6379");
+        redisCheck = new RedisCheck(config);
     }
 
     @Test
-    public void testDoCheck() {
-        storageRedisCheck.doCheck(new HealthCheckCallback() {
+    public void testDoCheck() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        redisCheck.doCheck(new HealthCheckCallback() {
             @Override
             public void onSuccess() {
-                System.out.println("success");
+                latch.countDown();
+                log.info("{} success", this.getClass().getSimpleName());
             }
 
             @Override
             public void onFail(Exception e) {
-                System.out.println("fail");
+                latch.countDown();
+                log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
             }
         });
+        latch.await();
     }
 }

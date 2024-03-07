@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health.annotation;
+package org.apache.eventmesh.dashboard.console.function.health.check;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
+
+import lombok.Getter;
 
 /**
- * This annotation is used to mark the type of health check service implement.
- * @see org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType
+ * extends
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface HealthCheckType {
-    /**
-     * type of resource. runtime, topic etc.
-     */
-    String type();
+@Getter
+public abstract class AbstractHealthCheckService implements HealthCheckService {
 
-    /**
-     * subtype of resource. For resource storage, it can be redis, rocketmq etc.
-     */
-    String subType() default "";
+    private final HealthCheckObjectConfig config;
+
+    public AbstractHealthCheckService(HealthCheckObjectConfig healthCheckObjectConfig) {
+        this.config = healthCheckObjectConfig;
+        this.init();
+    }
+
 }

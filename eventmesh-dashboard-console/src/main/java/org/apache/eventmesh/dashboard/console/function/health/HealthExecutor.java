@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health;
+package org.apache.eventmesh.dashboard.console.function.health;
 
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType;
-import org.apache.eventmesh.dashboard.console.health.CheckResultCache.CheckResult;
-import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
-import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
+import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache.CheckResult;
+import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
+import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import java.util.ArrayList;

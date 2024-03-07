@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health;
+package org.apache.eventmesh.dashboard.console.function.health;
 
-import org.apache.eventmesh.dashboard.console.health.CheckResultCache.CheckResult;
-import org.apache.eventmesh.dashboard.console.health.annotation.HealthCheckType;
-import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
-import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
-import org.apache.eventmesh.dashboard.console.health.check.impl.StorageRedisCheck;
+import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache.CheckResult;
+import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
+import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
+import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.RedisCheck;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import java.lang.reflect.Constructor;
@@ -55,7 +55,7 @@ public class HealthService {
     private static final Map<String, Class<?>> HEALTH_CHECK_CLASS_CACHE = new HashMap<>();
 
     static {
-        setClassCache(StorageRedisCheck.class);
+        setClassCache(RedisCheck.class);
     }
 
     private static void setClassCache(Class<?> clazz) {
@@ -127,6 +127,7 @@ public class HealthService {
         if (Objects.isNull(subMap)) {
             return;
         }
+        subMap.get(resourceId).destroy();
         subMap.remove(resourceId);
         if (subMap.isEmpty()) {
             checkServiceMap.remove(resourceType);

@@ -15,23 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health.check;
+package org.apache.eventmesh.dashboard.console.function.health.callback;
 
-import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
-
-import lombok.Getter;
+import org.apache.eventmesh.dashboard.console.function.health.HealthExecutor;
 
 /**
- * extends
+ * Callback used by HealthService.doCheck to notify the caller of the result of the health check.<br>
+ * @see HealthExecutor
  */
-@Getter
-public abstract class AbstractHealthCheckService implements HealthCheckService {
+public interface HealthCheckCallback {
+    public void onSuccess();
 
-    private final HealthCheckObjectConfig config;
-
-    public AbstractHealthCheckService(HealthCheckObjectConfig healthCheckObjectConfig) {
-        this.config = healthCheckObjectConfig;
-        this.init();
-    }
-
+    public void onFail(Exception e);
 }

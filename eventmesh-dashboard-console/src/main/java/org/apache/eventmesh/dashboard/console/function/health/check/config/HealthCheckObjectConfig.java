@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health.check.config;
+package org.apache.eventmesh.dashboard.console.function.health.check.config;
 
 import java.util.Properties;
 
@@ -38,8 +38,11 @@ public class HealthCheckObjectConfig {
 
     private Long clusterId;
 
+    //Prioritize passing in this field for a url.
+    //redis, nacos
     private String connectUrl;
-    //mysql, redis
+
+    //redis
     private String host;
 
     private Integer port;
@@ -51,5 +54,15 @@ public class HealthCheckObjectConfig {
     //mysql, redis
     private String database;
 
-    private Long requestTimeoutMillis = Long.MAX_VALUE;
+    private Long requestTimeoutMillis = 100000L;
+
+    private RocketmqConfig rocketmqConfig = new RocketmqConfig();
+
+    @Data
+    public class RocketmqConfig {
+
+        private String nameServerUrl;
+        private String brokerUrl;
+        private String endPoint;
+    }
 }
