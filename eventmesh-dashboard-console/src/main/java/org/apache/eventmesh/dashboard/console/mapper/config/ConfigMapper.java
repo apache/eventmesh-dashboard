@@ -40,21 +40,21 @@ public interface ConfigMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer addConfig(ConfigEntity configEntity);
 
-    @Update("update config set status=2 where id=#{id}")
+    @Update("UPDATE config SET status=2 WHERE id=#{id}")
     Integer deleteConfig(ConfigEntity configEntity);
 
-    @Update("update config set config_value=#{configValue} where status=1 and edit=2")
+    @Update("UPDATE config SET config_value=#{configValue} WHERE status=1 AND edit=2")
     void updateConfig(ConfigEntity configEntity);
 
-    @Select("select * from config where business_type=#{businessType} and instance_type=#{instanceType} "
-        + "and instance_id=#{instanceId}")
+    @Select("SELECT * FROM config WHERE business_type=#{businessType} AND instance_type=#{instanceType} "
+        + "AND instance_id=#{instanceId}")
     List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
 
-    @Select("select * from config where cluster_id=-1 and business_type=#{businessType} and instance_type=#{instanceType}")
+    @Select("SELECT * FROM config WHERE cluster_id=-1 AND business_type=#{businessType} AND instance_type=#{instanceType}")
     List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
 
 
-    @Select("select * from config where cluster_id=#{clusterId} and instance_type=#{instanceType} "
-        + "and instance_id=#{instanceId} and config_name=#{configName} and status=1")
+    @Select("SELECT * FROM config WHERE cluster_id=#{clusterId} AND instance_type=#{instanceType} "
+        + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
     ConfigEntity selectByUnique(ConfigEntity configEntity);
 }

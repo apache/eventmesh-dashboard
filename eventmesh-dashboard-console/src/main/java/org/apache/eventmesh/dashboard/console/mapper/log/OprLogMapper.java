@@ -35,27 +35,27 @@ public interface OprLogMapper {
 
     @Select({
         "<script>",
-        "   select * from operation_log",
+        "   SELECT * FROM operation_log",
         "   <where>",
         "       <if test='targetType!=null'>",
         "           target_type=#{operationType}",
         "       </if>",
         "       <if test='operationUser!=null'>",
-        "           and operation_user=#{operationUser}",
+        "           AND operation_user=#{operationUser}",
         "       </if>",
         "       <if test='clusterId!=null'>",
-        "           and cluster_id=#{clusterId} ",
+        "           AND cluster_id=#{clusterId} ",
         "       </if>",
-        "       and is_delete=0",
+        "       AND is_delete=0",
         "   </where>",
         "</script>"})
     List<LogEntity> getLogList(LogEntity logEntity);
 
-    @Insert("insert into operation_log ( cluster_id, operation_type,target_Type, content,operation_user,result)"
+    @Insert("INSERT INTO operation_log ( cluster_id, operation_type,target_Type, content,operation_user,result)"
         + "VALUE (#{clusterId},#{operationType},#{targetType},#{content},#{operationUser},#{result})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Long addLog(LogEntity logEntity);
 
-    @Update("update operation_log set status=#{status} ,result=#{resultContent} where id=#{id}")
+    @Update("UPDATE operation_log SET status=#{status} ,result=#{resultContent} WHERE id=#{id}")
     Integer updateLog(LogEntity logEntity);
 }
