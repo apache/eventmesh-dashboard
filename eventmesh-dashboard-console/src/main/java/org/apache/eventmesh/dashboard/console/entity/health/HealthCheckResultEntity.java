@@ -32,8 +32,6 @@ import lombok.NoArgsConstructor;
 public class HealthCheckResultEntity extends BaseEntity {
 
     private static final long serialVersionUID = -7350585209577598040L;
-    @Schema(name = "id", description = "primary key")
-    private Long id;
 
     private Long clusterId;
 

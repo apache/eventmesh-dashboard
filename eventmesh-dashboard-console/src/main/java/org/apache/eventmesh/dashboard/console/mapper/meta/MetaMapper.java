@@ -26,6 +26,8 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 /**
  * Mybatis Mapper for the table of meta.
  */
@@ -35,7 +37,7 @@ public interface MetaMapper {
     MetaEntity selectById(MetaEntity metaEntity);
 
     @Select("SELECT * FROM meta WHERE cluster_id = #{clusterId} LIMIT 1")
-    MetaEntity selectByClusterId(MetaEntity metaEntity);
+    List<MetaEntity> selectByClusterId(MetaEntity metaEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO meta (name, type, version, cluster_id, host, port, role, username, params, status)"

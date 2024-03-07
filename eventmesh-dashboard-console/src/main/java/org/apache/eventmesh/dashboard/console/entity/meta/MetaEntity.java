@@ -33,12 +33,6 @@ public class MetaEntity extends BaseEntity {
 
     private static final long serialVersionUID = 7176263169716424469L;
 
-    /**
-     * Primary key
-     */
-    @Schema(name = "id", description = "Primary key")
-    private Long id;
-
     private String name;
 
     private String type;
@@ -59,6 +53,7 @@ public class MetaEntity extends BaseEntity {
 
     /**
      * 0: not active, 1: active
+     *
      * @see StatusEnum
      */
     @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")

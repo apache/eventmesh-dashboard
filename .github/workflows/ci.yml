@@ -39,6 +39,7 @@ jobs:
     services:
       mysql:
         image: mysql:8.0
+        command: --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
         env:
           # The MySQL docker container requires these environment variables to be set, so we can create and migrate the test database.
           MYSQL_DATABASE: eventmesh_dashboard_test

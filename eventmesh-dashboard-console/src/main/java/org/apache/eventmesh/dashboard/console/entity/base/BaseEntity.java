@@ -29,8 +29,14 @@ import lombok.Data;
 public class BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -2697805837923579585L;
+    /**
+     * Primary key
+     */
+    @Schema(name = "id", description = "primary key")
+    protected Long id;
 
-    private Long clusterId;
+
+    protected Long clusterId;
 
     protected Timestamp createTime;
 

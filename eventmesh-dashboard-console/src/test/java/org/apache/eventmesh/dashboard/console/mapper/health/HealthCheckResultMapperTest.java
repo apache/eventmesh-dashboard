@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.health;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
@@ -58,7 +58,7 @@ class HealthCheckResultMapperTest {
 
     @Test
     public void testSelectByClusterIdAndTypeAndTypeId() {
-        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity(1L, 1L, 1, 1L, "", 1);
+        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity(1L, 1, 1L, "", 1);
         healthCheckResultEntity = healthCheckResultMapper.selectByClusterIdAndTypeAndTypeId(healthCheckResultEntity).get(0);
         assertEquals(1, healthCheckResultEntity.getId());
         assertEquals(0, healthCheckResultEntity.getStatus());
@@ -66,7 +66,7 @@ class HealthCheckResultMapperTest {
 
     @Test
     public void testSelectByClusterIdAndType() {
-        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity(1L, 1L, 1, 1L, "", 1);
+        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity(1L, 1, 1L, "", 1);
         List<HealthCheckResultEntity> results = healthCheckResultMapper.selectByClusterIdAndType(healthCheckResultEntity);
         assertEquals(2, results.size());
     }
@@ -84,7 +84,7 @@ class HealthCheckResultMapperTest {
 
     @Test
     public void testInsert() {
-        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity(1L, 5L, 1, 5L, "", 1);
+        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity(5L, 1, 5L, "", 1);
         healthCheckResultMapper.insert(healthCheckResultEntity);
         healthCheckResultEntity = healthCheckResultMapper.selectById(healthCheckResultEntity);
         assertEquals(7, healthCheckResultEntity.getId());
@@ -92,8 +92,8 @@ class HealthCheckResultMapperTest {
 
     @Test
     public void testBatchInsert() {
-        HealthCheckResultEntity healthCheckResultEntity1 = new HealthCheckResultEntity(1L, 1L, 1, 5L, "", 1);
-        HealthCheckResultEntity healthCheckResultEntity2 = new HealthCheckResultEntity(1L, 1L, 1, 6L, "", 1);
+        HealthCheckResultEntity healthCheckResultEntity1 = new HealthCheckResultEntity(1L, 1, 5L, "", 1);
+        HealthCheckResultEntity healthCheckResultEntity2 = new HealthCheckResultEntity(1L, 1, 6L, "", 1);
         healthCheckResultMapper.batchInsert(Arrays.asList(healthCheckResultEntity1, healthCheckResultEntity2));
         List<HealthCheckResultEntity> results = healthCheckResultMapper.selectByClusterIdAndType(healthCheckResultEntity1);
         assertEquals(4, results.size());
@@ -101,7 +101,7 @@ class HealthCheckResultMapperTest {
 
     @Test
     public void testUpdate() {
-        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity(1L, 1L, 1, 1L, "reason", 0);
+        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity(1L, 1, 1L, "reason", 0);
         healthCheckResultMapper.update(healthCheckResultEntity);
         healthCheckResultEntity = healthCheckResultMapper.selectByClusterIdAndTypeAndTypeId(healthCheckResultEntity).get(0);
         assertEquals(0, healthCheckResultEntity.getStatus());
@@ -109,8 +109,10 @@ class HealthCheckResultMapperTest {
 
     @Test
     public void testBatchUpdate() {
-        HealthCheckResultEntity healthCheckResultEntity1 = new HealthCheckResultEntity(1L, 1L, 1, 1L, "reason", 0);
-        HealthCheckResultEntity healthCheckResultEntity2 = new HealthCheckResultEntity(2L, 1L, 1, 1L, "reason", 0);
+        HealthCheckResultEntity healthCheckResultEntity1 = new HealthCheckResultEntity(1L, 1, 1L, "reason", 0);
+        healthCheckResultEntity1.setId(1L);
+        HealthCheckResultEntity healthCheckResultEntity2 = new HealthCheckResultEntity(1L, 1, 1L, "reason", 0);
+        healthCheckResultEntity2.setId(2L);
         healthCheckResultMapper.batchUpdate(Arrays.asList(healthCheckResultEntity1, healthCheckResultEntity2));
         healthCheckResultEntity1 = healthCheckResultMapper.selectById(healthCheckResultEntity1);
         healthCheckResultEntity2 = healthCheckResultMapper.selectById(healthCheckResultEntity2);
@@ -121,8 +123,8 @@ class HealthCheckResultMapperTest {
 
     @Test
     public void testUpdateByClusterIdAndTypeAndTypeId() {
-        HealthCheckResultEntity entity1 = new HealthCheckResultEntity(null, 1L, 1, 1L, "reason", 2);
-        HealthCheckResultEntity entity2 = new HealthCheckResultEntity(null, 1L, 1, 1L, "reason", 2);
+        HealthCheckResultEntity entity1 = new HealthCheckResultEntity(1L, 1, 1L, "reason", 2);
+        HealthCheckResultEntity entity2 = new HealthCheckResultEntity(1L, 1, 1L, "reason", 2);
         healthCheckResultMapper.batchInsert(Arrays.asList(entity1, entity2));
 
         List<HealthCheckResultEntity> toBeUpdate = healthCheckResultMapper.getIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(
