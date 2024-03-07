@@ -3,6 +3,7 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import FoundationIcon from '@mui/icons-material/Foundation';
 
 import { ReactComponent as EventMeshLogoIcon } from './eventmesh-logo.svg';
+import { ReactComponent as EventMeshTopicIcon } from './eventmesh-topic.svg';
 import { ReactComponent as HomeIcon } from './home.svg';
 import { ReactComponent as RuntimeIcon } from './runtime.svg';
 import { ReactComponent as TopicIcon } from './topic.svg';
@@ -22,6 +23,8 @@ export const Icons = {
 
 
   EventMeshLogo: EventMeshLogoIcon,
+  EventMeshTopic: EventMeshTopicIcon,
+
   Home: HomeIcon,
   Runtime: RuntimeIcon,
   Topic: TopicIcon,

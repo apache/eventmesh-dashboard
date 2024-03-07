@@ -7,7 +7,7 @@ interface UsersProps extends BoxProps {}
 
 const Users = forwardRef<typeof Box, UsersProps>(({ ...props }, ref) => {
   return (
-    <Page ref={ref}>
+    <Page>
       <Construction />
     </Page>
   )
