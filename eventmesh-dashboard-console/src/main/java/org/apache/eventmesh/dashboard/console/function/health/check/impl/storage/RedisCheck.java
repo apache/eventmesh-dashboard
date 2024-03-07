@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.health.check.impl;
+package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage;
 
-import org.apache.eventmesh.dashboard.console.health.annotation.HealthCheckType;
-import org.apache.eventmesh.dashboard.console.health.callback.HealthCheckCallback;
-import org.apache.eventmesh.dashboard.console.health.check.AbstractHealthCheckService;
-import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
+import static org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE;
+
+import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
+import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
+import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
+import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import java.time.Duration;
 import java.util.Objects;
@@ -30,13 +32,15 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.RedisURI.Builder;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 
+import lombok.extern.slf4j.Slf4j;
 
-@HealthCheckType(type = "storage", subType = "redis")
-public class StorageRedisCheck extends AbstractHealthCheckService {
+@Slf4j
+@HealthCheckType(type = HEALTH_CHECK_TYPE_STORAGE, subType = "redis")
+public class RedisCheck extends AbstractHealthCheckService {
 
     private RedisClient redisClient;
 
-    public StorageRedisCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
+    public RedisCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
         super(healthCheckObjectConfig);
     }
 
@@ -55,6 +59,7 @@ public class StorageRedisCheck extends AbstractHealthCheckService {
                 return null;
             });
         } catch (Exception e) {
+            log.error(e.toString());
             callback.onFail(e);
         }
     }
@@ -78,5 +83,12 @@ public class StorageRedisCheck extends AbstractHealthCheckService {
             redisUrl = builder.build().toString();
         }
         redisClient = RedisClient.create(redisUrl);
+    }
+
+    @Override
+    public void destroy() {
+        if (redisClient != null) {
+            redisClient.shutdown();
+        }
     }
 }
