@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.topic;
+package org.apache.eventmesh.dashboard.console.service.config;
 
-import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+
+import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
 
 import java.util.List;
+import java.util.Map;
+
 
 /**
- * Service about Topic
+ * config data service
  */
-public interface TopicService {
+public interface ConfigService {
 
-    Integer selectTopicNumByCluster(Long clusterId);
+    String mapToYaml(Map<String, String> stringMap);
 
-    List<TopicEntity> getTopicList(TopicEntity topicEntity);
+    Integer addConfig(ConfigEntity configEntity);
 
-    void addTopic(TopicEntity topicEntity);
+    Integer deleteConfig(ConfigEntity configEntity);
 
-    void updateTopic(TopicEntity topicEntity);
+    String mapToProperties(Map<String, String> stringMap);
 
-    void deleteTopicById(TopicEntity topicEntity);
 
-    TopicEntity selectTopicById(TopicEntity topicEntity);
+    List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
 
-    TopicEntity selectTopicByUnique(TopicEntity topicEntity);
+    List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
 
-    void deleteTopic(TopicEntity topicEntity);
+    void updateConfig(ConfigEntity configEntity);
 
-    List<TopicEntity> selectTopiByCluster(Long clusterId);
 }

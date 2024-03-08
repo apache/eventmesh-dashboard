@@ -38,12 +38,19 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Override
+    public Integer selectTopicNumByCluster(Long clusterId) {
+        TopicEntity topicEntity = new TopicEntity();
+        topicEntity.setClusterId(clusterId);
+        return topicMapper.selectTopicNumByCluster(topicEntity);
+    }
+
+    @Override
     public List<TopicEntity> getTopicList(TopicEntity topicEntity) {
         return topicMapper.getTopicList(topicEntity);
     }
 
     @Override
-    public void addTopic_plus(TopicEntity topicEntity) {
+    public void addTopic(TopicEntity topicEntity) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicEntity.getTopicName());
         groupMemberEntity.setState("active");
@@ -79,4 +86,13 @@ public class TopicServiceImpl implements TopicService {
         oprGroupMemberMapper.updateMemberByTopic(groupMemberEntity);
         topicMapper.deleteTopic(topicEntity);
     }
+
+    @Override
+    public List<TopicEntity> selectTopiByCluster(Long clusterId) {
+        TopicEntity topicEntity = new TopicEntity();
+        topicEntity.setClusterId(clusterId);
+        return topicMapper.selectTopicByCluster(topicEntity);
+    }
+
+
 }

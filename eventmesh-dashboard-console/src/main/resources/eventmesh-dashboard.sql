@@ -14,6 +14,121 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+DROP TABLE IF EXISTS `cluster`;
+create table cluster
+(
+    id                 bigint unsigned auto_increment comment '集群id'
+        primary key,
+    name               varchar(128)  default ''                not null comment '集群名称',
+    register_name_list varchar(4096) default ''                not null comment '注册中心名字',
+    bootstrap_servers  varchar(2048) default ''                not null comment 'server地址',
+    eventmesh_version  varchar(32)   default ''                not null comment 'eventmesh版本',
+    client_properties  text                                    null comment 'EventMesh客户端配置',
+    jmx_properties     text                                    null comment 'JMX配置',
+    reg_properties     text                                    null comment '注册中心配置',
+    description        text                                    null comment '备注',
+    auth_type          int           default 0                 not null comment '认证类型，-1未知，0:无认证，',
+    run_state          tinyint       default 1                 not null comment '运行状态, 0表示未监控, 1监控中，有注册中心，2:监控中，无注册中心',
+    create_time        timestamp     default CURRENT_TIMESTAMP not null comment '接入时间',
+    update_time        timestamp     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
+    is_delete          int           default 0                 not null comment '0',
+    constraint uniq_name
+        unique (name)
+)
+    comment '物理集群信息表';
+
+create index idx_uniq_name
+    on cluster (name);
+
+
+DROP TABLE IF EXISTS `config`;
+create table config
+(
+    id                bigint unsigned auto_increment
+        primary key,
+    cluster_id        bigint        default -1                not null comment '集群ID',
+    business_type     varchar(64)   default ''                not null comment '业务类型',
+    instance_type     tinyint                                 not null comment '配置类型 0:runtime,1:storage,2:connector,3:topic',
+    instance_id       bigint        default -1                not null comment '实例ID，上面配置对应的(比如runtime)的id',
+    config_name       varchar(192)  default ''                not null comment '配置名称',
+    config_value      text                                    null comment '配置值',
+    start_version     varchar(64)   default ''                not null comment '配置开始使用的版本',
+    status            int           default 1                 not null comment '1 正常 2 禁用',
+    end_version       varchar(64)   default ''                not null comment '配置结束使用的版本',
+    diff_type         int           default -1                not null comment '差异类型',
+    description       varchar(1000) default ''                not null comment '备注',
+    edit              int           default 1                 not null comment '是否可以编辑 1 不可编辑（程序获取） 2 可编辑',
+    create_time       timestamp     default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time       timestamp     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
+    is_default        int                                     not null comment '是否是默认值，0默认，1自定义的',
+    is_modify         int           default 0                 not null,
+    eventmesh_version varchar(64)   default ' '               not null,
+    constraint uniq_instance_type_instance_id_config_name
+        unique (instance_id, config_name, instance_type)
+)
+    comment '配置信息表';
+
+create index idx_phy_id_instance_id
+    on config (cluster_id, instance_id);
+
+
+DROP TABLE IF EXISTS `runtime`;
+create table runtime
+(
+    id                 bigint auto_increment comment 'id'
+        primary key,
+    cluster_id         bigint        default -1                not null comment '物理集群ID',
+    host               varchar(128)  default ''                not null comment 'runtime主机名',
+    storage_cluster_id bigint        default -1                not null comment 'storageId',
+    port               int           default -1                not null comment 'runtime端口',
+    jmx_port           int           default -1                not null comment 'Jmx端口',
+    start_timestamp    bigint        default -1                not null comment '启动时间',
+    rack               varchar(128)  default ''                not null comment 'Rack信息',
+    status             int           default 0                 not null comment '状态: 1启用，0未启用',
+    create_time        timestamp     default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time        timestamp     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
+    endpoint_map       varchar(1024) default ''                not null comment '监听信息',
+    is_delete          int           default 0                 not null comment '0',
+    constraint uniq_cluster_phy_id__host_port
+        unique (cluster_id, host)
+)
+    comment 'Runtime信息表';
+
+create index idx_phy_id_host_storage_id
+    on runtime (cluster_id, storage_cluster_id);
+
+
+DROP TABLE IF EXISTS `store`;
+create table store
+(
+    id              bigint unsigned auto_increment comment 'id'
+        primary key,
+    cluster_id      bigint        default -1                not null comment '物理集群ID',
+    store_id        int           default -1                not null comment 'storeId',
+    store_type      varchar(32)   default ''                not null comment 'Store类型,如rocketmq,redis,...',
+    host            varchar(128)  default ''                not null comment 'store主机名',
+    runtime_id      bigint        default -1                not null comment 'runtimeId',
+    topic_list      varchar(4096) default ''                not null comment 'topicName列表',
+    diff_type       int           default -1                not null comment '差异类型',
+    port            int           default -1                not null comment 'store端口',
+    jmx_port        int           default -1                not null comment 'Jmx端口',
+    start_timestamp bigint        default -1                not null comment '启动时间',
+    rack            varchar(128)  default ''                not null comment 'Rack信息',
+    status          int           default 0                 not null comment '状态: 1启用，0未启用',
+    create_time     timestamp     default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time     timestamp     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
+    endpoint_map    varchar(1024) default ''                not null comment '监听信息',
+    is_delete       int           default 0                 not null,
+    constraint uniq_cluster_phy_id__storage_id
+        unique (cluster_id, store_id)
+)
+    comment 'Store信息表';
+
+create index idx_store_id_runtime_id
+    on store (store_id, cluster_id, runtime_id);
+
+
+
 DROP TABLE IF EXISTS `group`;
 CREATE TABLE `group`
 (

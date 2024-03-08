@@ -15,32 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.topic;
+package org.apache.eventmesh.dashboard.console.entity.storage;
 
-import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 
-import java.util.List;
+import java.sql.Timestamp;
 
-/**
- * Service about Topic
- */
-public interface TopicService {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    Integer selectTopicNumByCluster(Long clusterId);
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class StoreEntity {
 
-    List<TopicEntity> getTopicList(TopicEntity topicEntity);
+    private Long id;
 
-    void addTopic(TopicEntity topicEntity);
+    private Long clusterId;
 
-    void updateTopic(TopicEntity topicEntity);
+    private Integer storeId;
 
-    void deleteTopicById(TopicEntity topicEntity);
+    private String storeType;
 
-    TopicEntity selectTopicById(TopicEntity topicEntity);
+    private String host;
 
-    TopicEntity selectTopicByUnique(TopicEntity topicEntity);
+    private Long runtimeId;
 
-    void deleteTopic(TopicEntity topicEntity);
+    private String topicList;
 
-    List<TopicEntity> selectTopiByCluster(Long clusterId);
+    private Short diffType;
+
+    private Integer port;
+
+    private Integer jmxPort;
+
+    private String rack;
+
+    private Short status;
+
+    private Timestamp createTime;
+
+    private Timestamp updateTime;
+
+    private String endpointMap;
+
+    private Long startTimestamp;
 }

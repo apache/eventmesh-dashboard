@@ -36,12 +36,21 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
     @Autowired
     private ConnectionMapper connectionMapper;
 
+
+    @Override
     public List<ConnectionEntity> getAllConnectionsByClusterId(Long clusterId) {
         ConnectionEntity connectionEntity = new ConnectionEntity();
         connectionEntity.setClusterId(clusterId);
         return connectionMapper.selectByClusterId(connectionEntity);
     }
 
+
+    @Override
+    public Integer selectConnectionNumByCluster(Long clusterId) {
+        ConnectionEntity connectionEntity = new ConnectionEntity();
+        connectionEntity.setClusterId(clusterId);
+        return connectionMapper.selectConnectionNumByCluster(connectionEntity);
+    }
 
     @Override
     public List<ConnectionEntity> getAllConnections() {

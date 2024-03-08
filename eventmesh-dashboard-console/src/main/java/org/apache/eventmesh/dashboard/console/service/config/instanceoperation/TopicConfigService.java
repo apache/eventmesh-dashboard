@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.topic;
+package org.apache.eventmesh.dashboard.console.service.config.instanceoperation;
 
-import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
 /**
- * Service about Topic
+ * TODO Pending interfaces
  */
-public interface TopicService {
 
-    Integer selectTopicNumByCluster(Long clusterId);
+@Service
+public class TopicConfigService {
 
-    List<TopicEntity> getTopicList(TopicEntity topicEntity);
+    public List<ConfigEntity> getTopicConfigFromInstance(Long clusterId, String name) {
+        return null;
+    }
 
-    void addTopic(TopicEntity topicEntity);
-
-    void updateTopic(TopicEntity topicEntity);
-
-    void deleteTopicById(TopicEntity topicEntity);
-
-    TopicEntity selectTopicById(TopicEntity topicEntity);
-
-    TopicEntity selectTopicByUnique(TopicEntity topicEntity);
-
-    void deleteTopic(TopicEntity topicEntity);
-
-    List<TopicEntity> selectTopiByCluster(Long clusterId);
 }

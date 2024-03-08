@@ -36,36 +36,36 @@ public interface OprGroupMapper {
 
     @Insert("INSERT INTO `group` (cluster_id, name, member_count, members, type, state)"
         + "VALUE (#{clusterId},#{name},#{memberCount},#{members},#{type},#{state}) "
-        + "on duplicate key update is_delete=0")
+        + "ON DUPLICATE KEY UPDATE is_delete=0")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroup(GroupEntity groupEntity);
 
-    @Update("update `group`set member_count=#{memberCount},"
-        + "members=#{members},type=#{type},state=#{state} where id=#{id}")
+    @Update("UPDATE `group` SET member_count=#{memberCount},"
+        + "members=#{members},type=#{type},state=#{state} WHERE id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer updateGroup(GroupEntity groupEntity);
 
-    @Delete("update `group` set  is_delete=1 where id=#{id}")
+    @Delete("UPDATE `group` SET  is_delete=1 WHERE id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer deleteGroup(GroupEntity groupEntity);
 
-    @Select("select * from `group` where cluster_id=#{clusterId} and name=#{name} and is_delete=0")
+    @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND is_delete=0")
     GroupEntity selectGroupByUnique(GroupEntity groupEntity);
 
-    @Select("select * from `group` where id=#{id} and is_delete=0")
+    @Select("SELECT * FROM `group` WHERE id=#{id} AND is_delete=0")
     GroupEntity selectGroupById(GroupEntity groupEntity);
 
     @Select({
         "<script>",
-        "   select * from `group`",
+        "   SELECT * FROM `group`",
         "   <where>",
         "       <if test='clusterId != null'>",
         "           cluster_id=#{clusterId}",
         "       </if>",
         "       <if test='name != null'>",
-        "           and name like concat('%',#{name},'%')",
+        "           AND name LIKE concat('%',#{name},'%')",
         "       </if>",
-        "       and is_delete=0",
+        "       AND is_delete=0",
         "   </where>",
         "</script>"})
     List<GroupEntity> selectGroup(GroupEntity groupEntity);

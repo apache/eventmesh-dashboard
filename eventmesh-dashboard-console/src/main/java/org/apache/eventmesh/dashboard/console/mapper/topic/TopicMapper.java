@@ -35,37 +35,43 @@ import java.util.List;
 @Mapper
 public interface TopicMapper {
 
+    @Select("SELECT count(*) FROM topic WHERE cluster_id=#{clusterId}")
+    Integer selectTopicNumByCluster(TopicEntity topicEntity);
+
     @Select({
         "<script>",
-        "   select * from topic",
+        "   SELECT * FROM topic",
         "   <where>",
         "       <if test='topicName!=null'>",
-        "           and topic_name=#{topicName}",
+        "           AND topic_name=#{topicName}",
         "       </if>",
         "       <if test='clusterId!=null'>",
-        "           and cluster_id=#{clusterId} ",
+        "           AND cluster_id=#{clusterId} ",
         "       </if>",
-        "       and is_delete=0",
+        "       AND is_delete=0",
         "   </where>",
         "</script>"})
     List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
     @Insert("INSERT INTO topic (cluster_id, topic_name, runtime_id, storage_id, retention_ms, type, description) "
         + "VALUE (#{clusterId},#{topicName},#{runtimeId},#{storageId},#{retentionMs},#{type},#{description})"
-        + "on duplicate key update is_delete = 0")
+        + "ON DUPLICATE KEY UPDATE is_delete = 0")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addTopic(TopicEntity topicEntity);
 
-    @Update("update topic set type=#{type},description=#{description} where id=#{id}")
+    @Update("UPDATE topic SET type=#{type},description=#{description} WHERE id=#{id}")
     void updateTopic(TopicEntity topicEntity);
 
-    @Delete("update `topic` set is_delete=1 where id=#{id}")
+    @Delete("UPDATE `topic` SET is_delete=1 WHERE id=#{id}")
     void deleteTopic(TopicEntity topicEntity);
 
-    @Select("select * from topic where cluster_id=#{clusterId} and topic_name=#{topicName}")
+    @Select("SELECT * FROM topic WHERE cluster_id=#{clusterId} AND topic_name=#{topicName}")
     TopicEntity selectTopicByUnique(TopicEntity topicEntity);
 
-    @Select("select * from topic where id=#{id}")
+    @Select("SELECT * FROM topic WHERE id=#{id}")
     TopicEntity selectTopicById(TopicEntity topicEntity);
+
+    @Select("SELECT * FROM topic WHERE cluster_id=#{clusterId}")
+    List<TopicEntity> selectTopicByCluster(TopicEntity topicEntity);
 
 }

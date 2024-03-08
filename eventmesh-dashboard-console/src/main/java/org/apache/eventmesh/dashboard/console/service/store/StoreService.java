@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.topic;
+package org.apache.eventmesh.dashboard.console.service.store;
 
-import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
 
 import java.util.List;
 
 /**
- * Service about Topic
+ * store data service
  */
-public interface TopicService {
+public interface StoreService {
 
-    Integer selectTopicNumByCluster(Long clusterId);
+    void addStore(StoreEntity storeEntity);
 
-    List<TopicEntity> getTopicList(TopicEntity topicEntity);
+    void deleteStoreByUnique(StoreEntity storeEntity);
 
-    void addTopic(TopicEntity topicEntity);
+    List<StoreEntity> selectStoreByCluster(Long clusterId);
 
-    void updateTopic(TopicEntity topicEntity);
-
-    void deleteTopicById(TopicEntity topicEntity);
-
-    TopicEntity selectTopicById(TopicEntity topicEntity);
-
-    TopicEntity selectTopicByUnique(TopicEntity topicEntity);
-
-    void deleteTopic(TopicEntity topicEntity);
-
-    List<TopicEntity> selectTopiByCluster(Long clusterId);
+    void updateStoreByUnique(StoreEntity storeEntity);
 }
