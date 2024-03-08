@@ -25,6 +25,9 @@ import java.util.List;
  * Service about Topic
  */
 public interface TopicService {
+
+    Integer selectTopicNumByCluster(Long clusterId);
+
     List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
     void addTopic(TopicEntity topicEntity);

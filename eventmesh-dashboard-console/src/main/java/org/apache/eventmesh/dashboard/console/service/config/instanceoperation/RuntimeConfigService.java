@@ -24,7 +24,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RuntimeConfigController {
+public class RuntimeConfigService {
 
     public List<ConfigEntity> getRuntimeConfigFromInstance(Long clusterId, String host) {
         return null;

@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.service.config.synchronous;
 import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
 import org.apache.eventmesh.dashboard.console.service.config.ConfigService;
-import org.apache.eventmesh.dashboard.console.service.config.instanceoperation.ConnectorConfigController;
+import org.apache.eventmesh.dashboard.console.service.config.instanceoperation.ConnectorConfigService;
 import org.apache.eventmesh.dashboard.console.service.connector.ConnectorDataService;
 
 import java.util.List;
@@ -29,14 +29,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Synchronous DB To Instance
+ */
 @Service
-public class SynchronousConnectorConfigDBToInstanceTask {
+public class SyncConnectorConfigTask {
 
     @Autowired
     private ConnectorDataService connectorDataService;
 
     @Autowired
-    private ConnectorConfigController connectorConfigController;
+    private ConnectorConfigService connectorConfigService;
     @Autowired
     private ConfigService configService;
 
@@ -45,7 +48,7 @@ public class SynchronousConnectorConfigDBToInstanceTask {
         for (ConnectorEntity connectorEntity : connectorEntities) {
 
             ConcurrentHashMap<String, String> connectorConfigMapFromInstance = this.configListToMap(
-                connectorConfigController.getConnectorConfigFromInstance(clusterId, connectorEntity.getId()));
+                connectorConfigService.getConnectorConfigFromInstance(clusterId, connectorEntity.getId()));
 
             ConfigEntity configEntity = this.getConfigEntityBelongInstance(clusterId, connectorEntity.getId());
 

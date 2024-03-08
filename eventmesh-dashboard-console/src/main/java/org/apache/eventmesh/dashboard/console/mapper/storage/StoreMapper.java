@@ -38,7 +38,7 @@ public interface StoreMapper {
         + "#{clusterId},#{storeId},#{storeType},#{host},#{runtimeId},#{topicList},#{diffType},#{port},#{jmxPort}"
         + ",#{startTimestamp},#{rack},#{status},#{endpointMap})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addStorage(StoreEntity storeEntity);
+    void addStore(StoreEntity storeEntity);
 
     @Update("UPDATE store SET is_delete=1 WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
     void deleteStoreByUnique(StoreEntity storeEntity);

@@ -22,7 +22,7 @@ import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
 import java.util.List;
 
 /**
- * Service providing data of connectors.
+ * Service providing ConnectorEntity data.
  */
 public interface ConnectorDataService {
 

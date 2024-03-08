@@ -25,7 +25,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConnectorConfigController {
+public class ConnectorConfigService {
 
     public List<ConfigEntity> getConnectorConfigFromInstance(Long clusterId, Long id) {
         return null;

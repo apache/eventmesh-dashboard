@@ -18,68 +18,71 @@
 package org.apache.eventmesh.dashboard.console.service.config.synchronous;
 
 import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 import org.apache.eventmesh.dashboard.console.service.config.ConfigService;
-import org.apache.eventmesh.dashboard.console.service.config.instanceoperation.RuntimeConfigController;
-import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
+import org.apache.eventmesh.dashboard.console.service.config.instanceoperation.TopicConfigService;
+import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Synchronous DB To Instance
+ */
+
 @Service
-public class SynchronousRuntimeConfigDBToInstanceTask {
+public class SyncTopicConfigTask {
 
     @Autowired
-    private RuntimeService runtimeService;
+    private TopicService topicService;
 
     @Autowired
-    private RuntimeConfigController runtimeConfigController;
+    private TopicConfigService topicConfigService;
 
     @Autowired
     private ConfigService configService;
 
-    public void synchronousRuntimeConfig(Long clusterId) {
-        List<RuntimeEntity> runtimeEntityList = runtimeService.getRuntimeByClusterId(clusterId);
-        for (RuntimeEntity runtimeEntity : runtimeEntityList) {
+    public void synchronousTopicConfig(Long clusterId) {
+        List<TopicEntity> topicEntityList = topicService.selectTopiByCluster(clusterId);
+        for (TopicEntity topicEntity : topicEntityList) {
 
-            ConcurrentHashMap<String, String> runtimeConfigMapFromInstance = this.configListToMap(
-                runtimeConfigController.getRuntimeConfigFromInstance(clusterId, runtimeEntity.getHost()));
+            ConcurrentHashMap<String, String> topicConfigMapFromInstance = this.configListToMap(
+                topicConfigService.getTopicConfigFromInstance(clusterId, topicEntity.getTopicName()));
 
-            ConfigEntity configEntity = this.getConfigEntityBelongInstance(clusterId, runtimeEntity.getId());
+            ConfigEntity configEntity = this.getConfigEntityBelongInstance(clusterId, topicEntity.getId());
 
-            ConcurrentHashMap<String, String> runtimeConfigMapFromDb = this.configListToMap(configService.selectByInstanceId(configEntity));
+            ConcurrentHashMap<String, String> topicConfigMapFromDb = this.configListToMap(configService.selectByInstanceId(configEntity));
 
             ConcurrentHashMap<String, String> updateConfigMap = new ConcurrentHashMap<>();
 
-            runtimeConfigMapFromInstance.entrySet().forEach(n -> {
-                if (runtimeConfigMapFromDb.remove(n.getKey(), n.getValue())) {
-                    runtimeConfigMapFromInstance.remove(n.getKey());
+            topicConfigMapFromInstance.entrySet().forEach(n -> {
+                if (topicConfigMapFromDb.remove(n.getKey(), n.getValue())) {
+                    topicConfigMapFromInstance.remove(n.getKey());
                 }
-                if (runtimeConfigMapFromDb.get(n.getKey()) != null) {
-                    updateConfigMap.put(n.getKey(), runtimeConfigMapFromDb.get(n.getKey()));
-                    runtimeConfigMapFromInstance.remove(n.getKey());
-                    runtimeConfigMapFromDb.remove(n.getKey());
+                if (topicConfigMapFromDb.get(n.getKey()) != null) {
+                    updateConfigMap.put(n.getKey(), topicConfigMapFromDb.get(n.getKey()));
+                    topicConfigMapFromInstance.remove(n.getKey());
+                    topicConfigMapFromDb.remove(n.getKey());
                 }
             });
-            //add  runtimeConfigMapFromDb
+            //add  topicConfigMapFromDb
 
             //update  updateConfigMap
 
-            //delete runtimeConfigMapFromInstance
+            //delete topicConfigMapFromInstance
         }
     }
 
     private ConcurrentHashMap<String, String> configListToMap(List<ConfigEntity> configEntityList) {
-        ConcurrentHashMap<String, String> runtimeConfigMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, String> topicConfigMap = new ConcurrentHashMap<>();
         configEntityList.forEach(n -> {
-                runtimeConfigMap.put(n.getConfigName(), n.getConfigValue());
+                topicConfigMap.put(n.getConfigName(), n.getConfigValue());
             }
         );
-        return runtimeConfigMap;
+        return topicConfigMap;
     }
 
 
@@ -87,7 +90,7 @@ public class SynchronousRuntimeConfigDBToInstanceTask {
         ConfigEntity configEntity = new ConfigEntity();
         configEntity.setClusterId(clusterId);
         configEntity.setInstanceId(id);
-        configEntity.setInstanceType(0);
+        configEntity.setInstanceType(1);
         return configEntity;
     }
 }

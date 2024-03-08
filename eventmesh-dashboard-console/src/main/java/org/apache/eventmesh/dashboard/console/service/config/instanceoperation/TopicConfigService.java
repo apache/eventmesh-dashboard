@@ -24,9 +24,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StorageConfigController {
+public class TopicConfigService {
 
-    public List<ConfigEntity> getStorageConfigFromInstance(Long clusterId, String storeId) {
+    public List<ConfigEntity> getTopicConfigFromInstance(Long clusterId, String name) {
         return null;
     }
 
