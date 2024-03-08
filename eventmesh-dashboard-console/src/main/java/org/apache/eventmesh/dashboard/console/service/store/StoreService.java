@@ -26,11 +26,11 @@ import java.util.List;
  */
 public interface StoreService {
 
-    void addStorage(StoreEntity storeEntity);
+    void addStore(StoreEntity storeEntity);
 
     void deleteStoreByUnique(StoreEntity storeEntity);
 
-    List<StoreEntity> selectStoreByCluster(StoreEntity storeEntity);
+    List<StoreEntity> selectStoreByCluster(Long clusterId);
 
     void updateStoreByUnique(StoreEntity storeEntity);
 }

@@ -33,8 +33,8 @@ public class StoreServiceImpl implements StoreService {
     private StoreMapper storeMapper;
 
     @Override
-    public void addStorage(StoreEntity storeEntity) {
-        storeMapper.addStorage(storeEntity);
+    public void addStore(StoreEntity storeEntity) {
+        storeMapper.addStore(storeEntity);
     }
 
     @Override
@@ -43,7 +43,9 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public List<StoreEntity> selectStoreByCluster(StoreEntity storeEntity) {
+    public List<StoreEntity> selectStoreByCluster(Long clusterId) {
+        StoreEntity storeEntity = new StoreEntity();
+        storeEntity.setClusterId(clusterId);
         return storeMapper.selectStoreByCluster(storeEntity);
     }
 

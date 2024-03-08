@@ -38,6 +38,13 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Override
+    public Integer selectTopicNumByCluster(Long clusterId) {
+        TopicEntity topicEntity = new TopicEntity();
+        topicEntity.setClusterId(clusterId);
+        return topicMapper.selectTopicNumByCluster(topicEntity);
+    }
+
+    @Override
     public List<TopicEntity> getTopicList(TopicEntity topicEntity) {
         return topicMapper.getTopicListByDynamic(topicEntity);
     }
