@@ -19,21 +19,36 @@ package org.apache.eventmesh.dashboard.common.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+import org.apache.rocketmq.common.message.MessageQueue;
+import org.apache.rocketmq.common.message.MessageType;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 /**
  * One record displayed in 'Topic' page.
  */
 
+@Data
 public class TopicProperties {
+    private String name;
 
-    public String name;
-    public long messageCount;
+    private long messageCount;
 
-    @JsonCreator
-    public TopicProperties(
-        @JsonProperty("name") String name,
-        @JsonProperty("messageCount") long messageCount) {
-        super();
+    private List<MessageQueue> queues;
+
+    private MessageType messageType;
+
+    private Map<String, String> properties;
+
+    private int perm;
+
+    public TopicProperties() {
+
+    }
+    public TopicProperties(String name, long messageCount) {
         this.name = name;
         this.messageCount = messageCount;
     }

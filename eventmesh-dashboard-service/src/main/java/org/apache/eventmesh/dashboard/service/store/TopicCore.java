@@ -27,10 +27,7 @@ import java.util.List;
 
 public interface TopicCore {
 
-    /**
-     * TODO rename to getTopics after being implemented
-     */
-    List<TopicProperties> getTopic();
+    List<TopicProperties> getTopics();
 
     void createTopic(String topicName);
 

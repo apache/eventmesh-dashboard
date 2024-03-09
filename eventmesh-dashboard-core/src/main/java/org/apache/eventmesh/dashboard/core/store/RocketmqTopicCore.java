@@ -24,36 +24,37 @@ import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
 import java.util.List;
 
+import org.apache.rocketmq.common.TopicFilterType;
+import org.apache.rocketmq.common.constant.PermName;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * TODO implement methods from storage-plugin.admin
- */
 
 @Slf4j
 @Service
-public class RocketmqTopicCoreImpl implements TopicCore {
+public class RocketmqTopicCore implements TopicCore {
 
-    private RocketmqProperties rocketmqProperties;
+    private final RocketmqProperties rocketmqProperties;
 
-    public RocketmqTopicCoreImpl(RocketmqProperties rocketmqProperties) {
+    public RocketmqTopicCore(RocketmqProperties rocketmqProperties) {
         this.rocketmqProperties = rocketmqProperties;
     }
 
     @Override
-    public List<TopicProperties> getTopic() {
-        return null;
+    public List<TopicProperties> getTopics() {
+        return RocketmqUtils.getTopics(rocketmqProperties.getNamesrvAddr());
     }
 
     @Override
     public void createTopic(String topicName) {
-
+        RocketmqUtils.createTopic(topicName, TopicFilterType.SINGLE_TAG, PermName.PERM_READ | PermName.PERM_WRITE,
+                rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getClusterName(),
+                rocketmqProperties.getReadQueueNums(), rocketmqProperties.getWriteQueueNums());
     }
 
     @Override
     public void deleteTopic(String topicName) {
-        RocketmqUtils.deleteTopic();
+        RocketmqUtils.deleteTopic(topicName, rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getClusterName());
     }
 }

@@ -19,7 +19,6 @@ package org.apache.eventmesh.dashboard.console.function.health.check.impl.storag
 
 import static org.apache.rocketmq.client.producer.SendStatus.SEND_OK;
 
-import org.apache.eventmesh.dashboard.common.util.RocketmqUtils;
 import org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant;
 import org.apache.eventmesh.dashboard.console.constant.health.HealthConstant;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
@@ -137,11 +136,22 @@ public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
         remotingClient = new NettyRemotingClient(config);
         remotingClient.start();
 
-        // TODO there are many functions that can be reused, they should be collected in a util module
+        //TODO there are many functions that can be reused, they should be collected in a util module
         //this function that create topics can be reused
-        RocketmqUtils.createTopic(HealthConstant.ROCKETMQ_CHECK_TOPIC, TopicFilterType.SINGLE_TAG.name(),
-                PermName.PERM_READ | PermName.PERM_WRITE, getConfig().getRocketmqProperties().getBrokerUrl(),
-                getConfig().getRequestTimeoutMillis());
+        try {
+            CreateTopicRequestHeader requestHeader = new CreateTopicRequestHeader();
+            requestHeader.setTopic(HealthConstant.ROCKETMQ_CHECK_TOPIC);
+            requestHeader.setTopicFilterType(TopicFilterType.SINGLE_TAG.name());
+            requestHeader.setReadQueueNums(8);
+            requestHeader.setWriteQueueNums(8);
+            requestHeader.setPerm(PermName.PERM_READ | PermName.PERM_WRITE);
+            RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC, requestHeader);
+            Object result = remotingClient.invokeSync(getConfig().getRocketmqProperties().getBrokerUrl(), request, getConfig().getRequestTimeoutMillis());
+            log.info(result.toString());
+        } catch (Exception e) {
+            log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
+            return;
+        }
 
         try {
             producer = new DefaultMQProducer(HealthConstant.ROCKETMQ_CHECK_PRODUCER_GROUP);
