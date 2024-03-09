@@ -2,102 +2,75 @@ package org.apache.eventmesh.dashboard.common.util;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
-import org.apache.rocketmq.acl.common.AclClientRPCHook;
-import org.apache.rocketmq.acl.common.SessionCredentials;
 import org.apache.rocketmq.common.TopicConfig;
-import org.apache.rocketmq.common.TopicFilterType;
-import org.apache.rocketmq.common.admin.TopicOffset;
-import org.apache.rocketmq.common.admin.TopicStatsTable;
-import org.apache.rocketmq.common.message.MessageQueue;
-import org.apache.rocketmq.remoting.RPCHook;
-import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
-import org.apache.rocketmq.tools.command.CommandUtil;
+import org.apache.rocketmq.common.protocol.RequestCode;
+import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
+import org.apache.rocketmq.common.protocol.header.CreateTopicRequestHeader;
+import org.apache.rocketmq.common.protocol.header.DeleteTopicRequestHeader;
+import org.apache.rocketmq.remoting.CommandCustomHeader;
+import org.apache.rocketmq.remoting.RemotingClient;
+import org.apache.rocketmq.remoting.netty.NettyClientConfig;
+import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
+import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 
 @Slf4j
 @UtilityClass
 public class RocketmqUtils {
+    private final RemotingClient remotingClient;
 
-    private DefaultMQAdminExt createMqAdminExt(String nameServerAddr) {
-        final RPCHook rpcHook = new AclClientRPCHook(new SessionCredentials());
-        DefaultMQAdminExt adminExt = new DefaultMQAdminExt(rpcHook);
-        String groupId = UUID.randomUUID().toString();
-        adminExt.setAdminExtGroup("admin_ext_group-" + groupId);
-        adminExt.setNamesrvAddr(nameServerAddr);
-        return adminExt;
+    static{
+        NettyClientConfig config = new NettyClientConfig();
+        config.setUseTLS(false);
+        remotingClient = new NettyRemotingClient(config);
+        remotingClient.start();
     }
 
 
-    public void createTopic(String topicName, TopicFilterType topicFilterType, int perm, String nameServerAddr,
-                            String clusterName, int readQueueNums, int writeQueueNums) {
-        if (StringUtils.isBlank(topicName)) {
-            log.info("Topic name can not be blank");
-        }
-        DefaultMQAdminExt adminExt = createMqAdminExt(nameServerAddr);
-
+    public void createTopic(String topicName, String topicFilterTypeName, int perm, String nameServerAddr,
+                            int readQueueNums, int writeQueueNums, long requestTimeoutMillis) {
         try {
-            adminExt.start();
-            Set<String> brokerAddress = CommandUtil.fetchMasterAddrByClusterName(adminExt, clusterName);
-            for (String masterAddress : brokerAddress) {
-                TopicConfig topicConfig = new TopicConfig();
-                topicConfig.setTopicName(topicName);
-                topicConfig.setReadQueueNums(readQueueNums);
-                topicConfig.setWriteQueueNums(writeQueueNums);
-                topicConfig.setPerm(perm);
-                topicConfig.setTopicFilterType(topicFilterType);
-                adminExt.createAndUpdateTopicConfig(masterAddress, topicConfig);
-            }
+            CreateTopicRequestHeader requestHeader = new CreateTopicRequestHeader();
+            requestHeader.setTopic(topicName);
+            requestHeader.setTopicFilterType(topicFilterTypeName);
+            requestHeader.setReadQueueNums(readQueueNums);
+            requestHeader.setWriteQueueNums(writeQueueNums);
+            requestHeader.setPerm(perm);
+            RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC, requestHeader);
+            Object result = remotingClient.invokeSync(nameServerAddr, request, requestTimeoutMillis);
+            log.info("rocketmq create topic result:" + result.toString());
         } catch (Exception e) {
-            log.info("Failed to create topic: " + e.getMessage());
-        } finally {
-            adminExt.shutdown();
+            log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
         }
     }
 
-    public List<TopicProperties> getTopics(String nameServerAddr) {
-        DefaultMQAdminExt adminExt = createMqAdminExt(nameServerAddr);
-        List<TopicProperties> result = new ArrayList<>();
+    public List<TopicConfig> getTopics(String nameServerAddr, long requestTimeoutMillis) {
+        List<TopicConfig> topicConfigList = new ArrayList<>();
         try {
-            adminExt.start();
-            Set<String> topicList = adminExt.fetchAllTopicList().getTopicList();
-            for (String topic : topicList) {
-                long messageCount = 0;
-                TopicStatsTable topicStats = adminExt.examineTopicStats(topic);
-                HashMap<MessageQueue, TopicOffset> offsetTable = topicStats.getOffsetTable();
-                for (TopicOffset topicOffset : offsetTable.values()) {
-                    messageCount += topicOffset.getMaxOffset() - topicOffset.getMinOffset();
-                }
-                result.add(new TopicProperties(topic, messageCount));
-            }
-
-            result.sort(Comparator.comparing(TopicProperties::getName));
-            return result;
+            RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ALL_TOPIC_CONFIG, (CommandCustomHeader) null);
+            RemotingCommand response = remotingClient.invokeSync(nameServerAddr, request, 3000L);
+            TopicConfigSerializeWrapper allTopicConfig = TopicConfigSerializeWrapper.decode(response.getBody(), TopicConfigSerializeWrapper.class);
+            ConcurrentMap<String, TopicConfig> topicConfigTable = allTopicConfig.getTopicConfigTable();
+            topicConfigList = new ArrayList<>(topicConfigTable.values());
         } catch (Exception e) {
-            log.info("Failed to getTopics: " + e.getMessage());
-        } finally {
-            adminExt.shutdown();
+            log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
         }
-        return result;
+        return topicConfigList;
     }
 
 
-    public void deleteTopic(String topicName, String nameServerAddr, String clusterName) {
-        if (StringUtils.isBlank(topicName)) {
-            log.info("Topic name can not be blank.");
-            return;
-        }
-        DefaultMQAdminExt adminExt = createMqAdminExt(nameServerAddr);
+    public void deleteTopic(String topicName, String nameServerAddr, long requestTimeoutMillis) {
         try {
-            adminExt.start();
-            Set<String> brokerAddress = CommandUtil.fetchMasterAddrByClusterName(adminExt, clusterName);
-            adminExt.deleteTopicInBroker(brokerAddress, topicName);
+            DeleteTopicRequestHeader deleteTopicRequestHeader = new DeleteTopicRequestHeader();
+            deleteTopicRequestHeader.setTopic(topicName);
+            RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.DELETE_TOPIC_IN_NAMESRV, null);
+            Object result = remotingClient.invokeSync(nameServerAddr, request, requestTimeoutMillis);
+
+            log.info("rocketmq delete topic result:" + result.toString());
         } catch (Exception e) {
-            log.info("Failed to delete topic: " + e.getMessage());
-        } finally {
-            adminExt.shutdown();
+            log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
         }
     }
 

@@ -22,8 +22,10 @@ import org.apache.eventmesh.dashboard.common.properties.RocketmqProperties;
 import org.apache.eventmesh.dashboard.common.util.RocketmqUtils;
 import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.TopicFilterType;
 import org.apache.rocketmq.common.constant.PermName;
 import org.springframework.stereotype.Service;
@@ -43,18 +45,28 @@ public class RocketmqTopicCore implements TopicCore {
 
     @Override
     public List<TopicProperties> getTopics() {
-        return RocketmqUtils.getTopics(rocketmqProperties.getNamesrvAddr());
+        List<TopicConfig> topicConfigList =
+                RocketmqUtils.getTopics(rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getRequestTimeoutMillis());
+        List<TopicProperties> topicPropertiesList = new ArrayList<>();
+        for (TopicConfig topicConfig : topicConfigList) {
+            TopicProperties topicProperties = new TopicProperties();
+            topicProperties.setRocketmqTopicConfig(topicConfig);
+            topicPropertiesList.add(topicProperties);
+        }
+        return topicPropertiesList;
     }
 
     @Override
     public void createTopic(String topicName) {
-        RocketmqUtils.createTopic(topicName, TopicFilterType.SINGLE_TAG, PermName.PERM_READ | PermName.PERM_WRITE,
-                rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getClusterName(),
-                rocketmqProperties.getReadQueueNums(), rocketmqProperties.getWriteQueueNums());
+        RocketmqUtils.createTopic(topicName, TopicFilterType.SINGLE_TAG.name(),
+                PermName.PERM_READ | PermName.PERM_WRITE, rocketmqProperties.getNamesrvAddr(),
+                rocketmqProperties.getReadQueueNums(), rocketmqProperties.getWriteQueueNums(),
+                rocketmqProperties.getRequestTimeoutMillis());
     }
 
     @Override
     public void deleteTopic(String topicName) {
-        RocketmqUtils.deleteTopic(topicName, rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getClusterName());
+        RocketmqUtils.deleteTopic(topicName, rocketmqProperties.getNamesrvAddr(),
+                rocketmqProperties.getRequestTimeoutMillis());
     }
 }

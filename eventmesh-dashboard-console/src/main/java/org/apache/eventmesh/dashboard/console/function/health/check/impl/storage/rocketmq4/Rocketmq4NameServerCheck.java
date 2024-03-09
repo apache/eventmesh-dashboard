@@ -47,7 +47,7 @@ public class Rocketmq4NameServerCheck extends AbstractHealthCheckService {
     public void doCheck(HealthCheckCallback callback) {
         try {
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_NAMESRV_CONFIG, null);
-            remotingClient.invokeAsync(getConfig().getRocketmqConfig().getNameServerUrl(), request, getConfig().getRequestTimeoutMillis(),
+            remotingClient.invokeAsync(getConfig().getRocketmqProperties().getNamesrvAddr(), request, getConfig().getRequestTimeoutMillis(),
                 new InvokeCallback() {
                     @Override
                     public void operationComplete(ResponseFuture responseFuture) {
@@ -67,7 +67,7 @@ public class Rocketmq4NameServerCheck extends AbstractHealthCheckService {
 
     @Override
     public void init() {
-        if (getConfig().getRocketmqConfig().getNameServerUrl() == null || getConfig().getRocketmqConfig().getNameServerUrl().isEmpty()) {
+        if (getConfig().getRocketmqProperties().getNamesrvAddr() == null || getConfig().getRocketmqProperties().getNamesrvAddr().isEmpty()) {
             throw new RuntimeException("RocketmqNameServerCheck init failed, nameServerUrl is empty");
         }
 

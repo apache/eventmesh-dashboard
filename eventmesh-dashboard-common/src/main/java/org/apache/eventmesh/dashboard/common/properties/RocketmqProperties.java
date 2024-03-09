@@ -19,4 +19,6 @@ public class RocketmqProperties {
     private String accessKey;
 
     private String secretKey;
+
+    private Long requestTimeoutMillis = 10000L;
 }

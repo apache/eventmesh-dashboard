@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.common.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.common.message.MessageType;
 
@@ -33,23 +34,7 @@ import java.util.Queue;
 
 @Data
 public class TopicProperties {
-    private String name;
 
-    private long messageCount;
+    private TopicConfig rocketmqTopicConfig;
 
-    private List<MessageQueue> queues;
-
-    private MessageType messageType;
-
-    private Map<String, String> properties;
-
-    private int perm;
-
-    public TopicProperties() {
-
-    }
-    public TopicProperties(String name, long messageCount) {
-        this.name = name;
-        this.messageCount = messageCount;
-    }
 }

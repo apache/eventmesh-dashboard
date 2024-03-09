@@ -51,7 +51,7 @@ public class Rocketmq4BrokerCheck extends AbstractHealthCheckService {
     public void doCheck(HealthCheckCallback callback) {
         try {
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_BROKER_RUNTIME_INFO, null);
-            remotingClient.invokeAsync(getConfig().getRocketmqConfig().getBrokerUrl(), request, getConfig().getRequestTimeoutMillis(),
+            remotingClient.invokeAsync(getConfig().getRocketmqProperties().getBrokerUrl(), request, getConfig().getRequestTimeoutMillis(),
                 new InvokeCallback() {
                     @Override
                     public void operationComplete(ResponseFuture responseFuture) {
@@ -71,7 +71,7 @@ public class Rocketmq4BrokerCheck extends AbstractHealthCheckService {
 
     @Override
     public void init() {
-        if (getConfig().getRocketmqConfig().getBrokerUrl() == null || getConfig().getRocketmqConfig().getBrokerUrl().isEmpty()) {
+        if (getConfig().getRocketmqProperties().getBrokerUrl() == null || getConfig().getRocketmqProperties().getBrokerUrl().isEmpty()) {
             throw new IllegalArgumentException("RocketmqCheck failed. BrokerUrl is null.");
         }
 
