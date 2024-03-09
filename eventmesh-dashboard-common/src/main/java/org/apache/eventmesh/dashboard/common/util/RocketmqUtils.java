@@ -16,8 +16,9 @@ import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 public class RocketmqUtils {
     private static final RemotingClient remotingClient;
 
-    private static int readQueueNums = 8;
-    private static int writeQueueNums = 8;
+    private static final int READ_QUEUE_NUMS = 8;
+
+    private static final int WRITE_QUEUE_NUMS = 8;
 
     static {
         NettyClientConfig config = new NettyClientConfig();
@@ -31,8 +32,8 @@ public class RocketmqUtils {
             CreateTopicRequestHeader requestHeader = new CreateTopicRequestHeader();
             requestHeader.setTopic(topicName);
             requestHeader.setTopicFilterType(topicFilterType);
-            requestHeader.setReadQueueNums(readQueueNums);
-            requestHeader.setWriteQueueNums(writeQueueNums);
+            requestHeader.setReadQueueNums(READ_QUEUE_NUMS);
+            requestHeader.setWriteQueueNums(WRITE_QUEUE_NUMS);
             requestHeader.setPerm(perm);
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC, requestHeader);
             Object result = remotingClient.invokeSync(brokerUrl, request, requestTimeoutMillis);

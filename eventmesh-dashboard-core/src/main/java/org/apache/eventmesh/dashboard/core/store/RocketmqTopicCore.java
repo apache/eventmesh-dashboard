@@ -19,6 +19,7 @@ package org.apache.eventmesh.dashboard.core.store;
 
 import org.apache.eventmesh.dashboard.common.model.TopicProperties;
 import org.apache.eventmesh.dashboard.common.properties.RocketmqProperties;
+import org.apache.eventmesh.dashboard.common.util.RocketmqUtils;
 import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
 import java.util.List;
@@ -33,11 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class RocketmqTopicCore implements TopicCore {
+public class RocketmqTopicCoreImpl implements TopicCore {
 
     private RocketmqProperties rocketmqProperties;
 
-    public RocketmqTopicCore(RocketmqProperties rocketmqProperties) {
+    public RocketmqTopicCoreImpl(RocketmqProperties rocketmqProperties) {
         this.rocketmqProperties = rocketmqProperties;
     }
 
@@ -53,6 +54,6 @@ public class RocketmqTopicCore implements TopicCore {
 
     @Override
     public void deleteTopic(String topicName) {
-
+        RocketmqUtils.deleteTopic();
     }
 }

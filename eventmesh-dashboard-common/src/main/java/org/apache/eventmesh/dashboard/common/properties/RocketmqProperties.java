@@ -12,6 +12,10 @@ public class RocketmqProperties {
 
     private String endPoint;
 
+    private int readQueueNums;
+
+    private int writeQueueNums;
+
     private String accessKey;
 
     private String secretKey;
