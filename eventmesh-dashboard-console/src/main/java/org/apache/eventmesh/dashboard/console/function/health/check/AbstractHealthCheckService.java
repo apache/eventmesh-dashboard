@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.base;
+package org.apache.eventmesh.dashboard.console.function.health.check;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
+import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import lombok.Data;
+import lombok.Getter;
 
 /**
- * Base Entity provide some basic fields that every Eventmesh Dashboard Entity would have
+ * extends
  */
-@Data
-@Schema(name = "BaseEntity", description = "Base entity")
-public class BaseEntity implements Serializable {
+@Getter
+public abstract class AbstractHealthCheckService implements HealthCheckService {
 
-    private static final long serialVersionUID = -2697805837923579585L;
-    /**
-     * Primary key
-     */
-    @Schema(name = "id", description = "primary key")
-    protected Long id;
+    private final HealthCheckObjectConfig config;
 
-    protected Long clusterId;
+    public AbstractHealthCheckService(HealthCheckObjectConfig healthCheckObjectConfig) {
+        this.config = healthCheckObjectConfig;
+        this.init();
+    }
 
-    protected Timestamp createTime;
-
-    protected Timestamp updateTime;
 }

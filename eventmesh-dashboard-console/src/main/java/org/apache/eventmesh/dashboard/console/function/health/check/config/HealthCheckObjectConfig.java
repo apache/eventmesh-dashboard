@@ -15,51 +15,54 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.meta;
+package org.apache.eventmesh.dashboard.console.function.health.check.config;
 
-import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
-import org.apache.eventmesh.dashboard.console.enums.StatusEnum;
+import java.util.Properties;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class MetaEntity extends BaseEntity {
+public class HealthCheckObjectConfig {
 
-    private static final long serialVersionUID = 7176263169716424469L;
+    private Long instanceId;
 
-    private String name;
+    private String healthCheckResourceType;
 
-    private String type;
+    private String healthCheckResourceSubType;
 
-    private String version;
+    private String simpleClassName;
+
+    private Class<?> checkClass;
+
+    private Properties eventmeshProperties;
 
     private Long clusterId;
 
+    //Prioritize passing in this field for a url.
+    //redis, nacos
+    private String connectUrl;
+
+    //redis
     private String host;
 
     private Integer port;
 
-    private String role;
-
     private String username;
 
-    private String params;
+    private String password;
 
-    /**
-     * 0: not active, 1: active
-     *
-     * @see StatusEnum
-     */
-    @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")
-    private Integer status;
+    //mysql, redis
+    private String database;
 
-    public void setStatusEnum(StatusEnum statusEnum) {
-        this.status = statusEnum.getNumber();
+    private Long requestTimeoutMillis = 100000L;
+
+    private RocketmqConfig rocketmqConfig = new RocketmqConfig();
+
+    @Data
+    public class RocketmqConfig {
+
+        private String nameServerUrl;
+        private String brokerUrl;
+        private String endPoint;
     }
 }

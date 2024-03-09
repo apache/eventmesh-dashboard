@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.spring.support;
 
-import org.apache.eventmesh.dashboard.console.health.CheckResultCache;
-import org.apache.eventmesh.dashboard.console.health.HealthService;
+import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
+import org.apache.eventmesh.dashboard.console.function.health.HealthService;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import lombok.Getter;

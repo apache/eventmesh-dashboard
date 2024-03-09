@@ -34,9 +34,6 @@ public class ConnectorEntity extends BaseEntity {
 
     private static final long serialVersionUID = -8226303660232951326L;
 
-    @Schema(name = "id", description = "primary key")
-    private Long id;
-
     private Long clusterId;
 
     private String name;

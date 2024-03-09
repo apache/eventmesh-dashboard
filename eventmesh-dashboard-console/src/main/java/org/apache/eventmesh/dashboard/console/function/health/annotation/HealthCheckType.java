@@ -15,32 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.base;
+package org.apache.eventmesh.dashboard.console.function.health.annotation;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import lombok.Data;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Base Entity provide some basic fields that every Eventmesh Dashboard Entity would have
+ * This annotation is used to mark the type of health check service implement.
+ * @see org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType
  */
-@Data
-@Schema(name = "BaseEntity", description = "Base entity")
-public class BaseEntity implements Serializable {
-
-    private static final long serialVersionUID = -2697805837923579585L;
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface HealthCheckType {
     /**
-     * Primary key
+     * type of resource. runtime, topic etc.
      */
-    @Schema(name = "id", description = "primary key")
-    protected Long id;
+    String type();
 
-    protected Long clusterId;
-
-    protected Timestamp createTime;
-
-    protected Timestamp updateTime;
+    /**
+     * subtype of resource. For resource storage, it can be redis, rocketmq etc.
+     */
+    String subType() default "";
 }

@@ -15,32 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.base;
+package org.apache.eventmesh.dashboard.console.function.health.check.impl;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
+public class StorageRocketmqCheck {
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import lombok.Data;
-
-/**
- * Base Entity provide some basic fields that every Eventmesh Dashboard Entity would have
- */
-@Data
-@Schema(name = "BaseEntity", description = "Base entity")
-public class BaseEntity implements Serializable {
-
-    private static final long serialVersionUID = -2697805837923579585L;
-    /**
-     * Primary key
-     */
-    @Schema(name = "id", description = "primary key")
-    protected Long id;
-
-    protected Long clusterId;
-
-    protected Timestamp createTime;
-
-    protected Timestamp updateTime;
 }

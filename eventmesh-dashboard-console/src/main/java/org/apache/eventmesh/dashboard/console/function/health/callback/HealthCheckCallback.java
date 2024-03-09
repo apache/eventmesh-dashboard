@@ -15,32 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.base;
+package org.apache.eventmesh.dashboard.console.function.health.callback;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-
-import lombok.Data;
+import org.apache.eventmesh.dashboard.console.function.health.HealthExecutor;
 
 /**
- * Base Entity provide some basic fields that every Eventmesh Dashboard Entity would have
+ * Callback used by HealthService.doCheck to notify the caller of the result of the health check.<br>
+ * @see HealthExecutor
  */
-@Data
-@Schema(name = "BaseEntity", description = "Base entity")
-public class BaseEntity implements Serializable {
+public interface HealthCheckCallback {
+    public void onSuccess();
 
-    private static final long serialVersionUID = -2697805837923579585L;
-    /**
-     * Primary key
-     */
-    @Schema(name = "id", description = "primary key")
-    protected Long id;
-
-    protected Long clusterId;
-
-    protected Timestamp createTime;
-
-    protected Timestamp updateTime;
+    public void onFail(Exception e);
 }

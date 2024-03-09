@@ -41,12 +41,6 @@ public class ConnectionEntity extends BaseEntity {
     private static final long serialVersionUID = 6565578252656944905L;
 
     /**
-     * Primary key
-     */
-    @Schema(name = "id", description = "primary key")
-    private Long id;
-
-    /**
      * Runtime cluster id
      */
     @Schema(name = "clusterId", description = "runtime cluster id")
