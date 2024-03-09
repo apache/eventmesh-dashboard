@@ -35,7 +35,7 @@ class RocketmqNameserverCheckTest {
     @BeforeEach
     public void init() {
         HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.getRocketmqConfig().setNameServerUrl("127.0.0.1:9876");
+        config.getRocketmqProperties().setNamesrvAddr("127.0.0.1:9876");
         config.setRequestTimeoutMillis(1000L);
         rocketmqCheck = new Rocketmq4NameServerCheck(config);
     }

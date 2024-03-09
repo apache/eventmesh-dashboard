@@ -35,8 +35,8 @@ class RocketmqTopicCheckTest {
     @BeforeEach
     public void init() throws InterruptedException {
         HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.getRocketmqConfig().setBrokerUrl("127.0.0.1:10911");
-        config.getRocketmqConfig().setNameServerUrl("127.0.0.1:9876");
+        config.getRocketmqProperties().setBrokerUrl("127.0.0.1:10911");
+        config.getRocketmqProperties().setNamesrvAddr("127.0.0.1:9876");
         config.setRequestTimeoutMillis(1000000L);
         rocketmqCheck = new Rocketmq4TopicCheck(config);
     }

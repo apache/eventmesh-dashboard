@@ -35,7 +35,7 @@ class RocketmqBrokerCheckTest {
     @BeforeEach
     public void init() {
         HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.getRocketmqConfig().setBrokerUrl("127.0.0.1:10911");
+        config.getRocketmqProperties().setBrokerUrl("127.0.0.1:10911");
         config.setRequestTimeoutMillis(1000L);
         rocketmqCheck = new Rocketmq4BrokerCheck(config);
     }
