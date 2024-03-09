@@ -1,6 +1,5 @@
 import React from 'react'
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material'
-import './App.css'
 import AppRoutes from './routes/Routes'
 
 function App() {
@@ -8,10 +7,12 @@ function App() {
     () =>
       createTheme({
         palette: {
-          // mode: prefersDarkMode ? 'dark' : 'light',
           primary: {
             main: '#1f95fc'
           }
+        },
+        typography: {
+          fontSize: 14
         }
       }),
     []

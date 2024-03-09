@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 import { Paper, PaperProps, Stack, Typography } from '@mui/material'
-import { Icons } from '../../assets/icons'
+import { Icons } from '../../../assets/icons'
 
 interface TopicCountProps extends PaperProps {}
 
