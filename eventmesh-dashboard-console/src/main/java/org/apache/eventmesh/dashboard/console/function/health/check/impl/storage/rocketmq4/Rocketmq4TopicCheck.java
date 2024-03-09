@@ -38,14 +38,11 @@ import org.apache.rocketmq.common.TopicFilterType;
 import org.apache.rocketmq.common.constant.PermName;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
-import org.apache.rocketmq.common.protocol.RequestCode;
-import org.apache.rocketmq.common.protocol.header.CreateTopicRequestHeader;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.apache.rocketmq.remoting.RemotingClient;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.netty.NettyClientConfig;
 import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
-import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
 import java.util.Arrays;
 import java.util.List;
