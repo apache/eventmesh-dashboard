@@ -82,8 +82,8 @@ public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
         log.debug("RocketmqTopicCheck start, uuid:{}", uuid);
         try {
             Message msg = new Message(HealthConstant.ROCKETMQ_CHECK_TOPIC, "eventmesh-dashboard-rocketmq-topic-check", uuid
-                    .getBytes(
-                            RemotingHelper.DEFAULT_CHARSET));
+                .getBytes(
+                    RemotingHelper.DEFAULT_CHARSET));
             synchronized (this) {
                 producer.send(msg, new SendCallback() {
                     @Override
@@ -140,7 +140,7 @@ public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
         //TODO there are many functions that can be reused, they should be collected in a util module
         //this function that create topics can be reused
         RocketmqUtils.createTopic(HealthConstant.ROCKETMQ_CHECK_TOPIC, TopicFilterType.SINGLE_TAG.name(), PermName.PERM_READ | PermName.PERM_WRITE,
-                getConfig().getRocketmqProperties().getBrokerUrl(), 8, 8, getConfig().getRequestTimeoutMillis());
+            getConfig().getRocketmqProperties().getBrokerUrl(), 8, 8, getConfig().getRequestTimeoutMillis());
 
         try {
             producer = new DefaultMQProducer(HealthConstant.ROCKETMQ_CHECK_PRODUCER_GROUP);

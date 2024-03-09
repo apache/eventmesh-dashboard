@@ -53,8 +53,7 @@ public class ConnectionEntity extends BaseEntity {
     private String sourceType;
 
     /**
-     * The id of the source.<br>
-     * It can be connectorId or clientId according to the sourceType.
+     * The id of the source.<br> It can be connectorId or clientId according to the sourceType.
      */
     @Schema(name = "sourceId", description = "connectorId or clientId")
     private Long sourceId;
@@ -66,8 +65,7 @@ public class ConnectionEntity extends BaseEntity {
     private String sinkType;
 
     /**
-     * The id of the sink.<br>
-     * It can be connectorId or clientId according to the sinkType.
+     * The id of the sink.<br> It can be connectorId or clientId according to the sinkType.
      */
     @Schema(name = "sinkId", description = "connectorId or clientId")
     private Long sinkId;
