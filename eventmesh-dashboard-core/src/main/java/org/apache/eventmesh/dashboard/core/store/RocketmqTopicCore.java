@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.core.store;
 
 import org.apache.eventmesh.dashboard.common.model.TopicProperties;
-import org.apache.eventmesh.dashboard.core.config.AdminProperties;
+import org.apache.eventmesh.dashboard.common.properties.RocketmqProperties;
 import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
 import java.util.List;
@@ -35,10 +35,10 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class RocketmqTopicCore implements TopicCore {
 
-    AdminProperties adminProperties;
+    private RocketmqProperties rocketmqProperties;
 
-    public RocketmqTopicCore(AdminProperties adminProperties) {
-        this.adminProperties = adminProperties;
+    public RocketmqTopicCore(RocketmqProperties rocketmqProperties) {
+        this.rocketmqProperties = rocketmqProperties;
     }
 
     @Override

@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.health.check.config;
 import java.util.Properties;
 
 import lombok.Data;
+import org.apache.eventmesh.dashboard.common.properties.RocketmqProperties;
 
 @Data
 public class HealthCheckObjectConfig {
@@ -56,13 +57,6 @@ public class HealthCheckObjectConfig {
 
     private Long requestTimeoutMillis = 100000L;
 
-    private RocketmqConfig rocketmqConfig = new RocketmqConfig();
+    private RocketmqProperties rocketmqProperties = new RocketmqProperties();
 
-    @Data
-    public class RocketmqConfig {
-
-        private String nameServerUrl;
-        private String brokerUrl;
-        private String endPoint;
-    }
 }

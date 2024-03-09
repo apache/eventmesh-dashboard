@@ -58,12 +58,5 @@
             <artifactId>nacos-client</artifactId>
             <version>2.2.4</version>
         </dependency>
-
-        <!-- Event Store -->
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-client</artifactId>
-            <version>4.9.7</version>
-        </dependency>
     </dependencies>
 </project>
