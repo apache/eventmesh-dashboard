@@ -17,16 +17,9 @@
 
 package org.apache.eventmesh.dashboard.common.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import org.apache.rocketmq.common.TopicConfig;
-import org.apache.rocketmq.common.message.MessageQueue;
-import org.apache.rocketmq.common.message.MessageType;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import lombok.Data;
 
 /**
  * One record displayed in 'Topic' page.
