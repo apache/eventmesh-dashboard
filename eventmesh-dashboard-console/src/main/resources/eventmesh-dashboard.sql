@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-drop table if exists cluster;
+DROP TABLE IF EXISTS `cluster`;
 create table cluster
 (
     id                 bigint unsigned auto_increment comment '集群id'
@@ -41,7 +41,8 @@ create table cluster
 create index idx_uniq_name
     on cluster (name);
 
-drop table if exists config;
+
+DROP TABLE IF EXISTS `config`;
 create table config
 (
     id                bigint unsigned auto_increment
@@ -120,29 +121,6 @@ create index cluster_id
 
 
 
-drop table if exists operation_log;
-create table operation_log
-(
-    id             bigint unsigned auto_increment comment 'id'
-        primary key,
-    cluster_id     bigint       default -1                not null comment '物理集群ID',
-    operation_type varchar(192) default ''                not null comment '操作类型,如:启动，停止，重启，添加，删除，修改',
-    state          int          default 0                 not null comment '操作状态 0:未知，1:执行中，2:成功，3:失败',
-    content        text                                   null comment '备注信息',
-    create_time    timestamp    default CURRENT_TIMESTAMP not null comment '创建时间',
-    end_time       timestamp    default CURRENT_TIMESTAMP null comment '结束时间',
-    operation_user varchar(192)                           null,
-    result         text                                   null,
-    target_type    varchar(192)                           not null,
-    is_delete      int          default 0                 not null
-)
-    comment '操作记录信息表';
-
-create index idx_cluster_phy_id
-    on operation_log (cluster_id);
-
-create index idx_status
-    on operation_log (state);
 
 drop table if exists runtime;
 create table runtime
@@ -169,7 +147,7 @@ create index idx_phy_id_host_storage_id
     on runtime (cluster_id, storage_cluster_id);
 
 
-drop table if exists store;
+DROP TABLE IF EXISTS `store`;
 create table store
 (
     id              bigint unsigned auto_increment comment 'id'
@@ -198,28 +176,96 @@ create index idx_store_id_runtime_id
     on store (store_id, cluster_id, runtime_id);
 
 
-drop table if exists topic;
-create table topic
-(
-    id           bigint unsigned auto_increment comment 'id'
-        primary key,
-    cluster_id   bigint                        default -1                not null comment '集群ID',
-    topic_name   varchar(192) collate utf8_bin default ''                not null comment 'Topic名称',
-    runtime_id   varchar(2048)                 default ''                not null comment 'RuntimeId',
-    storage_id   varchar(2048)                 default ''                not null comment 'StorageId',
-    retention_ms bigint                        default -2                not null comment '保存时间，-2：未知，-1：无限制，>=0对应时间，单位ms',
-    type         tinyint                       default 0                 not null comment 'Topic类型，默认0，0:普通，1:EventMesh内部',
-    description  text                                                    null comment '备注信息',
-    create_time  timestamp                     default CURRENT_TIMESTAMP not null comment '创建时间(尽量与Topic实际创建时间一致)',
-    update_time  timestamp                     default CURRENT_TIMESTAMP not null comment '修改时间(尽量与Topic实际创建时间一致)',
-    status       int                           default 1                 not null,
-    constraint uniq_cluster_phy_id_topic_name
-        unique (cluster_id, topic_name)
-)
-    comment 'Topic信息表';
 
-create index cluster_id
-    on topic (cluster_id, topic_name);
+DROP TABLE IF EXISTS `group`;
+CREATE TABLE `group`
+(
+    `id`           bigint unsigned                                        NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `cluster_id`   bigint                                                 NOT NULL DEFAULT '-1' COMMENT '集群id',
+    `name`         varchar(192) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '' COMMENT 'Group名称',
+    `member_count` int unsigned                                           NOT NULL DEFAULT '0' COMMENT '成员数',
+    `members`      varchar(1024) COMMENT 'group的member列表',
+    `type`         tinyint                                                NOT NULL COMMENT 'group类型 0：consumer 1：producer',
+    `state`        varchar(64)                                            NOT NULL DEFAULT '' COMMENT '状态',
+    `create_time`  timestamp                                              NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`  timestamp                                              NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    `status`    int                                                    NOT NULL DEFAULT '1',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_cluster_phy_id_name` (`cluster_id`, `name`),
+    KEY `cluster_id` (`cluster_id`, `name`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 322
+  DEFAULT CHARSET = utf8mb4,
+  DEFAULT COLLATE = utf8mb4_bin COMMENT ='Group信息表';
+
+
+DROP TABLE IF EXISTS `group_member`;
+CREATE TABLE `group_member`
+(
+    `id`             bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `cluster_id`     bigint          NOT NULL DEFAULT '-1' COMMENT '集群ID',
+    `topic_name`     varchar(192)    NOT NULL DEFAULT '' COMMENT 'Topic名称',
+    `group_name`     varchar(192)    NOT NULL DEFAULT '' COMMENT 'Group名称',
+    `eventmesh_user` varchar(192)    NOT NULL DEFAULT '' COMMENT 'EventMesh用户',
+    `state`          varchar(64)     NOT NULL DEFAULT '' COMMENT '状态',
+    `create_time`    timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`    timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    `status`      int             NOT NULL DEFAULT '1',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_cluster_topic_group` (`cluster_id`, `topic_name`, `group_name`),
+    KEY `cluster_id` (`cluster_id`, `topic_name`, `group_name`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 257
+  DEFAULT CHARSET = utf8mb4,
+  DEFAULT COLLATE = utf8mb4_bin COMMENT ='GroupMember信息表';
+
+
+DROP TABLE IF EXISTS `operation_log`;
+CREATE TABLE `operation_log`
+(
+    `id`             bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `cluster_id`     bigint          NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
+    `operation_type` varchar(192)    NOT NULL DEFAULT '' COMMENT '操作类型,如:启动，停止，重启，添加，删除，修改',
+    `state`         int             NOT NULL DEFAULT '0' COMMENT '操作状态 0:未知，1:执行中，2:成功，3:失败',
+    `content`        varchar(1024) COMMENT '备注信息',
+    `create_time`    timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `end_time`       timestamp       NULL     DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
+    `operation_user` varchar(192)             DEFAULT NULL,
+    `result`         varchar(1024),
+    `target_type`    varchar(192)    NOT NULL,
+    `is_delete`      int             NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`),
+    KEY `idx_cluster_phy_id` (`cluster_id`),
+    KEY `idx_state` (`state`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 68
+  DEFAULT CHARSET = utf8mb4,
+  DEFAULT COLLATE = utf8mb4_bin COMMENT ='操作记录信息表';
+
+
+DROP TABLE IF EXISTS `topic`;
+CREATE TABLE `topic`
+(
+    `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `cluster_id`   bigint          NOT NULL DEFAULT '-1' COMMENT '集群ID',
+    `topic_name`   varchar(192) CHARACTER SET utf8mb4
+        COLLATE utf8mb4_bin        NOT NULL DEFAULT '' COMMENT 'Topic名称',
+    `runtime_id`   varchar(2048)   NOT NULL DEFAULT '' COMMENT 'RuntimeId',
+    `storage_id`   varchar(2048)   NOT NULL DEFAULT '' COMMENT 'StorageId',
+    `retention_ms` bigint          NOT NULL DEFAULT '-2' COMMENT '保存时间，-2：未知，-1：无限制，>=0对应时间，单位ms',
+    `type`         tinyint         NOT NULL DEFAULT '0' COMMENT 'Topic类型，默认0，0:普通，1:EventMesh内部',
+    `description`  varchar(1024)            DEFAULT '' COMMENT '备注信息',
+    `create_time`  timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间(尽量与Topic实际创建时间一致)',
+    `update_time`  timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间(尽量与Topic实际创建时间一致)',
+    `status`    int             NOT NULL DEFAULT '1',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_cluster_phy_id_topic_name` (`cluster_id`, `topic_name`),
+    KEY `cluster_id` (`cluster_id`, `topic_name`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 562
+  DEFAULT CHARSET = utf8mb4,
+  DEFAULT COLLATE = utf8mb4_bin COMMENT ='Topic信息表';
+
 
 DROP TABLE IF EXISTS `client`;
 CREATE TABLE `client`

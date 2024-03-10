@@ -17,20 +17,26 @@
 
 package org.apache.eventmesh.dashboard.console.enums.health;
 
+import static org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_CLUSTER;
+import static org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_RUNTIME;
+import static org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE;
+import static org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_TOPIC;
+import static org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_UNKNOWN;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 public enum HealthCheckType {
-    UNKNOWN(0, "unknown"),
+    UNKNOWN(0, HEALTH_CHECK_TYPE_UNKNOWN),
 
-    CLUSTER(1, "cluster"),
+    CLUSTER(1, HEALTH_CHECK_TYPE_CLUSTER),
 
-    RUNTIME(2, "runtime"),
+    RUNTIME(2, HEALTH_CHECK_TYPE_RUNTIME),
 
-    TOPIC(3, "topic"),
+    TOPIC(3, HEALTH_CHECK_TYPE_TOPIC),
 
-    STORAGE(4, "storage");
+    STORAGE(4, HEALTH_CHECK_TYPE_STORAGE);
 
     @Getter
     private final Integer number;
