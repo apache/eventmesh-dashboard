@@ -38,7 +38,7 @@ public interface ConnectionMapper {
     @Select("SELECT COUNT(*) FROM connection WHERE cluster_id=#{clusterId}")
     Integer selectConnectionNumByCluster(ConnectionEntity connectionEntity);
 
-    @Select("SELECT * FROM connection where status=1")
+    @Select("SELECT * FROM connection")
     List<ConnectionEntity> selectAll();
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId}")
