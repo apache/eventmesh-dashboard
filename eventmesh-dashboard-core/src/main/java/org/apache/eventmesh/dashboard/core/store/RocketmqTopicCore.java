@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.core.store;
 
 
 import org.apache.eventmesh.dashboard.common.model.TopicProperties;
-import org.apache.eventmesh.dashboard.common.properties.RocketmqProperties;
+import org.apache.eventmesh.dashboard.service.properties.RocketmqProperties;
 import org.apache.eventmesh.dashboard.common.util.RocketmqUtils;
 import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
@@ -46,15 +46,7 @@ public class RocketmqTopicCore implements TopicCore {
 
     @Override
     public List<TopicProperties> getTopics() {
-        List<TopicConfig> topicConfigList =
-            RocketmqUtils.getTopics(rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getRequestTimeoutMillis());
-        List<TopicProperties> topicPropertiesList = new ArrayList<>();
-        for (TopicConfig topicConfig : topicConfigList) {
-            TopicProperties topicProperties = new TopicProperties();
-            topicProperties.setRocketmqTopicConfig(topicConfig);
-            topicPropertiesList.add(topicProperties);
-        }
-        return topicPropertiesList;
+        return RocketmqUtils.getTopics(rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getRequestTimeoutMillis());
     }
 
     @Override

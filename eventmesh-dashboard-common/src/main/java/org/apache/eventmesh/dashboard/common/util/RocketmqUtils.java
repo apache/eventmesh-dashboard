@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.common.util;
 
+import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+
 import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.protocol.RequestCode;
 import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
@@ -67,20 +69,25 @@ public class RocketmqUtils {
         }
     }
 
-    public List<TopicConfig> getTopics(String nameServerAddr, long requestTimeoutMillis) {
+    public List<TopicProperties> getTopics(String nameServerAddr, long requestTimeoutMillis) {
         List<TopicConfig> topicConfigList = new ArrayList<>();
         try {
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ALL_TOPIC_CONFIG, (CommandCustomHeader) null);
-            RemotingCommand response = remotingClient.invokeSync(nameServerAddr, request, 3000L);
+            RemotingCommand response = remotingClient.invokeSync(nameServerAddr, request, requestTimeoutMillis);
             TopicConfigSerializeWrapper allTopicConfig = TopicConfigSerializeWrapper.decode(response.getBody(), TopicConfigSerializeWrapper.class);
             ConcurrentMap<String, TopicConfig> topicConfigTable = allTopicConfig.getTopicConfigTable();
             topicConfigList = new ArrayList<>(topicConfigTable.values());
         } catch (Exception e) {
             log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
         }
-        return topicConfigList;
+        List<TopicProperties> topicPropertiesList = new ArrayList<>();
+        for (TopicConfig topicConfig : topicConfigList) {
+            TopicProperties topicProperties = new TopicProperties();
+            topicProperties.setRocketmqTopicConfig(topicConfig);
+            topicPropertiesList.add(topicProperties);
+        }
+        return topicPropertiesList;
     }
-
 
     public void deleteTopic(String topicName, String nameServerAddr, long requestTimeoutMillis) {
         try {
