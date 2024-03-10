@@ -36,12 +36,25 @@ import java.util.List;
 @Mapper
 public interface OprGroupMemberMapper {
 
-    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND is_delete=0")
+    @Select("SELECT * FROM group_member WHERE status=1")
+    List<GroupMemberEntity> selectAll();
+
+    @Insert({
+        "<script>",
+        "   INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user, state) VALUES ",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "(#{c.clusterId},#{c.topicName},#{c.groupName},#{c.eventMeshUser},#{c.state})",
+        "   </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void batchInsert(List<GroupMemberEntity> groupMemberEntities);
+
+    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND status=1")
     List<GroupMemberEntity> getGroupByClusterId(GroupMemberEntity groupMemberEntity);
 
     @Insert("INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user,state)"
         + " VALUE (#{clusterId},#{topicName},#{groupName},#{eventMeshUser},#{state})"
-        + "ON DUPLICATE KEY UPDATE is_delete=0")
+        + "ON DUPLICATE KEY UPDATE status=0")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroupMember(GroupMemberEntity groupMemberEntity);
 

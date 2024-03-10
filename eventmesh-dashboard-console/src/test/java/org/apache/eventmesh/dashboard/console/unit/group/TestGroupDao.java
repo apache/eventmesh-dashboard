@@ -1,6 +1,7 @@
 package org.apache.eventmesh.dashboard.console.unit.group;
 
-import org.apache.eventmesh.dashboard.console.EventmeshConsoleApplication;
+import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
+
 import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
 import org.apache.eventmesh.dashboard.console.mapper.group.OprGroupMapper;
 
@@ -15,17 +16,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EventmeshConsoleApplication.class)
-public class TestGroupDao {
+@SpringBootTest(classes = EventMeshDashboardApplication.class)
+public class TestGroupMapper {
 
     @Autowired
-    private OprGroupMapper groupDao;
+    private OprGroupMapper groupMapper;
 
     public List<GroupEntity> insertGroupData(String name) {
         List<GroupEntity> groupEntities = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            GroupEntity groupEntity = new GroupEntity(null, (long) i, name, 0, null, 1, "OK", null, null);
-            groupDao.addGroup(groupEntity);
+            GroupEntity groupEntity = new GroupEntity(null, (long) i, name, 0, null, 1, "OK", null, null, 0);
+            groupMapper.addGroup(groupEntity);
             groupEntities.add(groupEntity);
         }
         return groupEntities;
@@ -34,7 +35,7 @@ public class TestGroupDao {
     public List<GroupEntity> getRemovedTimeList(String name) {
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(name);
-        List<GroupEntity> groupEntities = groupDao.selectGroupByDynamic(groupEntity);
+        List<GroupEntity> groupEntities = groupMapper.selectGroup(groupEntity);
         for (GroupEntity groupEntity1 : groupEntities) {
             groupEntity1.setCreateTime(null);
             groupEntity1.setUpdateTime(null);
@@ -43,58 +44,58 @@ public class TestGroupDao {
     }
 
     @Test
-    public void test_addGroup() {
+    public void testAddGroup() {
         List<GroupEntity> groupEntities = this.insertGroupData("addGroup");
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName("addGroup");
-        List<GroupEntity> groupEntities1 = groupDao.selectGroupByDynamic(groupEntity);
+        List<GroupEntity> groupEntities1 = groupMapper.selectGroup(groupEntity);
         Assert.assertEquals(groupEntities, this.getRemovedTimeList("addGroup"));
     }
 
     @Test
-    public void test_updateGroupById() {
+    public void testUpdateGroupById() {
         List<GroupEntity> groupEntities = this.insertGroupData("updateById2");
         GroupEntity groupEntity = groupEntities.get(9);
         groupEntity.setType(3);
         groupEntity.setMembers("1,");
         groupEntity.setState("fail");
         groupEntity.setMemberCount(1);
-        groupDao.updateGroup(groupEntity);
+        groupMapper.updateGroup(groupEntity);
         Assert.assertEquals(groupEntities, this.getRemovedTimeList("updateById2"));
     }
 
     @Test
-    public void test_deleteGroupById() {
+    public void testDeleteGroupById() {
         List<GroupEntity> groupEntities = this.insertGroupData("deleteById");
         GroupEntity groupEntity = groupEntities.get(9);
-        groupDao.deleteGroup(groupEntity);
+        groupMapper.deleteGroup(groupEntity);
         groupEntities.remove(9);
         Assert.assertEquals(groupEntities, this.getRemovedTimeList("deleteById"));
     }
 
     @Test
-    public void test_selectGroupById() {
+    public void testSelectGroupById() {
         List<GroupEntity> groupEntities = this.insertGroupData("selectById");
-        GroupEntity groupEntity = groupDao.selectGroupById(groupEntities.get(0));
+        GroupEntity groupEntity = groupMapper.selectGroupById(groupEntities.get(0));
         groupEntity.setCreateTime(null);
         groupEntity.setUpdateTime(null);
         Assert.assertEquals(groupEntities.get(0), groupEntity);
     }
 
     @Test
-    public void test_selectGroupByClusterId() {
+    public void testSelectGroupByClusterId() {
         List<GroupEntity> groupEntities = this.insertGroupData("selectByUnique");
         GroupEntity groupEntity1 = new GroupEntity();
         groupEntity1.setClusterId(groupEntities.get(0).getClusterId());
         groupEntity1.setName(groupEntities.get(0).getName());
-        GroupEntity groupEntity = groupDao.selectGroupByUnique(groupEntity1);
+        GroupEntity groupEntity = groupMapper.selectGroupByUnique(groupEntity1);
         groupEntity.setCreateTime(null);
         groupEntity.setUpdateTime(null);
         Assert.assertEquals(groupEntities.get(0), groupEntity);
     }
 
     @Test
-    public void test_selectGroupByDynamic() {
+    public void testSelectGroup() {
         List<GroupEntity> groupEntities = this.insertGroupData("selectByDynamic1");
         Assert.assertEquals(groupEntities, this.getRemovedTimeList("Dynamic1"));
     }

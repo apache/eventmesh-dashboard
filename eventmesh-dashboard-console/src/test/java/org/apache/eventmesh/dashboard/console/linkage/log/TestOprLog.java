@@ -1,6 +1,6 @@
 package org.apache.eventmesh.dashboard.console.linkage.log;
 
-import org.apache.eventmesh.dashboard.console.EventmeshConsoleApplication;
+import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
 import org.apache.eventmesh.dashboard.console.service.group.GroupService;
@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EventmeshConsoleApplication.class)
+@SpringBootTest(classes = EventMeshDashboardApplication.class)
 public class TestOprLog {
 
     @Autowired
@@ -26,11 +26,11 @@ public class TestOprLog {
     private LogService logService;
 
     @Test
-    public void test_groupService_OprLog() {
-        GroupEntity groupEntity = new GroupEntity(null, 1L, "logTest", 0, null, 1, "OK", null, null);
+    public void testGroupServiceOprLog() {
+        GroupEntity groupEntity = new GroupEntity(null, 1L, "logTest", 0, null, 1, "OK", null, null, 0);
         GroupEntity groupEntity1 = groupService.addGroup(groupEntity);
         LogEntity logEntity = new LogEntity(null, 1L, "add", "Group", 2, groupEntity1.toString(), null, null, null, null);
-        logEntity.setResultContent(groupEntity.toString());
+        logEntity.setResult(groupEntity.toString());
         logEntity.setId(groupEntity1.getId());
         List<LogEntity> logListByCluster = logService.getLogListByCluster(logEntity);
         logListByCluster.get(0).setId(null);

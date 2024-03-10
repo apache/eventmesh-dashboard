@@ -38,6 +38,16 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Override
+    public void batchInsert(List<TopicEntity> topicEntities) {
+        topicMapper.batchInsert(topicEntities);
+    }
+
+    @Override
+    public List<TopicEntity> selectAll() {
+        return topicMapper.selectAll();
+    }
+
+    @Override
     public Integer selectTopicNumByCluster(Long clusterId) {
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setClusterId(clusterId);

@@ -33,6 +33,21 @@ import java.util.List;
 @Mapper
 public interface StoreMapper {
 
+    @Select("SELECT * FROM store WHERE status=1")
+    List<StoreEntity> selectAll();
+
+    @Insert({
+        "<script>",
+        "INSERT INTO store (cluster_id, store_id, store_type, host, runtime_id, topic_list, diff_type, port, jmx_port,start_timestamp, rack,",
+        " status, endpoint_map) VALUES ",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "       (#{c.clusterId}, #{c.storeId}, #{c.storeType}, #{c.host}, #{c.runtimeId}, #{c.topicList}, #{c.diffType}, #{c.port}, #{c.jmxPort},",
+        "       #{c.startTimestamp}, #{c.rack}, #{c.status}, #{c.endpointMap})",
+        "   </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void batchInsert(List<StoreEntity> storeEntities);
+
     @Insert("INSERT INTO store (cluster_id, store_id, store_type, host, runtime_id, topic_list, diff_type"
         + ", port, jmx_port, start_timestamp, rack, status, endpoint_map ) VALUES ("
         + "#{clusterId},#{storeId},#{storeType},#{host},#{runtimeId},#{topicList},#{diffType},#{port},#{jmxPort}"

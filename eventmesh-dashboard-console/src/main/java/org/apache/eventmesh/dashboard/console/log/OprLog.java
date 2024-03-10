@@ -70,14 +70,14 @@ public class OprLog implements Ordered, ApplicationContextAware {
         Object proceed = null;
         try {
             proceed = joinPoint.proceed();
-            logEntity.setStatus(2);
-            logEntity.setResultContent(Objects.isNull(proceed) ? "" : proceed.toString());
+            logEntity.setState(2);
+            logEntity.setResult(Objects.isNull(proceed) ? "" : proceed.toString());
             return proceed;
         } catch (Throwable e) {
-            logEntity.setStatus(3);
+            logEntity.setState(3);
             throw new RuntimeException(e);
         } finally {
-            logEntity.setResultContent(proceed.toString());
+            logEntity.setResult(proceed.toString());
             logService.updateLog(logEntity);
         }
 
@@ -94,10 +94,10 @@ public class OprLog implements Ordered, ApplicationContextAware {
         Long opClusterPhyId = (Long) clusterPhyId.get(model);
         //The clusterId is obtained from the parameter object, and the operation is described as the object itself
         logEntity.setClusterId(opClusterPhyId);
-        logEntity.setDescription(model.toString());
+        logEntity.setContent(model.toString());
         logEntity.setOperationType(declaredAnnotation.OprType());
         logEntity.setTargetType(declaredAnnotation.OprTarget());
-        logEntity.setStatus(1);
+        logEntity.setState(1);
         logEntity.setCreateTime(new Timestamp(System.currentTimeMillis()));
         return logEntity;
     }

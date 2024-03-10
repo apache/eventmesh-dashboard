@@ -1,6 +1,6 @@
 package org.apache.eventmesh.dashboard.console.unit.topic;
 
-import org.apache.eventmesh.dashboard.console.EventmeshConsoleApplication;
+import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
 
@@ -15,17 +15,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EventmeshConsoleApplication.class)
-public class testTopicDao {
+@SpringBootTest(classes = EventMeshDashboardApplication.class)
+public class testTopicMapper {
 
     @Autowired
-    private TopicMapper topicDao;
+    private TopicMapper topicMapper;
 
     public List<TopicEntity> insertGroupData(String topicName) {
         List<TopicEntity> topicEntities = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            TopicEntity topicEntity = new TopicEntity(null, (long) i, topicName, "10", "10", 100L, 1, "testTopic", null, null);
-            topicDao.addTopic(topicEntity);
+            TopicEntity topicEntity = new TopicEntity(null, (long) i, topicName, "10", "10", 100L, 1, "testTopic", null, null, 0);
+            topicMapper.addTopic(topicEntity);
             topicEntities.add(topicEntity);
         }
         return topicEntities;
@@ -35,7 +35,7 @@ public class testTopicDao {
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setTopicName(topicName);
         topicEntity.setClusterId(clusterId);
-        List<TopicEntity> topicEntities = topicDao.getTopicListByDynamic(topicEntity);
+        List<TopicEntity> topicEntities = topicMapper.getTopicList(topicEntity);
         for (TopicEntity topic : topicEntities) {
             topic.setCreateTime(null);
             topic.setUpdateTime(null);
@@ -44,11 +44,11 @@ public class testTopicDao {
     }
 
     @Test
-    public void test_selectTopicByClusterId() {
+    public void testSelectTopicByClusterId() {
         List<TopicEntity> topicEntities = this.insertGroupData("SelectById111");
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setClusterId(topicEntities.get(9).getClusterId());
-        List<TopicEntity> topicEntity1 = topicDao.getTopicListByDynamic(topicEntity);
+        List<TopicEntity> topicEntity1 = topicMapper.getTopicList(topicEntity);
         topicEntity1.get(0).setCreateTime(null);
         topicEntity1.get(0).setUpdateTime(null);
         Assert.assertEquals(topicEntity1.get(0), topicEntities.get(9));
@@ -56,14 +56,14 @@ public class testTopicDao {
     }
 
     @Test
-    public void test_addTopic() {
+    public void testAddTopic() {
         List<TopicEntity> topicEntities = this.insertGroupData("add111");
         List<TopicEntity> add111 = this.getRemovedTimeList("add111", null);
         Assert.assertEquals(add111, topicEntities);
     }
 
     @Test
-    public void test_UpdateTopic() {
+    public void testUpdateTopic() {
         List<TopicEntity> topicEntities = this.insertGroupData("update2");
         topicEntities.get(5).setDescription("updateTest1");
         topicEntities.get(5).setType(-1);
@@ -71,43 +71,43 @@ public class testTopicDao {
         topicEntity.setDescription("updateTest1");
         topicEntity.setType(-1);
         topicEntity.setId(topicEntities.get(5).getId());
-        topicDao.updateTopic(topicEntity);
-        TopicEntity topicEntity1 = topicDao.selectTopicById(topicEntity);
+        topicMapper.updateTopic(topicEntity);
+        TopicEntity topicEntity1 = topicMapper.selectTopicById(topicEntity);
         topicEntity1.setUpdateTime(null);
         topicEntity1.setCreateTime(null);
         Assert.assertEquals(topicEntity1, topicEntities.get(5));
     }
 
     @Test
-    public void test_DeleteTopic() {
+    public void testDeleteTopic() {
         List<TopicEntity> topicEntities = this.insertGroupData("update72");
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setId(topicEntities.get(5).getId());
         topicEntity.setClusterId(topicEntities.get(5).getClusterId());
         topicEntity.setTopicName("update72");
-        topicDao.deleteTopic(topicEntity);
-        List<TopicEntity> topicEntity1 = topicDao.getTopicListByDynamic(topicEntity);
+        topicMapper.deleteTopic(topicEntity);
+        List<TopicEntity> topicEntity1 = topicMapper.getTopicList(topicEntity);
         Assert.assertEquals(true, topicEntity1.isEmpty());
     }
 
     @Test
-    public void test_selectTopicByUnique() {
+    public void testSelectTopicByUnique() {
         List<TopicEntity> topicEntities = this.insertGroupData("unique11");
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setTopicName("unique11");
         topicEntity.setClusterId(topicEntities.get(1).getClusterId());
-        TopicEntity topicEntity1 = topicDao.selectTopicByUnique(topicEntity);
+        TopicEntity topicEntity1 = topicMapper.selectTopicByUnique(topicEntity);
         topicEntity1.setUpdateTime(null);
         topicEntity1.setCreateTime(null);
         Assert.assertEquals(topicEntity1, topicEntities.get(1));
     }
 
     @Test
-    public void test_selectTopicById() {
+    public void testSelectTopicById() {
         List<TopicEntity> topicEntities = this.insertGroupData("id1");
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setId(topicEntities.get(2).getId());
-        TopicEntity topicEntity1 = topicDao.selectTopicById(topicEntity);
+        TopicEntity topicEntity1 = topicMapper.selectTopicById(topicEntity);
         topicEntity1.setCreateTime(null);
         topicEntity1.setUpdateTime(null);
         Assert.assertEquals(topicEntity1, topicEntities.get(2));
