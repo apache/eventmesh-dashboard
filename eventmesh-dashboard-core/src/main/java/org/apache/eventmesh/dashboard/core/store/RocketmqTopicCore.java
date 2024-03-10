@@ -19,15 +19,13 @@ package org.apache.eventmesh.dashboard.core.store;
 
 
 import org.apache.eventmesh.dashboard.common.model.TopicProperties;
-import org.apache.eventmesh.dashboard.service.properties.RocketmqProperties;
 import org.apache.eventmesh.dashboard.common.util.RocketmqUtils;
+import org.apache.eventmesh.dashboard.service.properties.RocketmqProperties;
 import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
-import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.TopicFilterType;
 import org.apache.rocketmq.common.constant.PermName;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
