@@ -26,6 +26,10 @@ import java.util.List;
  */
 public interface RuntimeService {
 
+    void batchInsert(List<RuntimeEntity> runtimeEntities);
+
+    List<RuntimeEntity> selectAll();
+
     List<RuntimeEntity> getRuntimeByClusterId(Long cluster);
 
     void addRuntime(RuntimeEntity runtimeEntity);

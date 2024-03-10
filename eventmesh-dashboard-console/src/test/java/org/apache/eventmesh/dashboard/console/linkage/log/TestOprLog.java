@@ -27,7 +27,7 @@ public class TestOprLog {
 
     @Test
     public void testGroupServiceOprLog() {
-        GroupEntity groupEntity = new GroupEntity(null, 1L, "logTest", 0, null, 1, "OK", null, null);
+        GroupEntity groupEntity = new GroupEntity(null, 1L, "logTest", 0, null, 1, "OK", null, null, 0);
         GroupEntity groupEntity1 = groupService.addGroup(groupEntity);
         LogEntity logEntity = new LogEntity(null, 1L, "add", "Group", 2, groupEntity1.toString(), null, null, null, null);
         logEntity.setResult(groupEntity.toString());

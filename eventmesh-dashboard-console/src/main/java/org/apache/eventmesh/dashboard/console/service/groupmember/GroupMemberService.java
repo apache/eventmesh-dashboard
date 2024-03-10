@@ -27,6 +27,10 @@ import java.util.List;
  */
 public interface GroupMemberService {
 
+    List<GroupMemberEntity> selectAll();
+
+    void batchInsert(List<GroupMemberEntity> groupMemberEntities);
+
     List<GroupMemberEntity> getGroupMemberByClusterId(GroupMemberEntity groupMemberEntity);
 
     void addGroupMember(GroupMemberEntity groupMemberEntity);

@@ -26,11 +26,27 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 /**
  * Mybatis Mapper for the table of meta.
  */
 @Mapper
 public interface MetaMapper {
+
+    @Select("SELECT * FROM meta WHERE status=1")
+    List<MetaEntity> selectAll();
+
+    @Insert({
+        "<script>",
+        "   INSERT INTO meta (name, type, version, cluster_id, host, port, role, username, params,status) VALUES ",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "   (#{c.name}, #{c.type}, #{c.version}, #{c.clusterId}, #{c.host}, #{c.port}, #{c.role}, #{c.username}, #{c.params}, #{c.status})",
+        "</foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void batchInsert(List<MetaEntity> metaEntities);
+
     @Select("SELECT * FROM meta WHERE id = #{id}")
     MetaEntity selectById(MetaEntity metaEntity);
 

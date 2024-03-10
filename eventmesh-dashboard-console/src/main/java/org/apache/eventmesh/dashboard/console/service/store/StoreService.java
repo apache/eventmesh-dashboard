@@ -26,6 +26,10 @@ import java.util.List;
  */
 public interface StoreService {
 
+    List<StoreEntity> selectAll();
+
+    void batchInsert(List<StoreEntity> storeEntities);
+
     void addStore(StoreEntity storeEntity);
 
     void deleteStoreByUnique(StoreEntity storeEntity);

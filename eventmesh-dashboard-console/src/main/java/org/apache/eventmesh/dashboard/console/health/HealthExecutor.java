@@ -137,7 +137,7 @@ public class HealthExecutor {
         newEntity.setType(HealthCheckType.toNumber(result.getConfig().getHealthCheckResourceType()));
         newEntity.setTypeId(result.getConfig().getInstanceId());
         newEntity.setResultDesc(result.getResultDesc());
-        newEntity.setStatus(result.getStatus().getNumber());
+        newEntity.setState(result.getStatus().getNumber());
 
         resultList.add(newEntity);
     }

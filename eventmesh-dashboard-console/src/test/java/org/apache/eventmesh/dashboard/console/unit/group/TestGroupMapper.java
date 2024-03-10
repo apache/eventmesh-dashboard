@@ -24,7 +24,7 @@ public class TestGroupMapper {
     public List<GroupEntity> insertGroupData(String name) {
         List<GroupEntity> groupEntities = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            GroupEntity groupEntity = new GroupEntity(null, (long) i, name, 0, null, 1, "OK", null, null);
+            GroupEntity groupEntity = new GroupEntity(null, (long) i, name, 0, null, 1, "OK", null, null, 0);
             groupMapper.addGroup(groupEntity);
             groupEntities.add(groupEntity);
         }

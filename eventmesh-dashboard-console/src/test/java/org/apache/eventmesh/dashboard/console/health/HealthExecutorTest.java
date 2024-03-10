@@ -133,7 +133,7 @@ class HealthExecutorTest {
         query.setClusterId(1L);
         query.setType(HealthCheckType.STORAGE.getNumber());
         query.setTypeId(2L);
-        assertNotNull(healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getStatus());
+        assertNotNull(healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getState());
     }
 
     @Test
@@ -147,7 +147,7 @@ class HealthExecutorTest {
         query.setClusterId(1L);
         query.setType(HealthCheckType.STORAGE.getNumber());
         query.setTypeId(1L);
-        assertEquals(1, healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getStatus());
+        assertEquals(1, healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getState());
     }
 
     @Test
@@ -161,7 +161,7 @@ class HealthExecutorTest {
         query.setType(HealthCheckType.STORAGE.getNumber());
         query.setTypeId(1L);
         assertEquals(HealthCheckStatus.TIMEOUT.getNumber(),
-            healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getStatus());
+            healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getState());
     }
 
     @Test

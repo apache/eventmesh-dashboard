@@ -26,6 +26,10 @@ import java.util.List;
  */
 public interface ClusterService {
 
+    void batchInsert(List<ClusterEntity> clusterEntities);
+
+    List<ClusterEntity> selectAll();
+
     void addCluster(ClusterEntity cluster);
 
     List<ClusterEntity> selectAllCluster();
