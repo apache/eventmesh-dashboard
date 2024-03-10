@@ -18,7 +18,6 @@
 package org.apache.eventmesh.dashboard.console.mapper.topic;
 
 
-import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
 import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 
 import org.apache.ibatis.annotations.Delete;
