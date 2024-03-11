@@ -61,7 +61,7 @@ public interface TopicMapper {
         "       <if test='clusterId!=null'>",
         "           AND cluster_id=#{clusterId} ",
         "       </if>",
-        "       AND is_delete=0",
+        "       AND status=1",
         "   </where>",
         "</script>"})
     List<TopicEntity> getTopicList(TopicEntity topicEntity);

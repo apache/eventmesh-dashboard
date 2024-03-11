@@ -62,14 +62,14 @@ public interface OprGroupMemberMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void updateGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Delete("UPDATE group_member SET is_delete=1 WHERE id=#{id} ")
+    @Delete("UPDATE group_member SET status=0 WHERE id=#{id} ")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND group_name=#{groupName} AND topic_name=#{topicName} AND is_delete=0")
+    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND group_name=#{groupName} AND topic_name=#{topicName} AND status=1")
     GroupMemberEntity selectGroupMemberByUnique(GroupMemberEntity groupMemberEntity);
 
-    @Select("SELECT * FROM group_member WHERE id=#{id} AND is_delete=0")
+    @Select("SELECT * FROM group_member WHERE id=#{id} AND status=1")
     GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 
     @Select({
@@ -86,7 +86,7 @@ public interface OprGroupMemberMapper {
         "           AND topic_name=#{topicName}",
         "       </if>",
         "    </where>",
-        "   AND is_delete=0",
+        "   AND status=1",
         "</script>"})
     List<GroupMemberEntity> selectMember(GroupMemberEntity groupMemberEntity);
 

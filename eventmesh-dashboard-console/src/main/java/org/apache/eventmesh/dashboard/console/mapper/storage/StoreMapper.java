@@ -55,10 +55,10 @@ public interface StoreMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addStore(StoreEntity storeEntity);
 
-    @Update("UPDATE store SET is_delete=1 WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
+    @Update("UPDATE store SET status=0 WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
     void deleteStoreByUnique(StoreEntity storeEntity);
 
-    @Select("SELECT * FROM store WHERE cluster_id=#{clusterId} AND is_delete=0")
+    @Select("SELECT * FROM store WHERE cluster_id=#{clusterId} AND status=1")
     List<StoreEntity> selectStoreByCluster(StoreEntity storeEntity);
 
     @Update("UPDATE store SET status=#{status} WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
