@@ -44,7 +44,7 @@ public class HealthCheckResultEntity extends BaseEntity {
 
     private String resultDesc;
 
-    @Schema(description = "status of a health check, 0: failed, 1: passed, 2: doing check, 3: out of time")
-    private Integer status;
+    @Schema(description = "state of a health check, 0: failed, 1: passed, 2: doing check, 3: out of time")
+    private Integer state;
 
 }

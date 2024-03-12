@@ -18,6 +18,8 @@
 package org.apache.eventmesh.dashboard.console.entity.storage;
 
 
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
@@ -27,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoreEntity {
+public class StoreEntity extends BaseEntity {
 
     private Long id;
 

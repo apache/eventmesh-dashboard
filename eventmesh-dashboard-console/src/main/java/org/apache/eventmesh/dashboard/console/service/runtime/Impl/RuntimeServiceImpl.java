@@ -33,6 +33,16 @@ public class RuntimeServiceImpl implements RuntimeService {
     private RuntimeMapper runtimeMapper;
 
     @Override
+    public void batchInsert(List<RuntimeEntity> runtimeEntities) {
+        runtimeMapper.batchInsert(runtimeEntities);
+    }
+
+    @Override
+    public List<RuntimeEntity> selectAll() {
+        return runtimeMapper.selectAll();
+    }
+
+    @Override
     public List<RuntimeEntity> getRuntimeByClusterId(Long clusterId) {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setClusterId(clusterId);

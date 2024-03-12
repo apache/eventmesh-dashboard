@@ -31,7 +31,8 @@ create table cluster
     run_state          tinyint       default 1                 not null comment '运行状态, 0表示未监控, 1监控中，有注册中心，2:监控中，无注册中心',
     create_time        timestamp     default CURRENT_TIMESTAMP not null comment '接入时间',
     update_time        timestamp     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
-    is_delete          int           default 0                 not null comment '0',
+    status             int           default 1                 not null comment '0',
+    store_type         int           default 0                 not null,
     constraint uniq_name
         unique (name)
 )
@@ -53,14 +54,14 @@ create table config
     config_name       varchar(192)  default ''                not null comment '配置名称',
     config_value      text                                    null comment '配置值',
     start_version     varchar(64)   default ''                not null comment '配置开始使用的版本',
-    status            int           default 1                 not null comment '1 正常 2 禁用',
+    status            int           default 1                 not null comment '0 关闭 1 开启 ',
+    is_default        int           default 1                 null,
     end_version       varchar(64)   default ''                not null comment '配置结束使用的版本',
     diff_type         int           default -1                not null comment '差异类型',
     description       varchar(1000) default ''                not null comment '备注',
     edit              int           default 1                 not null comment '是否可以编辑 1 不可编辑（程序获取） 2 可编辑',
     create_time       timestamp     default CURRENT_TIMESTAMP not null comment '创建时间',
     update_time       timestamp     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
-    is_default        int                                     not null comment '是否是默认值，0默认，1自定义的',
     is_modify         int           default 0                 not null,
     eventmesh_version varchar(64)   default ' '               not null,
     constraint uniq_instance_type_instance_id_config_name
@@ -72,7 +73,56 @@ create index idx_phy_id_instance_id
     on config (cluster_id, instance_id);
 
 
-DROP TABLE IF EXISTS `runtime`;
+
+drop table if exists `group`;
+create table `group`
+(
+    id           bigint unsigned auto_increment comment 'id'
+        primary key,
+    cluster_id   bigint                        default -1                not null comment '集群id',
+    name         varchar(192) collate utf8_bin default ''                not null comment 'Group名称',
+    member_count int unsigned                  default '0'               not null comment '成员数',
+    members      text                                                    null comment 'group的member列表',
+    type         tinyint                                                 not null comment 'group类型 0：consumer 1：producer',
+    state        varchar(64)                   default ''                not null comment '状态',
+    create_time  timestamp                     default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time  timestamp                     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
+    status       int                           default 1                 not null,
+    constraint uniq_cluster_phy_id_name
+        unique (cluster_id, name)
+)
+    comment 'Group信息表';
+
+create index cluster_id
+    on `group` (cluster_id, name);
+
+
+drop table if exists group_member;
+create table group_member
+(
+    id             bigint unsigned auto_increment comment 'id'
+        primary key,
+    cluster_id     bigint       default -1                not null comment '集群ID',
+    topic_name     varchar(192) default ''                not null comment 'Topic名称',
+    group_name     varchar(192) default ''                not null comment 'Group名称',
+    eventmesh_user varchar(192) default ''                not null comment 'EventMesh用户',
+    state          varchar(64)  default ''                not null comment '状态',
+    create_time    timestamp    default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time    timestamp    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
+    status         int          default 1                 not null,
+    constraint uniq_cluster_topic_group
+        unique (cluster_id, topic_name, group_name)
+)
+    comment 'GroupMember信息表';
+
+create index cluster_id
+    on group_member (cluster_id, topic_name, group_name);
+
+
+
+
+
+drop table if exists runtime;
 create table runtime
 (
     id                 bigint auto_increment comment 'id'
@@ -84,11 +134,10 @@ create table runtime
     jmx_port           int           default -1                not null comment 'Jmx端口',
     start_timestamp    bigint        default -1                not null comment '启动时间',
     rack               varchar(128)  default ''                not null comment 'Rack信息',
-    status             int           default 0                 not null comment '状态: 1启用，0未启用',
+    status             int           default 1                 not null comment '状态: 1启用，0未启用',
     create_time        timestamp     default CURRENT_TIMESTAMP not null comment '创建时间',
     update_time        timestamp     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
     endpoint_map       varchar(1024) default ''                not null comment '监听信息',
-    is_delete          int           default 0                 not null comment '0',
     constraint uniq_cluster_phy_id__host_port
         unique (cluster_id, host)
 )
@@ -114,11 +163,10 @@ create table store
     jmx_port        int           default -1                not null comment 'Jmx端口',
     start_timestamp bigint        default -1                not null comment '启动时间',
     rack            varchar(128)  default ''                not null comment 'Rack信息',
-    status          int           default 0                 not null comment '状态: 1启用，0未启用',
+    status          int           default 1                 not null comment '状态: 1启用，0未启用',
     create_time     timestamp     default CURRENT_TIMESTAMP not null comment '创建时间',
     update_time     timestamp     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
     endpoint_map    varchar(1024) default ''                not null comment '监听信息',
-    is_delete       int           default 0                 not null,
     constraint uniq_cluster_phy_id__storage_id
         unique (cluster_id, store_id)
 )
@@ -141,7 +189,7 @@ CREATE TABLE `group`
     `state`        varchar(64)                                            NOT NULL DEFAULT '' COMMENT '状态',
     `create_time`  timestamp                                              NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`  timestamp                                              NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-    `is_delete`    int                                                    NOT NULL DEFAULT '0',
+    `status`    int                                                    NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_cluster_phy_id_name` (`cluster_id`, `name`),
     KEY `cluster_id` (`cluster_id`, `name`)
@@ -162,7 +210,7 @@ CREATE TABLE `group_member`
     `state`          varchar(64)     NOT NULL DEFAULT '' COMMENT '状态',
     `create_time`    timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`    timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-    `is_delete`      int             NOT NULL DEFAULT '0',
+    `status`      int             NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_cluster_topic_group` (`cluster_id`, `topic_name`, `group_name`),
     KEY `cluster_id` (`cluster_id`, `topic_name`, `group_name`)
@@ -178,7 +226,7 @@ CREATE TABLE `operation_log`
     `id`             bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
     `cluster_id`     bigint          NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
     `operation_type` varchar(192)    NOT NULL DEFAULT '' COMMENT '操作类型,如:启动，停止，重启，添加，删除，修改',
-    `status`         int             NOT NULL DEFAULT '0' COMMENT '操作状态 0:未知，1:执行中，2:成功，3:失败',
+    `state`         int             NOT NULL DEFAULT '0' COMMENT '操作状态 0:未知，1:执行中，2:成功，3:失败',
     `content`        varchar(1024) COMMENT '备注信息',
     `create_time`    timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `end_time`       timestamp       NULL     DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
@@ -188,7 +236,7 @@ CREATE TABLE `operation_log`
     `is_delete`      int             NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `idx_cluster_phy_id` (`cluster_id`),
-    KEY `idx_status` (`status`)
+    KEY `idx_state` (`state`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 68
   DEFAULT CHARSET = utf8mb4,
@@ -209,7 +257,7 @@ CREATE TABLE `topic`
     `description`  varchar(1024)            DEFAULT '' COMMENT '备注信息',
     `create_time`  timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间(尽量与Topic实际创建时间一致)',
     `update_time`  timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间(尽量与Topic实际创建时间一致)',
-    `is_delete`    int             NOT NULL DEFAULT '0',
+    `status`    int             NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_cluster_phy_id_topic_name` (`cluster_id`, `topic_name`),
     KEY `cluster_id` (`cluster_id`, `topic_name`)
@@ -300,7 +348,7 @@ CREATE TABLE `health_check_result`
     `type`        tinyint(4)          NOT NULL DEFAULT '0' COMMENT '检查维度(0:未知, 1:Cluster, 2:Runtime, 3:Topic, 4:Storage)',
     `type_id`     bigint(20) unsigned NOT NULL COMMENT '对应检查维度的实例id',
     `cluster_id`  bigint(20)          NOT NULL DEFAULT '0' COMMENT '集群ID',
-    `status`      tinyint(4)          NOT NULL DEFAULT '0' COMMENT '检查状态(0:未通过，1:通过,2:正在检查,3:超时)',
+    `state`       tinyint(4)          NOT NULL DEFAULT '0' COMMENT '检查状态(0:未通过，1:通过,2:正在检查,3:超时)',
     `result_desc` varchar(1024)       NOT NULL DEFAULT '' COMMENT '检查结果描述',
     `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

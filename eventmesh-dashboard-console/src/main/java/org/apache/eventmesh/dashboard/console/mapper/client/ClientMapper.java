@@ -27,11 +27,27 @@ import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
+
 /**
  * Mybatis Mapper for the table of client.
  */
 @Mapper
 public interface ClientMapper {
+
+    @Select("select * from client where status=1")
+    List<ClientEntity> selectAll();
+
+    @Select({
+        "<script>",
+        " INSERT INTO  client (cluster_id, name, platform, language, pid, host, port, protocol, status,",
+        " config_ids, description) VALUES ",
+        " <foreach collection='list' item='c' index='index' separator=','>",
+        "     (#{c.clusterId}, #{c.name}, #{c.platform},#{c.language}, #{c.pid}, #{c.host}, #{c.port}, #{c.protocol},",
+        "     #{c.status}, #{c.configIds}, #{c.description})",
+        " </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void batchInsert(List<ClientEntity> clientEntityList);
 
     @Select("SELECT * FROM `client` WHERE `id` = #{id}")
     ClientEntity selectById(ClientEntity clientEntity);

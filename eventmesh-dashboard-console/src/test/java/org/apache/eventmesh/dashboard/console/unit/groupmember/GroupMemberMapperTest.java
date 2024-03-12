@@ -41,7 +41,7 @@ public class GroupMemberMapperTest {
     public List<GroupMemberEntity> insertGroupData(String topicName, String groupName) {
         List<GroupMemberEntity> groupMemberEntities = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            GroupMemberEntity groupMemberEntity = new GroupMemberEntity(null, (long) i, topicName, groupName, "admin", "active", null, null);
+            GroupMemberEntity groupMemberEntity = new GroupMemberEntity(null, (long) i, topicName, groupName, "admin", "active", null, null, 0);
             groupMemberMapper.addGroupMember(groupMemberEntity);
             groupMemberEntities.add(groupMemberEntity);
         }

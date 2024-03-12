@@ -23,7 +23,7 @@ public class TestClusterMapper {
     @Test
     public void testAddCluster() {
         ClusterEntity clusterEntity =
-            new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, null, null);
+            new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, 0, null, null, 0);
         clusterMapper.addCluster(clusterEntity);
         ClusterEntity clusterEntity1 = clusterMapper.selectClusterById(clusterEntity);
         clusterEntity1.setUpdateTime(null);
@@ -34,9 +34,9 @@ public class TestClusterMapper {
     @Test
     public void testSelectAllCluster() {
         ClusterEntity clusterEntity =
-            new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, null, null);
+            new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, 0, null, null, 0);
         ClusterEntity clusterEntity1 =
-            new ClusterEntity(null, "c1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, null, null);
+            new ClusterEntity(null, "c1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, 0, null, null, 0);
         clusterMapper.addCluster(clusterEntity);
         clusterMapper.addCluster(clusterEntity1);
         List<ClusterEntity> clusterEntities = clusterMapper.selectAllCluster();
@@ -46,7 +46,7 @@ public class TestClusterMapper {
     @Test
     public void testSelectClusterById() {
         ClusterEntity clusterEntity =
-            new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, null, null);
+            new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, 0, null, null, 0);
         clusterMapper.addCluster(clusterEntity);
         ClusterEntity clusterEntity1 = clusterMapper.selectClusterById(clusterEntity);
         clusterEntity1.setCreateTime(null);
@@ -57,7 +57,7 @@ public class TestClusterMapper {
     @Test
     public void testUpdateCluster() {
         ClusterEntity clusterEntity =
-            new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, null, null);
+            new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, 0, null, null, 0);
         clusterMapper.addCluster(clusterEntity);
         clusterEntity.setDescription("nothing");
         clusterEntity.setName("cl2");
@@ -79,7 +79,7 @@ public class TestClusterMapper {
     @Test
     public void testDeleteCluster() {
         ClusterEntity clusterEntity =
-            new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, null, null);
+            new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, 0, null, null, 0);
         clusterMapper.addCluster(clusterEntity);
         clusterMapper.deleteClusterById(clusterEntity);
         ClusterEntity clusterEntity1 = clusterMapper.selectClusterById(clusterEntity);

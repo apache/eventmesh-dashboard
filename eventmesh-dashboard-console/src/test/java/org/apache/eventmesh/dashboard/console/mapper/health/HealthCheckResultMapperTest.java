@@ -53,7 +53,7 @@ class HealthCheckResultMapperTest {
         healthCheckResultEntity.setId(1L);
         healthCheckResultEntity = healthCheckResultMapper.selectById(healthCheckResultEntity);
         assertEquals(1, healthCheckResultEntity.getId());
-        assertEquals(0, healthCheckResultEntity.getStatus());
+        assertEquals(0, healthCheckResultEntity.getState());
     }
 
     @Test
@@ -61,7 +61,7 @@ class HealthCheckResultMapperTest {
         HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity(1L, 1, 1L, "", 1);
         healthCheckResultEntity = healthCheckResultMapper.selectByClusterIdAndTypeAndTypeId(healthCheckResultEntity).get(0);
         assertEquals(1, healthCheckResultEntity.getId());
-        assertEquals(0, healthCheckResultEntity.getStatus());
+        assertEquals(0, healthCheckResultEntity.getState());
     }
 
     @Test
@@ -104,7 +104,7 @@ class HealthCheckResultMapperTest {
         HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity(1L, 1, 1L, "reason", 0);
         healthCheckResultMapper.update(healthCheckResultEntity);
         healthCheckResultEntity = healthCheckResultMapper.selectByClusterIdAndTypeAndTypeId(healthCheckResultEntity).get(0);
-        assertEquals(0, healthCheckResultEntity.getStatus());
+        assertEquals(0, healthCheckResultEntity.getState());
     }
 
     @Test
@@ -117,8 +117,8 @@ class HealthCheckResultMapperTest {
         healthCheckResultEntity1 = healthCheckResultMapper.selectById(healthCheckResultEntity1);
         healthCheckResultEntity2 = healthCheckResultMapper.selectById(healthCheckResultEntity2);
 
-        assertEquals(0, healthCheckResultEntity1.getStatus());
-        assertEquals(0, healthCheckResultEntity2.getStatus());
+        assertEquals(0, healthCheckResultEntity1.getState());
+        assertEquals(0, healthCheckResultEntity2.getState());
     }
 
     @Test
@@ -130,13 +130,13 @@ class HealthCheckResultMapperTest {
         List<HealthCheckResultEntity> toBeUpdate = healthCheckResultMapper.getIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(
             Arrays.asList(entity1, entity2));
 
-        toBeUpdate.forEach(entity -> entity.setStatus(2));
+        toBeUpdate.forEach(entity -> entity.setState(2));
 
         healthCheckResultMapper.batchUpdate(toBeUpdate);
         entity1.setId(7L);
-        assertEquals(2, healthCheckResultMapper.selectById(entity1).getStatus());
+        assertEquals(2, healthCheckResultMapper.selectById(entity1).getState());
         entity2.setId(1L);
-        assertEquals(0, healthCheckResultMapper.selectById(entity2).getStatus());
+        assertEquals(0, healthCheckResultMapper.selectById(entity2).getState());
     }
 
 }

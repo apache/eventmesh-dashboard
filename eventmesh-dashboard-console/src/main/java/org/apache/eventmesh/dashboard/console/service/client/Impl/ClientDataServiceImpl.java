@@ -15,34 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.group;
+package org.apache.eventmesh.dashboard.console.service.client.Impl;
 
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.client.ClientEntity;
+import org.apache.eventmesh.dashboard.console.mapper.client.ClientMapper;
+import org.apache.eventmesh.dashboard.console.service.client.ClientDataService;
 
 import java.util.List;
 
-/**
- * operate Group Service
- */
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public interface GroupService {
+@Service
+public class ClientDataServiceImpl implements ClientDataService {
 
-    List<GroupEntity> selectAll();
+    @Autowired
+    private ClientMapper clientMapper;
 
-    void batchInsert(List<GroupEntity> groupEntities);
+    @Override
+    public List<ClientEntity> selectAll() {
+        return clientMapper.selectAll();
+    }
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
-
-    GroupEntity addGroup(GroupEntity groupEntity);
-
-    void updateGroup(GroupEntity groupEntity);
-
-    Integer deleteGroup(GroupEntity groupEntity);
-
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
-
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    @Override
+    public void batchInsert(List<ClientEntity> clientEntityList) {
+        clientMapper.batchInsert(clientEntityList);
+    }
 }

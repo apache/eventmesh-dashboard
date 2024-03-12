@@ -33,6 +33,21 @@ import java.util.List;
 @Mapper
 public interface StoreMapper {
 
+    @Select("SELECT * FROM store WHERE status=1")
+    List<StoreEntity> selectAll();
+
+    @Insert({
+        "<script>",
+        "INSERT INTO store (cluster_id, store_id, store_type, host, runtime_id, topic_list, diff_type, port, jmx_port,start_timestamp, rack,",
+        " status, endpoint_map) VALUES ",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "       (#{c.clusterId}, #{c.storeId}, #{c.storeType}, #{c.host}, #{c.runtimeId}, #{c.topicList}, #{c.diffType}, #{c.port}, #{c.jmxPort},",
+        "       #{c.startTimestamp}, #{c.rack}, #{c.status}, #{c.endpointMap})",
+        "   </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void batchInsert(List<StoreEntity> storeEntities);
+
     @Insert("INSERT INTO store (cluster_id, store_id, store_type, host, runtime_id, topic_list, diff_type"
         + ", port, jmx_port, start_timestamp, rack, status, endpoint_map ) VALUES ("
         + "#{clusterId},#{storeId},#{storeType},#{host},#{runtimeId},#{topicList},#{diffType},#{port},#{jmxPort}"
@@ -40,10 +55,10 @@ public interface StoreMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addStore(StoreEntity storeEntity);
 
-    @Update("UPDATE store SET is_delete=1 WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
+    @Update("UPDATE store SET status=0 WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
     void deleteStoreByUnique(StoreEntity storeEntity);
 
-    @Select("SELECT * FROM store WHERE cluster_id=#{clusterId} AND is_delete=0")
+    @Select("SELECT * FROM store WHERE cluster_id=#{clusterId} AND status=1")
     List<StoreEntity> selectStoreByCluster(StoreEntity storeEntity);
 
     @Update("UPDATE store SET status=#{status} WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")

@@ -56,6 +56,6 @@ public interface OprLogMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Long addLog(LogEntity logEntity);
 
-    @Update("UPDATE operation_log SET status=#{status} ,result=#{resultContent} WHERE id=#{id}")
+    @Update("UPDATE operation_log SET state=#{state} ,result=#{resultContent} WHERE id=#{id}")
     Integer updateLog(LogEntity logEntity);
 }

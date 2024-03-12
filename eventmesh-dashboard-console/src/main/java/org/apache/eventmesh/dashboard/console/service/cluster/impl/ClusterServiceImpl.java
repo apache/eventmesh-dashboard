@@ -34,6 +34,16 @@ public class ClusterServiceImpl implements ClusterService {
     private ClusterMapper clusterMapper;
 
     @Override
+    public void batchInsert(List<ClusterEntity> clusterEntities) {
+        clusterMapper.batchInsert(clusterEntities);
+    }
+
+    @Override
+    public List<ClusterEntity> selectAll() {
+        return clusterMapper.selectAllCluster();
+    }
+
+    @Override
     public void addCluster(ClusterEntity cluster) {
         clusterMapper.addCluster(cluster);
     }
