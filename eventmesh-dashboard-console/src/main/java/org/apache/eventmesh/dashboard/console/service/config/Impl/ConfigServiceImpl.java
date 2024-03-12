@@ -37,6 +37,16 @@ public class ConfigServiceImpl implements ConfigService {
     ConfigMapper configMapper;
 
     @Override
+    public List<ConfigEntity> selectAll() {
+        return configMapper.selectAll();
+    }
+
+    @Override
+    public void batchInsert(List<ConfigEntity> configEntityList) {
+        configMapper.batchInsert(configEntityList);
+    }
+
+    @Override
     public String mapToYaml(Map<String, String> stringMap) {
         Yaml yaml = new Yaml();
         return yaml.dumpAsMap(stringMap);

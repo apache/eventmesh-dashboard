@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.entity.config;
 
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ConfigEntity {
+public class ConfigEntity extends BaseEntity {
 
     private Long id;
 

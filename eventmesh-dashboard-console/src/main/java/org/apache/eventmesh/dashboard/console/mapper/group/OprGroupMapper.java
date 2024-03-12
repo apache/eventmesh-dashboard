@@ -36,23 +36,36 @@ public interface OprGroupMapper {
 
     @Insert("INSERT INTO `group` (cluster_id, name, member_count, members, type, state)"
         + "VALUE (#{clusterId},#{name},#{memberCount},#{members},#{type},#{state}) "
-        + "ON DUPLICATE KEY UPDATE is_delete=0")
+        + "ON DUPLICATE KEY UPDATE status=1")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroup(GroupEntity groupEntity);
+
+    @Insert({
+        "<script>",
+        "   INSERT INTO `group` (cluster_id, name, member_count, members, type, state) VALUES ",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "   (#{c.clusterId},#{c.name},#{c.memberCount},#{c.members},#{c.type},#{c.state})",
+        "   </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void batchInsert(List<GroupEntity> groupEntities);
+
+    @Select("SELECT * FROM `group` WHERE status=1")
+    List<GroupEntity> selectAll();
 
     @Update("UPDATE `group` SET member_count=#{memberCount},"
         + "members=#{members},type=#{type},state=#{state} WHERE id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer updateGroup(GroupEntity groupEntity);
 
-    @Delete("UPDATE `group` SET  is_delete=1 WHERE id=#{id}")
+    @Delete("UPDATE `group` SET  status=1 WHERE id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer deleteGroup(GroupEntity groupEntity);
 
-    @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND is_delete=0")
+    @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND status=1")
     GroupEntity selectGroupByUnique(GroupEntity groupEntity);
 
-    @Select("SELECT * FROM `group` WHERE id=#{id} AND is_delete=0")
+    @Select("SELECT * FROM `group` WHERE id=#{id} AND status=1")
     GroupEntity selectGroupById(GroupEntity groupEntity);
 
     @Select({
@@ -65,7 +78,7 @@ public interface OprGroupMapper {
         "       <if test='name != null'>",
         "           AND name LIKE concat('%',#{name},'%')",
         "       </if>",
-        "       AND is_delete=0",
+        "       AND status=1",
         "   </where>",
         "</script>"})
     List<GroupEntity> selectGroup(GroupEntity groupEntity);

@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.groupmember;
+package org.apache.eventmesh.dashboard.console.service.groupmember.Impl;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
 import org.apache.eventmesh.dashboard.console.mapper.groupmember.OprGroupMemberMapper;
+import org.apache.eventmesh.dashboard.console.service.groupmember.GroupMemberService;
 
 import java.util.List;
 
@@ -32,6 +33,16 @@ public class GroupMemberServiceImp implements GroupMemberService {
 
     @Autowired
     OprGroupMemberMapper oprGroupMemberMapper;
+
+    @Override
+    public List<GroupMemberEntity> selectAll() {
+        return oprGroupMemberMapper.selectAll();
+    }
+
+    @Override
+    public void batchInsert(List<GroupMemberEntity> groupMemberEntities) {
+        oprGroupMemberMapper.batchInsert(groupMemberEntities);
+    }
 
     @Override
     @EmLog(OprType = "View", OprTarget = "GroupMember")

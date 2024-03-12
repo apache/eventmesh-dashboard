@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.entity.topic;
 
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
@@ -26,7 +28,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopicEntity {
+public class TopicEntity extends BaseEntity {
+
     private Long id;
 
     private Long clusterId;
@@ -47,4 +50,5 @@ public class TopicEntity {
 
     private Timestamp updateTime;
 
+    private Integer status;
 }

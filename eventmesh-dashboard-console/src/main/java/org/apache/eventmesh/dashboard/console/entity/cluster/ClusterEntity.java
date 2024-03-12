@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClusterEntity {
+public class ClusterEntity extends BaseEntity {
 
     private Long id;
 
@@ -50,7 +52,11 @@ public class ClusterEntity {
 
     private Integer runState;
 
+    private Integer status;
+
     private Timestamp createTime;
 
     private Timestamp updateTime;
+
+    private Integer storeType;
 }

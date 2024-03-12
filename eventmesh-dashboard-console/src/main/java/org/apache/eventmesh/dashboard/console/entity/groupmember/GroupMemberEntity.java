@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.entity.groupmember;
 
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
@@ -26,7 +28,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupMemberEntity {
+public class GroupMemberEntity extends BaseEntity {
+
     private Long id;
 
     private Long clusterId;
@@ -43,5 +46,5 @@ public class GroupMemberEntity {
 
     private Timestamp updateTime;
 
-
+    private Integer status;
 }

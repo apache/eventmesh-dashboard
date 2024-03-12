@@ -17,9 +17,16 @@
 
 package org.apache.eventmesh.dashboard.console.service.client;
 
+import org.apache.eventmesh.dashboard.console.entity.client.ClientEntity;
+
+import java.util.List;
+
 /**
  * Service providing data of clients.
  */
 public interface ClientDataService {
 
+    List<ClientEntity> selectAll();
+
+    void batchInsert(List<ClientEntity> clientEntityList);
 }
