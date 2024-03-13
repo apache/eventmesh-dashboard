@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.function.health.check.config;
 
 
-import org.apache.eventmesh.dashboard.service.properties.RocketmqProperties;
+import org.apache.eventmesh.dashboard.common.model.RocketmqProperties;
 
 import java.util.Properties;
 

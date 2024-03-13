@@ -34,9 +34,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
+import org.springframework.beans.BeanUtils;
+
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-
 
 @Slf4j
 @UtilityClass
@@ -80,13 +81,8 @@ public class RocketmqUtils {
         } catch (Exception e) {
             log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
         }
-        List<TopicProperties> topicPropertiesList = new ArrayList<>();
-        for (TopicConfig topicConfig : topicConfigList) {
-            TopicProperties topicProperties = new TopicProperties();
-            topicProperties.setRocketmqTopicConfig(topicConfig);
-            topicPropertiesList.add(topicProperties);
-        }
-        return topicPropertiesList;
+
+        return topicConfig2TopicProperties(topicConfigList);
     }
 
     public void deleteTopic(String topicName, String nameServerAddr, long requestTimeoutMillis) {
@@ -100,6 +96,16 @@ public class RocketmqUtils {
         } catch (Exception e) {
             log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
         }
+    }
+
+    private List<TopicProperties> topicConfig2TopicProperties(List<TopicConfig> topicConfigList) {
+        ArrayList<TopicProperties> topicPropertiesList = new ArrayList<>();
+        for (TopicConfig topicConfig : topicConfigList) {
+            TopicProperties topicProperties = new TopicProperties();
+            BeanUtils.copyProperties(topicConfig, topicProperties);
+            topicPropertiesList.add(topicProperties);
+        }
+        return topicPropertiesList;
     }
 
 }

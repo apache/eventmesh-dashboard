@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.common.model;
 
-import org.apache.rocketmq.common.TopicConfig;
+import org.apache.rocketmq.common.TopicFilterType;
 
 import lombok.Data;
 
@@ -28,6 +28,26 @@ import lombok.Data;
 @Data
 public class TopicProperties {
 
-    private TopicConfig rocketmqTopicConfig;
+    private static final String SEPARATOR = " ";
+
+    public static int defaultReadQueueNums = 16;
+
+    public static int defaultWriteQueueNums = 16;
+
+    private String topicName;
+
+    private int offset;
+
+    private int readQueueNums;
+
+    private int writeQueueNums;
+
+    private int perm;
+
+    private TopicFilterType topicFilterType;
+
+    private int topicSysFlag;
+
+    private boolean order;
 
 }
