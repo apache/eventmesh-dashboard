@@ -21,18 +21,18 @@ import org.apache.eventmesh.dashboard.console.function.client.AbstractClientOper
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateRedisConfig;
 
+import java.util.AbstractMap.SimpleEntry;
+
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
-
-import javafx.util.Pair;
 
 public class RedisClientCreateOperation extends AbstractClientOperation<StatefulRedisConnection<String, String>> {
 
     @Override
-    public Pair<String, StatefulRedisConnection<String, String>> createClient(CreateClientConfig clientConfig) {
+    public SimpleEntry<String, StatefulRedisConnection<String, String>> createClient(CreateClientConfig clientConfig) {
         String redisUrl = ((CreateRedisConfig) clientConfig).getRedisUrl();
         RedisClient redisClient = RedisClient.create(redisUrl);
-        return new Pair<>(clientConfig.getUniqueKey(), redisClient.connect());
+        return new SimpleEntry<>(clientConfig.getUniqueKey(), redisClient.connect());
     }
 
     @Override

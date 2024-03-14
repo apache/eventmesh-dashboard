@@ -24,17 +24,17 @@ import org.apache.rocketmq.remoting.RemotingClient;
 import org.apache.rocketmq.remoting.netty.NettyClientConfig;
 import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
 
-import javafx.util.Pair;
+import java.util.AbstractMap.SimpleEntry;
 
 public class RocketMQRemotingClientCreateOperation extends AbstractClientOperation<RemotingClient> {
 
     @Override
-    public Pair<String, RemotingClient> createClient(CreateClientConfig clientConfig) {
+    public SimpleEntry<String, RemotingClient> createClient(CreateClientConfig clientConfig) {
         NettyClientConfig config = new NettyClientConfig();
         config.setUseTLS(false);
         RemotingClient remotingClient = new NettyRemotingClient(config);
         remotingClient.start();
-        return new Pair<>(clientConfig.getUniqueKey(), remotingClient);
+        return new SimpleEntry<>(clientConfig.getUniqueKey(), remotingClient);
     }
 
     @Override

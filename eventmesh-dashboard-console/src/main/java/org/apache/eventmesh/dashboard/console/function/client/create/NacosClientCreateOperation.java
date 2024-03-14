@@ -21,10 +21,10 @@ import org.apache.eventmesh.dashboard.console.function.client.AbstractClientOper
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
 import org.apache.eventmesh.dashboard.console.function.client.wrapper.NacosClientWrapper;
 
+import java.util.AbstractMap.SimpleEntry;
+
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
-
-import javafx.util.Pair;
 
 public class NacosClientCreateOperation extends AbstractClientOperation<NacosClientWrapper> {
 
@@ -32,16 +32,16 @@ public class NacosClientCreateOperation extends AbstractClientOperation<NacosCli
     private final NacosNamingClientCreateOperation nacosNamingClientCreateOperation = new NacosNamingClientCreateOperation();
 
     @Override
-    public Pair<String, NacosClientWrapper> createClient(CreateClientConfig createClientConfig) {
-        Pair<String, ConfigService> configPair = nacosConfigClientCreateOperation.createClient(createClientConfig);
-        Pair namingPair = nacosNamingClientCreateOperation.createClient(createClientConfig);
-        if (configPair.getKey() != namingPair.getKey()) {
+    public SimpleEntry<String, NacosClientWrapper> createClient(CreateClientConfig createClientConfig) {
+        SimpleEntry<String, ConfigService> configSimpleEntry = nacosConfigClientCreateOperation.createClient(createClientConfig);
+        SimpleEntry namingSimpleEntry = nacosNamingClientCreateOperation.createClient(createClientConfig);
+        if (configSimpleEntry.getKey() != namingSimpleEntry.getKey()) {
             throw new RuntimeException("Nacos config and naming server address not match");
         }
         NacosClientWrapper nacosClient = new NacosClientWrapper(
-            (ConfigService) configPair.getValue(), (NamingService) namingPair.getValue()
+            (ConfigService) configSimpleEntry.getValue(), (NamingService) namingSimpleEntry.getValue()
         );
-        return new Pair<>(configPair.getKey(), nacosClient);
+        return new SimpleEntry<>(configSimpleEntry.getKey(), nacosClient);
     }
 
     @Override

@@ -24,15 +24,15 @@ import org.apache.eventmesh.dashboard.console.function.client.config.CreateRocke
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.AbstractMap.SimpleEntry;
 
-import javafx.util.Pair;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class RocketMQPushConsumerClientCreateOperation extends AbstractClientOperation<DefaultMQPushConsumer> {
 
     @Override
-    public Pair createClient(CreateClientConfig clientConfig) {
+    public SimpleEntry<String, DefaultMQPushConsumer> createClient(CreateClientConfig clientConfig) {
         DefaultMQPushConsumer consumer = null;
         try {
             CreateRocketmqConfig config = (CreateRocketmqConfig) clientConfig;
@@ -45,7 +45,7 @@ public class RocketMQPushConsumerClientCreateOperation extends AbstractClientOpe
         } catch (MQClientException e) {
             log.error("create rocketmq push consumer failed", e);
         }
-        return new Pair(((CreateRocketmqConfig) clientConfig).getNameServerUrl(), consumer);
+        return new SimpleEntry(((CreateRocketmqConfig) clientConfig).getNameServerUrl(), consumer);
     }
 
     @Override

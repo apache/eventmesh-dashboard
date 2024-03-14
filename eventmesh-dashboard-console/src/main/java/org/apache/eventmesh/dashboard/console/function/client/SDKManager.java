@@ -26,11 +26,12 @@ import org.apache.eventmesh.dashboard.console.function.client.create.RocketMQPro
 import org.apache.eventmesh.dashboard.console.function.client.create.RocketMQPushConsumerClientCreateOperation;
 import org.apache.eventmesh.dashboard.console.function.client.create.RocketMQRemotingClientCreateOperation;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javafx.util.Pair;
+
 
 /**
  * SDK manager is a singleton to manage all SDK clients, it is a facade to create, delete and get a client.
@@ -76,23 +77,23 @@ public class SDKManager {
     private SDKManager() {
     }
 
-    public <T> Pair<String, T> createClient(ClientTypeEnum clientTypeEnum, CreateClientConfig config) {
+    public <T> SimpleEntry<String, T> createClient(ClientTypeEnum clientTypeEnum, CreateClientConfig config) {
         return createClient(clientTypeEnum, config.getUniqueKey(), config);
     }
 
-    public <T> Pair<String, T> createClient(ClientTypeEnum clientTypeEnum, String uniqueKey, CreateClientConfig config) {
+    public <T> SimpleEntry<String, T> createClient(ClientTypeEnum clientTypeEnum, String uniqueKey, CreateClientConfig config) {
 
         Map<String, Object> clients = this.clientMap.get(clientTypeEnum);
 
         Object client = clients.get(uniqueKey);
-        Pair<String, ?> result = new Pair<>(uniqueKey, client);
+        SimpleEntry<String, ?> result = new SimpleEntry<>(uniqueKey, client);
         if (Objects.isNull(client)) {
             ClientOperation<?> clientCreateOperation = this.clientCreateOperationMap.get(clientTypeEnum);
             result = clientCreateOperation.createClient(config);
             clients.put(result.getKey(), result.getValue());
         }
         try {
-            return (Pair<String, T>) result;
+            return (SimpleEntry<String, T>) result;
         } catch (Exception e) {
             throw new RuntimeException("create client error", e);
         }

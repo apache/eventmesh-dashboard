@@ -24,15 +24,15 @@ import org.apache.eventmesh.dashboard.console.function.client.config.CreateRocke
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.AbstractMap.SimpleEntry;
 
-import javafx.util.Pair;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class RocketMQProduceClientCreateOperation extends AbstractClientOperation<DefaultMQProducer> {
 
     @Override
-    public Pair<String, DefaultMQProducer> createClient(CreateClientConfig clientConfig) {
+    public SimpleEntry<String, DefaultMQProducer> createClient(CreateClientConfig clientConfig) {
         DefaultMQProducer producer = null;
         try {
             CreateRocketmqConfig config = (CreateRocketmqConfig) clientConfig;
@@ -43,7 +43,7 @@ public class RocketMQProduceClientCreateOperation extends AbstractClientOperatio
         } catch (MQClientException e) {
             log.error("create rocketmq producer failed", e);
         }
-        return new Pair<>(clientConfig.getUniqueKey(), producer);
+        return new SimpleEntry<>(clientConfig.getUniqueKey(), producer);
     }
 
     @Override

@@ -20,11 +20,11 @@ package org.apache.eventmesh.dashboard.console.function.client.create;
 import org.apache.eventmesh.dashboard.console.function.client.AbstractClientOperation;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
 
-import javafx.util.Pair;
+import java.util.AbstractMap.SimpleEntry;
 
 public class EtcdClientCreateOperation extends AbstractClientOperation {
     @Override
-    public Pair createClient(CreateClientConfig clientConfig) {
+    public SimpleEntry createClient(CreateClientConfig clientConfig) {
         return null;
     }
 

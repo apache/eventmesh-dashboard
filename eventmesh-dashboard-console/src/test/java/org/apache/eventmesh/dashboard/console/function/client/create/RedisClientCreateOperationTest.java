@@ -21,13 +21,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateRedisConfig;
 
+import java.util.AbstractMap.SimpleEntry;
+
 import org.junit.jupiter.api.Test;
 
 import io.lettuce.core.api.StatefulRedisConnection;
 
 import lombok.extern.slf4j.Slf4j;
 
-import javafx.util.Pair;
+
 
 @Slf4j
 class RedisClientCreateOperationTest {
@@ -39,9 +41,9 @@ class RedisClientCreateOperationTest {
         CreateRedisConfig createClientConfig = new CreateRedisConfig();
         createClientConfig.setRedisUrl("redis://localhost:6379");
         try {
-            Pair<String, StatefulRedisConnection<String, String>> pair = redisClientCreateOperation.createClient(createClientConfig);
-            assertEquals("redis://localhost:6379", pair.getKey());
-            String response = pair.getValue().sync().ping();
+            SimpleEntry<String, StatefulRedisConnection<String, String>> SimpleEntry = redisClientCreateOperation.createClient(createClientConfig);
+            assertEquals("redis://localhost:6379", SimpleEntry.getKey());
+            String response = SimpleEntry.getValue().sync().ping();
             log.info("response:{}", response);
         } catch (Exception e) {
             log.error("create redis client failed", e);

@@ -21,6 +21,7 @@ import org.apache.eventmesh.dashboard.console.function.client.AbstractClientOper
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateNacosConfig;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Properties;
 
 import com.alibaba.nacos.api.NacosFactory;
@@ -29,13 +30,11 @@ import com.alibaba.nacos.api.exception.NacosException;
 
 import lombok.extern.slf4j.Slf4j;
 
-import javafx.util.Pair;
-
 @Slf4j
 public class NacosConfigClientCreateOperation extends AbstractClientOperation<ConfigService> {
 
     @Override
-    public Pair<String, ConfigService> createClient(CreateClientConfig clientConfig) {
+    public SimpleEntry<String, ConfigService> createClient(CreateClientConfig clientConfig) {
         ConfigService configService = null;
         CreateNacosConfig config = (CreateNacosConfig) clientConfig;
         try {
@@ -45,7 +44,7 @@ public class NacosConfigClientCreateOperation extends AbstractClientOperation<Co
         } catch (NacosException e) {
             log.error("NacosCheck init failed caused by {}", e.getErrMsg());
         }
-        return new Pair<>(config.getServerAddress(), configService);
+        return new SimpleEntry<>(config.getServerAddress(), configService);
     }
 
     @Override

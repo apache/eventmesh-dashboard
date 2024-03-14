@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.console.function.client;
 
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
 
-import javafx.util.Pair;
+import java.util.AbstractMap.SimpleEntry;
 
 /**
  * Operation to create and close a client, the operations will be store in the SDKManager
@@ -28,7 +28,7 @@ import javafx.util.Pair;
  */
 public interface ClientOperation<T> {
 
-    public Pair<String, T> createClient(CreateClientConfig clientConfig);
+    public SimpleEntry<String, T> createClient(CreateClientConfig clientConfig);
 
 
     public void close(Object client);
