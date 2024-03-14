@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.config;
 
-import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import java.util.List;
 

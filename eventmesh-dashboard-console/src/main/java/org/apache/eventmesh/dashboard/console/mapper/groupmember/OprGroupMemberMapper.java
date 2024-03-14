@@ -36,12 +36,25 @@ import java.util.List;
 @Mapper
 public interface OprGroupMemberMapper {
 
-    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND is_delete=0")
+    @Select("SELECT * FROM group_member WHERE status=1")
+    List<GroupMemberEntity> selectAll();
+
+    @Insert({
+        "<script>",
+        "   INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user, state) VALUES ",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "(#{c.clusterId},#{c.topicName},#{c.groupName},#{c.eventMeshUser},#{c.state})",
+        "   </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void batchInsert(List<GroupMemberEntity> groupMemberEntities);
+
+    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND status=1")
     List<GroupMemberEntity> getGroupByClusterId(GroupMemberEntity groupMemberEntity);
 
     @Insert("INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user,state)"
         + " VALUE (#{clusterId},#{topicName},#{groupName},#{eventMeshUser},#{state})"
-        + "ON DUPLICATE KEY UPDATE is_delete=0")
+        + "ON DUPLICATE KEY UPDATE status=0")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroupMember(GroupMemberEntity groupMemberEntity);
 
@@ -49,14 +62,14 @@ public interface OprGroupMemberMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void updateGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Delete("UPDATE group_member SET is_delete=1 WHERE id=#{id} ")
+    @Delete("UPDATE group_member SET status=0 WHERE id=#{id} ")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND group_name=#{groupName} AND topic_name=#{topicName} AND is_delete=0")
+    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND group_name=#{groupName} AND topic_name=#{topicName} AND status=1")
     GroupMemberEntity selectGroupMemberByUnique(GroupMemberEntity groupMemberEntity);
 
-    @Select("SELECT * FROM group_member WHERE id=#{id} AND is_delete=0")
+    @Select("SELECT * FROM group_member WHERE id=#{id} AND status=1")
     GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 
     @Select({
@@ -73,7 +86,7 @@ public interface OprGroupMemberMapper {
         "           AND topic_name=#{topicName}",
         "       </if>",
         "    </where>",
-        "   AND is_delete=0",
+        "   AND status=1",
         "</script>"})
     List<GroupMemberEntity> selectMember(GroupMemberEntity groupMemberEntity);
 

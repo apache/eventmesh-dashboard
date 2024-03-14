@@ -33,14 +33,30 @@ import java.util.List;
 @Mapper
 public interface ConfigMapper {
 
-    @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name,"
-        + " config_value, start_version,eventmesh_version, description, edit,end_version,is_default,is_modify) VALUE "
+    @Select("SELECT * FROM config WHERE status=1")
+    List<ConfigEntity> selectAll();
+
+    @Insert({
+        "<script>",
+        "   INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version,",
+        "   eventmesh_version,end_version, diff_type, description, edit, is_default, is_modify) VALUES ",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "   (#{c.clusterId}, #{c.businessType}, #{c.instanceType}, #{c.instanceId},#{c.configName},",
+        "   #{c.configValue}, #{c.startVersion}, #{c.eventmeshVersion},#{c.endVersion},#{c.diffType},#{c.description},",
+        "   #{c.edit},#{c.isDefault},#{c.isModify})",
+        "   </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void batchInsert(List<ConfigEntity> configEntityList);
+
+    @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version, "
+        + "status, is_default, end_version, diff_type, description, edit, is_modify, eventmesh_version) VALUE "
         + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
-        + "#{configValue},#{startVersion},#{eventmeshVersion},#{description},#{edit},#{endVersion},#{isDefault},#{isModify})")
+        + "#{configValue},#{startVersion},#{status},#{isDefault},#{endVersion},#{diffType},#{description},#{edit},#{isModify},#{eventmeshVersion})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer addConfig(ConfigEntity configEntity);
 
-    @Update("UPDATE config SET status=2 WHERE id=#{id}")
+    @Update("UPDATE config SET status=0 WHERE id=#{id}")
     Integer deleteConfig(ConfigEntity configEntity);
 
     @Update("UPDATE config SET config_value=#{configValue} WHERE status=1 AND edit=2")

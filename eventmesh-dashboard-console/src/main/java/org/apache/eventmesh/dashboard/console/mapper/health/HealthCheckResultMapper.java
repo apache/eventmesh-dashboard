@@ -35,6 +35,9 @@ import java.util.List;
 @Mapper
 public interface HealthCheckResultMapper {
 
+    @Select("SELECT * FROM health_check_result")
+    List<HealthCheckResultEntity> selectAll();
+
     @Select("SELECT * FROM health_check_result WHERE id = #{id}")
     HealthCheckResultEntity selectById(HealthCheckResultEntity healthCheckResultEntity);
 
@@ -49,28 +52,28 @@ public interface HealthCheckResultMapper {
         @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("INSERT INTO health_check_result(type,type_id, cluster_id, status,result_desc)"
-        + " VALUES( #{type}, #{typeId}, #{clusterId}, #{status}, #{resultDesc})")
+    @Insert("INSERT INTO health_check_result(type,type_id, cluster_id, state,result_desc)"
+        + " VALUES( #{type}, #{typeId}, #{clusterId}, #{state}, #{resultDesc})")
     void insert(HealthCheckResultEntity healthCheckResultEntity);
 
     @Insert({
         "<script>",
-        "   INSERT INTO health_check_result(type, type_id, cluster_id, status, result_desc) VALUES ",
+        "   INSERT INTO health_check_result(type, type_id, cluster_id, state, result_desc) VALUES ",
         "   <foreach collection='list' item='healthCheckResultEntity' index='index' separator=','>",
         "       (#{healthCheckResultEntity.type}, #{healthCheckResultEntity.typeId}, #{healthCheckResultEntity.clusterId},",
-        "       #{healthCheckResultEntity.status}, #{healthCheckResultEntity.resultDesc})",
+        "       #{healthCheckResultEntity.state}, #{healthCheckResultEntity.resultDesc})",
         "   </foreach>",
         "</script>"
     })
     void batchInsert(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
-    @Update("UPDATE health_check_result SET status = #{status}, result_desc = #{resultDesc} WHERE id = #{id}")
+    @Update("UPDATE health_check_result SET state = #{state}, result_desc = #{resultDesc} WHERE id = #{id}")
     void update(HealthCheckResultEntity healthCheckResultEntity);
 
     @Update({
         "<script>",
         "   <foreach collection='list' item='healthCheckResultEntity' index='index' separator=';'>",
-        "       UPDATE health_check_result SET status = #{healthCheckResultEntity.status},",
+        "       UPDATE health_check_result SET state = #{healthCheckResultEntity.state},",
         "       result_desc = #{healthCheckResultEntity.resultDesc} WHERE id = #{healthCheckResultEntity.id}",
         "   </foreach>",
         "</script>"})
@@ -79,7 +82,7 @@ public interface HealthCheckResultMapper {
     @Select({
         "<script>",
         "   SELECT * FROM health_check_result",
-        "   WHERE (cluster_id, type, type_id, status) IN",
+        "   WHERE (cluster_id, type, type_id, state) IN",
         "   <foreach collection='list' item='item' open='(' separator=',' close=')'>",
         "       (#{item.clusterId}, #{item.type}, #{item.typeId}, 2)",
         "   </foreach>",

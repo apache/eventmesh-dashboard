@@ -33,6 +33,16 @@ public class StoreServiceImpl implements StoreService {
     private StoreMapper storeMapper;
 
     @Override
+    public List<StoreEntity> selectAll() {
+        return storeMapper.selectAll();
+    }
+
+    @Override
+    public void batchInsert(List<StoreEntity> storeEntities) {
+        storeMapper.batchInsert(storeEntities);
+    }
+
+    @Override
     public void addStore(StoreEntity storeEntity) {
         storeMapper.addStore(storeEntity);
     }

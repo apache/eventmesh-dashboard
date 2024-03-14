@@ -32,8 +32,6 @@ import lombok.NoArgsConstructor;
 public class HealthCheckResultEntity extends BaseEntity {
 
     private static final long serialVersionUID = -7350585209577598040L;
-    @Schema(name = "id", description = "primary key")
-    private Long id;
 
     private Long clusterId;
 
@@ -46,7 +44,7 @@ public class HealthCheckResultEntity extends BaseEntity {
 
     private String resultDesc;
 
-    @Schema(description = "status of a health check, 0: failed, 1: passed, 2: doing check, 3: out of time")
-    private Integer status;
+    @Schema(description = "state of a health check, 0: failed, 1: passed, 2: doing check, 3: out of time")
+    private Integer state;
 
 }

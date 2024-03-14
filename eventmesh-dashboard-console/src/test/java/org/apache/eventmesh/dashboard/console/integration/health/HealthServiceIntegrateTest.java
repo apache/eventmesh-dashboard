@@ -19,9 +19,9 @@ package org.apache.eventmesh.dashboard.console.integration.health;
 
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType;
-import org.apache.eventmesh.dashboard.console.health.CheckResultCache;
-import org.apache.eventmesh.dashboard.console.health.HealthService;
-import org.apache.eventmesh.dashboard.console.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
+import org.apache.eventmesh.dashboard.console.function.health.HealthService;
+import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import java.util.List;
@@ -38,12 +38,14 @@ import org.springframework.test.context.jdbc.Sql;
 @ActiveProfiles("test")
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = {"classpath:use-test-schema.sql", "classpath:eventmesh-dashboard.sql"})
 public class HealthServiceIntegrateTest {
+
     HealthService healthService = new HealthService();
 
     @Autowired
     private HealthDataService healthDataService;
 
     private final CheckResultCache checkResultCache = new CheckResultCache();
+
     @BeforeEach
     void init() {
         healthService.createExecutor(healthDataService, checkResultCache);
@@ -66,7 +68,7 @@ public class HealthServiceIntegrateTest {
         queryEntity.setClusterId(1L);
         queryEntity.setType(HealthCheckType.STORAGE.getNumber());
         queryEntity.setTypeId(1L);
-        List<HealthCheckResultEntity> results =  healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(queryEntity);
-        Assertions.assertEquals(2,results.size());
+        List<HealthCheckResultEntity> results = healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(queryEntity);
+        Assertions.assertEquals(2, results.size());
     }
 }

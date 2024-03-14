@@ -35,6 +35,19 @@ import java.util.List;
 @Mapper
 public interface TopicMapper {
 
+    @Select("SELECT * FROM topic WHERE status=1")
+    List<TopicEntity> selectAll();
+
+    @Insert({
+        "<script>",
+        "INSERT INTO topic (cluster_id, topic_name, runtime_id, storage_id, retention_ms, type, description) VALUES ",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "       (#{c.clusterId},#{c.topicName},#{c.runtimeId},#{c.storageId},#{c.retentionMs},#{c.type},#{c.description})",
+        "   </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void batchInsert(List<TopicEntity> topicEntities);
+
     @Select("SELECT count(*) FROM topic WHERE cluster_id=#{clusterId}")
     Integer selectTopicNumByCluster(TopicEntity topicEntity);
 
@@ -48,21 +61,21 @@ public interface TopicMapper {
         "       <if test='clusterId!=null'>",
         "           AND cluster_id=#{clusterId} ",
         "       </if>",
-        "       AND is_delete=0",
+        "       AND status=1",
         "   </where>",
         "</script>"})
     List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
     @Insert("INSERT INTO topic (cluster_id, topic_name, runtime_id, storage_id, retention_ms, type, description) "
         + "VALUE (#{clusterId},#{topicName},#{runtimeId},#{storageId},#{retentionMs},#{type},#{description})"
-        + "ON DUPLICATE KEY UPDATE is_delete = 0")
+        + "ON DUPLICATE KEY UPDATE status = 1")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addTopic(TopicEntity topicEntity);
 
     @Update("UPDATE topic SET type=#{type},description=#{description} WHERE id=#{id}")
     void updateTopic(TopicEntity topicEntity);
 
-    @Delete("UPDATE `topic` SET is_delete=1 WHERE id=#{id}")
+    @Delete("UPDATE `topic` SET status=0 WHERE id=#{id}")
     void deleteTopic(TopicEntity topicEntity);
 
     @Select("SELECT * FROM topic WHERE cluster_id=#{clusterId} AND topic_name=#{topicName}")

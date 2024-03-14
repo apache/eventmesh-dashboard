@@ -29,6 +29,10 @@ import java.util.Map;
  */
 public interface ConfigService {
 
+    List<ConfigEntity> selectAll();
+
+    void batchInsert(List<ConfigEntity> configEntityList);
+
     String mapToYaml(Map<String, String> stringMap);
 
     Integer addConfig(ConfigEntity configEntity);
