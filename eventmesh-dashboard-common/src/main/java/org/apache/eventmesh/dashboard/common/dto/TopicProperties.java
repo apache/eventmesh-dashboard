@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.model;
+package org.apache.eventmesh.dashboard.common.dto;
 
 import org.apache.rocketmq.common.TopicFilterType;
 

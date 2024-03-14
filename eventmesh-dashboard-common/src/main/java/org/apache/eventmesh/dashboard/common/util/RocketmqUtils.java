@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.common.util;
 
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+import org.apache.eventmesh.dashboard.common.dto.TopicProperties;
 
 import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.protocol.RequestCode;
@@ -66,7 +66,7 @@ public class RocketmqUtils {
             Object result = remotingClient.invokeSync(nameServerAddr, request, requestTimeoutMillis);
             log.info("rocketmq create topic result:" + result.toString());
         } catch (Exception e) {
-            log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
+            log.error("Rocketmq create topic failed when examining topic stats.", e);
         }
     }
 
@@ -79,7 +79,7 @@ public class RocketmqUtils {
             ConcurrentMap<String, TopicConfig> topicConfigTable = allTopicConfig.getTopicConfigTable();
             topicConfigList = new ArrayList<>(topicConfigTable.values());
         } catch (Exception e) {
-            log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
+            log.error("Rocketmq get topics failed when examining topic stats.", e);
         }
 
         return topicConfig2TopicProperties(topicConfigList);
@@ -94,7 +94,7 @@ public class RocketmqUtils {
 
             log.info("rocketmq delete topic result:" + result.toString());
         } catch (Exception e) {
-            log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
+            log.error("Rocketmq delete topic failed when examining topic stats.", e);
         }
     }
 

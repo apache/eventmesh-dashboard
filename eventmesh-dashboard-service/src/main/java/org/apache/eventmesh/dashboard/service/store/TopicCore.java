@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.service.store;
 
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+import org.apache.eventmesh.dashboard.common.dto.TopicProperties;
 
 import java.util.List;
 
