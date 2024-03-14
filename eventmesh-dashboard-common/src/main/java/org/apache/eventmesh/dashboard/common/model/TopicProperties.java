@@ -27,7 +27,6 @@ import lombok.Data;
 
 @Data
 public class TopicProperties {
-    private RocketmqProperties rocketmqProperties;
 
     private static final String SEPARATOR = " ";
 
