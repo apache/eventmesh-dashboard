@@ -70,19 +70,18 @@ public class RocketmqUtils {
         }
     }
 
-    public List<TopicProperties> getTopics(String nameServerAddr, long requestTimeoutMillis) {
+    public List<TopicConfig> getTopics(String nameServerAddr, long requestTimeoutMillis) {
         List<TopicConfig> topicConfigList = new ArrayList<>();
         try {
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ALL_TOPIC_CONFIG, (CommandCustomHeader) null);
-            RemotingCommand response = remotingClient.invokeSync(nameServerAddr, request, requestTimeoutMillis);
+            RemotingCommand response = remotingClient.invokeSync(nameServerAddr, request, 3000L);
             TopicConfigSerializeWrapper allTopicConfig = TopicConfigSerializeWrapper.decode(response.getBody(), TopicConfigSerializeWrapper.class);
             ConcurrentMap<String, TopicConfig> topicConfigTable = allTopicConfig.getTopicConfigTable();
             topicConfigList = new ArrayList<>(topicConfigTable.values());
         } catch (Exception e) {
             log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
         }
-
-        return topicConfig2TopicProperties(topicConfigList);
+        return topicConfigList;
     }
 
     public void deleteTopic(String topicName, String nameServerAddr, long requestTimeoutMillis) {

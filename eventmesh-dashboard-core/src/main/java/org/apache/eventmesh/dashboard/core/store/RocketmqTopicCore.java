@@ -23,9 +23,11 @@ import org.apache.eventmesh.dashboard.common.model.TopicProperties;
 import org.apache.eventmesh.dashboard.common.util.RocketmqUtils;
 import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
+import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.TopicFilterType;
 import org.apache.rocketmq.common.constant.PermName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -44,7 +46,15 @@ public class RocketmqTopicCore implements TopicCore {
 
     @Override
     public List<TopicProperties> getTopics() {
-        return RocketmqUtils.getTopics(rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getRequestTimeoutMillis());
+        List<TopicConfig> topicConfigList =
+            RocketmqUtils.getTopics(rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getRequestTimeoutMillis());
+        List<TopicProperties> topicPropertiesList = new ArrayList<>();
+        for (TopicConfig topicConfig : topicConfigList) {
+            TopicProperties topicProperties = new TopicProperties();
+            topicProperties.setRocketmqTopicConfig(topicConfig);
+            topicPropertiesList.add(topicProperties);
+        }
+        return topicPropertiesList;
     }
 
     @Override
