@@ -41,9 +41,9 @@ class RedisClientCreateOperationTest {
         CreateRedisConfig createClientConfig = new CreateRedisConfig();
         createClientConfig.setRedisUrl("redis://localhost:6379");
         try {
-            SimpleEntry<String, StatefulRedisConnection<String, String>> SimpleEntry = redisClientCreateOperation.createClient(createClientConfig);
-            assertEquals("redis://localhost:6379", SimpleEntry.getKey());
-            String response = SimpleEntry.getValue().sync().ping();
+            SimpleEntry<String, StatefulRedisConnection<String, String>> simpleEntry = redisClientCreateOperation.createClient(createClientConfig);
+            assertEquals("redis://localhost:6379", simpleEntry.getKey());
+            String response = simpleEntry.getValue().sync().ping();
             log.info("response:{}", response);
         } catch (Exception e) {
             log.error("create redis client failed", e);
