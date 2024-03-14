@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.create;
+package org.apache.eventmesh.dashboard.console.function.client.operation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class RedisClientCreateOperationTest {
 
-    private RedisClientCreateOperation redisClientCreateOperation = new RedisClientCreateOperation();
+    private RedisSDKOperation redisClientCreateOperation = new RedisSDKOperation();
 
     @Test
     void testCreateClient() {

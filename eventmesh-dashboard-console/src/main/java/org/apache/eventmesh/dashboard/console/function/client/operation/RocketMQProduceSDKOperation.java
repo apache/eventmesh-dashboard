@@ -15,41 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.create;
+package org.apache.eventmesh.dashboard.console.function.client.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractClientOperation;
+import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateRocketmqConfig;
 
-import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.DefaultMQProducer;
 
 import java.util.AbstractMap.SimpleEntry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RocketMQPushConsumerClientCreateOperation extends AbstractClientOperation<DefaultMQPushConsumer> {
+public class RocketMQProduceSDKOperation extends AbstractSDKOperation<DefaultMQProducer> {
 
     @Override
-    public SimpleEntry<String, DefaultMQPushConsumer> createClient(CreateClientConfig clientConfig) {
-        DefaultMQPushConsumer consumer = null;
+    public SimpleEntry<String, DefaultMQProducer> createClient(CreateClientConfig clientConfig) {
+        DefaultMQProducer producer = null;
         try {
             CreateRocketmqConfig config = (CreateRocketmqConfig) clientConfig;
-            consumer = new DefaultMQPushConsumer(config.getConsumerGroup());
-            consumer.setMessageModel(config.getMessageModel());
-            consumer.setNamesrvAddr(config.getNameServerUrl());
-            consumer.subscribe(config.getTopic(), config.getSubExpression());
-            consumer.registerMessageListener(config.getMessageListener());
-            consumer.start();
+            producer = new DefaultMQProducer(config.getProducerGroup());
+            producer.setNamesrvAddr(config.getNameServerUrl());
+            producer.setCompressMsgBodyOverHowmuch(16);
+            producer.start();
         } catch (MQClientException e) {
-            log.error("create rocketmq push consumer failed", e);
+            log.error("create rocketmq producer failed", e);
         }
-        return new SimpleEntry(((CreateRocketmqConfig) clientConfig).getNameServerUrl(), consumer);
+        return new SimpleEntry<>(clientConfig.getUniqueKey(), producer);
     }
 
     @Override
     public void close(Object client) {
-        ((DefaultMQPushConsumer) client).shutdown();
+        ((DefaultMQProducer) client).shutdown();
     }
 }

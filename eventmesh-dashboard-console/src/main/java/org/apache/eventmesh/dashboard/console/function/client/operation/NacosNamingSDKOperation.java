@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.create;
+package org.apache.eventmesh.dashboard.console.function.client.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractClientOperation;
+import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateNacosConfig;
 
@@ -27,30 +27,31 @@ import java.util.Properties;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class NacosConfigClientCreateOperation extends AbstractClientOperation<ConfigService> {
+public class NacosNamingSDKOperation extends AbstractSDKOperation<NamingService> {
 
     @Override
-    public SimpleEntry<String, ConfigService> createClient(CreateClientConfig clientConfig) {
-        ConfigService configService = null;
+    public SimpleEntry<String, NamingService> createClient(CreateClientConfig clientConfig) {
+        NamingService namingService = null;
         CreateNacosConfig config = (CreateNacosConfig) clientConfig;
         try {
             Properties properties = new Properties();
             properties.put("serverAddr", config.getServerAddress());
-            configService = NacosFactory.createConfigService(properties);
+            namingService = NacosFactory.createNamingService(properties);
         } catch (NacosException e) {
             log.error("NacosCheck init failed caused by {}", e.getErrMsg());
         }
-        return new SimpleEntry<>(config.getServerAddress(), configService);
+        return new SimpleEntry<>(config.getUniqueKey(), namingService);
     }
 
     @Override
     public void close(Object client) {
         try {
-            castClient(client).shutDown();
+            ((ConfigService) client).shutDown();
         } catch (NacosException e) {
             log.error("NacosCheck close failed caused by {}", e.getErrMsg());
         }

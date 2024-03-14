@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.create;
+package org.apache.eventmesh.dashboard.console.function.client.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractClientOperation;
+import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
 
 import org.apache.rocketmq.remoting.RemotingClient;
@@ -26,7 +26,7 @@ import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
 
 import java.util.AbstractMap.SimpleEntry;
 
-public class RocketMQRemotingClientCreateOperation extends AbstractClientOperation<RemotingClient> {
+public class RocketMQRemotingSDKOperation extends AbstractSDKOperation<RemotingClient> {
 
     @Override
     public SimpleEntry<String, RemotingClient> createClient(CreateClientConfig clientConfig) {

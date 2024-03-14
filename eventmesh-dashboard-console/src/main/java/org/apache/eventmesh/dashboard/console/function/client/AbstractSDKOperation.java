@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.function.client;
 
-public abstract class AbstractClientOperation<T> implements ClientOperation<T> {
+public abstract class AbstractSDKOperation<T> implements SDKOperation<T> {
 
     protected T castClient(Object client) {
         try {

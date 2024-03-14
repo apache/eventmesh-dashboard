@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.create;
+package org.apache.eventmesh.dashboard.console.function.client.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractClientOperation;
+import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
 import org.apache.eventmesh.dashboard.console.function.client.wrapper.NacosClientWrapper;
 
@@ -26,10 +26,10 @@ import java.util.AbstractMap.SimpleEntry;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
 
-public class NacosClientCreateOperation extends AbstractClientOperation<NacosClientWrapper> {
+public class NacosSDKOperation extends AbstractSDKOperation<NacosClientWrapper> {
 
-    private final NacosConfigClientCreateOperation nacosConfigClientCreateOperation = new NacosConfigClientCreateOperation();
-    private final NacosNamingClientCreateOperation nacosNamingClientCreateOperation = new NacosNamingClientCreateOperation();
+    private final NacosConfigSDKOperation nacosConfigClientCreateOperation = new NacosConfigSDKOperation();
+    private final NacosNamingSDKOperation nacosNamingClientCreateOperation = new NacosNamingSDKOperation();
 
     @Override
     public SimpleEntry<String, NacosClientWrapper> createClient(CreateClientConfig createClientConfig) {

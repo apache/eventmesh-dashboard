@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.create;
+package org.apache.eventmesh.dashboard.console.function.client;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractClientOperation;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateRedisConfig;
 
 import java.util.AbstractMap.SimpleEntry;
 
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.api.StatefulRedisConnection;
+/**
+ * Operation to create and close a client, the operations will be store in the SDKManager
+ *
+ * @param <T> SDK client
+ */
+public interface SDKOperation<T> {
 
-public class RedisClientCreateOperation extends AbstractClientOperation<StatefulRedisConnection<String, String>> {
+    public SimpleEntry<String, T> createClient(CreateClientConfig clientConfig);
 
-    @Override
-    public SimpleEntry<String, StatefulRedisConnection<String, String>> createClient(CreateClientConfig clientConfig) {
-        String redisUrl = ((CreateRedisConfig) clientConfig).getRedisUrl();
-        RedisClient redisClient = RedisClient.create(redisUrl);
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), redisClient.connect());
-    }
 
-    @Override
-    public void close(Object client) {
-        castClient(client).close();
-    }
+    public void close(Object client);
+
 }

@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client;
+package org.apache.eventmesh.dashboard.console.function.client.operation;
 
+import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
 
 import java.util.AbstractMap.SimpleEntry;
 
-/**
- * Operation to create and close a client, the operations will be store in the SDKManager
- *
- * @param <T> SDK client
- */
-public interface ClientOperation<T> {
+public class EtcdSDKOperation extends AbstractSDKOperation {
+    @Override
+    public SimpleEntry createClient(CreateClientConfig clientConfig) {
+        return null;
+    }
 
-    public SimpleEntry<String, T> createClient(CreateClientConfig clientConfig);
+    @Override
+    public void close(Object client) {
 
-
-    public void close(Object client);
-
+    }
 }

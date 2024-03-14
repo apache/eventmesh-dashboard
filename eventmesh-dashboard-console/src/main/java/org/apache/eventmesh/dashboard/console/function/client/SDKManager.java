@@ -18,13 +18,13 @@
 package org.apache.eventmesh.dashboard.console.function.client;
 
 import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
-import org.apache.eventmesh.dashboard.console.function.client.create.NacosClientCreateOperation;
-import org.apache.eventmesh.dashboard.console.function.client.create.NacosConfigClientCreateOperation;
-import org.apache.eventmesh.dashboard.console.function.client.create.NacosNamingClientCreateOperation;
-import org.apache.eventmesh.dashboard.console.function.client.create.RedisClientCreateOperation;
-import org.apache.eventmesh.dashboard.console.function.client.create.RocketMQProduceClientCreateOperation;
-import org.apache.eventmesh.dashboard.console.function.client.create.RocketMQPushConsumerClientCreateOperation;
-import org.apache.eventmesh.dashboard.console.function.client.create.RocketMQRemotingClientCreateOperation;
+import org.apache.eventmesh.dashboard.console.function.client.operation.NacosSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.client.operation.NacosConfigSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.client.operation.NacosNamingSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.client.operation.RedisSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.client.operation.RocketMQProduceSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.client.operation.RocketMQPushConsumerSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.client.operation.RocketMQRemotingSDKOperation;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class SDKManager {
 
     private final Map<ClientTypeEnum, Map<String, Object>> clientMap = new ConcurrentHashMap<>();
 
-    private final Map<ClientTypeEnum, ClientOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
+    private final Map<ClientTypeEnum, SDKOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
 
     // register all client create operation
     {
@@ -62,15 +62,15 @@ public class SDKManager {
             clientMap.put(clientTypeEnum, new ConcurrentHashMap<>());
         }
 
-        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_REDIS, new RedisClientCreateOperation());
+        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_REDIS, new RedisSDKOperation());
 
-        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_ROCKETMQ_REMOTING, new RocketMQRemotingClientCreateOperation());
-        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_ROCKETMQ_PRODUCER, new RocketMQProduceClientCreateOperation());
-        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_ROCKETMQ_CONSUMER, new RocketMQPushConsumerClientCreateOperation());
+        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_ROCKETMQ_REMOTING, new RocketMQRemotingSDKOperation());
+        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_ROCKETMQ_PRODUCER, new RocketMQProduceSDKOperation());
+        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_ROCKETMQ_CONSUMER, new RocketMQPushConsumerSDKOperation());
 
-        clientCreateOperationMap.put(ClientTypeEnum.CENTER_NACOS, new NacosClientCreateOperation());
-        clientCreateOperationMap.put(ClientTypeEnum.CENTER_NACOS_CONFIG, new NacosConfigClientCreateOperation());
-        clientCreateOperationMap.put(ClientTypeEnum.CENTER_NACOS_NAMING, new NacosNamingClientCreateOperation());
+        clientCreateOperationMap.put(ClientTypeEnum.CENTER_NACOS, new NacosSDKOperation());
+        clientCreateOperationMap.put(ClientTypeEnum.CENTER_NACOS_CONFIG, new NacosConfigSDKOperation());
+        clientCreateOperationMap.put(ClientTypeEnum.CENTER_NACOS_NAMING, new NacosNamingSDKOperation());
 
     }
 
@@ -88,7 +88,7 @@ public class SDKManager {
         Object client = clients.get(uniqueKey);
         SimpleEntry<String, ?> result = new SimpleEntry<>(uniqueKey, client);
         if (Objects.isNull(client)) {
-            ClientOperation<?> clientCreateOperation = this.clientCreateOperationMap.get(clientTypeEnum);
+            SDKOperation<?> clientCreateOperation = this.clientCreateOperationMap.get(clientTypeEnum);
             result = clientCreateOperation.createClient(config);
             clients.put(result.getKey(), result.getValue());
         }
@@ -101,7 +101,7 @@ public class SDKManager {
 
     public void deleteClient(ClientTypeEnum clientTypeEnum, String uniqueKey) {
         Map<String, Object> clients = this.clientMap.get(clientTypeEnum);
-        ClientOperation<?> operation = this.clientCreateOperationMap.get(clientTypeEnum);
+        SDKOperation<?> operation = this.clientCreateOperationMap.get(clientTypeEnum);
         try {
             operation.close(clients.get(uniqueKey));
         } catch (Exception e) {
