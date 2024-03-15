@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client;
+package org.apache.eventmesh.dashboard.console.function.SDK;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateRedisConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateRedisConfig;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class SDKManagerTest {
     void setUp() {
         try {
             createRedisConfig.setRedisUrl("redis://localhost:6379");
-            redisKey = SDKManager.getInstance().createClient(ClientTypeEnum.STORAGE_REDIS, createRedisConfig).getKey();
+            redisKey = SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_REDIS, createRedisConfig).getKey();
         } catch (Exception e) {
             log.warn("SDK manager test init failed, possible reason: redis-server is offline. {}", this.getClass().getSimpleName(), e);
         }
@@ -45,7 +45,7 @@ class SDKManagerTest {
     @Test
     public void testGetClient() {
         try {
-            Object redisClient = SDKManager.getInstance().getClient(ClientTypeEnum.STORAGE_REDIS, redisKey);
+            Object redisClient = SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_REDIS, redisKey);
             assertNotNull(redisClient);
         } catch (Exception e) {
             log.warn("SDK manager test failed, possible reason: redis-server is offline. {}", this.getClass().getSimpleName(), e);

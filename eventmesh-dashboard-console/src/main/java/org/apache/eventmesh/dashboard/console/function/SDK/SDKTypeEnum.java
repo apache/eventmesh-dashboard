@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.config;
+package org.apache.eventmesh.dashboard.console.function.SDK;
 
-import lombok.Data;
+public enum SDKTypeEnum {
 
-@Data
-public class CreateNacosConfig implements CreateClientConfig {
+    RUNTIME,
 
-    private String serverAddress;
+    STORAGE_ROCKETMQ_REMOTING,
 
-    @Override
-    public String getUniqueKey() {
-        return serverAddress;
-    }
+    STORAGE_ROCKETMQ_PRODUCER,
+
+    STORAGE_ROCKETMQ_CONSUMER,
+
+    STORAGE_REDIS,
+
+    META_NACOS,
+    META_NACOS_CONFIG,
+
+    META_NACOS_NAMING,
+
+
 }
-
-

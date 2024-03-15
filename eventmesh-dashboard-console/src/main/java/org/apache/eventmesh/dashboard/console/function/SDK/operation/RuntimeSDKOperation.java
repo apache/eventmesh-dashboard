@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.operation;
+package org.apache.eventmesh.dashboard.console.function.SDK.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateRedisConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
 
 import java.util.AbstractMap.SimpleEntry;
 
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.api.StatefulRedisConnection;
-
-public class RedisSDKOperation extends AbstractSDKOperation<StatefulRedisConnection<String, String>> {
-
+public class RuntimeSDKOperation extends AbstractSDKOperation {
     @Override
-    public SimpleEntry<String, StatefulRedisConnection<String, String>> createClient(CreateClientConfig clientConfig) {
-        String redisUrl = ((CreateRedisConfig) clientConfig).getRedisUrl();
-        RedisClient redisClient = RedisClient.create(redisUrl);
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), redisClient.connect());
+    public SimpleEntry createClient(CreateSDKConfig clientConfig) {
+        return null;
     }
 
     @Override
     public void close(Object client) {
-        castClient(client).close();
+
     }
 }

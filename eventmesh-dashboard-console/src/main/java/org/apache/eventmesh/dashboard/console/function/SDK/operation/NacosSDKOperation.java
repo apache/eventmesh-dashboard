@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.operation;
+package org.apache.eventmesh.dashboard.console.function.SDK.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
-import org.apache.eventmesh.dashboard.console.function.client.wrapper.NacosClientWrapper;
+import org.apache.eventmesh.dashboard.console.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.wrapper.NacosSDKWrapper;
 
 import java.util.AbstractMap.SimpleEntry;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
 
-public class NacosSDKOperation extends AbstractSDKOperation<NacosClientWrapper> {
+public class NacosSDKOperation extends AbstractSDKOperation<NacosSDKWrapper> {
 
     private final NacosConfigSDKOperation nacosConfigClientCreateOperation = new NacosConfigSDKOperation();
     private final NacosNamingSDKOperation nacosNamingClientCreateOperation = new NacosNamingSDKOperation();
 
     @Override
-    public SimpleEntry<String, NacosClientWrapper> createClient(CreateClientConfig createClientConfig) {
+    public SimpleEntry<String, NacosSDKWrapper> createClient(CreateSDKConfig createClientConfig) {
         SimpleEntry<String, ConfigService> configSimpleEntry = nacosConfigClientCreateOperation.createClient(createClientConfig);
         SimpleEntry namingSimpleEntry = nacosNamingClientCreateOperation.createClient(createClientConfig);
         if (configSimpleEntry.getKey() != namingSimpleEntry.getKey()) {
             throw new RuntimeException("Nacos config and naming server address not match");
         }
-        NacosClientWrapper nacosClient = new NacosClientWrapper(
+        NacosSDKWrapper nacosClient = new NacosSDKWrapper(
             (ConfigService) configSimpleEntry.getValue(), (NamingService) namingSimpleEntry.getValue()
         );
         return new SimpleEntry<>(configSimpleEntry.getKey(), nacosClient);

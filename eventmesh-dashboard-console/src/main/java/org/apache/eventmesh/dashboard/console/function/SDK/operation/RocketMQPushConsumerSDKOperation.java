@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.operation;
+package org.apache.eventmesh.dashboard.console.function.SDK.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateRocketmqConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateRocketmqConfig;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RocketMQPushConsumerSDKOperation extends AbstractSDKOperation<DefaultMQPushConsumer> {
 
     @Override
-    public SimpleEntry<String, DefaultMQPushConsumer> createClient(CreateClientConfig clientConfig) {
+    public SimpleEntry<String, DefaultMQPushConsumer> createClient(CreateSDKConfig clientConfig) {
         DefaultMQPushConsumer consumer = null;
         try {
             CreateRocketmqConfig config = (CreateRocketmqConfig) clientConfig;

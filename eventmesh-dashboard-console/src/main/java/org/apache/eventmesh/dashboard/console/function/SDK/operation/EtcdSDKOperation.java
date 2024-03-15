@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.operation;
+package org.apache.eventmesh.dashboard.console.function.SDK.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
 
 import java.util.AbstractMap.SimpleEntry;
 
-public class RuntimeSDKOperation extends AbstractSDKOperation {
+public class EtcdSDKOperation extends AbstractSDKOperation {
     @Override
-    public SimpleEntry createClient(CreateClientConfig clientConfig) {
+    public SimpleEntry createClient(CreateSDKConfig clientConfig) {
         return null;
     }
 

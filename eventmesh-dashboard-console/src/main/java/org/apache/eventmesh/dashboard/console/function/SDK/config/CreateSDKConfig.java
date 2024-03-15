@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client;
-
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
-
-import java.util.AbstractMap.SimpleEntry;
+package org.apache.eventmesh.dashboard.console.function.SDK.config;
 
 /**
- * Operation to create and close a client, the operations will be store in the SDKManager
- *
- * @param <T> SDK client
+ * Config to create an SDK client, usually contains an address url.
  */
-public interface SDKOperation<T> {
+public interface CreateSDKConfig {
 
-    public SimpleEntry<String, T> createClient(CreateClientConfig clientConfig);
-
-
-    public void close(Object client);
-
+    String getUniqueKey();
 }

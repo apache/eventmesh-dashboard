@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.wrapper;
+package org.apache.eventmesh.dashboard.console.function.SDK;
 
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.api.naming.NamingService;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
 
-import lombok.AllArgsConstructor;
+import java.util.AbstractMap.SimpleEntry;
 
-@AllArgsConstructor
-public class NacosClientWrapper {
+/**
+ * Operation to create and close a client, the operations will be store in the SDKManager
+ *
+ * @param <T> SDK client
+ */
+public interface SDKOperation<T> {
 
-    public void shutdown() throws NacosException {
-        configService.shutDown();
-        namingService.shutDown();
-    }
+    public SimpleEntry<String, T> createClient(CreateSDKConfig clientConfig);
 
-    private ConfigService configService;
-    private NamingService namingService;
+
+    public void close(Object client);
+
 }

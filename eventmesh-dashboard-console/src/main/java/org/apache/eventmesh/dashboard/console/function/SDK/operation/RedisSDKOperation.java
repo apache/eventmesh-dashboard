@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.operation;
+package org.apache.eventmesh.dashboard.console.function.SDK.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
-
-import org.apache.rocketmq.remoting.RemotingClient;
-import org.apache.rocketmq.remoting.netty.NettyClientConfig;
-import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
+import org.apache.eventmesh.dashboard.console.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateRedisConfig;
 
 import java.util.AbstractMap.SimpleEntry;
 
-public class RocketMQRemotingSDKOperation extends AbstractSDKOperation<RemotingClient> {
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.StatefulRedisConnection;
+
+public class RedisSDKOperation extends AbstractSDKOperation<StatefulRedisConnection<String, String>> {
 
     @Override
-    public SimpleEntry<String, RemotingClient> createClient(CreateClientConfig clientConfig) {
-        NettyClientConfig config = new NettyClientConfig();
-        config.setUseTLS(false);
-        RemotingClient remotingClient = new NettyRemotingClient(config);
-        remotingClient.start();
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), remotingClient);
+    public SimpleEntry<String, StatefulRedisConnection<String, String>> createClient(CreateSDKConfig clientConfig) {
+        String redisUrl = ((CreateRedisConfig) clientConfig).getRedisUrl();
+        RedisClient redisClient = RedisClient.create(redisUrl);
+        return new SimpleEntry<>(clientConfig.getUniqueKey(), redisClient.connect());
     }
 
     @Override
     public void close(Object client) {
-        ((RemotingClient) client).shutdown();
+        castClient(client).close();
     }
 }

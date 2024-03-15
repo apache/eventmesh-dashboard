@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client;
+package org.apache.eventmesh.dashboard.console.function.SDK.config;
 
-public abstract class AbstractSDKOperation<T> implements SDKOperation<T> {
+import lombok.Data;
 
-    protected T castClient(Object client) {
-        try {
-            return (T) client;
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Client is not of the expected type", e);
-        }
+@Data
+public class CreateNacosConfig implements CreateSDKConfig {
+
+    private String serverAddress;
+
+    @Override
+    public String getUniqueKey() {
+        return serverAddress;
     }
 }
+
+

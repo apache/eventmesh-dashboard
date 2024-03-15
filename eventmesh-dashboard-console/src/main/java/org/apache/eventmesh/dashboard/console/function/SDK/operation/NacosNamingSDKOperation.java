@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.operation;
+package org.apache.eventmesh.dashboard.console.function.SDK.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateNacosConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateNacosConfig;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Properties;
@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NacosNamingSDKOperation extends AbstractSDKOperation<NamingService> {
 
     @Override
-    public SimpleEntry<String, NamingService> createClient(CreateClientConfig clientConfig) {
+    public SimpleEntry<String, NamingService> createClient(CreateSDKConfig clientConfig) {
         NamingService namingService = null;
         CreateNacosConfig config = (CreateNacosConfig) clientConfig;
         try {

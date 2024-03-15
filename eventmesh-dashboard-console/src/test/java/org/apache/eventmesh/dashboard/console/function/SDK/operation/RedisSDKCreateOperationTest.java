@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.operation;
+package org.apache.eventmesh.dashboard.console.function.SDK.operation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateRedisConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateRedisConfig;
 
 import java.util.AbstractMap.SimpleEntry;
 
@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-class RedisClientCreateOperationTest {
+class RedisSDKCreateOperationTest {
 
     private RedisSDKOperation redisClientCreateOperation = new RedisSDKOperation();
 

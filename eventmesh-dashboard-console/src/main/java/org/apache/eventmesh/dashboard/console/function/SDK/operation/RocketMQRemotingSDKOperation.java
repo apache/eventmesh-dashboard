@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.operation;
+package org.apache.eventmesh.dashboard.console.function.SDK.operation;
 
-import org.apache.eventmesh.dashboard.console.function.client.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
+
+import org.apache.rocketmq.remoting.RemotingClient;
+import org.apache.rocketmq.remoting.netty.NettyClientConfig;
+import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
 
 import java.util.AbstractMap.SimpleEntry;
 
-public class EtcdSDKOperation extends AbstractSDKOperation {
+public class RocketMQRemotingSDKOperation extends AbstractSDKOperation<RemotingClient> {
+
     @Override
-    public SimpleEntry createClient(CreateClientConfig clientConfig) {
-        return null;
+    public SimpleEntry<String, RemotingClient> createClient(CreateSDKConfig clientConfig) {
+        NettyClientConfig config = new NettyClientConfig();
+        config.setUseTLS(false);
+        RemotingClient remotingClient = new NettyRemotingClient(config);
+        remotingClient.start();
+        return new SimpleEntry<>(clientConfig.getUniqueKey(), remotingClient);
     }
 
     @Override
     public void close(Object client) {
-
+        ((RemotingClient) client).shutdown();
     }
 }

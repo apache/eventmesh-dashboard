@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client;
+package org.apache.eventmesh.dashboard.console.function.SDK;
 
-import org.apache.eventmesh.dashboard.console.function.client.config.CreateClientConfig;
-import org.apache.eventmesh.dashboard.console.function.client.operation.NacosConfigSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.operation.NacosNamingSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.operation.NacosSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.operation.RedisSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.operation.RocketMQProduceSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.operation.RocketMQPushConsumerSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.client.operation.RocketMQRemotingSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.operation.NacosConfigSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.operation.NacosNamingSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.operation.NacosSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.operation.RedisSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.operation.RocketMQProduceSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.operation.RocketMQPushConsumerSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.operation.RocketMQRemotingSDKOperation;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map;
@@ -49,39 +49,39 @@ public class SDKManager {
     /**
      * inner key is the unique key of a client, such as (ip + port) they are defined in CreateClientConfig
      *
-     * @see CreateClientConfig#getUniqueKey()
+     * @see CreateSDKConfig#getUniqueKey()
      */
 
-    private final Map<ClientTypeEnum, Map<String, Object>> clientMap = new ConcurrentHashMap<>();
+    private final Map<SDKTypeEnum, Map<String, Object>> clientMap = new ConcurrentHashMap<>();
 
-    private final Map<ClientTypeEnum, SDKOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
+    private final Map<SDKTypeEnum, SDKOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
 
     // register all client create operation
     {
-        for (ClientTypeEnum clientTypeEnum : ClientTypeEnum.values()) {
+        for (SDKTypeEnum clientTypeEnum : SDKTypeEnum.values()) {
             clientMap.put(clientTypeEnum, new ConcurrentHashMap<>());
         }
 
-        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_REDIS, new RedisSDKOperation());
+        clientCreateOperationMap.put(SDKTypeEnum.STORAGE_REDIS, new RedisSDKOperation());
 
-        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_ROCKETMQ_REMOTING, new RocketMQRemotingSDKOperation());
-        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_ROCKETMQ_PRODUCER, new RocketMQProduceSDKOperation());
-        clientCreateOperationMap.put(ClientTypeEnum.STORAGE_ROCKETMQ_CONSUMER, new RocketMQPushConsumerSDKOperation());
+        clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, new RocketMQRemotingSDKOperation());
+        clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_PRODUCER, new RocketMQProduceSDKOperation());
+        clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_CONSUMER, new RocketMQPushConsumerSDKOperation());
 
-        clientCreateOperationMap.put(ClientTypeEnum.CENTER_NACOS, new NacosSDKOperation());
-        clientCreateOperationMap.put(ClientTypeEnum.CENTER_NACOS_CONFIG, new NacosConfigSDKOperation());
-        clientCreateOperationMap.put(ClientTypeEnum.CENTER_NACOS_NAMING, new NacosNamingSDKOperation());
+        clientCreateOperationMap.put(SDKTypeEnum.META_NACOS, new NacosSDKOperation());
+        clientCreateOperationMap.put(SDKTypeEnum.META_NACOS_CONFIG, new NacosConfigSDKOperation());
+        clientCreateOperationMap.put(SDKTypeEnum.META_NACOS_NAMING, new NacosNamingSDKOperation());
 
     }
 
     private SDKManager() {
     }
 
-    public <T> SimpleEntry<String, T> createClient(ClientTypeEnum clientTypeEnum, CreateClientConfig config) {
+    public <T> SimpleEntry<String, T> createClient(SDKTypeEnum clientTypeEnum, CreateSDKConfig config) {
         return createClient(clientTypeEnum, config.getUniqueKey(), config);
     }
 
-    public <T> SimpleEntry<String, T> createClient(ClientTypeEnum clientTypeEnum, String uniqueKey, CreateClientConfig config) {
+    public <T> SimpleEntry<String, T> createClient(SDKTypeEnum clientTypeEnum, String uniqueKey, CreateSDKConfig config) {
 
         Map<String, Object> clients = this.clientMap.get(clientTypeEnum);
 
@@ -99,7 +99,7 @@ public class SDKManager {
         }
     }
 
-    public void deleteClient(ClientTypeEnum clientTypeEnum, String uniqueKey) {
+    public void deleteClient(SDKTypeEnum clientTypeEnum, String uniqueKey) {
         Map<String, Object> clients = this.clientMap.get(clientTypeEnum);
         SDKOperation<?> operation = this.clientCreateOperationMap.get(clientTypeEnum);
         try {
@@ -110,7 +110,7 @@ public class SDKManager {
         clients.remove(uniqueKey);
     }
 
-    public Object getClient(ClientTypeEnum clientTypeEnum, String uniqueKey) {
+    public Object getClient(SDKTypeEnum clientTypeEnum, String uniqueKey) {
         return this.clientMap.get(clientTypeEnum).get(uniqueKey);
     }
 }

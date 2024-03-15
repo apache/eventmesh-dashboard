@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.config;
+package org.apache.eventmesh.dashboard.console.function.SDK.wrapper;
 
-import lombok.Data;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingService;
 
-@Data
-public class CreateRedisConfig implements CreateClientConfig {
+import lombok.AllArgsConstructor;
 
-    private String redisUrl;
+@AllArgsConstructor
+public class NacosSDKWrapper {
 
-    @Override
-    public String getUniqueKey() {
-        return redisUrl;
+    public void shutdown() throws NacosException {
+        configService.shutDown();
+        namingService.shutDown();
     }
+
+    private ConfigService configService;
+    private NamingService namingService;
 }

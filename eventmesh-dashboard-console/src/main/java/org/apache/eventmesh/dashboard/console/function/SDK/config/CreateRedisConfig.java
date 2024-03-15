@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client;
+package org.apache.eventmesh.dashboard.console.function.SDK.config;
 
-public enum ClientTypeEnum {
+import lombok.Data;
 
-    RUNTIME,
+@Data
+public class CreateRedisConfig implements CreateSDKConfig {
 
-    STORAGE_ROCKETMQ_REMOTING,
+    private String redisUrl;
 
-    STORAGE_ROCKETMQ_PRODUCER,
-
-    STORAGE_ROCKETMQ_CONSUMER,
-
-    STORAGE_REDIS,
-
-    CENTER_NACOS,
-    CENTER_NACOS_CONFIG,
-
-    CENTER_NACOS_NAMING,
-
-
+    @Override
+    public String getUniqueKey() {
+        return redisUrl;
+    }
 }

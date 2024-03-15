@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.config;
+package org.apache.eventmesh.dashboard.console.function.SDK.config;
 
 import org.apache.rocketmq.client.consumer.listener.MessageListener;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
@@ -23,7 +23,7 @@ import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import lombok.Data;
 
 @Data
-public class CreateRocketmqConfig implements CreateClientConfig {
+public class CreateRocketmqConfig implements CreateSDKConfig {
 
     // common
     private String nameServerUrl;

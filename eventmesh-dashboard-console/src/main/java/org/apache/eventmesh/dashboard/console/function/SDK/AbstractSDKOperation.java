@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.client.config;
+package org.apache.eventmesh.dashboard.console.function.SDK;
 
-/**
- * Config to create an SDK client, usually contains an address url.
- */
-public interface CreateClientConfig {
+public abstract class AbstractSDKOperation<T> implements SDKOperation<T> {
 
-    String getUniqueKey();
+    protected T castClient(Object client) {
+        try {
+            return (T) client;
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Client is not of the expected type", e);
+        }
+    }
 }
