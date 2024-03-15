@@ -18,8 +18,8 @@
 package org.apache.eventmesh.dashboard.console.function.SDK.operation;
 
 import org.apache.eventmesh.dashboard.console.function.SDK.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
 import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateRedisConfig;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
 
 import java.util.AbstractMap.SimpleEntry;
 
