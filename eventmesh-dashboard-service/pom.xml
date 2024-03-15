@@ -11,7 +11,7 @@
     <groupId>org.apache.eventmesh.dashboard.service</groupId>
     <artifactId>eventmesh-dashboard-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>eventmesh-dashboard-core</name>
+    <name>eventmesh-dashboard-service</name>
 
     <properties>
         <java.version>1.8</java.version>
