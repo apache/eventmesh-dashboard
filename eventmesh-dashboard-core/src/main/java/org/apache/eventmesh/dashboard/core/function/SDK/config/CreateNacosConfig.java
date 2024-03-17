@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-import org.apache.eventmesh.dashboard.common.dto.TopicProperties;
+import lombok.Data;
 
-import java.util.List;
+@Data
+public class CreateNacosConfig implements CreateSDKConfig {
 
-import org.springframework.stereotype.Service;
+    private String serverAddress;
 
-/**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
- */
-@Service
-public interface TopicCore {
-
-    List<TopicProperties> getTopics();
-
-    void createTopic(String topicName);
-
-    void deleteTopic(String topicName);
+    @Override
+    public String getUniqueKey() {
+        return serverAddress;
+    }
 }
+
+

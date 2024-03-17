@@ -19,13 +19,13 @@ package org.apache.eventmesh.dashboard.console.function.health.check.impl.storag
 
 import static org.apache.rocketmq.client.producer.SendStatus.SEND_OK;
 
-import org.apache.eventmesh.dashboard.common.util.RocketmqUtils;
 import org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant;
 import org.apache.eventmesh.dashboard.console.constant.health.HealthConstant;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.service.mq.RocketmqTopicService;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
@@ -52,11 +52,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.annotation.Resource;
+
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @HealthCheckType(type = HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE, subType = HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_ROCKETMQ_TOPIC)
 public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
+
+    @Resource
+    private RocketmqTopicService rocketmqTopicService;
 
     private RemotingClient remotingClient;
 
@@ -136,7 +142,8 @@ public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
 
         //TODO there are many functions that can be reused, they should be collected in a util module
         //this function that create topics can be reused
-        RocketmqUtils.createTopic(HealthConstant.ROCKETMQ_CHECK_TOPIC, TopicFilterType.SINGLE_TAG.name(), PermName.PERM_READ | PermName.PERM_WRITE,
+        rocketmqTopicService.createTopic(HealthConstant.ROCKETMQ_CHECK_TOPIC, TopicFilterType.SINGLE_TAG.name(),
+            PermName.PERM_READ | PermName.PERM_WRITE,
             getConfig().getRocketmqProperties().getBrokerUrl(), 8, 8, getConfig().getRequestTimeoutMillis());
 
         try {

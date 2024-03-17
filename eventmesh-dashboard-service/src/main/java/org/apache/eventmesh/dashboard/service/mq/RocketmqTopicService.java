@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.service.mq;
+
 
 import org.apache.eventmesh.dashboard.common.dto.TopicProperties;
 
@@ -24,14 +25,16 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 /**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
+ * RocketmqTopicService
  */
 @Service
-public interface TopicCore {
+public interface RocketmqTopicService {
 
-    List<TopicProperties> getTopics();
+    Boolean createTopic(String topicName, String topicFilterTypeName, int perm, String nameServerAddr, int readQueueNums, int writeQueueNums,
+        long requestTimeoutMillis);
 
-    void createTopic(String topicName);
+    List<TopicProperties> getTopics(String nameServerAddr, long requestTimeoutMillis);
 
-    void deleteTopic(String topicName);
+    Boolean deleteTopic(String topicName, String nameServerAddr, long requestTimeoutMillis);
+
 }
