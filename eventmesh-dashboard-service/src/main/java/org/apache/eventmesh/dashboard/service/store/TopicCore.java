@@ -21,13 +21,9 @@ import org.apache.eventmesh.dashboard.common.dto.TopicProperties;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-
 /**
  * Manage topics of eventmesh-storage-plugin (EventMesh Store).
  */
-@Service
 public interface TopicCore {
 
     List<TopicProperties> getTopics();
