@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.function.SDK.config;
+package org.apache.eventmesh.dashboard.console.function.SDK.config;
 
-/**
- * Config to create an SDK client, usually contains an address url.
- */
-public interface CreateSDKConfig {
+import lombok.Data;
 
-    String getUniqueKey();
+@Data
+public class CreateRedisConfig implements CreateSDKConfig {
+
+    private String redisUrl;
+
+    @Override
+    public String getUniqueKey() {
+        return redisUrl;
+    }
 }

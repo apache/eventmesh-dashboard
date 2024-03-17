@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.console.function.SDK;
 
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+public abstract class AbstractSDKOperation<T> implements SDKOperation<T> {
 
-import java.util.List;
-
-/**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
- */
-public interface TopicCore {
-
-    List<TopicProperties> getTopics();
-
-    void createTopic(String topicName);
-
-    void deleteTopic(String topicName);
+    protected T castClient(Object client) {
+        try {
+            return (T) client;
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Client is not of the expected type", e);
+        }
+    }
 }

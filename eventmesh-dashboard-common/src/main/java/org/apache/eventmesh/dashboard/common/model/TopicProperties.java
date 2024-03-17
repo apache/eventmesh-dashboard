@@ -15,28 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.properties;
+package org.apache.eventmesh.dashboard.common.model;
+
+import org.apache.rocketmq.common.TopicFilterType;
 
 import lombok.Data;
 
+/**
+ * One record displayed in 'Topic' page.
+ */
+
 @Data
-public class RocketmqProperties {
+public class TopicProperties {
 
-    private String namesrvAddr;
+    private static final String SEPARATOR = " ";
 
-    private String clusterName;
+    public static int defaultReadQueueNums = 16;
 
-    private String brokerUrl;
+    public static int defaultWriteQueueNums = 16;
 
-    private String endPoint;
+    private String topicName;
 
-    private int writeQueueNums;
+    private int offset;
 
     private int readQueueNums;
 
-    private String accessKey;
+    private int writeQueueNums;
 
-    private String secretKey;
+    private int perm;
 
-    private Long requestTimeoutMillis = 10000L;
+    private TopicFilterType topicFilterType;
+
+    private int topicSysFlag;
+
+    private boolean order;
+
 }

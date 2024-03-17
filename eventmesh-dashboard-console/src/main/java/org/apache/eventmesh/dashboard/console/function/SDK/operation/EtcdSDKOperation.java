@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.console.function.SDK.operation;
 
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+import org.apache.eventmesh.dashboard.console.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
 
-import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
 
-/**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
- */
-public interface TopicCore {
+public class EtcdSDKOperation extends AbstractSDKOperation {
+    @Override
+    public SimpleEntry createClient(CreateSDKConfig clientConfig) {
+        return null;
+    }
 
-    List<TopicProperties> getTopics();
+    @Override
+    public void close(Object client) {
 
-    void createTopic(String topicName);
-
-    void deleteTopic(String topicName);
+    }
 }

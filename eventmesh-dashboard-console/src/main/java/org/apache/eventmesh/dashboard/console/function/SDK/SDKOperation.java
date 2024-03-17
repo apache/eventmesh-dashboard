@@ -15,39 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.dto;
+package org.apache.eventmesh.dashboard.console.function.SDK;
 
-import org.apache.rocketmq.common.TopicFilterType;
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
 
-import lombok.Data;
+import java.util.AbstractMap.SimpleEntry;
 
 /**
- * One record displayed in 'Topic' page.
+ * Operation to create and close a client, the operations will be store in the SDKManager
+ *
+ * @param <T> SDK client
  */
+public interface SDKOperation<T> {
 
-@Data
-public class TopicProperties {
+    public SimpleEntry<String, T> createClient(CreateSDKConfig clientConfig);
 
-    private static final String SEPARATOR = " ";
 
-    public static int defaultReadQueueNums = 16;
-
-    public static int defaultWriteQueueNums = 16;
-
-    private String topicName;
-
-    private int offset;
-
-    private int readQueueNums;
-
-    private int writeQueueNums;
-
-    private int perm;
-
-    private TopicFilterType topicFilterType;
-
-    private int topicSysFlag;
-
-    private boolean order;
+    public void close(Object client);
 
 }

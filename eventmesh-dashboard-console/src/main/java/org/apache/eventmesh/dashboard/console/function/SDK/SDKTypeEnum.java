@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.console.function.SDK;
 
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+public enum SDKTypeEnum {
 
-import java.util.List;
+    RUNTIME,
 
-/**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
- */
-public interface TopicCore {
+    STORAGE_ROCKETMQ_REMOTING,
 
-    List<TopicProperties> getTopics();
+    STORAGE_ROCKETMQ_PRODUCER,
 
-    void createTopic(String topicName);
+    STORAGE_ROCKETMQ_CONSUMER,
 
-    void deleteTopic(String topicName);
+    STORAGE_REDIS,
+
+    META_NACOS,
+    META_NACOS_CONFIG,
+
+    META_NACOS_NAMING,
+
+
 }

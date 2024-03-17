@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.common.model;
 
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+import lombok.Data;
 
-import java.util.List;
+@Data
+public class RocketmqProperties {
 
-/**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
- */
-public interface TopicCore {
+    private String namesrvAddr;
 
-    List<TopicProperties> getTopics();
+    private String clusterName;
 
-    void createTopic(String topicName);
+    private String brokerUrl;
 
-    void deleteTopic(String topicName);
+    private String endPoint;
+
+    private int writeQueueNums;
+
+    private int readQueueNums;
+
+    private String accessKey;
+
+    private String secretKey;
+
+    private Long requestTimeoutMillis = 10000L;
 }

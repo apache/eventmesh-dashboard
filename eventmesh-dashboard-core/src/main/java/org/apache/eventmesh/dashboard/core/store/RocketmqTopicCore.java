@@ -18,9 +18,9 @@
 package org.apache.eventmesh.dashboard.core.store;
 
 
-import org.apache.eventmesh.dashboard.common.dto.TopicProperties;
-import org.apache.eventmesh.dashboard.common.properties.RocketmqProperties;
-import org.apache.eventmesh.dashboard.service.mq.RocketmqTopicService;
+import org.apache.eventmesh.dashboard.common.model.RocketmqProperties;
+import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+import org.apache.eventmesh.dashboard.common.util.RocketmqUtils;
 import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
 import org.apache.rocketmq.common.TopicFilterType;
@@ -28,7 +28,6 @@ import org.apache.rocketmq.common.constant.PermName;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class RocketmqTopicCore implements TopicCore {
-
-    @Autowired
-    private RocketmqTopicService rocketmqTopicService;
 
     private final RocketmqProperties rocketmqProperties;
 
@@ -48,12 +44,12 @@ public class RocketmqTopicCore implements TopicCore {
 
     @Override
     public List<TopicProperties> getTopics() {
-        return rocketmqTopicService.getTopics(rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getRequestTimeoutMillis());
+        return RocketmqUtils.getTopics(rocketmqProperties.getNamesrvAddr(), rocketmqProperties.getRequestTimeoutMillis());
     }
 
     @Override
     public void createTopic(String topicName) {
-        rocketmqTopicService.createTopic(topicName, TopicFilterType.SINGLE_TAG.name(),
+        RocketmqUtils.createTopic(topicName, TopicFilterType.SINGLE_TAG.name(),
             PermName.PERM_READ | PermName.PERM_WRITE, rocketmqProperties.getNamesrvAddr(),
             rocketmqProperties.getReadQueueNums(), rocketmqProperties.getWriteQueueNums(),
             rocketmqProperties.getRequestTimeoutMillis());
@@ -61,7 +57,7 @@ public class RocketmqTopicCore implements TopicCore {
 
     @Override
     public void deleteTopic(String topicName) {
-        rocketmqTopicService.deleteTopic(topicName, rocketmqProperties.getNamesrvAddr(),
+        RocketmqUtils.deleteTopic(topicName, rocketmqProperties.getNamesrvAddr(),
             rocketmqProperties.getRequestTimeoutMillis());
     }
 }
