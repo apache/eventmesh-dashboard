@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.dashboard.service.dto;
 
-import org.apache.rocketmq.common.TopicFilterType;
-
 import lombok.Data;
 
 /**
