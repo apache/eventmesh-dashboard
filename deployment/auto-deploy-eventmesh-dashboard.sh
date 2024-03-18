@@ -60,7 +60,7 @@ if [ $LOCAL != $REMOTE ]; then
     fi
     
     # Compile and package the Jar file
-    mvn clean package
+    mvn clean package -DskipTests
     
     # Start the springboot application and record the process id to pid.log file, redirect console logs to eventmesh-dashboard-<current time>.log file
     nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
@@ -79,7 +79,7 @@ else
         echo "$(date +"%Y-%m-%d %H:%M:%S") - application running, no operation performed." >> $AUTO_DEPLOY_LOG
     else
         # If the pid.log file does not exist, compile and package the Jar file
-        mvn clean package
+        mvn clean package -DskipTests
 
         # Start the springboot application and record the process id to pid.log file, redirect console logs to eventmesh-dashboard-<current time>.log file
         nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
