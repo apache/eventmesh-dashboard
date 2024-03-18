@@ -59,7 +59,7 @@ if [ $LOCAL != $REMOTE ]; then
     mvn clean package
     
     # Start the springboot application and record the process id to pid.log file, redirect console logs to eventmesh-dashboard-<current time>.log file
-    nohup java -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
+    nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
     echo $! > $PID_LOG
     
     # Log the event
