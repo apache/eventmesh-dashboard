@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.controller;
 
+import org.apache.eventmesh.dashboard.common.dto.Result;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,4 +32,8 @@ public class MetricsController {
         return DruidStatManagerFacade.getInstance().getDataSourceStatDataList();
     }
 
+    @GetMapping("/hello")
+    public Result<String> hello() {
+        return Result.success("Hello, EventMesh Dashboard!");
+    }
 }
