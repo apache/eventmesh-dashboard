@@ -47,8 +47,8 @@ spring:
 logging:
   level:
     root: INFO
-    org.apache.eventmesh.dashboard: DEBUG
     org.apache.eventmesh: DEBUG
+    org.apache.eventmesh.dashboard: DEBUG
 
 mybatis:
   type-aliases-package: org.apache.eventmesh.dashboard.console.entity
