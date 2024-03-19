@@ -58,11 +58,18 @@ public interface HealthCheckResultMapper {
 
     @Insert({
         "<script>",
-        "   INSERT INTO health_check_result(type, type_id, cluster_id, state, result_desc) VALUES ",
-        "   <foreach collection='list' item='healthCheckResultEntity' index='index' separator=','>",
-        "       (#{healthCheckResultEntity.type}, #{healthCheckResultEntity.typeId}, #{healthCheckResultEntity.clusterId},",
-        "       #{healthCheckResultEntity.state}, #{healthCheckResultEntity.resultDesc})",
-        "   </foreach>",
+        "   <choose>",
+        "   <when test='list.size() > 0'>",
+        "       INSERT INTO health_check_result(type, type_id, cluster_id, state, result_desc) VALUES ",
+        "       <foreach collection='list' item='healthCheckResultEntity' index='index' separator=','>",
+        "           (#{healthCheckResultEntity.type}, #{healthCheckResultEntity.typeId}, #{healthCheckResultEntity.clusterId},",
+        "           #{healthCheckResultEntity.state}, #{healthCheckResultEntity.resultDesc})",
+        "       </foreach>",
+        "   </when>",
+        "   <otherwise>",
+        "       SELECT 1 FROM DUAL WHERE FALSE",
+        "   </otherwise>",
+        "   </choose>",
         "</script>"
     })
     void batchInsert(List<HealthCheckResultEntity> healthCheckResultEntityList);
