@@ -12,6 +12,7 @@ chmod +x deployment/auto-deploy-eventmesh-dashboard.sh
 Edit credentials:
 
 ```
+cp deployment/.env.example deployment/.env
 vim deployment/.env
 ```
 
