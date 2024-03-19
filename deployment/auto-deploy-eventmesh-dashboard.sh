@@ -26,9 +26,6 @@ PID_LOG=~/service/eventmesh-dashboard/deployment/eventmesh-dashboard-pid.log
 # Automatic deployment shell script log file path
 AUTO_DEPLOY_LOG=~/service/eventmesh-dashboard/deployment/auto-deploy-eventmesh-dashboard.log
 
-# EventMesh Dashboard log file path
-APP_LOG=~/service/eventmesh-dashboard/deployment/eventmesh-dashboard-$(date +"%Y-%m-%d-%H-%M-%S").log
-
 # Jar file path
 JAR_FILE_PATH=~/service/eventmesh-dashboard/eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar
 
@@ -62,8 +59,8 @@ if [ $LOCAL != $REMOTE ]; then
     # Compile and package the Jar file
     mvn clean package -DskipTests
     
-    # Start the springboot application and record the process id to pid.log file, redirect console logs to eventmesh-dashboard-<current time>.log file
-    nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
+    # Start the springboot application and record the process id to pid.log file
+    nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > /dev/null 2>&1 &
     echo $! > $PID_LOG
     
     # Log the event
@@ -81,8 +78,8 @@ else
         # If the pid.log file does not exist, compile and package the Jar file
         mvn clean package -DskipTests
 
-        # Start the springboot application and record the process id to pid.log file, redirect console logs to eventmesh-dashboard-<current time>.log file
-        nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
+        # Start the springboot application and record the process id to pid.log file
+        nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > /dev/null 2>&1 &
         echo $! > $PID_LOG
 
         # Log the event
