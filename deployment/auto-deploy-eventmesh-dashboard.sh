@@ -32,6 +32,10 @@ APP_LOG=~/service/eventmesh-dashboard/deployment/eventmesh-dashboard-$(date +"%Y
 # Jar file path
 JAR_FILE_PATH=~/service/eventmesh-dashboard/eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar
 
+# Load environment variables from external file
+ENV_FILE=~/service/eventmesh-dashboard/deployment/.env
+source $ENV_FILE
+
 # Update the git repository
 cd $REPO_PATH
 git fetch origin dev
@@ -56,10 +60,10 @@ if [ $LOCAL != $REMOTE ]; then
     fi
     
     # Compile and package the Jar file
-    mvn clean package
+    mvn clean package -DskipTests
     
     # Start the springboot application and record the process id to pid.log file, redirect console logs to eventmesh-dashboard-<current time>.log file
-    nohup java -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
+    nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
     echo $! > $PID_LOG
     
     # Log the event
@@ -75,10 +79,10 @@ else
         echo "$(date +"%Y-%m-%d %H:%M:%S") - application running, no operation performed." >> $AUTO_DEPLOY_LOG
     else
         # If the pid.log file does not exist, compile and package the Jar file
-        mvn clean package
+        mvn clean package -DskipTests
 
         # Start the springboot application and record the process id to pid.log file, redirect console logs to eventmesh-dashboard-<current time>.log file
-        nohup java -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
+        nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
         echo $! > $PID_LOG
 
         # Log the event
