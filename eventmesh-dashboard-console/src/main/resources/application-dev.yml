@@ -45,7 +45,10 @@ spring:
       min-evictable-idle-time-millis: 300000
 
 logging:
-  config: classpath:logback-dev.xml
+  level:
+    root: INFO
+    org.apache.eventmesh: DEBUG
+    org.apache.eventmesh.dashboard: DEBUG
 
 mybatis:
   type-aliases-package: org.apache.eventmesh.dashboard.console.entity
