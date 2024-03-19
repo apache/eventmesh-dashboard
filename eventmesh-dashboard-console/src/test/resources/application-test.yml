@@ -34,3 +34,7 @@ spring:
       test-on-borrow: false
       test-while-idle: true
       min-evictable-idle-time-millis: 300000
+
+logging:
+  level:
+    root: DEBUG
