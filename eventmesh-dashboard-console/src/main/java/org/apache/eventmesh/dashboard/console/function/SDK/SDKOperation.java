@@ -15,8 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.health.check.impl;
+package org.apache.eventmesh.dashboard.console.function.SDK;
 
-public class StorageRocketmqCheck {
+import org.apache.eventmesh.dashboard.console.function.SDK.config.CreateSDKConfig;
+
+import java.util.AbstractMap.SimpleEntry;
+
+/**
+ * Operation to create and close a client, the operations will be store in the SDKManager
+ *
+ * @param <T> SDK client
+ */
+public interface SDKOperation<T> {
+
+    public SimpleEntry<String, T> createClient(CreateSDKConfig clientConfig);
+
+
+    public void close(Object client);
 
 }
