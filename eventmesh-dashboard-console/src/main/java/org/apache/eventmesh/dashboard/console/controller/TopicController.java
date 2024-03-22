@@ -59,14 +59,14 @@ public class TopicController {
     }
 
     @CrossOrigin
-    @GetMapping()
+    @GetMapping
     public Result<List<TopicProperties>> getList() {
         List<TopicProperties> topicList = topicCore.getTopics();
         return Result.success(topicList);
     }
 
     @CrossOrigin
-    @PostMapping()
+    @PostMapping
     public Result<Object> create(@RequestBody CreateTopicRequest createTopicRequest) {
         String topicName = createTopicRequest.getName();
         topicCore.createTopic(topicName);
@@ -74,7 +74,7 @@ public class TopicController {
     }
 
     @CrossOrigin
-    @DeleteMapping()
+    @DeleteMapping
     public Result<Object> delete(@RequestBody DeleteTopicRequest deleteTopicRequest) {
         String topicName = deleteTopicRequest.getName();
         topicCore.deleteTopic(topicName);

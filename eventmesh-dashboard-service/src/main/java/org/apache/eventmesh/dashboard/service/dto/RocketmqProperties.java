@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.properties;
+package org.apache.eventmesh.dashboard.service.dto;
 
 import lombok.Data;
 
@@ -25,8 +25,6 @@ public class RocketmqProperties {
     private String namesrvAddr;
 
     private String clusterName;
-
-    private String brokerUrl;
 
     private int writeQueueNums = 8;
 

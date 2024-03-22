@@ -17,10 +17,10 @@
 
 package org.apache.eventmesh.dashboard.core.store;
 
-import org.apache.eventmesh.dashboard.common.properties.RocketmqProperties;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKManager;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.service.dto.RocketmqProperties;
 import org.apache.eventmesh.dashboard.service.dto.TopicProperties;
 import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
@@ -65,18 +65,18 @@ public class RocketmqTopicCore implements TopicCore {
 
     @Override
     public Boolean createTopic(String topicName) {
-        String brokerUrl = rocketmqProperties.getBrokerUrl();
+        String namesrvAddr = rocketmqProperties.getNamesrvAddr();
         long requestTimeoutMillis = rocketmqProperties.getRequestTimeoutMillis();
         int readQueueNums = rocketmqProperties.getReadQueueNums();
         int writeQueueNums = rocketmqProperties.getReadQueueNums();
-        if (StringUtils.isEmpty(brokerUrl)) {
+        if (StringUtils.isEmpty(namesrvAddr)) {
             log.info("RocketmqTopicCore-createTopic failed, missing brokerUrl");
             return Boolean.FALSE;
         }
 
-        RemotingClient remotingClient = (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, brokerUrl);
+        RemotingClient remotingClient = (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, namesrvAddr);
         if (remotingClient == null) {
-            remotingClient = createRemotingClient(brokerUrl);
+            remotingClient = createRemotingClient(namesrvAddr);
         }
         try {
             CreateTopicRequestHeader requestHeader = new CreateTopicRequestHeader();
@@ -87,7 +87,7 @@ public class RocketmqTopicCore implements TopicCore {
             requestHeader.setPerm(PermName.PERM_READ | PermName.PERM_WRITE);
 
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC, requestHeader);
-            RemotingCommand response = remotingClient.invokeSync(brokerUrl, request, requestTimeoutMillis);
+            RemotingCommand response = remotingClient.invokeSync(namesrvAddr, request, requestTimeoutMillis);
             log.info("Rocketmq create topic result:" + response.toString());
             return response.getCode() == 0;
         } catch (Exception e) {
@@ -98,21 +98,21 @@ public class RocketmqTopicCore implements TopicCore {
 
     @Override
     public List<TopicProperties> getTopics() {
-        String brokerUrl = rocketmqProperties.getBrokerUrl();
+        String namesrvAddr = rocketmqProperties.getNamesrvAddr();
         long requestTimeoutMillis = rocketmqProperties.getRequestTimeoutMillis();
-        if (StringUtils.isEmpty(brokerUrl)) {
+        if (StringUtils.isEmpty(namesrvAddr)) {
             log.info("RocketmqTopicCore-getTopics failed, missing brokerUrl");
             return new ArrayList<>();
         }
 
-        RemotingClient remotingClient = (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, brokerUrl);
+        RemotingClient remotingClient = (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, namesrvAddr);
         if (remotingClient == null) {
-            remotingClient = createRemotingClient(brokerUrl);
+            remotingClient = createRemotingClient(namesrvAddr);
         }
         List<TopicConfig> topicConfigList = new ArrayList<>();
         try {
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ALL_TOPIC_CONFIG, (CommandCustomHeader) null);
-            RemotingCommand response = remotingClient.invokeSync(brokerUrl, request, requestTimeoutMillis);
+            RemotingCommand response = remotingClient.invokeSync(namesrvAddr, request, requestTimeoutMillis);
             TopicConfigSerializeWrapper allTopicConfig = TopicConfigSerializeWrapper.decode(response.getBody(), TopicConfigSerializeWrapper.class);
             ConcurrentMap<String, TopicConfig> topicConfigTable = allTopicConfig.getTopicConfigTable();
             topicConfigList = new ArrayList<>(topicConfigTable.values());
@@ -125,22 +125,22 @@ public class RocketmqTopicCore implements TopicCore {
 
     @Override
     public Boolean deleteTopic(String topicName) {
-        String brokerUrl = rocketmqProperties.getBrokerUrl();
+        String namesrvAddr = rocketmqProperties.getNamesrvAddr();
         long requestTimeoutMillis = rocketmqProperties.getRequestTimeoutMillis();
-        if (StringUtils.isEmpty(brokerUrl)) {
+        if (StringUtils.isEmpty(namesrvAddr)) {
             log.info("RocketmqTopicCore-deleteTopic failed, missing brokerUrl");
             return Boolean.FALSE;
         }
 
-        RemotingClient remotingClient = (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, brokerUrl);
+        RemotingClient remotingClient = (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, namesrvAddr);
         if (remotingClient == null) {
-            remotingClient = createRemotingClient(brokerUrl);
+            remotingClient = createRemotingClient(namesrvAddr);
         }
         try {
             DeleteTopicRequestHeader deleteTopicRequestHeader = new DeleteTopicRequestHeader();
             deleteTopicRequestHeader.setTopic(topicName);
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.DELETE_TOPIC_IN_BROKER, null);
-            RemotingCommand response = remotingClient.invokeSync(brokerUrl, request, requestTimeoutMillis);
+            RemotingCommand response = remotingClient.invokeSync(namesrvAddr, request, requestTimeoutMillis);
 
             log.info("Rocketmq delete topic result:" + response.toString());
             return response.getCode() == 0;
