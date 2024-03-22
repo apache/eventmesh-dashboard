@@ -30,8 +30,4 @@ public class TopicProperties {
 
     private int offset;
 
-    private int readQueueNums;
-
-    private int writeQueueNums;
-
 }

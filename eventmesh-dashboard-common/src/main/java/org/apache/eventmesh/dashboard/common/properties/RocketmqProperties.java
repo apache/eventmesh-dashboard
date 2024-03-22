@@ -28,8 +28,6 @@ public class RocketmqProperties {
 
     private String brokerUrl;
 
-    private String endPoint;
-
     private int writeQueueNums = 8;
 
     private int readQueueNums = 8;
