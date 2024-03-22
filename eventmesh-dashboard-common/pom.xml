@@ -52,11 +52,6 @@
             <version>${nacos.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-        </dependency>
         <!-- rocketmq client -->
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
