@@ -79,7 +79,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- todo These SDKs should be placed in the core module after the console module's usage of these SDKs has been migrated to the core module.  -->
         <!-- health check client -->
         <!-- EventMesh SDK -->
 <!--        <dependency>-->
