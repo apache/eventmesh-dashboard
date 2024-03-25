@@ -46,7 +46,6 @@
             <artifactId>eventmesh-dashboard-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.eventmesh.dashboard.service</groupId>
             <artifactId>eventmesh-dashboard-service</artifactId>
@@ -73,7 +72,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
