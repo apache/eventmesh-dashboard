@@ -18,9 +18,9 @@
 package org.apache.eventmesh.dashboard.console.controller;
 
 import org.apache.eventmesh.dashboard.common.dto.Result;
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
 import org.apache.eventmesh.dashboard.console.dto.CreateTopicRequest;
 import org.apache.eventmesh.dashboard.console.dto.DeleteTopicRequest;
+import org.apache.eventmesh.dashboard.service.dto.TopicProperties;
 import org.apache.eventmesh.dashboard.service.store.TopicCore;
 
 import java.util.List;
@@ -61,7 +61,7 @@ public class TopicController {
     @CrossOrigin
     @GetMapping
     public Result<List<TopicProperties>> getList() {
-        List<TopicProperties> topicList = topicCore.getTopic();
+        List<TopicProperties> topicList = topicCore.getTopics();
         return Result.success(topicList);
     }
 

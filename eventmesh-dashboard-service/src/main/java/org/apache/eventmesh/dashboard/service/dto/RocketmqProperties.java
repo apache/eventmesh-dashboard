@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.service.dto;
 
-import org.apache.eventmesh.dashboard.service.dto.TopicProperties;
+import lombok.Data;
 
-import java.util.List;
+@Data
+public class RocketmqProperties {
 
-/**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
- */
+    private String namesrvAddr;
 
-public interface TopicCore {
+    private String clusterName;
 
-    List<TopicProperties> getTopics();
+    private int writeQueueNums = 8;
 
-    Boolean createTopic(String topicName);
+    private int readQueueNums = 8;
 
-    Boolean deleteTopic(String topicName);
+    private String accessKey;
+
+    private String secretKey;
+
+    private long requestTimeoutMillis = 10000L;
 }
