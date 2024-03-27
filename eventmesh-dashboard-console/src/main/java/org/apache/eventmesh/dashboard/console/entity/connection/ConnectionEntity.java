@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.entity.connection;
 
+import org.apache.eventmesh.dashboard.common.enums.DataStatus;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
-import org.apache.eventmesh.dashboard.console.enums.StatusEnum;
 
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -53,8 +53,7 @@ public class ConnectionEntity extends BaseEntity {
     private String sourceType;
 
     /**
-     * The id of the source.<br>
-     * It can be connectorId or clientId according to the sourceType.
+     * The id of the source.<br> It can be connectorId or clientId according to the sourceType.
      */
     @Schema(name = "sourceId", description = "connectorId or clientId")
     private Long sourceId;
@@ -66,8 +65,7 @@ public class ConnectionEntity extends BaseEntity {
     private String sinkType;
 
     /**
-     * The id of the sink.<br>
-     * It can be connectorId or clientId according to the sinkType.
+     * The id of the sink.<br> It can be connectorId or clientId according to the sinkType.
      */
     @Schema(name = "sinkId", description = "connectorId or clientId")
     private Long sinkId;
@@ -85,8 +83,8 @@ public class ConnectionEntity extends BaseEntity {
 
     private String description;
 
-    public void setStatusEnum(StatusEnum statusEnum) {
-        this.status = statusEnum.getNumber();
+    public void setDataStatus(DataStatus dataStatus) {
+        this.status = dataStatus.getNumber();
     }
 
     @Override

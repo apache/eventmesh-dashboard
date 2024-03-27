@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.function.health;
 
-import org.apache.eventmesh.dashboard.console.constant.health.HealthConstant;
-import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
+import org.apache.eventmesh.dashboard.common.constant.health.HealthConstant;
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckStatus;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import java.time.LocalDateTime;

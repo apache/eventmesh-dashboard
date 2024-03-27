@@ -19,8 +19,8 @@ package org.apache.eventmesh.dashboard.console.function.health.check.impl.storag
 
 import static org.apache.rocketmq.client.producer.SendStatus.SEND_OK;
 
-import org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant;
-import org.apache.eventmesh.dashboard.console.constant.health.HealthConstant;
+import org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant;
+import org.apache.eventmesh.dashboard.common.constant.health.HealthConstant;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;

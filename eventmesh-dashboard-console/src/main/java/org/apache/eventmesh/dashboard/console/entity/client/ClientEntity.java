@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.entity.client;
 
+import org.apache.eventmesh.dashboard.common.enums.DataStatus;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
-import org.apache.eventmesh.dashboard.console.enums.StatusEnum;
 
 import java.sql.Timestamp;
 
@@ -69,7 +69,7 @@ public class ClientEntity extends BaseEntity {
 
     /**
      * 0: not active, 1: active
-     * @see StatusEnum
+     * @see DataStatus
      */
     @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
     private Integer status;
@@ -88,7 +88,7 @@ public class ClientEntity extends BaseEntity {
      */
     private Timestamp endTime;
 
-    public void setStatusEntity(StatusEnum status) {
+    public void setStatusEntity(DataStatus status) {
         this.status = status.getNumber();
     }
 }
