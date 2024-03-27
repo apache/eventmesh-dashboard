@@ -17,10 +17,10 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.meta;
 
-import static org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_NACOS_REGISTER;
-import static org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_META;
-import static org.apache.eventmesh.dashboard.console.constant.health.HealthConstant.NACOS_CHECK_SERVICE_CLUSTER_NAME;
-import static org.apache.eventmesh.dashboard.console.constant.health.HealthConstant.NACOS_CHECK_SERVICE_NAME;
+import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_NACOS_REGISTRY;
+import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_META;
+import static org.apache.eventmesh.dashboard.common.constant.health.HealthConstant.NACOS_CHECK_SERVICE_CLUSTER_NAME;
+import static org.apache.eventmesh.dashboard.common.constant.health.HealthConstant.NACOS_CHECK_SERVICE_NAME;
 
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@HealthCheckType(type = HEALTH_CHECK_TYPE_META, subType = HEALTH_CHECK_SUBTYPE_NACOS_REGISTER)
+@HealthCheckType(type = HEALTH_CHECK_TYPE_META, subType = HEALTH_CHECK_SUBTYPE_NACOS_REGISTRY)
 public class NacosRegisterCheck extends AbstractHealthCheckService {
 
     private NamingService namingService;

@@ -17,11 +17,11 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.meta;
 
-import static org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_NACOS_CONFIG;
-import static org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_META;
-import static org.apache.eventmesh.dashboard.console.constant.health.HealthConstant.NACOS_CHECK_CONTENT;
-import static org.apache.eventmesh.dashboard.console.constant.health.HealthConstant.NACOS_CHECK_DATA_ID;
-import static org.apache.eventmesh.dashboard.console.constant.health.HealthConstant.NACOS_CHECK_GROUP;
+import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_NACOS_CONFIG;
+import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_META;
+import static org.apache.eventmesh.dashboard.common.constant.health.HealthConstant.NACOS_CHECK_CONTENT;
+import static org.apache.eventmesh.dashboard.common.constant.health.HealthConstant.NACOS_CHECK_DATA_ID;
+import static org.apache.eventmesh.dashboard.common.constant.health.HealthConstant.NACOS_CHECK_GROUP;
 
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;

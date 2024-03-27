@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4;
 
-import org.apache.eventmesh.dashboard.console.constant.health.HealthCheckTypeConstant;
+import org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;

@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.integration.health;
 
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
-import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.function.health.HealthService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
