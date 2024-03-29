@@ -26,10 +26,6 @@ public class RocketmqProperties {
 
     private String clusterName;
 
-    private int writeQueueNums = 8;
-
-    private int readQueueNums = 8;
-
     private String accessKey;
 
     private String secretKey;
