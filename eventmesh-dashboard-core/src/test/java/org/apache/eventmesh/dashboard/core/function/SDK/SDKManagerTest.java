@@ -19,8 +19,6 @@ package org.apache.eventmesh.dashboard.core.function.SDK;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRedisConfig;
 
 import org.junit.jupiter.api.BeforeEach;

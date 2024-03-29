@@ -29,9 +29,9 @@ import lombok.NoArgsConstructor;
 
 public class GetConfigRequest {
 
-    private List<String> nameServerAddress;
+    private List<String> registryAddressList;
 
-    private List<String> runtimeAddress;
+    private List<String> runtimeAddressList;
 
-    private List<String> brokerAddress;
+    private List<String> nameServerAddressList;
 }

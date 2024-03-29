@@ -27,8 +27,8 @@ import lombok.Data;
 @Data
 public class MetadataConfig {
 
-    //center url
+    //eventmesh registry url
     private String registryAddress;
-
+    //cluster id in database
     private Long clusterId;
 }

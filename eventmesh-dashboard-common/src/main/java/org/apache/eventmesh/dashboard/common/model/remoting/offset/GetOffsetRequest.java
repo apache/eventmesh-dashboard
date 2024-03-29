@@ -23,7 +23,7 @@ import lombok.Data;
 @Data
 public class GetOffsetRequest {
 
-    private String bootStrapServers;
+    private String bootstrapServers;
 
     private String groupName;
 }
