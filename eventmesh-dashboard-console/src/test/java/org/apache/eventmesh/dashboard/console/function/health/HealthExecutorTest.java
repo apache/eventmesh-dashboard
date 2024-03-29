@@ -22,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckStatus;
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
-import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckStatus;
-import org.apache.eventmesh.dashboard.console.enums.health.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;

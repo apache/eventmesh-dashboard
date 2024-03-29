@@ -43,6 +43,6 @@ public class FunctionManager {
         healthService = new HealthService();
         CheckResultCache checkResultCache = new CheckResultCache();
         healthService.createExecutor(healthDataService, checkResultCache);
-        healthService.startScheduledExecution(5, 5);
+        healthService.startScheduledExecution(120, 60);
     }
 }
