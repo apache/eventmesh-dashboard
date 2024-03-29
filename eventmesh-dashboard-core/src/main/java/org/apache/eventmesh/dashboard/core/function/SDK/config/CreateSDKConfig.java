@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
-
-import org.apache.eventmesh.dashboard.service.dto.TopicProperties;
-
-import java.util.List;
+package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
 /**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
+ * Config to create an SDK client, usually contains an address url.
  */
+public interface CreateSDKConfig {
 
-public interface TopicCore {
-
-    List<TopicProperties> getTopics();
-
-    Boolean createTopic(String topicName);
-
-    Boolean deleteTopic(String topicName);
+    String getUniqueKey();
 }
