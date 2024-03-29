@@ -19,6 +19,9 @@ package org.apache.eventmesh.dashboard.common.model.remoting.group;
 
 import java.util.concurrent.CompletableFuture;
 
+import lombok.Data;
+
+@Data
 public class GetGroupResult {
 
     private CompletableFuture<GetGroupsResponse> future;

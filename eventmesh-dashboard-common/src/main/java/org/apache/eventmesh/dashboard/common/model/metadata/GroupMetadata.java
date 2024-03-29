@@ -17,15 +17,10 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import org.apache.eventmesh.dashboard.common.enums.metadata.MetadataServiceTypeEnum;
-
 import lombok.Data;
 
 @Data
 public class GroupMetadata extends MetadataConfig {
-    {
-        this.setServiceTypeEnums(MetadataServiceTypeEnum.GROUP);
-    }
 
     private String name;
 

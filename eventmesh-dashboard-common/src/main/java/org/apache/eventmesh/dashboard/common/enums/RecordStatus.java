@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.model.metadata;
+package org.apache.eventmesh.dashboard.common.enums;
 
-import org.apache.eventmesh.dashboard.common.enums.StoreType;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import lombok.Data;
+@Getter
+@AllArgsConstructor
+public enum RecordStatus {
+    INACTIVE(0, "Inactive"),
+    ACTIVE(1, "Active");
 
-/**
- * Service users are users that are used by components like mysql, kafka, etc.
- */
-@Data
-public class ServiceUserMetadata {
-
-    private String userName;
-    //service users are only store users by now
-    private StoreType serviceType;
-    private String password;
+    private final Integer number;
+    private final String name;
 }

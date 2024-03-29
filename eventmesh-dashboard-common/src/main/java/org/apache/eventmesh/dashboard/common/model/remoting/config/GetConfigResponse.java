@@ -32,6 +32,6 @@ import lombok.NoArgsConstructor;
 
 public class GetConfigResponse {
 
-    List<ConfigMetadata> configMetadataList;
+    private List<ConfigMetadata> configMetadataList;
     private Boolean success;
 }

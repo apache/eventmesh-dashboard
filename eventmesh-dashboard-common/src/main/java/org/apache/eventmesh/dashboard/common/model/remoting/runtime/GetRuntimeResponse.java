@@ -15,23 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.enums.metadata;
+package org.apache.eventmesh.dashboard.common.model.remoting.runtime;
 
-public enum MetadataTypeEnum {
+import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 
-    CENTER,
+import java.util.List;
 
-    CLUSTER,
+import lombok.Data;
 
-    RUNTIME,
+@Data
+public class GetRuntimeResponse {
 
-    TOPIC,
-
-    GROUP,
-
-    SUBSCRIPTION,
-
-    STORE
-    ;
-
+    private List<RuntimeMetadata> runtimeMetadata;
 }

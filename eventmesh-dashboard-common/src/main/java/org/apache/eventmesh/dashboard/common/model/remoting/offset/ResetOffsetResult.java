@@ -19,7 +19,11 @@ package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
 import java.util.concurrent.CompletableFuture;
 
-public class ResetOffsetResult {
+import lombok.Data;
 
-    private CompletableFuture<ResetOffsetResponse> resetOffsetResponseCompletableFuture;
+@Data
+public class ResetOffsetResult {
+    private Boolean success;
+
+    private CompletableFuture<ResetOffsetResponse> future;
 }

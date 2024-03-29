@@ -15,25 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.enums.metadata;
+package org.apache.eventmesh.dashboard.common.model.remoting.runtime;
 
-public enum MetadataServiceTypeEnum {
+import java.util.concurrent.CompletableFuture;
 
-    RUNTIME,
+import lombok.Data;
 
-    CENTER_ETCD,
+@Data
+public class GetRuntimeResult {
 
-    META_NACOS,
-
-    TOPIC,
-
-    CLUSTER,
-
-    CLIENT,
-
-    GROUP,
-
-    CONNECTION,
-
-
+    private CompletableFuture<GetRuntimeResponse> future;
 }

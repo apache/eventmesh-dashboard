@@ -17,6 +17,9 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
+import lombok.Data;
+
+@Data
 public class ResetOffsetResponse {
 
     private Long offset;

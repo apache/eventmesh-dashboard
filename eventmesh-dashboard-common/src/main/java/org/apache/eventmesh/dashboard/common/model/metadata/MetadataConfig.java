@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import org.apache.eventmesh.dashboard.common.enums.metadata.MetadataServiceTypeEnum;
-
 import lombok.Data;
 
 /**
@@ -28,8 +26,6 @@ import lombok.Data;
  */
 @Data
 public class MetadataConfig {
-
-    private MetadataServiceTypeEnum serviceTypeEnums;
 
     //center url
     private String registryAddress;

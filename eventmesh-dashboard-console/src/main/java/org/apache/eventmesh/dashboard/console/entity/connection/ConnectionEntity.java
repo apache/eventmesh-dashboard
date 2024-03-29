@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.entity.connection;
 
-import org.apache.eventmesh.dashboard.common.enums.DataStatus;
+import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
@@ -83,7 +83,7 @@ public class ConnectionEntity extends BaseEntity {
 
     private String description;
 
-    public void setDataStatus(DataStatus dataStatus) {
+    public void setDataStatus(RecordStatus dataStatus) {
         this.status = dataStatus.getNumber();
     }
 

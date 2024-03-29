@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.client;
 
-import org.apache.eventmesh.dashboard.common.enums.DataStatus;
+import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.client.ClientEntity;
 
@@ -70,7 +70,7 @@ class ClientMapperTest {
         clientEntity.setDescription("");
         clientEntity.setPid(1L);
         clientEntity.setPort(8080);
-        clientEntity.setStatusEntity(DataStatus.ACTIVE);
+        clientEntity.setStatusEntity(RecordStatus.ACTIVE);
         clientEntity.setConfigIds("");
         clientEntity.setLanguage("rust");
         clientEntity.setPlatform("");

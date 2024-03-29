@@ -17,17 +17,10 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import org.apache.eventmesh.dashboard.common.enums.metadata.MetadataServiceTypeEnum;
-
 import lombok.Data;
 
 @Data
 public class ClientMetadata extends MetadataConfig {
-
-
-    {
-        this.setServiceTypeEnums(MetadataServiceTypeEnum.CLIENT);
-    }
 
     private String name;
 

@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.enums;
+package org.apache.eventmesh.dashboard.common.model.remoting.runtime;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-@AllArgsConstructor
-public enum DataStatus {
-    INACTIVE(0, "Inactive"),
-    ACTIVE(1, "Active");
+@Data
+public class GetRuntimeRequest {
 
-    private final Integer number;
-    private final String name;
+    private String registryAddress;
 }

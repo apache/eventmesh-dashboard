@@ -18,22 +18,24 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
 
-import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
-
-import java.time.LocalDateTime;
-
 import lombok.Data;
 
 @Data
 public class ResetOffsetRequest {
 
-    LocalDateTime timestamp;
+    Long timestamp;
 
     Long offset;
 
+    private String topic;
+
+    private String bootStrapServers;
+
+    private Integer partitionId;
+
     ResetOffsetMode resetOffsetMode;
 
-    GroupMetadata groupMetadata;
+    private String groupName;
 
     public enum ResetOffsetMode {
         EARLIEST,

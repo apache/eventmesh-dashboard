@@ -17,17 +17,13 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import org.apache.eventmesh.dashboard.common.enums.DataStatus;
-import org.apache.eventmesh.dashboard.common.enums.metadata.MetadataServiceTypeEnum;
+import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 
 import lombok.Data;
 
 @Data
 public class RegistryMetadata extends MetadataConfig {
 
-    {
-        this.setServiceTypeEnums(MetadataServiceTypeEnum.META_NACOS);
-    }
 
     private String clusterName;
 
@@ -50,7 +46,7 @@ public class RegistryMetadata extends MetadataConfig {
     /**
      * 0: not active, 1: active
      *
-     * @see DataStatus
+     * @see RecordStatus
      */
     private Integer status;
 }

@@ -18,12 +18,12 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
 
-import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
-
 import lombok.Data;
 
 @Data
 public class GetOffsetRequest {
 
-    private GroupMetadata groupMetadata;
+    private String bootStrapServers;
+
+    private String groupName;
 }

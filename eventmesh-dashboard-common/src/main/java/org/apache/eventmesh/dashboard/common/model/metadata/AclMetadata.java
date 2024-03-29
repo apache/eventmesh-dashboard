@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.common.model.metadata;
 import lombok.Data;
 
 @Data
-public class AclMetadata {
+public class AclMetadata extends MetadataConfig {
 
     private Long clusterId;
     private String principal;

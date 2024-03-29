@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 
 public class GetConfigRequest {
 
-    private List<String> registryAddress;
+    private List<String> nameServerAddress;
 
     private List<String> runtimeAddress;
 

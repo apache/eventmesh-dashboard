@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.entity.connector;
 
-import org.apache.eventmesh.dashboard.common.enums.DataStatus;
 import org.apache.eventmesh.dashboard.common.enums.KubernetesPodStatus;
+import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,7 +45,7 @@ public class ConnectorEntity extends BaseEntity {
     /**
      * 0: not active, 1: active
      *
-     * @see DataStatus
+     * @see RecordStatus
      */
     @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")
     private Integer status;
@@ -63,7 +63,7 @@ public class ConnectorEntity extends BaseEntity {
      */
     private String configIds;
 
-    public void setDataStatus(DataStatus dataStatus) {
+    public void setDataStatus(RecordStatus dataStatus) {
         this.status = dataStatus.getNumber();
     }
 
