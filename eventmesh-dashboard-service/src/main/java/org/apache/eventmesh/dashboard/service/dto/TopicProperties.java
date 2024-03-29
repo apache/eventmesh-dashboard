@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.service.dto;
 
-import org.apache.eventmesh.dashboard.service.dto.TopicProperties;
-
-import java.util.List;
+import lombok.Data;
 
 /**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
+ * One record displayed in 'Topic' page.
  */
 
-public interface TopicCore {
+@Data
+public class TopicProperties {
 
-    List<TopicProperties> getTopics();
+    private String topicName;
 
-    Boolean createTopic(String topicName);
+    private int offset;
 
-    Boolean deleteTopic(String topicName);
 }

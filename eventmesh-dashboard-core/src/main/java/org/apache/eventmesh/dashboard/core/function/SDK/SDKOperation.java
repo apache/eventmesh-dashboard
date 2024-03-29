@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.core.function.SDK;
 
-import org.apache.eventmesh.dashboard.service.dto.TopicProperties;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 
-import java.util.List;
+import java.util.AbstractMap.SimpleEntry;
 
 /**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
+ * Operation to create and close a client, the operations will be store in the SDKManager
+ *
+ * @param <T> SDK client
  */
+public interface SDKOperation<T> {
 
-public interface TopicCore {
+    public SimpleEntry<String, T> createClient(CreateSDKConfig clientConfig);
 
-    List<TopicProperties> getTopics();
 
-    Boolean createTopic(String topicName);
+    public void close(Object client);
 
-    Boolean deleteTopic(String topicName);
 }

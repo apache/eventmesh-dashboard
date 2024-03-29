@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.service.store;
+package org.apache.eventmesh.dashboard.core.function.SDK.wrapper;
 
-import org.apache.eventmesh.dashboard.service.dto.TopicProperties;
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingService;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
 
-/**
- * Manage topics of eventmesh-storage-plugin (EventMesh Store).
- */
+@AllArgsConstructor
+public class NacosSDKWrapper {
 
-public interface TopicCore {
+    public void shutdown() throws NacosException {
+        configService.shutDown();
+        namingService.shutDown();
+    }
 
-    List<TopicProperties> getTopics();
-
-    Boolean createTopic(String topicName);
-
-    Boolean deleteTopic(String topicName);
+    private ConfigService configService;
+    private NamingService namingService;
 }
