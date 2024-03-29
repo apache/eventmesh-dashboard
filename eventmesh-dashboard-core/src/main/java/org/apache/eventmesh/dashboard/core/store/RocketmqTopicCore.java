@@ -67,8 +67,6 @@ public class RocketmqTopicCore implements TopicCore {
     public Boolean createTopic(String topicName) {
         String namesrvAddr = rocketmqProperties.getNamesrvAddr();
         long requestTimeoutMillis = rocketmqProperties.getRequestTimeoutMillis();
-        int readQueueNums = rocketmqProperties.getReadQueueNums();
-        int writeQueueNums = rocketmqProperties.getReadQueueNums();
         if (StringUtils.isEmpty(namesrvAddr)) {
             log.info("RocketmqTopicCore-createTopic failed, missing brokerUrl");
             return Boolean.FALSE;
@@ -82,8 +80,6 @@ public class RocketmqTopicCore implements TopicCore {
             CreateTopicRequestHeader requestHeader = new CreateTopicRequestHeader();
             requestHeader.setTopic(topicName);
             requestHeader.setTopicFilterType(TopicFilterType.SINGLE_TAG.name());
-            requestHeader.setReadQueueNums(readQueueNums);
-            requestHeader.setWriteQueueNums(writeQueueNums);
             requestHeader.setPerm(PermName.PERM_READ | PermName.PERM_WRITE);
 
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC, requestHeader);
