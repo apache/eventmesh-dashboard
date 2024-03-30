@@ -52,7 +52,8 @@ public interface ConfigMapper {
     @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version, "
         + "status, is_default, end_version, diff_type, description, edit, is_modify, eventmesh_version) VALUE "
         + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
-        + "#{configValue},#{startVersion},#{status},#{isDefault},#{endVersion},#{diffType},#{description},#{edit},#{isModify},#{eventmeshVersion})")
+        + "#{configValue},#{startVersion},#{status},#{isDefault},#{endVersion},#{diffType},"
+        + "#{description},#{edit},#{isModify},#{eventmeshVersion})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer addConfig(ConfigEntity configEntity);
 

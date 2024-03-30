@@ -23,10 +23,10 @@ create table cluster
     register_name_list varchar(4096) default ''                not null comment '注册中心名字',
     bootstrap_servers  varchar(2048) default ''                not null comment 'server地址',
     eventmesh_version  varchar(32)   default ''                not null comment 'eventmesh版本',
-    client_properties  text                                    null comment 'EventMesh客户端配置',
-    jmx_properties     text                                    null comment 'JMX配置',
-    reg_properties     text                                    null comment '注册中心配置',
-    description        text                                    null comment '备注',
+    client_properties  text null comment 'EventMesh客户端配置',
+    jmx_properties     text null comment 'JMX配置',
+    reg_properties     text null comment '注册中心配置',
+    description        text null comment '备注',
     auth_type          int           default 0                 not null comment '认证类型，-1未知，0:无认证，',
     run_state          tinyint       default 1                 not null comment '运行状态, 0表示未监控, 1监控中，有注册中心，2:监控中，无注册中心',
     create_time        timestamp     default CURRENT_TIMESTAMP not null comment '接入时间',
@@ -35,8 +35,7 @@ create table cluster
     store_type         int           default 0                 not null,
     constraint uniq_name
         unique (name)
-)
-    comment '物理集群信息表';
+) comment '物理集群信息表';
 
 create index idx_uniq_name
     on cluster (name);
@@ -52,10 +51,10 @@ create table config
     instance_type     tinyint                                 not null comment '配置类型 0:runtime,1:storage,2:connector,3:topic',
     instance_id       bigint        default -1                not null comment '实例ID，上面配置对应的(比如runtime)的id',
     config_name       varchar(192)  default ''                not null comment '配置名称',
-    config_value      text                                    null comment '配置值',
+    config_value      text null comment '配置值',
     start_version     varchar(64)   default ''                not null comment '配置开始使用的版本',
     status            int           default 1                 not null comment '0 关闭 1 开启 ',
-    is_default        int           default 1                 null,
+    is_default        int           default 1 null,
     end_version       varchar(64)   default ''                not null comment '配置结束使用的版本',
     diff_type         int           default -1                not null comment '差异类型',
     description       varchar(1000) default ''                not null comment '备注',
@@ -66,8 +65,7 @@ create table config
     eventmesh_version varchar(64)   default ' '               not null,
     constraint uniq_instance_type_instance_id_config_name
         unique (instance_id, config_name, instance_type)
-)
-    comment '配置信息表';
+) comment '配置信息表';
 
 create index idx_phy_id_instance_id
     on config (cluster_id, instance_id);
@@ -81,8 +79,8 @@ create table `group`
         primary key,
     cluster_id   bigint                        default -1                not null comment '集群id',
     name         varchar(192) collate utf8_bin default ''                not null comment 'Group名称',
-    member_count int unsigned                  default '0'               not null comment '成员数',
-    members      text                                                    null comment 'group的member列表',
+    member_count int unsigned default '0' not null comment '成员数',
+    members      text null comment 'group的member列表',
     type         tinyint                                                 not null comment 'group类型 0：consumer 1：producer',
     state        varchar(64)                   default ''                not null comment '状态',
     create_time  timestamp                     default CURRENT_TIMESTAMP not null comment '创建时间',
@@ -90,8 +88,7 @@ create table `group`
     status       int                           default 1                 not null,
     constraint uniq_cluster_phy_id_name
         unique (cluster_id, name)
-)
-    comment 'Group信息表';
+) comment 'Group信息表';
 
 create index cluster_id
     on `group` (cluster_id, name);
@@ -112,13 +109,10 @@ create table group_member
     status         int          default 1                 not null,
     constraint uniq_cluster_topic_group
         unique (cluster_id, topic_name, group_name)
-)
-    comment 'GroupMember信息表';
+) comment 'GroupMember信息表';
 
 create index cluster_id
     on group_member (cluster_id, topic_name, group_name);
-
-
 
 
 
@@ -140,8 +134,7 @@ create table runtime
     endpoint_map       varchar(1024) default ''                not null comment '监听信息',
     constraint uniq_cluster_phy_id__host_port
         unique (cluster_id, host)
-)
-    comment 'Runtime信息表';
+) comment 'Runtime信息表';
 
 create index idx_phy_id_host_storage_id
     on runtime (cluster_id, storage_cluster_id);
@@ -169,30 +162,67 @@ create table store
     endpoint_map    varchar(1024) default ''                not null comment '监听信息',
     constraint uniq_cluster_phy_id__storage_id
         unique (cluster_id, store_id)
-)
-    comment 'Store信息表';
+) comment 'Store信息表';
 
 create index idx_store_id_runtime_id
     on store (store_id, cluster_id, runtime_id);
+
+DROP TABLE IF EXISTS `service_user`;
+CREATE TABLE `service_user`
+(
+    `id`           bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `service_type` int(255) NOT NULL DEFAULT 0 COMMENT '区分不同软件',
+    `password`     varchar(100)                                     NOT NULL DEFAULT '' COMMENT '密码',
+    `cluster_id`   bigint(20) NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
+    `name`         varchar(192) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '名称',
+    `token`        varchar(8192)                                    NOT NULL DEFAULT '' COMMENT '密钥',
+    `status`       int                                                       default 1 not null comment '状态: 1启用，0未启用',
+    `create_time`  timestamp                                        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`  timestamp                                        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Service_User信息表';
+
+
+
+DROP TABLE IF EXISTS `acl`;
+CREATE TABLE `acl`
+(
+    `id`              bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
+    `cluster_id`      bigint(20) NOT NULL DEFAULT '0' COMMENT '集群id',
+    `principal`       varchar(192) NOT NULL DEFAULT '' COMMENT 'Service User Pattern',
+    `operation`       int(11) NOT NULL DEFAULT '0' COMMENT '操作,',
+    `permission_type` int(11) NOT NULL DEFAULT '0' COMMENT '权限类型(0:未知，1:任意，2:拒绝，3:允许)',
+    `host`            varchar(192) NOT NULL DEFAULT '' COMMENT '',
+    `resource_type`   int(11) NOT NULL DEFAULT '0' COMMENT '资源类型(0:未知，1:任意，10:Kafka Topic,11:Kafka Group;21:Rocketmq topic)',
+    `resource_name`   varchar(192) NOT NULL DEFAULT '' COMMENT '资源名称',
+    `pattern_type`    tinyint(4) NOT NULL COMMENT '匹配类型(0:未知，1:任意，2:Match，3:Literal，4:prefixed)',
+    `status`          int        NOT NULL DEFAULT 1 COMMENT '状态(0:删除，1:存在)',
+    `create_time`     timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`     timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    INDEX             `idx_cluster_phy_id_principal_res_name` (`cluster_id`, `principal`, `resource_name`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4,
+  DEFAULT COLLATE = utf8mb4_bin COMMENT ='ACL信息表';
 
 
 
 DROP TABLE IF EXISTS `group`;
 CREATE TABLE `group`
 (
-    `id`           bigint unsigned                                        NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
     `cluster_id`   bigint                                                 NOT NULL DEFAULT '-1' COMMENT '集群id',
     `name`         varchar(192) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '' COMMENT 'Group名称',
-    `member_count` int unsigned                                           NOT NULL DEFAULT '0' COMMENT '成员数',
+    `member_count` int unsigned NOT NULL DEFAULT '0' COMMENT '成员数',
     `members`      varchar(1024) COMMENT 'group的member列表',
     `type`         tinyint                                                NOT NULL COMMENT 'group类型 0：consumer 1：producer',
     `state`        varchar(64)                                            NOT NULL DEFAULT '' COMMENT '状态',
     `create_time`  timestamp                                              NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`  timestamp                                              NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-    `status`    int                                                    NOT NULL DEFAULT '1',
+    `status`       int                                                    NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_cluster_phy_id_name` (`cluster_id`, `name`),
-    KEY `cluster_id` (`cluster_id`, `name`)
+    KEY            `cluster_id` (`cluster_id`, `name`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 322
   DEFAULT CHARSET = utf8mb4,
@@ -203,17 +233,17 @@ DROP TABLE IF EXISTS `group_member`;
 CREATE TABLE `group_member`
 (
     `id`             bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id`     bigint          NOT NULL DEFAULT '-1' COMMENT '集群ID',
-    `topic_name`     varchar(192)    NOT NULL DEFAULT '' COMMENT 'Topic名称',
-    `group_name`     varchar(192)    NOT NULL DEFAULT '' COMMENT 'Group名称',
-    `eventmesh_user` varchar(192)    NOT NULL DEFAULT '' COMMENT 'EventMesh用户',
-    `state`          varchar(64)     NOT NULL DEFAULT '' COMMENT '状态',
-    `create_time`    timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time`    timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-    `status`      int             NOT NULL DEFAULT '1',
+    `cluster_id`     bigint       NOT NULL DEFAULT '-1' COMMENT '集群ID',
+    `topic_name`     varchar(192) NOT NULL DEFAULT '' COMMENT 'Topic名称',
+    `group_name`     varchar(192) NOT NULL DEFAULT '' COMMENT 'Group名称',
+    `eventmesh_user` varchar(192) NOT NULL DEFAULT '' COMMENT 'EventMesh用户',
+    `state`          varchar(64)  NOT NULL DEFAULT '' COMMENT '状态',
+    `create_time`    timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`    timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    `status`         int          NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_cluster_topic_group` (`cluster_id`, `topic_name`, `group_name`),
-    KEY `cluster_id` (`cluster_id`, `topic_name`, `group_name`)
+    KEY              `cluster_id` (`cluster_id`, `topic_name`, `group_name`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 257
   DEFAULT CHARSET = utf8mb4,
@@ -224,19 +254,19 @@ DROP TABLE IF EXISTS `operation_log`;
 CREATE TABLE `operation_log`
 (
     `id`             bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id`     bigint          NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
-    `operation_type` varchar(192)    NOT NULL DEFAULT '' COMMENT '操作类型,如:启动，停止，重启，添加，删除，修改',
-    `state`         int             NOT NULL DEFAULT '0' COMMENT '操作状态 0:未知，1:执行中，2:成功，3:失败',
+    `cluster_id`     bigint       NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
+    `operation_type` varchar(192) NOT NULL DEFAULT '' COMMENT '操作类型,如:启动，停止，重启，添加，删除，修改',
+    `state`          int          NOT NULL DEFAULT '0' COMMENT '操作状态 0:未知，1:执行中，2:成功，3:失败',
     `content`        varchar(1024) COMMENT '备注信息',
-    `create_time`    timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `end_time`       timestamp       NULL     DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
-    `operation_user` varchar(192)             DEFAULT NULL,
+    `create_time`    timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `end_time`       timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
+    `operation_user` varchar(192)          DEFAULT NULL,
     `result`         varchar(1024),
-    `target_type`    varchar(192)    NOT NULL,
-    `is_delete`      int             NOT NULL DEFAULT '0',
+    `target_type`    varchar(192) NOT NULL,
+    `is_delete`      int          NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
-    KEY `idx_cluster_phy_id` (`cluster_id`),
-    KEY `idx_state` (`state`)
+    KEY              `idx_cluster_phy_id` (`cluster_id`),
+    KEY              `idx_state` (`state`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 68
   DEFAULT CHARSET = utf8mb4,
@@ -247,20 +277,20 @@ DROP TABLE IF EXISTS `topic`;
 CREATE TABLE `topic`
 (
     `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id`   bigint          NOT NULL DEFAULT '-1' COMMENT '集群ID',
+    `cluster_id`   bigint        NOT NULL DEFAULT '-1' COMMENT '集群ID',
     `topic_name`   varchar(192) CHARACTER SET utf8mb4
-        COLLATE utf8mb4_bin        NOT NULL DEFAULT '' COMMENT 'Topic名称',
-    `runtime_id`   varchar(2048)   NOT NULL DEFAULT '' COMMENT 'RuntimeId',
-    `storage_id`   varchar(2048)   NOT NULL DEFAULT '' COMMENT 'StorageId',
-    `retention_ms` bigint          NOT NULL DEFAULT '-2' COMMENT '保存时间，-2：未知，-1：无限制，>=0对应时间，单位ms',
-    `type`         tinyint         NOT NULL DEFAULT '0' COMMENT 'Topic类型，默认0，0:普通，1:EventMesh内部',
-    `description`  varchar(1024)            DEFAULT '' COMMENT '备注信息',
-    `create_time`  timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间(尽量与Topic实际创建时间一致)',
-    `update_time`  timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间(尽量与Topic实际创建时间一致)',
-    `status`    int             NOT NULL DEFAULT '1',
+        COLLATE utf8mb4_bin      NOT NULL DEFAULT '' COMMENT 'Topic名称',
+    `runtime_id`   varchar(2048) NOT NULL DEFAULT '' COMMENT 'RuntimeId',
+    `storage_id`   varchar(2048) NOT NULL DEFAULT '' COMMENT 'StorageId',
+    `retention_ms` bigint        NOT NULL DEFAULT '-2' COMMENT '保存时间，-2：未知，-1：无限制，>=0对应时间，单位ms',
+    `type`         tinyint       NOT NULL DEFAULT '0' COMMENT 'Topic类型，默认0，0:普通，1:EventMesh内部',
+    `description`  varchar(1024)          DEFAULT '' COMMENT '备注信息',
+    `create_time`  timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间(尽量与Topic实际创建时间一致)',
+    `update_time`  timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间(尽量与Topic实际创建时间一致)',
+    `status`       int           NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_cluster_phy_id_topic_name` (`cluster_id`, `topic_name`),
-    KEY `cluster_id` (`cluster_id`, `topic_name`)
+    KEY            `cluster_id` (`cluster_id`, `topic_name`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 562
   DEFAULT CHARSET = utf8mb4,
@@ -270,24 +300,24 @@ CREATE TABLE `topic`
 DROP TABLE IF EXISTS `client`;
 CREATE TABLE `client`
 (
-    `id`          bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id`  bigint(20)          NOT NULL DEFAULT '-1' COMMENT '集群ID',
-    `name`        varchar(192)        NOT NULL DEFAULT '' COMMENT '客户端名称',
-    `platform`    varchar(192)        NOT NULL DEFAULT '' COMMENT '客户端平台',
-    `language`    varchar(192)        NOT NULL DEFAULT '' COMMENT '客户端语言',
-    `pid`         bigint(22)          NOT NULL DEFAULT '-1' COMMENT '客户端进程ID',
-    `host`        varchar(128)        NOT NULL DEFAULT '' COMMENT '客户端地址',
-    `port`        int(16)             NOT NULL DEFAULT '-1' COMMENT '客户端端口',
-    `protocol`    varchar(192)        NOT NULL DEFAULT '' COMMENT '协议类型',
+    `id`          bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `cluster_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT '集群ID',
+    `name`        varchar(192)  NOT NULL DEFAULT '' COMMENT '客户端名称',
+    `platform`    varchar(192)  NOT NULL DEFAULT '' COMMENT '客户端平台',
+    `language`    varchar(192)  NOT NULL DEFAULT '' COMMENT '客户端语言',
+    `pid`         bigint(22) NOT NULL DEFAULT '-1' COMMENT '客户端进程ID',
+    `host`        varchar(128)  NOT NULL DEFAULT '' COMMENT '客户端地址',
+    `port`        int(16) NOT NULL DEFAULT '-1' COMMENT '客户端端口',
+    `protocol`    varchar(192)  NOT NULL DEFAULT '' COMMENT '协议类型',
     `status`      tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '状态: 1启用，0未启用',
-    `config_ids`  varchar(1024)       NOT NULL DEFAULT '' COMMENT 'csv config id list, like:1,3,7',
-    `description` varchar(1024)       NOT NULL DEFAULT '' COMMENT '客户端描述',
-    `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `end_time`    timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
-    `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    `config_ids`  varchar(1024) NOT NULL DEFAULT '' COMMENT 'csv config id list, like:1,3,7',
+    `description` varchar(1024) NOT NULL DEFAULT '' COMMENT '客户端描述',
+    `create_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `end_time`    timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
+    `update_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
 
     PRIMARY KEY (`id`),
-    INDEX `idx_cluster_id` (`cluster_id`)
+    INDEX         `idx_cluster_id` (`cluster_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4,
   DEFAULT COLLATE = utf8mb4_bin COMMENT ='client is an SDK application that can produce or consume events.';
@@ -298,17 +328,17 @@ DROP TABLE IF EXISTS `connector`;
 CREATE TABLE `connector`
 (
     `id`          bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id`  bigint(20)          NOT NULL DEFAULT '-1' COMMENT '集群ID',
-    `name`        varchar(512)        NOT NULL DEFAULT '' COMMENT 'Connector名称',
-    `class_name`  varchar(512)        NOT NULL DEFAULT '' COMMENT 'Connector类',
-    `type`        varchar(32)         NOT NULL DEFAULT '' COMMENT 'Connector类型',
+    `cluster_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT '集群ID',
+    `name`        varchar(512)  NOT NULL DEFAULT '' COMMENT 'Connector名称',
+    `class_name`  varchar(512)  NOT NULL DEFAULT '' COMMENT 'Connector类',
+    `type`        varchar(32)   NOT NULL DEFAULT '' COMMENT 'Connector类型',
     `status`      tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '状态: 1启用，0未启用',
     `pod_state`   tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT 'k8s pod状态。0: pending;1: running;2: success;3: failed;4: unknown',
-    `config_ids`  varchar(1024)       NOT NULL DEFAULT '' COMMENT 'csv config id list, like:1,3,7',
-    `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    `config_ids`  varchar(1024) NOT NULL DEFAULT '' COMMENT 'csv config id list, like:1,3,7',
+    `create_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`),
-    INDEX `idx_cluster_id` (`cluster_id`)
+    INDEX         `idx_cluster_id` (`cluster_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4,
   DEFAULT COLLATE = utf8mb4_bin COMMENT ='Connector信息表';
@@ -316,27 +346,27 @@ CREATE TABLE `connector`
 DROP TABLE IF EXISTS `connection`;
 CREATE TABLE `connection`
 (
-    `id`          bigint(20)          NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id`  bigint(20)          NOT NULL DEFAULT '-1' COMMENT '集群ID',
-    `source_type` varchar(64)         NOT NULL DEFAULT '' COMMENT 'source类型,可以为client或source connector',
-    `source_id`   bigint(20)          NOT NULL DEFAULT '-1' COMMENT 'client或source connector ID',
-    `sink_type`   varchar(64)         NOT NULL DEFAULT '' COMMENT 'sink类型,可以为client或sink connector',
-    `sink_id`     bigint(20)          NOT NULL DEFAULT '-1' COMMENT 'client或sink connector ID',
-    `runtime_id`  bigint(20)          NOT NULL DEFAULT '-1' COMMENT '对应runtime id',
+    `id`          bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `cluster_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT '集群ID',
+    `source_type` varchar(64)   NOT NULL DEFAULT '' COMMENT 'source类型,可以为client或source connector',
+    `source_id`   bigint(20) NOT NULL DEFAULT '-1' COMMENT 'client或source connector ID',
+    `sink_type`   varchar(64)   NOT NULL DEFAULT '' COMMENT 'sink类型,可以为client或sink connector',
+    `sink_id`     bigint(20) NOT NULL DEFAULT '-1' COMMENT 'client或sink connector ID',
+    `runtime_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT '对应runtime id',
     `status`      tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '状态: 1启用，0未启用',
-    `topic`       varchar(192)        NOT NULL DEFAULT '' COMMENT 'topic name',
-    `group_id`    bigint(20)          NOT NULL DEFAULT '-1' COMMENT 'GroupID',
-    `description` varchar(1024)       NOT NULL DEFAULT '' COMMENT '客户端描述',
-    `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `end_time`    timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
-    `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    `topic`       varchar(192)  NOT NULL DEFAULT '' COMMENT 'topic name',
+    `group_id`    bigint(20) NOT NULL DEFAULT '-1' COMMENT 'GroupID',
+    `description` varchar(1024) NOT NULL DEFAULT '' COMMENT '客户端描述',
+    `create_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `end_time`    timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
+    `update_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
 
     PRIMARY KEY (`id`),
-    INDEX `idx_cluster_id` (`cluster_id`),
-    INDEX `idx_group_id` (`group_id`),
-    INDEX `idx_topic` (`topic`),
-    INDEX `idx_source_id` (`source_id`),
-    INDEX `idx_sink_id` (`sink_id`)
+    INDEX         `idx_cluster_id` (`cluster_id`),
+    INDEX         `idx_group_id` (`group_id`),
+    INDEX         `idx_topic` (`topic`),
+    INDEX         `idx_source_id` (`source_id`),
+    INDEX         `idx_sink_id` (`sink_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4,
   DEFAULT COLLATE = utf8mb4_bin COMMENT ='connection from event source to event sink. event source can be a source connector or a producer client.';
@@ -345,16 +375,16 @@ DROP TABLE IF EXISTS `health_check_result`;
 CREATE TABLE `health_check_result`
 (
     `id`          bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
-    `type`        tinyint(4)          NOT NULL DEFAULT '0' COMMENT '检查维度(0:未知, 1:Cluster, 2:Runtime, 3:Topic, 4:Storage)',
+    `type`        tinyint(4) NOT NULL DEFAULT '0' COMMENT '检查维度(0:未知, 1:Cluster, 2:Runtime, 3:Topic, 4:Storage)',
     `type_id`     bigint(20) unsigned NOT NULL COMMENT '对应检查维度的实例id',
-    `cluster_id`  bigint(20)          NOT NULL DEFAULT '0' COMMENT '集群ID',
-    `state`       tinyint(4)          NOT NULL DEFAULT '0' COMMENT '检查状态(0:未通过，1:通过,2:正在检查,3:超时)',
-    `result_desc` varchar(1024)       NOT NULL DEFAULT '' COMMENT '检查结果描述',
-    `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `cluster_id`  bigint(20) NOT NULL DEFAULT '0' COMMENT '集群ID',
+    `state`       tinyint(4) NOT NULL DEFAULT '0' COMMENT '检查状态(0:未通过，1:通过,2:正在检查,3:超时)',
+    `result_desc` varchar(1024) NOT NULL DEFAULT '' COMMENT '检查结果描述',
+    `create_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    INDEX `idx_cluster_id` (`cluster_id`),
-    INDEX `idx_type` (`type`)
+    INDEX         `idx_cluster_id` (`cluster_id`),
+    INDEX         `idx_type` (`type`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4,
   DEFAULT COLLATE = utf8mb4_bin COMMENT ='健康检查结果';
@@ -363,23 +393,30 @@ DROP TABLE IF EXISTS `meta`;
 CREATE TABLE `meta`
 (
     `id`          bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `name`        varchar(192)        NOT NULL DEFAULT '' COMMENT '注册中心名称',
-    `type`        varchar(192)        NOT NULL DEFAULT '' COMMENT '注册中心类型,nacos,etcd,zookeeper',
-    `version`     varchar(128)        NOT NULL DEFAULT '' COMMENT '注册中心版本',
-    `cluster_id`  bigint(20)          NOT NULL DEFAULT '-1' COMMENT '集群ID',
-    `host`        varchar(128)        NOT NULL DEFAULT '' COMMENT '注册中心地址',
-    `port`        int(16)             NOT NULL DEFAULT '-1' COMMENT '注册中心端口',
-    `role`        varchar(16)         NOT NULL DEFAULT '-1' COMMENT '角色, leader follower observer',
-    `username`    varchar(192)        NOT NULL DEFAULT '' COMMENT '注册中心用户名',
-    `params`      varchar(192)        NOT NULL DEFAULT '' COMMENT '注册中心启动参数',
+    `name`        varchar(192) NOT NULL DEFAULT '' COMMENT '注册中心名称',
+    `type`        varchar(192) NOT NULL DEFAULT '' COMMENT '注册中心类型,nacos,etcd,zookeeper',
+    `version`     varchar(128) NOT NULL DEFAULT '' COMMENT '注册中心版本',
+    `cluster_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT '集群ID',
+    `host`        varchar(128) NOT NULL DEFAULT '' COMMENT '注册中心地址',
+    `port`        int(16) NOT NULL DEFAULT '-1' COMMENT '注册中心端口',
+    `role`        varchar(16)  NOT NULL DEFAULT '-1' COMMENT '角色, leader follower observer',
+    `username`    varchar(192) NOT NULL DEFAULT '' COMMENT '注册中心用户名',
+    `params`      varchar(192) NOT NULL DEFAULT '' COMMENT '注册中心启动参数',
     `status`      tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '状态: 1启用，0未启用',
 
-    `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    `create_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
 
     PRIMARY KEY (`id`),
-    INDEX `idx_cluster_id` (`cluster_id`)
+    INDEX         `idx_cluster_id` (`cluster_id`)
 
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4,
   DEFAULT COLLATE = utf8mb4_bin COMMENT ='注册中心信息表';
+
+
+
+
+
+
+
