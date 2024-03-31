@@ -15,7 +15,7 @@ const RootLayout = () => {
         bgcolor: grey[100]
       }}>
       <Navigation />
-      <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
+      <Box sx={{ flexGrow: 1, pl: 4, overflow: 'hidden' }}>
         <Outlet />
       </Box>
     </Stack>
