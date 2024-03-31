@@ -5,15 +5,14 @@
 ```
 cd ~/service
 git clone -b dev https://github.com/apache/eventmesh-dashboard.git
-cd eventmesh-dashboard
-chmod +x deployment/auto-deploy-eventmesh-dashboard.sh
+cd eventmesh-dashboard/deployment/
 ```
 
 Edit credentials:
 
 ```
-cp deployment/.env.example deployment/.env
-vim deployment/.env
+cp .env.example .env
+vim .env
 ```
 
 Add task to crontab:
@@ -23,5 +22,5 @@ crontab -e
 ```
 
 ```
-0 * * * * ~/service/eventmesh-dashboard/deployment/auto-deploy-eventmesh-dashboard.sh
+0 * * * * bash ~/service/eventmesh-dashboard/deployment/auto-deploy-eventmesh-dashboard.sh
 ```
