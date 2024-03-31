@@ -1,6 +1,15 @@
 import React from 'react'
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material'
 import AppRoutes from './routes/Routes'
+import GlobalStyles from '@mui/material/GlobalStyles'
+
+const inputGlobalStyles = (
+  <GlobalStyles
+    styles={{
+      backgroundColor: '#f9fafb'
+    }}
+  />
+)
 
 function App() {
   const theme = React.useMemo(
@@ -8,12 +17,14 @@ function App() {
       createTheme({
         palette: {
           primary: {
-            main: '#1f95fc'
-          }
+            main: '#43497a'
+          },
+          background: {}
         },
         typography: {
-          fontSize: 14
-        }
+          fontSize: 12
+        },
+        
       }),
     []
   ) // [prefersDarkMode]
@@ -21,6 +32,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      {inputGlobalStyles}
       <AppRoutes />
     </ThemeProvider>
   )
