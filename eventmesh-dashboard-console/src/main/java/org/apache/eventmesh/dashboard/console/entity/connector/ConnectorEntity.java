@@ -17,9 +17,9 @@
 
 package org.apache.eventmesh.dashboard.console.entity.connector;
 
+import org.apache.eventmesh.dashboard.common.enums.KubernetesPodStatus;
+import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
-import org.apache.eventmesh.dashboard.console.enums.KubernetesPodStatus;
-import org.apache.eventmesh.dashboard.console.enums.StatusEnum;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -34,9 +34,6 @@ public class ConnectorEntity extends BaseEntity {
 
     private static final long serialVersionUID = -8226303660232951326L;
 
-    @Schema(name = "id", description = "primary key")
-    private Long id;
-
     private Long clusterId;
 
     private String name;
@@ -48,7 +45,7 @@ public class ConnectorEntity extends BaseEntity {
     /**
      * 0: not active, 1: active
      *
-     * @see StatusEnum
+     * @see RecordStatus
      */
     @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")
     private Integer status;
@@ -66,11 +63,11 @@ public class ConnectorEntity extends BaseEntity {
      */
     private String configIds;
 
-    public void setStatusEnum(StatusEnum statusEnum) {
-        this.status = statusEnum.getNumber();
+    public void setDataStatus(RecordStatus dataStatus) {
+        this.status = dataStatus.getNumber();
     }
 
-    public void setKubernetesPodStatusEnum(KubernetesPodStatus kubernetesPodStatusEnum) {
-        this.podState = kubernetesPodStatusEnum.getNumber();
+    public void setKubernetesPodDataStatus(KubernetesPodStatus kubernetesPodDataStatus) {
+        this.podState = kubernetesPodDataStatus.getNumber();
     }
 }

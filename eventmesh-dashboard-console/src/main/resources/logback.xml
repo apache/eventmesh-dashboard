@@ -19,25 +19,20 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder charset="UTF-8">
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %p %t - %m%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %magenta(%-5level) %green(%logger{60}) - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <appender name="FILE"
-        class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${user.home}/logs/eventmesh-dashboard.log</file>
-        <append>true</append>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${user.home}/logs/eventmesh-dashboard-%d{yyyy-MM-dd}.%i.log
-            </fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy
-                class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>104857600</maxFileSize>
+            <fileNamePattern>${user.home}/logs/eventmesh-dashboard/eventmesh-dashboard-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10485760</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
             <MaxHistory>10</MaxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %p %t - %m%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{60} - %msg%n</pattern>
             <charset class="java.nio.charset.Charset">UTF-8</charset>
         </encoder>
     </appender>

@@ -83,15 +83,15 @@ class ConnectionMapperTest {
 
     @Test
     public void testInsert() {
-        ConnectionEntity connectionEntity = new ConnectionEntity(1L, 1L, "connector", 1L, "connector", 2L, 1L, 0, "topic", 3L, null, "description");
+        ConnectionEntity connectionEntity = new ConnectionEntity(1L, "connector", 1L, "connector", 2L, 1L, 0, "topic", 3L, null, "description");
         connectionMapper.insert(connectionEntity);
         assertEquals(7, connectionMapper.selectAll().size());
     }
 
     @Test
     public void testBatchInsert() {
-        ConnectionEntity connectionEntity1 = new ConnectionEntity(1L, 1L, "connector", 1L, "connector", 2L, 1L, 0, "topic", 3L, null, "description");
-        ConnectionEntity connectionEntity2 = new ConnectionEntity(1L, 1L, "connector", 1L, "connector", 2L, 1L, 0, "topic", 3L, null, "description");
+        ConnectionEntity connectionEntity1 = new ConnectionEntity(1L, "connector", 1L, "connector", 2L, 1L, 0, "topic", 3L, null, "description");
+        ConnectionEntity connectionEntity2 = new ConnectionEntity(1L, "connector", 1L, "connector", 2L, 1L, 0, "topic", 3L, null, "description");
         connectionMapper.batchInsert(Arrays.asList(connectionEntity1, connectionEntity2));
         assertEquals(8, connectionMapper.selectAll().size());
     }

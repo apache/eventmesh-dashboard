@@ -28,6 +28,10 @@ import java.util.List;
 
 public interface GroupService {
 
+    List<GroupEntity> selectAll();
+
+    void batchInsert(List<GroupEntity> groupEntities);
+
     List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
 
     GroupEntity addGroup(GroupEntity groupEntity);

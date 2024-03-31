@@ -22,10 +22,15 @@ import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity
 import java.util.List;
 
 /**
- * Service providing data of connections.
+ * Service providing ConnectionEntity data.
  */
 public interface ConnectionDataService {
+
+    Integer selectConnectionNumByCluster(Long clusterId);
+
     List<ConnectionEntity> getAllConnections();
+
+    List<ConnectionEntity> getAllConnectionsByClusterId(Long clusterId);
 
     void replaceAllConnections(List<ConnectionEntity> connectionEntityList);
 }

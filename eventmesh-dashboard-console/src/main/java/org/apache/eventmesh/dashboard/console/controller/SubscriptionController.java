@@ -69,5 +69,4 @@ public class SubscriptionController {
         @RequestParam(name = "group", defaultValue = "") String group) {
         return Result.success(subscriptionCore.retrieveConfigs(page, size, dataId, group));
     }
-
 }

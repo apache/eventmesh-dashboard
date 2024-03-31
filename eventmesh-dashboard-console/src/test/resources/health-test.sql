@@ -17,10 +17,10 @@
 DELETE FROM `eventmesh_dashboard_test`.health_check_result WHERE TRUE;
 ALTER TABLE `eventmesh_dashboard_test`.health_check_result AUTO_INCREMENT = 1;
 
-insert into `eventmesh_dashboard_test`.health_check_result (id, type, type_id, cluster_id, status, result_desc, create_time, update_time)
-values  (1, 1, 1, 1, 0, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
-    (2, 2, 2, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
-    (3, 3, 3, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
-    (4, 4, 4, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
-    (5, 1, 2, 1, 1, '', '2024-02-04 18:56:50', '2024-02-02 19:33:13'),
-    (6, 4, 2, 2, 0, '', '2024-02-04 18:56:50', '2024-02-02 19:33:13');
+insert into `eventmesh_dashboard_test`.health_check_result (id, type, type_id, cluster_id, state, result_desc, create_time, update_time)
+values (1, 1, 1, 1, 0, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
+       (2, 2, 2, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
+       (3, 3, 3, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
+       (4, 4, 4, 1, 1, '', '2024-02-02 18:56:50', '2024-02-02 18:56:50'),
+       (5, 1, 2, 1, 1, '', '2024-02-04 18:56:50', '2024-02-02 19:33:13'),
+       (6, 4, 2, 2, 0, '', '2024-02-04 18:56:50', '2024-02-02 19:33:13');

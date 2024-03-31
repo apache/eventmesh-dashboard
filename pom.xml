@@ -74,13 +74,15 @@
     <url>https://github.com/apache/eventmesh-dashboard/issues</url>
   </issueManagement>
 
-  <properties>
-    <maven.compiler.source>8</maven.compiler.source>
-    <maven.compiler.target>8</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring-boot.version>2.7.6</spring-boot.version>
-    <mybatis-spring-boot.version>2.3.2</mybatis-spring-boot.version>
-  </properties>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-boot.version>2.7.6</spring-boot.version>
+        <mybatis-spring-boot.version>2.3.2</mybatis-spring-boot.version>
+        <nacos.version>2.1.2</nacos.version>
+        <rocketmq.version>4.9.8</rocketmq.version>
+    </properties>
 
   <modules>
     <module>eventmesh-dashboard-console</module>
@@ -103,11 +105,18 @@
         <groupId>org.mybatis.spring.boot</groupId>
         <artifactId>mybatis-spring-boot-starter</artifactId>
         <version>${mybatis-spring-boot.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-to-slf4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.mybatis.spring.boot</groupId>
         <artifactId>mybatis-spring-boot-starter-test</artifactId>
         <version>${mybatis-spring-boot.version}</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -134,17 +143,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.2.2</version>
-        <configuration>
-          <excludes>
-            <exclude>**/org/apache/eventmesh/dashboard/console/integration/**/*.java</exclude>
-          </excludes>
-        </configuration>
       </plugin>
     </plugins>
   </build>

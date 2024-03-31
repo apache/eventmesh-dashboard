@@ -17,9 +17,14 @@
 
 package org.apache.eventmesh.dashboard.console.service.connector;
 
+import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
+
+import java.util.List;
+
 /**
- * Service providing data of connectors.
+ * Service providing ConnectorEntity data.
  */
 public interface ConnectorDataService {
 
+    List<ConnectorEntity> selectConnectorByCluster(Long clusterId);
 }

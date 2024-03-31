@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.spring.support;
 
-import org.apache.eventmesh.dashboard.console.health.HealthService;
+import org.apache.eventmesh.dashboard.console.function.health.HealthService;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import javax.annotation.PostConstruct;

@@ -25,9 +25,16 @@ import java.util.List;
  * Service about Topic
  */
 public interface TopicService {
+
+    void batchInsert(List<TopicEntity> topicEntities);
+
+    List<TopicEntity> selectAll();
+
+    Integer selectTopicNumByCluster(Long clusterId);
+
     List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
-    void addTopic_plus(TopicEntity topicEntity);
+    void addTopic(TopicEntity topicEntity);
 
     void updateTopic(TopicEntity topicEntity);
 
@@ -38,4 +45,6 @@ public interface TopicService {
     TopicEntity selectTopicByUnique(TopicEntity topicEntity);
 
     void deleteTopic(TopicEntity topicEntity);
+
+    List<TopicEntity> selectTopiByCluster(Long clusterId);
 }

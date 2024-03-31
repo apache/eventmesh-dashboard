@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.mapper.meta;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.meta.MetaEntity;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ class MetaMapperTest {
     public void testSelectByClusterId() {
         MetaEntity metaEntity = new MetaEntity();
         metaEntity.setClusterId(1L);
-        metaEntity = metaMapper.selectByClusterId(metaEntity);
+        metaEntity = metaMapper.selectByClusterId(metaEntity).get(0);
+        Assertions.assertEquals("nacos", metaEntity.getType());
     }
 }
