@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-INSERT INTO eventmesh_dashboard_test.acl (id, cluster_id, principal, operation, permission_type, host, resource_type,
+INSERT INTO eventmesh_dashboard_test.acl (id, cluster_id, pattern, operation, permission_type, host, resource_type,
                                           resource_name, pattern_type, create_time, update_time)
 VALUES (3, 0, '', 0, '0', '', '0', 'source_name', 1, '2024-03-27 13:22:36', '2024-03-27 14:12:07');
-INSERT INTO eventmesh_dashboard_test.acl (id, cluster_id, principal, operation, permission_type, host, resource_type,
+INSERT INTO eventmesh_dashboard_test.acl (id, cluster_id, pattern, operation, permission_type, host, resource_type,
                                           resource_name, pattern_type, create_time, update_time)
 VALUES (4, 0, '', 0, '0', '', '0', 'source_name1', 1, '2024-03-27 13:22:36', '2024-03-27 14:12:07');

@@ -18,6 +18,7 @@ bin/
 *.iws
 *.iml
 *.ipr
+*.http
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/

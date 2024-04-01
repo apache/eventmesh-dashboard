@@ -33,7 +33,7 @@ public class AclEntity extends BaseEntity {
     private static final long serialVersionUID = 6057071983428111947L;
     private Long id;
     private Long clusterId;
-    private String principal;
+    private String pattern;
     private Integer operation;
     private Integer permissionType;
     private String host;

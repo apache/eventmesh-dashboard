@@ -35,7 +35,7 @@ public class AclMapperTest {
             AclEntity aclEntity = new AclEntity();
 
             aclEntity.setClusterId(1L);
-            aclEntity.setPrincipal("principal1");
+            aclEntity.setPattern("pattern1");
             aclEntity.setOperation(0);
             aclEntity.setPermissionType(1);
             aclEntity.setHost("127.0.0.1");
@@ -47,6 +47,7 @@ public class AclMapperTest {
 
         aclMapper.batchInsert(aclEntities);
         assertEquals(3, aclEntities.size());
+        // aclEntities.size()返回的是新加的size，是3，而不是acl表中总的size，是5
     }
 
     @Test
@@ -54,7 +55,7 @@ public class AclMapperTest {
 //        AclEntity aclEntity = new AclEntity("", 0, "0", "", "0", "source_name", 1);
         AclEntity aclEntity = new AclEntity();
         aclEntity.setClusterId(0L);
-        aclEntity.setPrincipal("pr");
+        aclEntity.setPattern("pattern1");
         aclEntity.setOperation(0);
         aclEntity.setPermissionType(1);
         aclEntity.setHost("host");
@@ -77,6 +78,7 @@ public class AclMapperTest {
         aclMapper.deleteById(aclEntity);
         assertEquals(4, aclEntity.getId());
         // 删除的就是id=4这条数据
+        // 通过改status为0，实现删除
     }
 
     @Test

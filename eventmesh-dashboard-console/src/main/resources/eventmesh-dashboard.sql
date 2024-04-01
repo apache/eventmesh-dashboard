@@ -171,7 +171,7 @@ DROP TABLE IF EXISTS `service_user`;
 CREATE TABLE `service_user`
 (
     `id`           bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `service_type` int(255) NOT NULL DEFAULT 0 COMMENT '区分不同软件',
+    `instance_type` int(255) NOT NULL DEFAULT 0 COMMENT '区分不同软件',
     `password`     varchar(100)                                     NOT NULL DEFAULT '' COMMENT '密码',
     `cluster_id`   bigint(20) NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
     `name`         varchar(192) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '名称',
@@ -189,7 +189,7 @@ CREATE TABLE `acl`
 (
     `id`              bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
     `cluster_id`      bigint(20) NOT NULL DEFAULT '0' COMMENT '集群id',
-    `principal`       varchar(192) NOT NULL DEFAULT '' COMMENT 'Service User Pattern',
+    `pattern`       varchar(192) NOT NULL DEFAULT '' COMMENT 'Service User Pattern',
     `operation`       int(11) NOT NULL DEFAULT '0' COMMENT '操作,',
     `permission_type` int(11) NOT NULL DEFAULT '0' COMMENT '权限类型(0:未知，1:任意，2:拒绝，3:允许)',
     `host`            varchar(192) NOT NULL DEFAULT '' COMMENT '',
@@ -200,7 +200,7 @@ CREATE TABLE `acl`
     `create_time`     timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`     timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    INDEX             `idx_cluster_phy_id_principal_res_name` (`cluster_id`, `principal`, `resource_name`)
+    INDEX             `idx_cluster_phy_id_principal_res_name` (`cluster_id`, `pattern`, `resource_name`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4,
   DEFAULT COLLATE = utf8mb4_bin COMMENT ='ACL信息表';
