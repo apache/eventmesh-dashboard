@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.serviceuser;
+package org.apache.eventmesh.dashboard.console.entity.instanceuser;
 
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = "status")
-public class ServiceUserEntity extends BaseEntity {
+public class InstanceUserEntity extends BaseEntity {
 
     private Integer instanceType;
 

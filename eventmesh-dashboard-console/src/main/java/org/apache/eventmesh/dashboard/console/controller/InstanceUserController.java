@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.controller;
 
-import org.apache.eventmesh.dashboard.console.entity.serviceuser.ServiceUserEntity;
-import org.apache.eventmesh.dashboard.console.service.serviceuser.ServiceUserService;
+import org.apache.eventmesh.dashboard.console.entity.instanceuser.InstanceUserEntity;
+import org.apache.eventmesh.dashboard.console.service.instanceuser.InstanceUserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,25 +27,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/serviceUser")
-public class ServiceUserController {
+@RequestMapping("/instanceUser")
+public class InstanceUserController {
 
     @Autowired
-    private ServiceUserService serviceUserService;
+    private InstanceUserService instanceUserService;
 
-    @PostMapping("/insertServiceUser")
-    public void insertServiceUser(@RequestBody ServiceUserEntity serviceUserEntity) {
-        this.serviceUserService.insert(serviceUserEntity);
+    @PostMapping("/insertInstanceUser")
+    public void insertInstanceUser(@RequestBody InstanceUserEntity instanceUserEntity) {
+        this.instanceUserService.insert(instanceUserEntity);
     }
 
-    @PostMapping("/deleteServiceUserByCluster")
-    public void deleteServiceUserByCluster(@RequestBody ServiceUserEntity serviceUserEntity) {
-        this.serviceUserService.deleteServiceUserByCluster(serviceUserEntity);
+    @PostMapping("/deleteInstanceUserByCluster")
+    public void deleteInstanceUserByCluster(@RequestBody InstanceUserEntity instanceUserEntity) {
+        this.instanceUserService.deleteInstanceUserByCluster(instanceUserEntity);
     }
 
     @PostMapping("/updateNameById")
-    public void updateNameById(@RequestBody ServiceUserEntity serviceUserEntity) {
-        this.serviceUserService.updatePasswordById(serviceUserEntity);
+    public void updateNameById(@RequestBody InstanceUserEntity instanceUserEntity) {
+        this.instanceUserService.updatePasswordById(instanceUserEntity);
     }
 
     @PostMapping("/selectAll")
@@ -54,13 +54,13 @@ public class ServiceUserController {
     }
 
     @PostMapping("/selectById")
-    public void selectById(@RequestBody ServiceUserEntity serviceUserEntity) {
-        this.serviceUserService.selectById(serviceUserEntity);
+    public void selectById(@RequestBody InstanceUserEntity instanceUserEntity) {
+        this.instanceUserService.selectById(instanceUserEntity);
     }
 
     @PostMapping("/selectByName")
-    public void selectByName(@RequestBody ServiceUserEntity serviceUserEntity) {
-        this.serviceUserService.selectByName(serviceUserEntity);
+    public void selectByName(@RequestBody InstanceUserEntity instanceUserEntity) {
+        this.instanceUserService.selectByName(instanceUserEntity);
     }
 
 }

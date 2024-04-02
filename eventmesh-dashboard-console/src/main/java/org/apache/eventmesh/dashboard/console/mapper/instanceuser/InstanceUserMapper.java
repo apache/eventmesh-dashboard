@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.mapper.serviceuser;
+package org.apache.eventmesh.dashboard.console.mapper.instanceuser;
 
-import org.apache.eventmesh.dashboard.console.entity.serviceuser.ServiceUserEntity;
+import org.apache.eventmesh.dashboard.console.entity.instanceuser.InstanceUserEntity;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,29 +28,29 @@ import org.apache.ibatis.annotations.Update;
 import java.util.List;
 
 /**
- * Mybatis Mapper for the table of serviceuser.
+ * Mybatis Mapper for the table of instanceuser.
  */
 @Mapper
-public interface ServiceUserMapper {
+public interface InstanceUserMapper {
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO service_user (id, instance_type, password, cluster_id, name, token, status) "
         + "VALUES (#{id}, #{instanceType}, #{password}, #{clusterId}, #{name}, #{token},1)")
-    void insert(ServiceUserEntity serviceuserEntity);
+    void insert(InstanceUserEntity instanceuserEntity);
 
     @Update("UPDATE service_user SET status=0 WHERE cluster_id=#{clusterId}")
-    void deleteServiceUserByCluster(ServiceUserEntity serviceuserEntity);
+    void deleteInstanceUserByCluster(InstanceUserEntity instanceuserEntity);
 
     @Update("UPDATE service_user SET password=#{password} WHERE id=#{id}")
-    void updatePasswordById(ServiceUserEntity serviceuserentity);
+    void updatePasswordById(InstanceUserEntity instanceuserentity);
 
     @Select("SELECT * FROM service_user WHERE status=1")
-    List<ServiceUserEntity> selectAll();
+    List<InstanceUserEntity> selectAll();
 
     @Select("SELECT * FROM service_user WHERE id=#{id} AND status=1")
-    ServiceUserEntity selectById(ServiceUserEntity serviceuserEntity);
+    InstanceUserEntity selectById(InstanceUserEntity instanceuserEntity);
 
     @Select("SELECT * FROM service_user WHERE name=#{name} AND status=1")
-    List<ServiceUserEntity> selectByName(ServiceUserEntity serviceuserEntity);
+    List<InstanceUserEntity> selectByName(InstanceUserEntity instanceuserEntity);
 
 }

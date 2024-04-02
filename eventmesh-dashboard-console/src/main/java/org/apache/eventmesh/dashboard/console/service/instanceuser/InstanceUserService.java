@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.serviceuser;
+package org.apache.eventmesh.dashboard.console.service.instanceuser;
 
-import org.apache.eventmesh.dashboard.console.entity.serviceuser.ServiceUserEntity;
+import org.apache.eventmesh.dashboard.console.entity.instanceuser.InstanceUserEntity;
 
 import java.util.List;
 
 /**
- * ServiceUser data service
+ * InstanceUser data service
  */
-public interface ServiceUserService {
+public interface InstanceUserService {
 
-    void insert(ServiceUserEntity serviceuserEntity);
+    void insert(InstanceUserEntity instanceuserEntity);
 
-    void deleteServiceUserByCluster(ServiceUserEntity serviceuserEntity);
+    void deleteInstanceUserByCluster(InstanceUserEntity instanceuserEntity);
 
-    void updatePasswordById(ServiceUserEntity serviceuserentity);
+    void updatePasswordById(InstanceUserEntity instanceuserentity);
 
-    List<ServiceUserEntity> selectAll();
+    List<InstanceUserEntity> selectAll();
 
-    ServiceUserEntity selectById(ServiceUserEntity serviceuserEntity);
+    InstanceUserEntity selectById(InstanceUserEntity instanceuserEntity);
 
-    List<ServiceUserEntity> selectByName(ServiceUserEntity serviceuserEntity);
+    List<InstanceUserEntity> selectByName(InstanceUserEntity instanceuserEntity);
 
 }
