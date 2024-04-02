@@ -15,11 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.model.remoting.user;
+package org.apache.eventmesh.dashboard.console.service.instanceuser;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
+import org.apache.eventmesh.dashboard.console.entity.instanceuser.InstanceUserEntity;
 
-public class CreateUserRequest {
+import java.util.List;
 
-    private InstanceUserMetadata instanceUserMetadata;
+/**
+ * InstanceUser data service
+ */
+public interface InstanceUserService {
+
+    void insert(InstanceUserEntity instanceuserEntity);
+
+    void deleteInstanceUserByCluster(InstanceUserEntity instanceuserEntity);
+
+    void updatePasswordById(InstanceUserEntity instanceuserentity);
+
+    List<InstanceUserEntity> selectAll();
+
+    InstanceUserEntity selectById(InstanceUserEntity instanceuserEntity);
+
+    List<InstanceUserEntity> selectByName(InstanceUserEntity instanceuserEntity);
+
 }

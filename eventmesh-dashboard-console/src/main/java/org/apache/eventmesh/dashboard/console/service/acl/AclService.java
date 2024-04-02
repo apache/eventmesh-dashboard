@@ -15,11 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.model.remoting.user;
+package org.apache.eventmesh.dashboard.console.service.acl;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
+import org.apache.eventmesh.dashboard.console.entity.acl.AclEntity;
 
-public class CreateUserRequest {
+import java.util.List;
 
-    private InstanceUserMetadata instanceUserMetadata;
+/**
+ * Service providing data of acl.
+ */
+public interface AclService {
+
+    void insert(AclEntity aclEntity);
+
+    void deleteAclById(AclEntity aclEntity);
+
+    void updateResourceTypeById(AclEntity aclEntity);
+
+    List<AclEntity> selectAll();
+
+    AclEntity selectById(AclEntity aclEntity);
+
 }

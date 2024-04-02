@@ -15,11 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.model.remoting.user;
+package org.apache.eventmesh.dashboard.console.entity.instanceuser;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
-public class CreateUserRequest {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-    private InstanceUserMetadata instanceUserMetadata;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = "status")
+public class InstanceUserEntity extends BaseEntity {
+
+    private Integer instanceType;
+
+    private String password;
+
+    private Long clusterId;
+
+    private String name;
+
+    private String token;
+
+    private Integer status;
+
 }

@@ -14,21 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+DELETE FROM `eventmesh_dashboard_test`.instance_user WHERE TRUE;
+ALTER TABLE `eventmesh_dashboard_test`.instance_user AUTO_INCREMENT = 1;
 
-package org.apache.eventmesh.dashboard.common.model.metadata;
+INSERT INTO eventmesh_dashboard_test.instance_user (instance_type, password, cluster_id, name, token, status)
+VALUES (1, 'pwd01', 1, 'name01', 'token01', 1);
 
-import org.apache.eventmesh.dashboard.common.enums.StoreType;
+INSERT INTO eventmesh_dashboard_test.instance_user (instance_type, password, cluster_id, name, token, status)
+VALUES (2, 'pwd02', 2, 'name02', 'token02', 1);
 
-import lombok.Data;
+INSERT INTO eventmesh_dashboard_test.instance_user (instance_type, password, cluster_id, name, token, status)
+VALUES (3, 'pwd03', 3, 'name03', 'token03', 1);
 
-/**
- * Service users are users that are used by components like mysql, kafka, etc.
- */
-@Data
-public class ServiceUserMetadata {
-
-    private String userName;
-    //service users are only store users by now
-    private StoreType serviceType;
-    private String password;
-}

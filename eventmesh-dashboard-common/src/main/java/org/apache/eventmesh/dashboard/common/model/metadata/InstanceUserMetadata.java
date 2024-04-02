@@ -15,11 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.model.remoting.user;
+package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
+import org.apache.eventmesh.dashboard.common.enums.StoreType;
 
-public class CreateUserRequest {
+import lombok.Data;
 
-    private InstanceUserMetadata instanceUserMetadata;
+/**
+ * Service users are users that are used by components like mysql, kafka, etc.
+ */
+@Data
+public class InstanceUserMetadata {
+
+    private String userName;
+    //service users are only store users by now
+    private StoreType serviceType;
+    private String password;
 }

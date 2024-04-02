@@ -15,11 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.model.remoting.user;
+package org.apache.eventmesh.dashboard.console.entity.acl;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
-public class CreateUserRequest {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-    private InstanceUserMetadata instanceUserMetadata;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = "status")
+public class AclEntity extends BaseEntity {
+
+    private static final long serialVersionUID = 6057071983428111947L;
+    private Long id;
+    private Long clusterId;
+    private String pattern;
+    private Integer operation;
+    private Integer permissionType;
+    private String host;
+    private Integer resourceType;
+    private String resourceName;
+    private Integer patternType;
+    private Integer status;
+
 }
