@@ -41,7 +41,7 @@ class ServiceUserMapperTest {
     @Test
     public void testSelectByName() {
         ServiceUserEntity serviceUserEntity1 = new ServiceUserEntity();
-        serviceUserEntity1.setName("name1");
+        serviceUserEntity1.setName("name01");
         List<ServiceUserEntity> serviceUserEntities = serviceUserMapper.selectByName(serviceUserEntity1);
         assertEquals(1, serviceUserEntities.size());
     }
@@ -51,7 +51,8 @@ class ServiceUserMapperTest {
         ServiceUserEntity serviceUserEntity = new ServiceUserEntity(0, "pwd", 13L, "name4", "11", 1);
         serviceUserMapper.insert(serviceUserEntity);
         assertNotNull(serviceUserEntity);
-        assertEquals(6, serviceUserEntity.getId());
+        assertEquals(4, serviceUserEntity.getId());
+        // serviceuser.sql中新加三条数据，这条数据id自增为4
     }
 
     @Test
