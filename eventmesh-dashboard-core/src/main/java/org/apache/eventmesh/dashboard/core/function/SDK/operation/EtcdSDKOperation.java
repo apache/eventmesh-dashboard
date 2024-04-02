@@ -18,18 +18,41 @@
 package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateEtcdConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 
 import java.util.AbstractMap.SimpleEntry;
 
-public class EtcdSDKOperation extends AbstractSDKOperation {
+import io.etcd.jetcd.Client;
+import io.etcd.jetcd.KV;
+import io.etcd.jetcd.common.exception.EtcdException;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class EtcdSDKOperation extends AbstractSDKOperation<KV> {
+
     @Override
-    public SimpleEntry createClient(CreateSDKConfig clientConfig) {
-        return null;
+    public SimpleEntry<String, KV> createClient(CreateSDKConfig clientConfig) {
+        final CreateEtcdConfig etcdConfig = (CreateEtcdConfig) clientConfig;
+        KV kvClient = null;
+        try {
+            final Client client = Client.builder()
+                .endpoints(getSplitEndpoints(etcdConfig))
+                .build();
+            kvClient = client.getKVClient();
+        } catch (EtcdException e) {
+            log.error("create etcd client failed", e);
+        }
+        return new SimpleEntry<>(clientConfig.getUniqueKey(), kvClient);
+    }
+
+    private static String[] getSplitEndpoints(CreateEtcdConfig etcdConfig) {
+        return etcdConfig.getEtcdServerAddress().split(",");
     }
 
     @Override
     public void close(Object client) {
-
+        castClient(client).close();
     }
 }
