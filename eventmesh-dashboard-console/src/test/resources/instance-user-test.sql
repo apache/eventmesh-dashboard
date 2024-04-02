@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-INSERT INTO eventmesh_dashboard_test.service_user (instance_type, password, cluster_id, name, token, status)
+INSERT INTO eventmesh_dashboard_test.instance_user (instance_type, password, cluster_id, name, token, status)
 VALUES (1, 'pwd01', 1, 'name01', 'token01', 1);
 
-INSERT INTO eventmesh_dashboard_test.service_user (instance_type, password, cluster_id, name, token, status)
+INSERT INTO eventmesh_dashboard_test.instance_user (instance_type, password, cluster_id, name, token, status)
 VALUES (2, 'pwd02', 2, 'name02', 'token02', 1);
 
-INSERT INTO eventmesh_dashboard_test.service_user (instance_type, password, cluster_id, name, token, status)
+INSERT INTO eventmesh_dashboard_test.instance_user (instance_type, password, cluster_id, name, token, status)
 VALUES (3, 'pwd03', 3, 'name03', 'token03', 1);
 

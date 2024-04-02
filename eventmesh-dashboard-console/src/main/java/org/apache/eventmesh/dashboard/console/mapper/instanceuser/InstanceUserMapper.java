@@ -34,23 +34,23 @@ import java.util.List;
 public interface InstanceUserMapper {
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("INSERT INTO service_user (id, instance_type, password, cluster_id, name, token, status) "
+    @Insert("INSERT INTO instance_user (id, instance_type, password, cluster_id, name, token, status) "
         + "VALUES (#{id}, #{instanceType}, #{password}, #{clusterId}, #{name}, #{token},1)")
     void insert(InstanceUserEntity instanceuserEntity);
 
-    @Update("UPDATE service_user SET status=0 WHERE cluster_id=#{clusterId}")
+    @Update("UPDATE instance_user SET status=0 WHERE cluster_id=#{clusterId}")
     void deleteInstanceUserByCluster(InstanceUserEntity instanceuserEntity);
 
-    @Update("UPDATE service_user SET password=#{password} WHERE id=#{id}")
+    @Update("UPDATE instance_user SET password=#{password} WHERE id=#{id}")
     void updatePasswordById(InstanceUserEntity instanceuserentity);
 
-    @Select("SELECT * FROM service_user WHERE status=1")
+    @Select("SELECT * FROM instance_user WHERE status=1")
     List<InstanceUserEntity> selectAll();
 
-    @Select("SELECT * FROM service_user WHERE id=#{id} AND status=1")
+    @Select("SELECT * FROM instance_user WHERE id=#{id} AND status=1")
     InstanceUserEntity selectById(InstanceUserEntity instanceuserEntity);
 
-    @Select("SELECT * FROM service_user WHERE name=#{name} AND status=1")
+    @Select("SELECT * FROM instance_user WHERE name=#{name} AND status=1")
     List<InstanceUserEntity> selectByName(InstanceUserEntity instanceuserEntity);
 
 }
