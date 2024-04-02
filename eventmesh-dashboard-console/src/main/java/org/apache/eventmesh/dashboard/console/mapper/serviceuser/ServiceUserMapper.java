@@ -34,8 +34,8 @@ import java.util.List;
 public interface ServiceUserMapper {
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("INSERT INTO service_user (id, service_type, password, cluster_id, name, token, status) "
-        + "VALUES (#{id}, #{serviceType}, #{password}, #{clusterId}, #{name}, #{token},1)")
+    @Insert("INSERT INTO service_user (id, instance_type, password, cluster_id, name, token, status) "
+        + "VALUES (#{id}, #{instanceType}, #{password}, #{clusterId}, #{name}, #{token},1)")
     void insert(ServiceUserEntity serviceuserEntity);
 
     @Update("UPDATE service_user SET status=0 WHERE cluster_id=#{clusterId}")

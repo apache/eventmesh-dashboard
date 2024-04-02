@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true, exclude = "status")
 public class ServiceUserEntity extends BaseEntity {
 
-    private Integer serviceType;
+    private Integer instanceType;
 
     private String password;
 
