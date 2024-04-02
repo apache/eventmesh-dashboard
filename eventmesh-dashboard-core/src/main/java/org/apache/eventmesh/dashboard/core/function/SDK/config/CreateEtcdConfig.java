@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.function.SDK;
+package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-public enum SDKTypeEnum {
+import lombok.Data;
 
-    RUNTIME,
+@Data
+public class CreateEtcdConfig implements CreateSDKConfig{
 
-    STORAGE_ROCKETMQ_REMOTING,
+    private String etcdServerAddress;
 
-    STORAGE_ROCKETMQ_PRODUCER,
-
-    STORAGE_ROCKETMQ_CONSUMER,
-
-    STORAGE_REDIS,
-
-    META_NACOS,
-    META_NACOS_CONFIG,
-
-    META_NACOS_NAMING,
-
-    META_ETCD,
+    @Override
+    public String getUniqueKey() {
+        return etcdServerAddress;
+    }
 }
