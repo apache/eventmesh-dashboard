@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.core.function.SDK.config;
 import lombok.Data;
 
 @Data
-public class CreateEtcdConfig implements CreateSDKConfig{
+public class CreateEtcdConfig implements CreateSDKConfig {
 
     private String etcdServerAddress;
 
