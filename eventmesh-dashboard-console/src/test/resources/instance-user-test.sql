@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+DELETE FROM `eventmesh_dashboard_test`.instance_user WHERE TRUE;
+ALTER TABLE `eventmesh_dashboard_test`.instance_user AUTO_INCREMENT = 1;
 
 INSERT INTO eventmesh_dashboard_test.instance_user (instance_type, password, cluster_id, name, token, status)
 VALUES (1, 'pwd01', 1, 'name01', 'token01', 1);
