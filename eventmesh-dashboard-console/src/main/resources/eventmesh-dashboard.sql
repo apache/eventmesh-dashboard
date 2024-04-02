@@ -167,8 +167,8 @@ create table store
 create index idx_store_id_runtime_id
     on store (store_id, cluster_id, runtime_id);
 
-DROP TABLE IF EXISTS `service_user`;
-CREATE TABLE `service_user`
+DROP TABLE IF EXISTS `instance_user`;
+CREATE TABLE `instance_user`
 (
     `id`           bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
     `instance_type` int(255) NOT NULL DEFAULT 0 COMMENT '区分不同软件',
@@ -180,7 +180,7 @@ CREATE TABLE `service_user`
     `create_time`  timestamp                                        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`  timestamp                                        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Service_User信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Instance_User信息表';
 
 
 
