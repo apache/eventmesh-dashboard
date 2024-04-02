@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.user;
 
 
-import org.apache.eventmesh.dashboard.common.model.metadata.ServiceUserMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
 
 import java.util.List;
 
@@ -27,5 +27,5 @@ import lombok.Data;
 @Data
 public class GetUserResponse {
 
-    private List<ServiceUserMetadata> serviceUserMetadata;
+    private List<InstanceUserMetadata> instanceUserMetadata;
 }

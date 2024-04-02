@@ -25,7 +25,7 @@ import lombok.Data;
  * Service users are users that are used by components like mysql, kafka, etc.
  */
 @Data
-public class ServiceUserMetadata {
+public class InstanceUserMetadata {
 
     private String userName;
     //service users are only store users by now
