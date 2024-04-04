@@ -55,7 +55,8 @@ public class SyncRuntimeConfigTask {
 
             ConfigEntity configEntity = this.getConfigEntityBelongInstance(clusterId, runtimeEntity.getId());
 
-            ConcurrentHashMap<String, String> runtimeConfigMapFromDb = this.configListToMap(configService.selectByInstanceId(configEntity));
+            ConcurrentHashMap<String, String> runtimeConfigMapFromDb =
+                this.configListToMap(configService.selectByInstanceIdAndType(configEntity.getInstanceId(), configEntity.getInstanceType()));
 
             ConcurrentHashMap<String, String> updateConfigMap = new ConcurrentHashMap<>();
 

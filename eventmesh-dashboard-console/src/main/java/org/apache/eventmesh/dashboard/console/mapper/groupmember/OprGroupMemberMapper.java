@@ -36,6 +36,12 @@ import java.util.List;
 @Mapper
 public interface OprGroupMemberMapper {
 
+    @Select("SELECT topic_name FROM group_member WHERE cluster_id=#{clusterId} AND group_name=#{groupName}")
+    List<String> selectTopicsByGroupNameAndClusterId(GroupMemberEntity groupMemberEntity);
+
+    @Select("SELECT DISTINCT (group_name) FROM group_member WHERE cluster_id=#{clusterId} AND topic_name=#{topicName}")
+    List<String> selectGroupNameByTopicName(GroupMemberEntity groupMemberEntity);
+
     @Select("SELECT * FROM group_member WHERE status=1")
     List<GroupMemberEntity> selectAll();
 

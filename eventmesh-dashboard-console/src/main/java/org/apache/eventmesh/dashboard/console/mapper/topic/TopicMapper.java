@@ -24,6 +24,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -40,15 +41,15 @@ public interface TopicMapper {
 
     @Insert({
         "<script>",
-        "INSERT INTO topic (cluster_id, topic_name, runtime_id, storage_id, retention_ms, type, description) VALUES ",
+        "INSERT INTO topic (cluster_id, topic_name, storage_id, retention_ms, type, description, create_progress) VALUES ",
         "   <foreach collection='list' item='c' index='index' separator=','>",
-        "       (#{c.clusterId},#{c.topicName},#{c.runtimeId},#{c.storageId},#{c.retentionMs},#{c.type},#{c.description})",
+        "       (#{c.clusterId},#{c.topicName},#{c.storageId},#{c.retentionMs},#{c.type},#{c.description},#{c.createProgress})",
         "   </foreach>",
         "</script>"})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void batchInsert(List<TopicEntity> topicEntities);
 
-    @Select("SELECT count(*) FROM topic WHERE cluster_id=#{clusterId}")
+    @Select("SELECT count(*) FROM topic WHERE cluster_id=#{clusterId} AND status=1")
     Integer selectTopicNumByCluster(TopicEntity topicEntity);
 
     @Select({
@@ -66,14 +67,32 @@ public interface TopicMapper {
         "</script>"})
     List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
-    @Insert("INSERT INTO topic (cluster_id, topic_name, runtime_id, storage_id, retention_ms, type, description) "
-        + "VALUE (#{clusterId},#{topicName},#{runtimeId},#{storageId},#{retentionMs},#{type},#{description})"
+    @Insert("INSERT INTO topic (cluster_id, topic_name, storage_id, retention_ms, type, description, create_progress) "
+        + "VALUE (#{clusterId},#{topicName},#{storageId},#{retentionMs},#{type},#{description},#{createProgress})"
         + "ON DUPLICATE KEY UPDATE status = 1")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addTopic(TopicEntity topicEntity);
 
+    @Select("SELECT * FROM topic WHERE status=1 AND cluster_id=#{clusterId}")
+    List<TopicEntity> selectAllByClusterId(TopicEntity topicEntity);
+
+    @Select({
+        "<script>",
+        "SELECT * FROM topic",
+        "<where>",
+        "cluster_id =#{topicEntity.clusterId} And status=1",
+        "<if test='topicEntity.topicName!=null'>",
+        "and topic_name like CONCAT('%',#{topicEntity.topicName},'%')",
+        "</if>",
+        "</where>",
+        "</script>"})
+    List<TopicEntity> getTopicsToFrontByClusterId(@Param("topicEntity") TopicEntity topicEntity);
+
     @Update("UPDATE topic SET type=#{type},description=#{description} WHERE id=#{id}")
     void updateTopic(TopicEntity topicEntity);
+
+    @Update("UPDATE topic SET create_progress=#{createProgress} WHERE id=#{id}")
+    void updateTopicCreateProgress(TopicEntity topicEntity);
 
     @Delete("UPDATE `topic` SET status=0 WHERE id=#{id}")
     void deleteTopic(TopicEntity topicEntity);

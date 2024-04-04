@@ -19,7 +19,6 @@ package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -37,12 +36,15 @@ public interface ClusterMapper {
     @Select("SELECT * FROM cluster WHERE status=1")
     List<ClusterEntity> selectAllCluster();
 
+    @Select("SELECT * FROM cluster WHERE status=1 LIMIT #{rowIndex},#{pageNum}")
+    List<ClusterEntity> selectAllClusterToFront(Integer rowIndex, Integer pageNum);
+
     @Insert({
         "<script>",
-        "   INSERT INTO cluster (name, register_name_list, bootstrap_servers, eventmesh_version, client_properties, jmx_properties,",
+        "   INSERT INTO cluster (name, registry_name_list, bootstrap_servers, eventmesh_version, client_properties, jmx_properties,",
         "reg_properties, description, auth_type,run_state, store_type) VALUES ",
         "   <foreach collection='list' item='c' index='index' separator=','>",
-        "   (#{c.name}, #{c.registerNameList}, #{c.bootstrapServers}, #{c.eventmeshVersion}, #{c.clientProperties}, #{c.jmxProperties}, ",
+        "   (#{c.name}, #{c.registryNameList}, #{c.bootstrapServers}, #{c.eventmeshVersion}, #{c.clientProperties}, #{c.jmxProperties}, ",
         "   #{c.regProperties}, #{c.description}, #{c.authType}, #{c.runState},#{c.storeType})",
         "   </foreach>",
         "</script>"})
@@ -52,20 +54,20 @@ public interface ClusterMapper {
     @Select("SELECT * FROM cluster WHERE id=#{id} AND status=1")
     ClusterEntity selectClusterById(ClusterEntity cluster);
 
-    @Insert("INSERT INTO cluster (name, register_name_list, bootstrap_servers, eventmesh_version, client_properties, "
-        + "jmx_properties, reg_properties, description, auth_type, run_state,store_type) VALUES (#{name},#{registerNameList},"
+    @Insert("INSERT INTO cluster (name, registry_name_list, bootstrap_servers, eventmesh_version, client_properties, "
+        + "jmx_properties, reg_properties, description, auth_type, run_state,store_type) VALUES (#{name},#{registryNameList},"
         + "#{bootstrapServers},#{eventmeshVersion},#{clientProperties},#{jmxProperties},#{regProperties},#{description},#{authType},"
-        + "#{runState},#{storeType})")
+        + "#{runState},#{storeType})"
+        + "ON DUPLICATE KEY UPDATE status = 1")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addCluster(ClusterEntity cluster);
 
     @Update("UPDATE cluster SET name =#{name},reg_properties=#{regProperties},bootstrap_servers=#{bootstrapServers},"
         + "eventmesh_version=#{eventmeshVersion},client_properties=#{clientProperties},jmx_properties=#{jmxProperties},"
         + "reg_properties=#{regProperties},description=#{description},auth_type=#{authType},run_state=#{runState} ,"
-        + "register_name_list=#{registerNameList} WHERE id=#{id}")
+        + "registry_name_list=#{registryNameList} WHERE id=#{id}")
     void updateClusterById(ClusterEntity cluster);
 
-    @Delete("UPDATE cluster SET status=0 WHERE id=#{id}")
-    void deleteClusterById(ClusterEntity clusterEntity);
-
+    @Update("UPDATE cluster SET status=0 WHERE id=#{id}")
+    void deActive(ClusterEntity clusterEntity);
 }

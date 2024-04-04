@@ -17,36 +17,73 @@
 
 package org.apache.eventmesh.dashboard.console.controller;
 
-import org.apache.eventmesh.dashboard.service.meta.ConnectionCore;
+import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.connection.AddConnectionDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.connection.CreateConnectionDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.connection.GetConnectionListDTO;
+import org.apache.eventmesh.dashboard.console.modle.vo.connection.ConnectionListVO;
+import org.apache.eventmesh.dashboard.console.service.connection.ConnectionDataService;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @RestController
 public class ConnectionController {
 
-    /**
-     * TODO expose implement by FunctionManager
-     */
-    ConnectionCore connectionCore;
+    @Autowired
+    private ConnectionDataService connectionDataService;
 
     /**
-     * Query Connection List
-     * <p>
-     * The subscription information of SourceConnector and SinkConnector reported by EventMesh Runtime to the meta,
-     * containing the configuration of each connection.
+     * 'type' only can be Sink or Source
      *
-     * @param page the page number
-     * @param size the page size
-     * @return A paged list of connection configuration and total number of pages
+     * @param type
+     * @return
      */
-    @GetMapping("/connection")
-    public String listConnections(@RequestParam("page") Integer page, @RequestParam("size") String size) {
-        return null;
+    @GetMapping("/cluster/connection/getConnectorBusinessType")
+    public List<String> getConnectorBusinessType(String type) {
+        return connectionDataService.getConnectorBusinessType(type);
     }
+
+    @GetMapping("/cluster/connection/getConnectorConfigs")
+    public List<ConfigEntity> getConnectorConfigsByClassAndVersion(String version, String classType) {
+        return connectionDataService.getConnectorConfigsByClassAndVersion(classType, version);
+    }
+
+
+    @GetMapping("/cluster/connection/showCreateConnectionMessage")
+    public AddConnectionDTO showCreateConnectionMessage() {
+        return new AddConnectionDTO();
+    }
+
+
+    @PostMapping("/cluster/connection/createConnection")
+    public String createConnection(@Validated @RequestBody CreateConnectionDTO createConnectionDTO) {
+        try {
+            connectionDataService.createConnection(createConnectionDTO);
+
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return "success";
+    }
+
+
+    @PostMapping("/cluster/connection/getConnectionList")
+    public List<ConnectionListVO> getConnectionList(@Validated @RequestBody GetConnectionListDTO getConnectionListDTO) {
+        return connectionDataService.getConnectionToFrontByCluster(getConnectionListDTO.getClusterId(), getConnectionListDTO);
+    }
+
+    @GetMapping("/cluster/connection/getConnectorDetail")
+    public ConnectorEntity getConnectorDetail(Long connectorId) {
+        return connectionDataService.getConnectorById(connectorId);
+    }
+
 
 }

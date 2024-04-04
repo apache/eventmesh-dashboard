@@ -19,6 +19,8 @@ package org.apache.eventmesh.dashboard.console.service.config;
 
 
 import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.ChangeConfigDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.DynamicGetConfigDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,10 @@ import java.util.Map;
  * config data service
  */
 public interface ConfigService {
+
+    List<ConfigEntity> selectToFront(Long instanceId, Integer type, DynamicGetConfigDTO dynamicGetConfigDto);
+
+    void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId, List<ChangeConfigDTO> changeConfigDTOList);
 
     List<ConfigEntity> selectAll();
 
@@ -41,11 +47,12 @@ public interface ConfigService {
 
     String mapToProperties(Map<String, String> stringMap);
 
+    Map<String, String> propertiesToMap(String configProperties);
 
-    List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
+    List<ConfigEntity> selectByInstanceIdAndType(Long instanceId, Integer type);
 
-    List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
+    Map<String, String> selectDefaultConfig(String version, Long instanceId, Integer instanceType);
 
-    void updateConfig(ConfigEntity configEntity);
+
 
 }

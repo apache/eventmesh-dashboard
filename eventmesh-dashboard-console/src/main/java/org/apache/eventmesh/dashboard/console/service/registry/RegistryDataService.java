@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.dto;
+package org.apache.eventmesh.dashboard.console.service.registry;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Data;
+import org.apache.eventmesh.dashboard.console.entity.meta.MetaEntity;
+
+import java.util.List;
 
 /**
- * TODO this class is copied from storage plugin, needs update
+ * Database service of registry(meta) such as nacos
  */
+public interface RegistryDataService {
 
-@Data
-public class CreateTopicRequest {
+    public List<MetaEntity> selectAll();
 
-    private String name;
+    public List<Long> batchInsert(List<MetaEntity> metaEntities);
 
-    @JsonCreator
-    public CreateTopicRequest(@JsonProperty("name") String name) {
-        super();
-        this.name = name;
-    }
+    public Long insert(MetaEntity metaEntity);
+
+    public void deActive(MetaEntity metaEntity);
 }

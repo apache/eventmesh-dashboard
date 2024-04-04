@@ -27,4 +27,6 @@ import java.util.List;
 public interface ConnectorDataService {
 
     List<ConnectorEntity> selectConnectorByCluster(Long clusterId);
+
+    List<ConnectorEntity> selectByHostPort(ConnectorEntity connectorEntity);
 }
