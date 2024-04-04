@@ -17,21 +17,55 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_SUBTYPE_ROCKETMQ_BROKER;
+import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_SUBTYPE_ROCKETMQ_NAMESERVER;
+import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_TYPE_KAFKA;
+import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_TYPE_PULSAR;
+import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_TYPE_RABBITMQ;
+import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_TYPE_REDIS;
+import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_TYPE_ROCKETMQ;
+import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_TYPE_STANDALONE;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 public enum StoreType {
 
-    STANDALONE(0, "Standalone"),
-    ROCKETMQ(1, "RocketMQ"),
-    KAFKA(2, "Kafka"),
-    PULSAR(3, "Pulsar"),
-    RABBITMQ(4, "RabbitMQ"),
-    REDIS(5, "Redis");
+    STANDALONE(0, STORE_TYPE_STANDALONE),
+    ROCKETMQ(1, STORE_TYPE_ROCKETMQ),
+    ROCKETMQ_BROKER(11, STORE_SUBTYPE_ROCKETMQ_BROKER),
+    ROCKETMQ_NAMESERVER(12, STORE_SUBTYPE_ROCKETMQ_NAMESERVER),
+    KAFKA(2, STORE_TYPE_KAFKA),
+    PULSAR(3, STORE_TYPE_PULSAR),
+    RABBITMQ(4, STORE_TYPE_RABBITMQ),
+    REDIS(5, STORE_TYPE_REDIS);
 
     @Getter
     private final Integer number;
     @Getter
     private final String name;
+
+    public static StoreType fromNumber(Integer number) {
+        for (StoreType storeType : StoreType.values()) {
+            if (storeType.getNumber().equals(number)) {
+                return storeType;
+            }
+        }
+        return null;
+    }
+
+    public static StoreType fromName(String name) {
+        for (StoreType storeType : StoreType.values()) {
+            if (storeType.getName().equalsIgnoreCase(name)) {
+                return storeType;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

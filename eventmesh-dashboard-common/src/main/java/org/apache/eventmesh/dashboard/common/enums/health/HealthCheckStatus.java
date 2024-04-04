@@ -26,7 +26,8 @@ public enum HealthCheckStatus {
     FAILED(0, "failed"),
     PASSED(1, "passed"),
     CHECKING(2, "checking"),
-    TIMEOUT(3, "timeout");
+    TIMEOUT(3, "timeout"),
+    NOT_CONNECTED(4, "not connected");
 
     private final Integer number;
     private final String name;

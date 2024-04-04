@@ -44,6 +44,9 @@ public class ClusterMetadata extends MetadataConfig {
 
     private Integer status;
 
+    /**
+     * @see StoreType
+     */
     private StoreType storeType;
 
     private String description;
