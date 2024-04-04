@@ -33,33 +33,41 @@ import java.util.List;
 @Mapper
 public interface ConnectorMapper {
 
+
     @Select("SELECT * FROM connector WHERE status=1")
     ConnectorEntity selectAll();
 
-    @Select("SELECT * FROM connector WHERE id = #{id}")
+    @Select("SELECT * FROM connector WHERE id = #{id} AND status=1")
     ConnectorEntity selectById(ConnectorEntity connectorEntity);
 
-    @Select("SELECT * FROM connector WHERE cluster_id = #{clusterId}")
+    @Select("SELECT * FROM connector WHERE cluster_id = #{clusterId} AND status=1")
     List<ConnectorEntity> selectByClusterId(ConnectorEntity connectorEntity);
 
+    @Select("SELECT * FROM connector WHERE host = #{host} AND port = #{port} AND status=1")
+    List<ConnectorEntity> selectByHostAndPort(ConnectorEntity connectorEntity);
+
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("INSERT INTO connector (cluster_id,name, class_name, type, status, pod_state, config_ids) "
-        + "VALUES (#{clusterId}, #{name}, #{className}, #{type}, #{status}, #{podState}, #{configIds})")
+    @Insert("INSERT INTO connector (cluster_id,name, class_name, type, status, pod_state, config_ids, host, port) "
+        + "VALUES (#{clusterId}, #{name}, #{className}, #{type}, #{status}, #{podState}, #{configIds}, #{host}, #{port})")
     void insert(ConnectorEntity connectorEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert({
         "<script>",
-        "   INSERT INTO connector (cluster_id, name, class_name, type, status, pod_state, config_ids) VALUES ",
+        "   INSERT INTO connector (cluster_id, name, class_name, type, status, pod_state, config_ids, host, port) VALUES ",
         "   <foreach collection='list' item='connectorEntity' index='index' separator=','>",
         "       (#{connectorEntity.clusterId}, #{connectorEntity.name}, #{connectorEntity.className},",
-        "       #{connectorEntity.type}, #{connectorEntity.status}, #{connectorEntity.podState}, #{connectorEntity.configIds})",
+        "       #{connectorEntity.type}, #{connectorEntity.status}, #{connectorEntity.podState}, ",
+        "       #{connectorEntity.configIds}, #{connectorEntity.host}, #{connectorEntity.port})",
         "   </foreach>",
         "</script>"})
     void batchInsert(List<ConnectorEntity> connectorEntityList);
 
-    @Update("UPDATE connector SET status = #{status} WHERE id = #{id}")
-    void updateStatus(ConnectorEntity connectorEntity);
+    @Update("UPDATE connector SET status = 1 WHERE id = #{id}")
+    void active(ConnectorEntity connectorEntity);
+
+    @Update("UPDATE connector SET status = 0 WHERE id = #{id}")
+    void deActive(ConnectorEntity connectorEntity);
 
     @Update("UPDATE connector SET pod_state = #{podState} WHERE id = #{id}")
     void updatePodState(ConnectorEntity connectorEntity);

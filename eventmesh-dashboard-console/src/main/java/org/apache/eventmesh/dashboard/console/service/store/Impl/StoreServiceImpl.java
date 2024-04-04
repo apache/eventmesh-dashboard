@@ -33,8 +33,29 @@ public class StoreServiceImpl implements StoreService {
     private StoreMapper storeMapper;
 
     @Override
+    public void updateConfigById(Long storeId) {
+
+    }
+
+
+    @Override
+    public StoreEntity getStoreToFrontListByCluster(Long clusterId) {
+        StoreEntity storeEntity = new StoreEntity();
+        storeEntity.setClusterId(clusterId);
+        return storeMapper.selectStoreByCluster(storeEntity);
+    }
+
+
+    @Override
     public List<StoreEntity> selectAll() {
         return storeMapper.selectAll();
+    }
+
+    @Override
+    public StoreEntity selectById(Long storeId) {
+        StoreEntity query = new StoreEntity();
+        query.setId(storeId);
+        return storeMapper.selectById(query);
     }
 
     @Override
@@ -53,7 +74,7 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public List<StoreEntity> selectStoreByCluster(Long clusterId) {
+    public StoreEntity selectStoreByCluster(Long clusterId) {
         StoreEntity storeEntity = new StoreEntity();
         storeEntity.setClusterId(clusterId);
         return storeMapper.selectStoreByCluster(storeEntity);

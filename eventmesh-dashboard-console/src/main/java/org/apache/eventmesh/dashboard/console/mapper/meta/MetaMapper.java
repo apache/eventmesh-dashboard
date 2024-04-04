@@ -19,7 +19,6 @@ package org.apache.eventmesh.dashboard.console.mapper.meta;
 
 import org.apache.eventmesh.dashboard.console.entity.meta.MetaEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -45,7 +44,7 @@ public interface MetaMapper {
         "</foreach>",
         "</script>"})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<MetaEntity> metaEntities);
+    List<Long> batchInsert(List<MetaEntity> metaEntities);
 
     @Select("SELECT * FROM meta WHERE id = #{id}")
     MetaEntity selectById(MetaEntity metaEntity);
@@ -56,11 +55,8 @@ public interface MetaMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO meta (name, type, version, cluster_id, host, port, role, username, params, status)"
         + " VALUES ( #{name}, #{type}, #{version}, #{clusterId}, #{host}, #{port}, #{role}, #{username}, #{params}, #{status})")
-    void insert(MetaEntity metaEntity);
+    Long insert(MetaEntity metaEntity);
 
-    @Update("UPDATE meta SET status = #{status} WHERE id = #{id}")
-    void update(MetaEntity metaEntity);
-
-    @Delete("DELETE FROM meta WHERE id = #{id}")
-    void deleteById(MetaEntity metaEntity);
+    @Update("UPDATE meta SET status = 0 WHERE id = #{id}")
+    void deActive(MetaEntity metaEntity);
 }

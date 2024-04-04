@@ -38,7 +38,7 @@ public interface OprLogMapper {
         "   SELECT * FROM operation_log",
         "   <where>",
         "       <if test='targetType!=null'>",
-        "           target_type=#{operationType}",
+        "           target_type=#{targetType}",
         "       </if>",
         "       <if test='operationUser!=null'>",
         "           AND operation_user=#{operationUser}",
@@ -56,6 +56,9 @@ public interface OprLogMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Long addLog(LogEntity logEntity);
 
-    @Update("UPDATE operation_log SET state=#{state} ,result=#{resultContent} WHERE id=#{id}")
+    @Update("UPDATE operation_log SET state=#{state} ,result=#{result} WHERE id=#{id}")
     Integer updateLog(LogEntity logEntity);
+
+    @Select("SELECT * FROM operation_log WHERE is_delete=0")
+    List<LogEntity> getLogListToFront(Integer pageIndex, Integer pageNum);
 }

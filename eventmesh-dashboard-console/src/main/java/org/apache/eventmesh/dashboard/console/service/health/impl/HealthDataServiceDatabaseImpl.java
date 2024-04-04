@@ -17,8 +17,15 @@
 
 package org.apache.eventmesh.dashboard.console.service.health.impl;
 
+
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
+import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.mapper.health.HealthCheckResultMapper;
+import org.apache.eventmesh.dashboard.console.mapper.runtime.RuntimeMapper;
+import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
+import org.apache.eventmesh.dashboard.console.modle.vo.health.InstanceLiveProportionVo;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import java.sql.Timestamp;
@@ -32,6 +39,68 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
 
     @Autowired
     private HealthCheckResultMapper healthCheckResultMapper;
+
+    @Autowired
+    private RuntimeMapper runtimeMapper;
+
+    @Autowired
+    private TopicMapper topicMapper;
+
+
+    @Override
+    public InstanceLiveProportionVo getInstanceLiveProportion(Long clusterId, Integer instanceType) {
+        InstanceLiveProportionVo instanceLiveProportionVo = new InstanceLiveProportionVo();
+        switch (instanceType) {
+            case 2:
+                instanceLiveProportionVo = this.getRuntimeLiveProportion(clusterId);
+                break;
+            case 3:
+                instanceLiveProportionVo = this.getTopicLiveProportion(clusterId);
+                break;
+            default:
+                break;
+        }
+        return instanceLiveProportionVo;
+    }
+
+    public InstanceLiveProportionVo getTopicLiveProportion(Long clusterId) {
+        TopicEntity topicEntity = new TopicEntity();
+        topicEntity.setClusterId(clusterId);
+        Integer topicNum = topicMapper.selectTopicNumByCluster(topicEntity);
+        List<TopicEntity> topicEntityList = topicMapper.selectTopicByCluster(topicEntity);
+        int abnormalNum = 0;
+        for (TopicEntity n : topicEntityList) {
+            if (CheckResultCache.getLastHealthyCheckResult("topic", n.getId()) == 0) {
+                abnormalNum++;
+            }
+        }
+        return new InstanceLiveProportionVo(abnormalNum, topicNum);
+    }
+
+
+    public InstanceLiveProportionVo getRuntimeLiveProportion(Long clusterId) {
+        RuntimeEntity runtimeEntity = new RuntimeEntity();
+        runtimeEntity.setClusterId(clusterId);
+        Integer topicNum = runtimeMapper.getRuntimeNumByCluster(runtimeEntity);
+        List<RuntimeEntity> runtimeEntities = runtimeMapper.selectRuntimeByCluster(runtimeEntity);
+        int abnormalNum = 0;
+        for (RuntimeEntity n : runtimeEntities) {
+            if (CheckResultCache.getLastHealthyCheckResult("runtime", n.getId()) == 0) {
+                abnormalNum++;
+            }
+        }
+        return new InstanceLiveProportionVo(abnormalNum, topicNum);
+    }
+
+
+    @Override
+    public List<HealthCheckResultEntity> getInstanceLiveStatusHistory(Integer type, Long instanceId, Timestamp startTime) {
+        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity();
+        healthCheckResultEntity.setType(type);
+        healthCheckResultEntity.setTypeId(instanceId);
+        healthCheckResultEntity.setCreateTime(startTime);
+        return healthCheckResultMapper.getInstanceLiveStatusHistory(healthCheckResultEntity);
+    }
 
     @Override
     public HealthCheckResultEntity insertHealthCheckResult(HealthCheckResultEntity healthCheckResultEntity) {

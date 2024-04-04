@@ -20,7 +20,7 @@ create table cluster
     id                 bigint unsigned auto_increment comment '集群id'
         primary key,
     name               varchar(128)  default ''                not null comment '集群名称',
-    register_name_list varchar(4096) default ''                not null comment '注册中心名字',
+    registry_name_list varchar(4096) default ''                not null comment '注册中心名字',
     bootstrap_servers  varchar(2048) default ''                not null comment 'server地址',
     eventmesh_version  varchar(32)   default ''                not null comment 'eventmesh版本',
     client_properties  text null comment 'EventMesh客户端配置',
@@ -62,10 +62,12 @@ create table config
     create_time       timestamp     default CURRENT_TIMESTAMP not null comment '创建时间',
     update_time       timestamp     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
     is_modify         int           default 0                 not null,
+    already_update    int           default 0                 not null comment '0:no,1:yes',
     eventmesh_version varchar(64)   default ' '               not null,
-    constraint uniq_instance_type_instance_id_config_name
-        unique (instance_id, config_name, instance_type)
-) comment '配置信息表';
+    constraint uniq_cluster_id_instance_type_instance_id_config_name
+        unique (instance_id, config_name, instance_type, cluster_id)
+)
+    comment '配置信息表';
 
 create index idx_phy_id_instance_id
     on config (cluster_id, instance_id);
@@ -149,7 +151,6 @@ create table store
     store_id        int           default -1                not null comment 'storeId',
     store_type      varchar(32)   default ''                not null comment 'Store类型,如rocketmq,redis,...',
     host            varchar(128)  default ''                not null comment 'store主机名',
-    runtime_id      bigint        default -1                not null comment 'runtimeId',
     topic_list      varchar(4096) default ''                not null comment 'topicName列表',
     diff_type       int           default -1                not null comment '差异类型',
     port            int           default -1                not null comment 'store端口',
@@ -165,7 +166,7 @@ create table store
 ) comment 'Store信息表';
 
 create index idx_store_id_runtime_id
-    on store (store_id, cluster_id, runtime_id);
+    on store (store_id, cluster_id);
 
 DROP TABLE IF EXISTS `instance_user`;
 CREATE TABLE `instance_user`
@@ -243,7 +244,7 @@ CREATE TABLE `group_member`
     `status`         int          NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_cluster_topic_group` (`cluster_id`, `topic_name`, `group_name`),
-    KEY              `cluster_id` (`cluster_id`, `topic_name`, `group_name`)
+    KEY `cluster_id` (`cluster_id`, `topic_name`, `group_name`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 257
   DEFAULT CHARSET = utf8mb4,
@@ -254,9 +255,9 @@ DROP TABLE IF EXISTS `operation_log`;
 CREATE TABLE `operation_log`
 (
     `id`             bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id`     bigint       NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
-    `operation_type` varchar(192) NOT NULL DEFAULT '' COMMENT '操作类型,如:启动，停止，重启，添加，删除，修改',
-    `state`          int          NOT NULL DEFAULT '0' COMMENT '操作状态 0:未知，1:执行中，2:成功，3:失败',
+    `cluster_id`     bigint          NOT NULL DEFAULT '-1' COMMENT '物理集群ID',
+    `operation_type` varchar(192)    NOT NULL DEFAULT '' COMMENT '操作类型,如:启动，停止，重启，添加，删除，修改',
+    `state`          int             NOT NULL DEFAULT '0' COMMENT '操作状态 0:未知，1:执行中，2:成功，3:失败',
     `content`        varchar(1024) COMMENT '备注信息',
     `create_time`    timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `end_time`       timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '结束时间',
@@ -279,15 +280,14 @@ CREATE TABLE `topic`
     `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
     `cluster_id`   bigint        NOT NULL DEFAULT '-1' COMMENT '集群ID',
     `topic_name`   varchar(192) CHARACTER SET utf8mb4
-        COLLATE utf8mb4_bin      NOT NULL DEFAULT '' COMMENT 'Topic名称',
-    `runtime_id`   varchar(2048) NOT NULL DEFAULT '' COMMENT 'RuntimeId',
-    `storage_id`   varchar(2048) NOT NULL DEFAULT '' COMMENT 'StorageId',
-    `retention_ms` bigint        NOT NULL DEFAULT '-2' COMMENT '保存时间，-2：未知，-1：无限制，>=0对应时间，单位ms',
-    `type`         tinyint       NOT NULL DEFAULT '0' COMMENT 'Topic类型，默认0，0:普通，1:EventMesh内部',
-    `description`  varchar(1024)          DEFAULT '' COMMENT '备注信息',
-    `create_time`  timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间(尽量与Topic实际创建时间一致)',
-    `update_time`  timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间(尽量与Topic实际创建时间一致)',
-    `status`       int           NOT NULL DEFAULT '1',
+        COLLATE utf8mb4_bin        NOT NULL DEFAULT '' COMMENT 'Topic名称',
+    `storage_id`   varchar(2048)   NOT NULL DEFAULT '' COMMENT 'StorageId',
+    `retention_ms` bigint          NOT NULL DEFAULT '-2' COMMENT '保存时间，-2：未知，-1：无限制，>=0对应时间，单位ms',
+    `type`         tinyint         NOT NULL DEFAULT '0' COMMENT 'Topic类型，默认0，0:普通，1:EventMesh内部',
+    `description`  varchar(1024)            DEFAULT '' COMMENT '备注信息',
+    `create_time`  timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间(尽量与Topic实际创建时间一致)',
+    `update_time`  timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间(尽量与Topic实际创建时间一致)',
+    `status`       int             NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_cluster_phy_id_topic_name` (`cluster_id`, `topic_name`),
     KEY            `cluster_id` (`cluster_id`, `topic_name`)
@@ -328,10 +328,12 @@ DROP TABLE IF EXISTS `connector`;
 CREATE TABLE `connector`
 (
     `id`          bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `cluster_id`  bigint(20) NOT NULL DEFAULT '-1' COMMENT '集群ID',
-    `name`        varchar(512)  NOT NULL DEFAULT '' COMMENT 'Connector名称',
-    `class_name`  varchar(512)  NOT NULL DEFAULT '' COMMENT 'Connector类',
-    `type`        varchar(32)   NOT NULL DEFAULT '' COMMENT 'Connector类型',
+    `cluster_id`  bigint(20)          NOT NULL DEFAULT '-1' COMMENT '集群ID',
+    `name`        varchar(512)        NOT NULL DEFAULT '' COMMENT 'Connector名称',
+    `class_name`  varchar(512)        NOT NULL DEFAULT '' COMMENT 'Connector类',
+    `type`        varchar(32)         NOT NULL DEFAULT '' COMMENT 'Connector类型',
+    `host`        varchar(128)        NOT NULL DEFAULT '' COMMENT 'Connector地址',
+    `port`        int(16)             NOT NULL DEFAULT '-1' COMMENT 'Connector端口',
     `status`      tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '状态: 1启用，0未启用',
     `pod_state`   tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT 'k8s pod状态。0: pending;1: running;2: success;3: failed;4: unknown',
     `config_ids`  varchar(1024) NOT NULL DEFAULT '' COMMENT 'csv config id list, like:1,3,7',

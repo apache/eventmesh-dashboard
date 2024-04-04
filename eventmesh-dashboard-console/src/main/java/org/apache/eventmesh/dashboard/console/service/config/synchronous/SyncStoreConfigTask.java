@@ -46,34 +46,34 @@ public class SyncStoreConfigTask {
     private ConfigService configService;
 
     public void synchronousStoreConfig(Long clusterId) {
-        List<StoreEntity> storeEntityList = storeService.selectStoreByCluster(clusterId);
-        for (StoreEntity storeEntity : storeEntityList) {
+        StoreEntity storeEntity = storeService.selectStoreByCluster(clusterId);
 
-            ConcurrentHashMap<String, String> storeConfigMapFromInstance = this.configListToMap(
-                storeConfigService.getStorageConfigFromInstance(clusterId, storeEntity.getHost()));
+        ConcurrentHashMap<String, String> storeConfigMapFromInstance = this.configListToMap(
+            storeConfigService.getStorageConfigFromInstance(clusterId, storeEntity.getHost()));
 
-            ConfigEntity configEntity = this.getConfigEntityBelongInstance(clusterId, storeEntity.getId());
+        ConfigEntity configEntity = this.getConfigEntityBelongInstance(clusterId, storeEntity.getId());
 
-            ConcurrentHashMap<String, String> storeConfigMapFromDb = this.configListToMap(configService.selectByInstanceId(configEntity));
+        ConcurrentHashMap<String, String> storeConfigMapFromDb =
+            this.configListToMap(configService.selectByInstanceIdAndType(configEntity.getInstanceId(), configEntity.getInstanceType()));
 
-            ConcurrentHashMap<String, String> updateConfigMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, String> updateConfigMap = new ConcurrentHashMap<>();
 
-            storeConfigMapFromInstance.entrySet().forEach(n -> {
-                if (storeConfigMapFromDb.remove(n.getKey(), n.getValue())) {
-                    storeConfigMapFromInstance.remove(n.getKey());
-                }
-                if (storeConfigMapFromDb.get(n.getKey()) != null) {
-                    updateConfigMap.put(n.getKey(), storeConfigMapFromDb.get(n.getKey()));
-                    storeConfigMapFromInstance.remove(n.getKey());
-                    storeConfigMapFromDb.remove(n.getKey());
-                }
-            });
-            //add  storeConfigMapFromDb
+        storeConfigMapFromInstance.entrySet().forEach(n -> {
+            if (storeConfigMapFromDb.remove(n.getKey(), n.getValue())) {
+                storeConfigMapFromInstance.remove(n.getKey());
+            }
+            if (storeConfigMapFromDb.get(n.getKey()) != null) {
+                updateConfigMap.put(n.getKey(), storeConfigMapFromDb.get(n.getKey()));
+                storeConfigMapFromInstance.remove(n.getKey());
+                storeConfigMapFromDb.remove(n.getKey());
+            }
+        });
+        //add  storeConfigMapFromDb
 
-            //update  updateConfigMap
+        //update  updateConfigMap
 
-            //delete storeConfigMapFromInstance
-        }
+        //delete storeConfigMapFromInstance
+
     }
 
     private ConcurrentHashMap<String, String> configListToMap(List<ConfigEntity> configEntityList) {

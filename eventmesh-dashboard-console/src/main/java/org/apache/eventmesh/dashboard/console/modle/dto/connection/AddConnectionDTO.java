@@ -15,25 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.dto;
+package org.apache.eventmesh.dashboard.console.modle.dto.connection;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * TODO this class is copied from storage plugin, needs update
- */
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class DeleteTopicRequest {
+public class AddConnectionDTO {
 
-    private String name;
+    private String sinkName;
 
-    @JsonCreator
-    public DeleteTopicRequest(@JsonProperty("name") String name) {
-        super();
-        this.name = name;
-    }
+    private String sourceName;
+
+    private String sinkClass;
+
+    private String sourceClass;
+
+    private String topicName;
+
+    private String sinkHost;
+
+    private String sourceHost;
+
+    private Integer sinkPort;
+
+    private Integer sourcePort;
+
+    private String sinkDescription;
+
+    private String sourceDescription;
+
+    private String connectionDescription;
+
+    private Long groupId;
 }

@@ -32,9 +32,8 @@ public class LogServiceImpl implements LogService {
     OprLogMapper oprLogMapper;
 
     @Override
-    public List<LogEntity> getLogListByCluster(LogEntity logEntity) {
-
-        return oprLogMapper.getLogList(logEntity);
+    public List<LogEntity> getLogListByCluster(Integer pageIndex, Integer pageNum) {
+        return oprLogMapper.getLogListToFront(pageIndex, pageNum);
     }
 
     @Override

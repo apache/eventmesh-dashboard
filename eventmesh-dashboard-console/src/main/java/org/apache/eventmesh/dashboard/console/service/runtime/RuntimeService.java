@@ -17,7 +17,9 @@
 
 package org.apache.eventmesh.dashboard.console.service.runtime;
 
+
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.runtime.GetRuntimeListDTO;
 
 import java.util.List;
 
@@ -26,15 +28,21 @@ import java.util.List;
  */
 public interface RuntimeService {
 
+    List<RuntimeEntity> getRuntimeToFrontByClusterId(Long clusterId, GetRuntimeListDTO getRuntimeListDTO);
+
     void batchInsert(List<RuntimeEntity> runtimeEntities);
 
     List<RuntimeEntity> selectAll();
 
     List<RuntimeEntity> getRuntimeByClusterId(Long cluster);
 
+    List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity);
+
     void addRuntime(RuntimeEntity runtimeEntity);
 
     void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
 
     void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
+
+    void deActive(RuntimeEntity runtimeEntity);
 }

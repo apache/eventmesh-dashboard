@@ -69,7 +69,7 @@ class ConnectorMapperTest {
 
     @Test
     public void testInsert() {
-        ConnectorEntity connectorEntity = new ConnectorEntity(1L, "test", "test", "test", 0, 2, "test");
+        ConnectorEntity connectorEntity = new ConnectorEntity(1L, "test", "test", "test", 1, "2", 0, 2, "test");
         connectorMapper.insert(connectorEntity);
 
         assertNotNull(connectorEntity);
@@ -78,9 +78,9 @@ class ConnectorMapperTest {
 
     @Test
     public void testBatchInsert() {
-        ConnectorEntity connectorEntity1 = new ConnectorEntity(1L, "test", "test", "test", 0, 2, "test");
-        ConnectorEntity connectorEntity2 = new ConnectorEntity(1L, "test", "test", "test", 0, 2, "test");
-        ConnectorEntity connectorEntity3 = new ConnectorEntity(1L, "test", "test", "test", 0, 2, "test");
+        ConnectorEntity connectorEntity1 = new ConnectorEntity(1L, "test", "test", "test", 1, "2", 0, 2, "test");
+        ConnectorEntity connectorEntity2 = new ConnectorEntity(1L, "test", "test", "test", 1, "2", 0, 2, "test");
+        ConnectorEntity connectorEntity3 = new ConnectorEntity(1L, "test", "test", "test", 1, "2", 0, 2, "test");
         List<ConnectorEntity> connectorEntityList = new ArrayList<>();
         connectorEntityList.add(connectorEntity1);
         connectorEntityList.add(connectorEntity2);
