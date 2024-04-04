@@ -9,7 +9,7 @@ interface TopicProps extends BoxProps {}
 const Topic = forwardRef<typeof Box, TopicProps>(({ ...props }, ref) => {
   return (
     <Page>
-      <Stack sx={{ width: 1, height: 1, p: 2 }} spacing={1}>
+      <Stack sx={{ width: 1, height: 1, p: 2 }} spacing={3}>
         <Stats />
         <TopicList />
       </Stack>

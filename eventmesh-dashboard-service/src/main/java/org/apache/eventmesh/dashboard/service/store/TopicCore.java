@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.service.store;
 
-import org.apache.eventmesh.dashboard.common.model.TopicProperties;
+import org.apache.eventmesh.dashboard.service.dto.TopicProperties;
 
 import java.util.List;
 
@@ -27,12 +27,9 @@ import java.util.List;
 
 public interface TopicCore {
 
-    /**
-     * TODO rename to getTopics after being implemented
-     */
-    List<TopicProperties> getTopic();
+    List<TopicProperties> getTopics();
 
-    void createTopic(String topicName);
+    Boolean createTopic(String topicName);
 
-    void deleteTopic(String topicName);
+    Boolean deleteTopic(String topicName);
 }

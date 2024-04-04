@@ -79,15 +79,15 @@ const Navigation = forwardRef<typeof Stack, NavigationProps>(
     )
 
     return (
-      <Stack sx={{ width: 240, boxShadow: 1, bgcolor: 'white' }}>
+      <Stack sx={{ width: 260, px: 3 }}>
         <Box
           sx={{
-            height: 120,
+            height: 80,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'centers'
           }}>
-          <Icons.EventMeshLogo style={{ width: '80%' }} />
+          <Icons.EventMeshLogo style={{ width: '60%' }} />
         </Box>
         <Divider />
         <Stack
@@ -95,7 +95,11 @@ const Navigation = forwardRef<typeof Stack, NavigationProps>(
           justifyContent="space-between"
           alignItems="center"
           sx={{ pl: 2, pr: 2, mt: 1, mb: 1 }}>
-          <Typography variant="overline" fontSize={12} color={grey[600]}>
+          <Typography
+            variant="overline"
+            fontSize={12}
+            fontWeight="bold"
+            color={grey[600]}>
             General
           </Typography>
 
@@ -109,7 +113,7 @@ const Navigation = forwardRef<typeof Stack, NavigationProps>(
             </Typography>
           </Stack>
         </Stack>
-        <Stack sx={{ pl: 2, pr: 2 }} spacing={0.5}>
+        <Stack sx={{ pl: 2, pr: 2 }} spacing={1}>
           {generalMenus.map((item) => {
             return (
               <NavigationItem
@@ -132,11 +136,15 @@ const Navigation = forwardRef<typeof Stack, NavigationProps>(
           justifyContent="space-between"
           alignItems="center"
           sx={{ pl: 2, pr: 2, mt: 1, mb: 1 }}>
-          <Typography variant="overline" fontSize={12} color={grey[600]}>
+          <Typography
+            variant="overline"
+            fontSize={12}
+            fontWeight="bold"
+            color={grey[600]}>
             System
           </Typography>
         </Stack>
-        <Stack sx={{ pl: 2, pr: 2 }} spacing={0.5}>
+        <Stack sx={{ pl: 2, pr: 2 }} spacing={1}>
           {DefSystemMenus.map((item) => {
             return (
               <NavigationItem

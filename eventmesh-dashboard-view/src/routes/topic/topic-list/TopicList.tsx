@@ -8,37 +8,43 @@ interface TopicListProps extends StackProps {}
 const TopicList = forwardRef<typeof Stack, TopicListProps>(
   ({ ...props }, ref) => {
     return (
-      <Stack sx={{ flexGrow: 1 }} spacing={2}>
+      <Paper
+        sx={{
+          flexGrow: 1,
+          borderRadius: 4,
+          boxShadow: '2px 2px 40px 2px rgba(0,0,0,.05)'
+        }}>
         <Stack
+          sx={{ px: 2, py: 3 }}
           direction="row"
           justifyContent="space-between"
           alignItems="center">
-          <TextField label="Topic 名称" variant="standard" />
+          <TextField size="small" placeholder="Topic 名称"  variant="outlined" />
 
           <Button
-            variant="contained"
+            variant="outlined"
             size="small"
             sx={{ textTransform: 'none' }}>
             新增Topic
           </Button>
         </Stack>
-        <Paper sx={{ flexGrow: 1 }}>
-          <DataGrid
-            sx={{
-              '& .MuiDataGrid-columnHeaderTitle': {
-                fontWeight: 'normal',
-                color: grey[800]
-              },
-              '& .MuiDataGrid-cell': {
-                fontWeight: 'normal',
-                fontSize: 14
-              }
-            }}
-            rows={rows}
-            columns={columns}
-          />
-        </Paper>
-      </Stack>
+
+        <DataGrid
+          sx={{
+            border: 0,
+            borderRadius: 4,
+            '& .MuiDataGrid-columnHeaderTitle': {
+              color: grey[400]
+            },
+            '& .MuiDataGrid-cell': {
+              fontWeight: 'normal',
+              fontSize: 14
+            }
+          }}
+          rows={rows}
+          columns={columns}
+        />
+      </Paper>
     )
   }
 )

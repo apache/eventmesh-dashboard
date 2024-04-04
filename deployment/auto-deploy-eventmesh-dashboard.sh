@@ -26,11 +26,22 @@ PID_LOG=~/service/eventmesh-dashboard/deployment/eventmesh-dashboard-pid.log
 # Automatic deployment shell script log file path
 AUTO_DEPLOY_LOG=~/service/eventmesh-dashboard/deployment/auto-deploy-eventmesh-dashboard.log
 
-# EventMesh Dashboard log file path
-APP_LOG=~/service/eventmesh-dashboard/deployment/eventmesh-dashboard-$(date +"%Y-%m-%d-%H-%M-%S").log
-
 # Jar file path
 JAR_FILE_PATH=~/service/eventmesh-dashboard/eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar
+
+# Load environment variables from external file
+ENV_FILE=~/service/eventmesh-dashboard/deployment/.env
+source $ENV_FILE
+
+# Function to check if a process with given PID is running
+is_process_running() {
+    local pid=$1
+    if ps -p $pid > /dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
 
 # Update the git repository
 cd $REPO_PATH
@@ -45,10 +56,10 @@ if [ $LOCAL != $REMOTE ]; then
     # Log the event
     echo "$(date +"%Y-%m-%d %H:%M:%S") - change detected." >> $AUTO_DEPLOY_LOG
     
-    # Terminate the old process
+    # Terminate the old process if it's running
     if [ -s $PID_LOG ]; then
         PID=$(cat $PID_LOG)
-        if [ -n "$PID" ]; then
+        if is_process_running $PID; then
             kill $PID
             # Log the event
             echo "$(date +"%Y-%m-%d %H:%M:%S") - kill running application." >> $AUTO_DEPLOY_LOG
@@ -56,10 +67,10 @@ if [ $LOCAL != $REMOTE ]; then
     fi
     
     # Compile and package the Jar file
-    mvn clean package
+    mvn clean package -DskipTests -Dcheckstyle.skip=true
     
-    # Start the springboot application and record the process id to pid.log file, redirect console logs to eventmesh-dashboard-<current time>.log file
-    nohup java -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
+    # Start the springboot application and record the process id to pid.log file
+    nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > /dev/null 2>&1 &
     echo $! > $PID_LOG
     
     # Log the event
@@ -70,18 +81,18 @@ else
     # Log the event
     echo "$(date +"%Y-%m-%d %H:%M:%S") - no change detected." >> $AUTO_DEPLOY_LOG
     
-    if [ -s $PID_LOG ]; then
-        # If the pid.log file exists, no action is performed
-        echo "$(date +"%Y-%m-%d %H:%M:%S") - application running, no operation performed." >> $AUTO_DEPLOY_LOG
-    else
-        # If the pid.log file does not exist, compile and package the Jar file
-        mvn clean package
+    if [ ! -s $PID_LOG ] || ! is_process_running $(cat $PID_LOG); then
+        # If the pid.log file does not exist or the process is not running, compile and package the Jar file
+        mvn clean package -DskipTests -Dcheckstyle.skip=true
 
-        # Start the springboot application and record the process id to pid.log file, redirect console logs to eventmesh-dashboard-<current time>.log file
-        nohup java -jar $JAR_FILE_PATH > $APP_LOG 2>&1 &
+        # Start the springboot application and record the process id to pid.log file
+        nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > /dev/null 2>&1 &
         echo $! > $PID_LOG
 
         # Log the event
-        echo "$(date +"%Y-%m-%d %H:%M:%S") - no pid.log file, start application." >> $AUTO_DEPLOY_LOG
+        echo "$(date +"%Y-%m-%d %H:%M:%S") - no pid.log file or process not running, start application." >> $AUTO_DEPLOY_LOG
+    else
+        # If the pid.log file exists and the process is running, no action is performed
+        echo "$(date +"%Y-%m-%d %H:%M:%S") - application running, no operation performed." >> $AUTO_DEPLOY_LOG
     fi
 fi

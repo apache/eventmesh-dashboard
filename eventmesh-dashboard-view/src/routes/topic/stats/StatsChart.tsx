@@ -1,44 +1,71 @@
 import React, { forwardRef, useRef, useEffect } from 'react'
-import { Box, BoxProps } from '@mui/material'
+import { Box, BoxProps, Paper } from '@mui/material'
 import echarts from '../../../utils/chart'
+import { grey } from '@mui/material/colors'
 
-interface StatsChartProps extends BoxProps {}
+interface StatsChartProps extends BoxProps {
+  title?: string
+  small?: boolean
+}
 
 const StatsChart = forwardRef<typeof Box, StatsChartProps>(
-  ({ ...props }, ref) => {
+  ({ title, small = false, sx, ...props }, ref) => {
     const chartElemRef = useRef(null)
     const chartInsRef = useRef<echarts.ECharts | null>(null)
 
     useEffect(() => {
       if (!chartInsRef.current) {
         const chartIns = echarts.init(chartElemRef.current)
-        const chartOptions = getChartOptions()
+        const chartOptions = small
+          ? getChartOptionsSmall(title)
+          : getChartOptions(title)
         chartIns.setOption(chartOptions)
         chartInsRef.current = chartIns
       }
     }, [])
 
-    return <Box ref={chartElemRef} sx={{ width: 1, height: 1 }}></Box>
+    return (
+      <Paper
+        sx={{
+          ...sx,
+          width: 1,
+          height: 1,
+          borderRadius: 4,
+          boxShadow: '2px 2px 40px 2px rgba(0,0,0,.05)'
+        }}>
+        <Box ref={chartElemRef} sx={{ width: 1, height: 1 }}></Box>
+      </Paper>
+    )
   }
 )
 
 StatsChart.displayName = 'StatsChart'
 export default StatsChart
 
-const getChartOptions = () => {
+const getChartOptionsSmall = (title?: string) => {
   return {
-    grid: {
+    title: {
+      text: title,
       top: 10,
-      left: 40,
-      right: 10,
-      bottom: 20
+      left: 10,
+      textStyle: {
+        fontSize: 12,
+        color: grey[600]
+      }
+    },
+    grid: {
+      top: 50,
+      left: 50,
+      right: 20,
+      bottom: 30
     },
     xAxis: {
       type: 'category',
       splitLine: {
         show: true,
         lineStyle: {
-          type: 'dashed'
+          type: 'dashed',
+          color: grey[200]
         }
       },
       data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -48,30 +75,79 @@ const getChartOptions = () => {
       splitLine: {
         show: true,
         lineStyle: {
-          type: 'dashed'
+          type: 'dashed',
+          color: grey[200]
         }
+      },
+      axisTick: {
+        color: grey[200]
       }
     },
     series: [
       {
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        data: [20, 32, 51, 934, 190, 130, 320],
         type: 'line',
         smooth: true,
         showSymbol: false,
         lineStyle: {
-          width: 0
-        },
-        areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            {
-              offset: 0,
-              color: 'rgb(92, 216, 244)'
-            },
-            {
-              offset: 1,
-              color: 'rgb(115, 189, 255)'
-            }
-          ])
+          width: 2,
+          color: '#17c8eb'
+        }
+      }
+    ]
+  }
+}
+
+const getChartOptions = (title?: string) => {
+  return {
+    title: {
+      text: title,
+      top: 15,
+      left: 10,
+      textStyle: {
+        fontSize: 12,
+        color: grey[600]
+      }
+    },
+    grid: {
+      top: 60,
+      left: 60,
+      right: 40,
+      bottom: 40
+    },
+    xAxis: {
+      type: 'category',
+      splitLine: {
+        show: true,
+        lineStyle: {
+          type: 'dashed',
+          color: grey[200]
+        }
+      },
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    },
+    yAxis: {
+      type: 'value',
+      splitLine: {
+        show: true,
+        lineStyle: {
+          type: 'dashed',
+          color: grey[200]
+        }
+      },
+      axisTick: {
+        color: grey[200]
+      }
+    },
+    series: [
+      {
+        data: [20, 32, 51, 934, 190, 130, 320],
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        lineStyle: {
+          width: 2,
+          color: '#17c8eb'
         }
       }
     ]

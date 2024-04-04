@@ -40,6 +40,30 @@
             <artifactId>fastjson2</artifactId>
             <version>2.0.40</version>
         </dependency>
+
+        <!-- todo These SDKs should be placed in the core module after the console module's usage of these SDKs has been migrated to the core module.  -->
+        <!-- storage redis client -->
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+        </dependency>
+        <!-- Meta - nacos client -->
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>${nacos.version}</version>
+        </dependency>
+        <!-- rocketmq client -->
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-client</artifactId>
+            <version>${rocketmq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-tools</artifactId>
+            <version>${rocketmq.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
