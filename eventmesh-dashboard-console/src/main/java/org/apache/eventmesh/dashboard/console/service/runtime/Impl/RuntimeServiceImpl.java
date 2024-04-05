@@ -17,8 +17,13 @@
 
 package org.apache.eventmesh.dashboard.console.service.runtime.Impl;
 
+
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
+import org.apache.eventmesh.dashboard.console.mapper.health.HealthCheckResultMapper;
 import org.apache.eventmesh.dashboard.console.mapper.runtime.RuntimeMapper;
+import org.apache.eventmesh.dashboard.console.modle.dto.runtime.DynamicGetRuntimeDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.runtime.GetRuntimeListDTO;
 import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
 
 import java.util.List;
@@ -31,6 +36,31 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     @Autowired
     private RuntimeMapper runtimeMapper;
+
+    @Autowired
+    private HealthCheckResultMapper healthCheckResultMapper;
+
+    public RuntimeEntity setSearchCriteria(DynamicGetRuntimeDTO dynamicGetRuntimeDTO, RuntimeEntity runtimeEntity) {
+        if (dynamicGetRuntimeDTO != null) {
+            if (dynamicGetRuntimeDTO.getHost() != null) {
+                runtimeEntity.setHost(dynamicGetRuntimeDTO.getHost());
+            }
+        }
+        return runtimeEntity;
+    }
+
+    @Override
+    public List<RuntimeEntity> getRuntimeToFrontByClusterId(Long clusterId, GetRuntimeListDTO getRuntimeListDTO) {
+        RuntimeEntity runtimeEntity = new RuntimeEntity();
+        runtimeEntity.setClusterId(clusterId);
+        runtimeEntity = this.setSearchCriteria(getRuntimeListDTO.getDynamicGetRuntimeDTO(), runtimeEntity);
+        List<RuntimeEntity> runtimeByClusterId = runtimeMapper.getRuntimesToFrontByCluster(runtimeEntity);
+        runtimeByClusterId.forEach(n -> {
+            n.setStatus(CheckResultCache.getLastHealthyCheckResult("runtime", n.getId()));
+        });
+        return runtimeByClusterId;
+    }
+
 
     @Override
     public void batchInsert(List<RuntimeEntity> runtimeEntities) {
@@ -46,7 +76,13 @@ public class RuntimeServiceImpl implements RuntimeService {
     public List<RuntimeEntity> getRuntimeByClusterId(Long clusterId) {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setClusterId(clusterId);
+
         return runtimeMapper.selectRuntimeByCluster(runtimeEntity);
+    }
+
+    @Override
+    public List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity) {
+        return runtimeMapper.selectByHostPort(runtimeEntity);
     }
 
     @Override
@@ -62,5 +98,10 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void deleteRuntimeByCluster(RuntimeEntity runtimeEntity) {
         runtimeMapper.deleteRuntimeByCluster(runtimeEntity);
+    }
+
+    @Override
+    public void deActive(RuntimeEntity runtimeEntity) {
+        runtimeMapper.deActive(runtimeEntity);
     }
 }

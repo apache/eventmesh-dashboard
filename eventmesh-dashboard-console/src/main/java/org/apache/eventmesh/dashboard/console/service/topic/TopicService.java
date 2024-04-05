@@ -18,6 +18,9 @@
 package org.apache.eventmesh.dashboard.console.service.topic;
 
 import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.topic.CreateTopicDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
+import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
 
 import java.util.List;
 
@@ -26,11 +29,13 @@ import java.util.List;
  */
 public interface TopicService {
 
+    public List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId);
+
+    void createTopic(CreateTopicDTO topicRequest);
+
     void batchInsert(List<TopicEntity> topicEntities);
 
     List<TopicEntity> selectAll();
-
-    Integer selectTopicNumByCluster(Long clusterId);
 
     List<TopicEntity> getTopicList(TopicEntity topicEntity);
 
@@ -40,11 +45,13 @@ public interface TopicService {
 
     void deleteTopicById(TopicEntity topicEntity);
 
-    TopicEntity selectTopicById(TopicEntity topicEntity);
+    TopicEntity selectTopicById(Long topicId);
 
     TopicEntity selectTopicByUnique(TopicEntity topicEntity);
 
     void deleteTopic(TopicEntity topicEntity);
 
     List<TopicEntity> selectTopiByCluster(Long clusterId);
+
+    List<TopicEntity> getTopicListToFront(Long clusterId, GetTopicListDTO getTopicListDTO);
 }

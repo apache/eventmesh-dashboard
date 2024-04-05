@@ -35,6 +35,22 @@ import java.util.List;
 @Mapper
 public interface HealthCheckResultMapper {
 
+    @Select("SELECT * FROM health_check_result WHERE type_id = #{typeId} AND type=#{type} AND create_time>#{createTime}")
+    List<HealthCheckResultEntity> getInstanceLiveStatusHistory(HealthCheckResultEntity healthCheckResultEntity);
+
+    @Select("SELECT state FROM health_check_result WHERE type=#{type} AND type_id=#{typeId} AND create_time= (SELECT MAX(create_time) "
+        + "FROM health_check_result WHERE type_id=#{typeId} AND type=#{type})")
+    Integer selectStateByTypeAndId(HealthCheckResultEntity healthCheckResultEntity);
+
+    @Select(
+        "SELECT count(*) FROM health_check_result WHERE type_id =#{typeId} AND type=#{type} AND state != 1 AND create_time= (SELECT MAX(create_time) "
+            + "FROM health_check_result WHERE type_id=#{typeId} AND type=#{type} )")
+    Integer getAbnormalNumByClusterIdAndType(HealthCheckResultEntity healthCheckResultEntity);
+
+    @Select("SELECT * FROM health_check_result WHERE type_id =#{typeId} AND type=#{type} AND create_time= (SELECT MAX(create_time) "
+        + "FROM health_check_result WHERE type_id=#{typeId} AND type=#{type})")
+    HealthCheckResultEntity getLatestByTypeAndId(HealthCheckResultEntity healthCheckResultEntity);
+
     @Select("SELECT * FROM health_check_result")
     List<HealthCheckResultEntity> selectAll();
 

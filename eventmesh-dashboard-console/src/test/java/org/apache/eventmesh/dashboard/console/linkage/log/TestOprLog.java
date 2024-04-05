@@ -49,7 +49,7 @@ public class TestOprLog {
         LogEntity logEntity = new LogEntity(null, 1L, "add", "Group", 2, groupEntity1.toString(), null, null, null, null);
         logEntity.setResult(groupEntity.toString());
         logEntity.setId(groupEntity1.getId());
-        List<LogEntity> logListByCluster = logService.getLogListByCluster(logEntity);
+        List<LogEntity> logListByCluster = logService.getLogListByCluster(0, 10);
         logListByCluster.get(0).setId(null);
         logListByCluster.get(0).setCreateTime(null);
         logListByCluster.get(0).setEndTime(null);

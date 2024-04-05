@@ -28,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class RuntimeEntity extends BaseEntity {
 
     private Long id;

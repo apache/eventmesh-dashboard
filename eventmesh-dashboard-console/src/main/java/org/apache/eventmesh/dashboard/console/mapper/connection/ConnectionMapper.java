@@ -35,16 +35,29 @@ import java.util.List;
 @Mapper
 public interface ConnectionMapper {
 
-    @Select("SELECT COUNT(*) FROM connection WHERE cluster_id=#{clusterId}")
+
+    @Select("SELECT COUNT(*) FROM connection WHERE cluster_id=#{clusterId} AND status=1")
     Integer selectConnectionNumByCluster(ConnectionEntity connectionEntity);
 
-    @Select("SELECT * FROM connection")
+    @Select("SELECT * FROM connection WHERE status=1")
     List<ConnectionEntity> selectAll();
 
-    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId}")
+    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND status=1")
     List<ConnectionEntity> selectByClusterId(ConnectionEntity connectionEntity);
 
-    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND source_id = #{sourceId} AND source_type = #{sourceType}")
+    @Select({
+        "<script>",
+        "SELECT * FROM connection",
+        "<where>",
+        "cluster_id = #{connectionEntity.clusterId} and status=1",
+        "<if test='connectionEntity.topic != null'>",
+        "and topic like CONCAT('%',#{connectionEntity.topic},'%')",
+        "</if>",
+        "</where>",
+        "</script>"})
+    List<ConnectionEntity> selectToFrontByClusterId(@Param("connectionEntity") ConnectionEntity connectionEntity);
+
+    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND source_id = #{sourceId} AND source_type = #{sourceType} AND status=1")
     public List<ConnectionEntity> selectByClusterIdSourceTypeAndSourceId(ConnectionEntity connectionEntity);
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND sink_id = #{sinkId} AND sink_type = #{sinkType}")
@@ -64,7 +77,7 @@ public interface ConnectionMapper {
     @Insert("INSERT INTO connection (cluster_id, source_type, source_id," + " sink_type, sink_id, runtime_id, status, topic, group_id, description)"
         + " VALUES ( #{clusterId}, #{sourceType}, #{sourceId}, "
         + " #{sinkType}, #{sinkId},  #{runtimeId}, #{status}, #{topic}, #{groupId}, #{description})")
-    void insert(ConnectionEntity connectionEntity);
+    Long insert(ConnectionEntity connectionEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert({

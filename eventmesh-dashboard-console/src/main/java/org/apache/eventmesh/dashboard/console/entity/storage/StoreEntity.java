@@ -41,8 +41,6 @@ public class StoreEntity extends BaseEntity {
 
     private String host;
 
-    private Long runtimeId;
-
     private String topicList;
 
     private Short diffType;

@@ -50,6 +50,10 @@ public class ConnectorEntity extends BaseEntity {
     @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")
     private Integer status;
 
+    private String host;
+
+    private Integer port;
+
     /**
      * @see KubernetesPodStatus
      */

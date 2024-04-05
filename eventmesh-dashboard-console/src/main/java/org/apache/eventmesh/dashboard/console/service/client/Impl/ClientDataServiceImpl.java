@@ -41,4 +41,12 @@ public class ClientDataServiceImpl implements ClientDataService {
     public void batchInsert(List<ClientEntity> clientEntityList) {
         clientMapper.batchInsert(clientEntityList);
     }
+
+    @Override
+    public List<ClientEntity> selectByHostPort(String host, Integer port) {
+        ClientEntity query = new ClientEntity();
+        query.setHost(host);
+        query.setPort(port);
+        return clientMapper.selectByHostPort(query);
+    }
 }

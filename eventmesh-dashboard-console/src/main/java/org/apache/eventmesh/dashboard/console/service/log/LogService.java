@@ -21,15 +21,16 @@ import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 /**
- *
  * operation service
- *
  */
 
+@Service
 public interface LogService {
 
-    List<LogEntity> getLogListByCluster(LogEntity logEntity);
+    List<LogEntity> getLogListByCluster(Integer pageIndex, Integer pageNum);
 
     Long addLog(LogEntity logEntity);
 

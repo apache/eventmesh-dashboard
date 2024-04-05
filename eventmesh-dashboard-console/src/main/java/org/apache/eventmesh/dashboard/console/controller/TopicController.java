@@ -17,67 +17,65 @@
 
 package org.apache.eventmesh.dashboard.console.controller;
 
-import org.apache.eventmesh.dashboard.common.dto.Result;
-import org.apache.eventmesh.dashboard.console.dto.CreateTopicRequest;
-import org.apache.eventmesh.dashboard.console.dto.DeleteTopicRequest;
-import org.apache.eventmesh.dashboard.service.dto.TopicProperties;
-import org.apache.eventmesh.dashboard.service.store.TopicCore;
+
+import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.topic.CreateTopicDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
+import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
+import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/topic")
 public class TopicController {
 
-    /**
-     * TODO expose implement by FunctionManager
-     */
-    TopicCore topicCore;
+    @Autowired
+    private TopicService topicService;
 
-    /**
-     * TODO Is OPTIONS method and @CrossOrigin necessary?
-     */
-    @CrossOrigin
-    @RequestMapping(method = RequestMethod.OPTIONS)
-    public ResponseEntity<Object> preflight() {
-        return ResponseEntity.ok()
-            .header("Access-Control-Allow-Origin", "*")
-            .header("Access-Control-Allow-Methods", "*")
-            .header("Access-Control-Allow-Headers", "*")
-            .header("Access-Control-Max-Age", "86400")
-            .build();
+
+    @PostMapping("/cluster/topic/topicList")
+    public List<TopicEntity> getTopicList(@Validated @RequestBody GetTopicListDTO getTopicListDTO) {
+        return topicService.getTopicListToFront(getTopicListDTO.getClusterId(), getTopicListDTO);
+
     }
 
-    @CrossOrigin
-    @GetMapping
-    public Result<List<TopicProperties>> getList() {
-        List<TopicProperties> topicList = topicCore.getTopics();
-        return Result.success(topicList);
+
+    @GetMapping("/cluster/topic/deleteTopic")
+    public String deleteTopic(TopicEntity topicEntity) {
+        try {
+            topicService.deleteTopic(topicEntity);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return "success";
     }
 
-    @CrossOrigin
-    @PostMapping
-    public Result<Object> create(@RequestBody CreateTopicRequest createTopicRequest) {
-        String topicName = createTopicRequest.getName();
-        topicCore.createTopic(topicName);
-        return Result.success();
+
+    @GetMapping("/cluster/topic/showCreateTopic")
+    public CreateTopicDTO showCreateTopicMessage() {
+        return new CreateTopicDTO();
     }
 
-    @CrossOrigin
-    @DeleteMapping
-    public Result<Object> delete(@RequestBody DeleteTopicRequest deleteTopicRequest) {
-        String topicName = deleteTopicRequest.getName();
-        topicCore.deleteTopic(topicName);
-        return Result.success();
+    @PostMapping("/cluster/topic/createTopic")
+    public String createTopic(@Validated @RequestBody CreateTopicDTO createTopicDTO) {
+        try {
+            topicService.createTopic(createTopicDTO);
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return "success";
     }
+
+    @GetMapping("/cluster/topic/getTopicDetailGroups")
+    public List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId) {
+        return topicService.getTopicDetailGroups(topicId);
+    }
+
 }
