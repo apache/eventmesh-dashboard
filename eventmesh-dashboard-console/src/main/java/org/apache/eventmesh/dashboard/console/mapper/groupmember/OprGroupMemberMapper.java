@@ -20,7 +20,6 @@ package org.apache.eventmesh.dashboard.console.mapper.groupmember;
 
 import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -68,7 +67,7 @@ public interface OprGroupMemberMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void updateGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Delete("UPDATE group_member SET status=0 WHERE id=#{id} ")
+    @Update("UPDATE group_member SET status=0 WHERE id=#{id} ")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
 

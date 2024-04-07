@@ -20,7 +20,6 @@ package org.apache.eventmesh.dashboard.console.mapper.topic;
 
 import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -94,7 +93,7 @@ public interface TopicMapper {
     @Update("UPDATE topic SET create_progress=#{createProgress} WHERE id=#{id}")
     void updateTopicCreateProgress(TopicEntity topicEntity);
 
-    @Delete("UPDATE `topic` SET status=0 WHERE id=#{id}")
+    @Update("UPDATE `topic` SET status=0 WHERE id=#{id}")
     void deleteTopic(TopicEntity topicEntity);
 
     @Select("SELECT * FROM topic WHERE cluster_id=#{clusterId} AND topic_name=#{topicName}")

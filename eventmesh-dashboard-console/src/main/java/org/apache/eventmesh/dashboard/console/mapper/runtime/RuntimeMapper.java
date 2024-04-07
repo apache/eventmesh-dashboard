@@ -19,7 +19,6 @@ package org.apache.eventmesh.dashboard.console.mapper.runtime;
 
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;

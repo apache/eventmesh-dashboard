@@ -19,7 +19,6 @@ package org.apache.eventmesh.dashboard.console.mapper.group;
 
 import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -64,7 +63,7 @@ public interface OprGroupMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer updateGroup(GroupEntity groupEntity);
 
-    @Delete("UPDATE `group` SET  status=1 WHERE id=#{id}")
+    @Update("UPDATE `group` SET  status=1 WHERE id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer deleteGroup(GroupEntity groupEntity);
 
