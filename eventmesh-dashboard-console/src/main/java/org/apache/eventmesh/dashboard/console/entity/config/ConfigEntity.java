@@ -65,4 +65,45 @@ public class ConfigEntity extends BaseEntity {
     private Integer isDefault;
 
     private Integer isModify;
+
+    private Integer alreadyUpdate;
+
+    public boolean matchVersion(String eventmeshVersion) {
+        return (xiaoyu(eventmeshVersion) && dayu(eventmeshVersion));
+    }
+
+
+    public boolean xiaoyu(String eventmeshVersion) {
+        String[] em = eventmeshVersion.split(".");
+        String[] startVersion = this.getStartVersion().split(".");
+        boolean flag = true;
+        for (int i = 0; i < em.length; i++) {
+            if (Integer.valueOf(em[i]) < Integer.valueOf(startVersion[i])) {
+                flag = false;
+                break;
+            } else if (Integer.valueOf(em[i]) == Integer.valueOf(startVersion[i])) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        return flag;
+    }
+
+    public boolean dayu(String eventmeshVersion) {
+        String[] em = eventmeshVersion.split(".");
+        String[] endVersion = this.getEndVersion().split(".");
+        boolean flag = true;
+        for (int i = 0; i < em.length; i++) {
+            if (Integer.valueOf(em[i]) < Integer.valueOf(endVersion[i])) {
+                break;
+            } else if (Integer.valueOf(em[i]) == Integer.valueOf(endVersion[i])) {
+                continue;
+            } else {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
 }

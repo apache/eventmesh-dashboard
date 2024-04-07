@@ -49,6 +49,9 @@ public interface ClientMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void batchInsert(List<ClientEntity> clientEntityList);
 
+    @Select("SELECT * FROM `client` WHERE `host` = #{host} AND `port` = #{port} AND status = 1")
+    List<ClientEntity> selectByHostPort(ClientEntity clientEntity);
+
     @Select("SELECT * FROM `client` WHERE `id` = #{id}")
     ClientEntity selectById(ClientEntity clientEntity);
 
@@ -66,6 +69,6 @@ public interface ClientMapper {
     void insert(ClientEntity clientEntity);
 
     @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE id = #{id}")
-    void deActive(ClientEntity clientEntity);
+    void deactivate(ClientEntity clientEntity);
 
 }

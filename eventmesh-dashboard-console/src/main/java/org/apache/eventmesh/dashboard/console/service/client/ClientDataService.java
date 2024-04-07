@@ -29,4 +29,6 @@ public interface ClientDataService {
     List<ClientEntity> selectAll();
 
     void batchInsert(List<ClientEntity> clientEntityList);
+
+    List<ClientEntity> selectByHostPort(String host, Integer port);
 }

@@ -26,7 +26,11 @@ import java.util.List;
  */
 public interface StoreService {
 
+    StoreEntity getStoreToFrontListByCluster(Long clusterId);
+
     List<StoreEntity> selectAll();
+
+    StoreEntity selectById(Long storeId);
 
     void batchInsert(List<StoreEntity> storeEntities);
 
@@ -34,7 +38,7 @@ public interface StoreService {
 
     void deleteStoreByUnique(StoreEntity storeEntity);
 
-    List<StoreEntity> selectStoreByCluster(Long clusterId);
+    StoreEntity selectStoreByCluster(Long clusterId);
 
     void updateStoreByUnique(StoreEntity storeEntity);
 }

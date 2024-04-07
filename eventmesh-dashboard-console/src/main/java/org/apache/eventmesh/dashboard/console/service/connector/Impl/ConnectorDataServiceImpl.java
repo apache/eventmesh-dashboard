@@ -38,4 +38,9 @@ public class ConnectorDataServiceImpl implements ConnectorDataService {
         connectorEntity.setClusterId(clusterId);
         return connectorMapper.selectByClusterId(connectorEntity);
     }
+
+    @Override
+    public List<ConnectorEntity> selectByHostPort(ConnectorEntity connectorEntity) {
+        return null;
+    }
 }
