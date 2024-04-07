@@ -47,7 +47,7 @@ public class RegistryDataServiceImpl implements RegistryDataService {
     }
 
     @Override
-    public void deActivate(MetaEntity metaEntity) {
-        metaMapper.deActivate(metaEntity);
+    public void deactivate(MetaEntity metaEntity) {
+        metaMapper.deactivate(metaEntity);
     }
 }

@@ -121,7 +121,7 @@ public class ClusterServiceImpl implements ClusterService {
 
     @Override
     public void deleteClusterById(ClusterEntity cluster) {
-        clusterMapper.deActivate(cluster);
+        clusterMapper.deactivate(cluster);
     }
 
 }

@@ -67,7 +67,7 @@ public interface ConnectorMapper {
     void active(ConnectorEntity connectorEntity);
 
     @Update("UPDATE connector SET status = 0 WHERE id = #{id}")
-    void deActivate(ConnectorEntity connectorEntity);
+    void deactivate(ConnectorEntity connectorEntity);
 
     @Update("UPDATE connector SET pod_state = #{podState} WHERE id = #{id}")
     void updatePodState(ConnectorEntity connectorEntity);
@@ -76,7 +76,7 @@ public interface ConnectorMapper {
     void updateConfigIds(ConnectorEntity connectorEntity);
 
     @Update("UPDATE connector SET status = 0 WHERE cluster_id = #{clusterId}")
-    void deActivateById(ConnectorEntity connectorEntity);
+    void deactivateById(ConnectorEntity connectorEntity);
 
     @Update({
         "<script>",
@@ -87,5 +87,5 @@ public interface ConnectorMapper {
         "   </foreach>",
         "</script>"
     })
-    void batchDeActivate(List<ConnectorEntity> connectorEntities);
+    void batchDeactivate(List<ConnectorEntity> connectorEntities);
 }

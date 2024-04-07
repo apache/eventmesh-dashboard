@@ -82,6 +82,6 @@ public interface RuntimeMapper {
     void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
 
     @Update("UPDATE runtime SET status = 0 WHERE id = #{id}")
-    void deActivate(RuntimeEntity runtimeEntity);
+    void deactivate(RuntimeEntity runtimeEntity);
 
 }

@@ -88,7 +88,7 @@ public class TestClusterMapper {
         ClusterEntity clusterEntity =
             new ClusterEntity(null, "cl1", "registerList", "server", "1.7.0", "null", "null", "null", "no", 0, 0, 0, null, null, 0);
         clusterMapper.addCluster(clusterEntity);
-        clusterMapper.deActivate(clusterEntity);
+        clusterMapper.deactivate(clusterEntity);
         ClusterEntity clusterEntity1 = clusterMapper.selectClusterById(clusterEntity);
         Assert.assertEquals(clusterEntity1, null);
     }

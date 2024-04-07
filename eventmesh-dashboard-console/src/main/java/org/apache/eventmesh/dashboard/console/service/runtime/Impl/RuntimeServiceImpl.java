@@ -96,7 +96,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public void deActivate(RuntimeEntity runtimeEntity) {
-        runtimeMapper.deActivate(runtimeEntity);
+    public void deactivate(RuntimeEntity runtimeEntity) {
+        runtimeMapper.deactivate(runtimeEntity);
     }
 }

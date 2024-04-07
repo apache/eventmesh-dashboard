@@ -44,5 +44,5 @@ public interface RuntimeService {
 
     void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    void deActivate(RuntimeEntity runtimeEntity);
+    void deactivate(RuntimeEntity runtimeEntity);
 }

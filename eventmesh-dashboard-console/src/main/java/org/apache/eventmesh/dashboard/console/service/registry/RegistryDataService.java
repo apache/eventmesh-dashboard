@@ -33,5 +33,5 @@ public interface RegistryDataService {
 
     public Long insert(MetaEntity metaEntity);
 
-    public void deActivate(MetaEntity metaEntity);
+    public void deactivate(MetaEntity metaEntity);
 }
