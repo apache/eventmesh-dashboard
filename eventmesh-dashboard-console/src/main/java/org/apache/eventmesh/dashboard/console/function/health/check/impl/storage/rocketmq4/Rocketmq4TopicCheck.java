@@ -19,9 +19,7 @@ package org.apache.eventmesh.dashboard.console.function.health.check.impl.storag
 
 import static org.apache.rocketmq.client.producer.SendStatus.SEND_OK;
 
-import org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant;
 import org.apache.eventmesh.dashboard.common.constant.health.HealthConstant;
-import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
@@ -57,7 +55,6 @@ import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@HealthCheckType(type = HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE, subType = HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_ROCKETMQ_TOPIC)
 public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
 
     private RemotingClient remotingClient;
