@@ -48,5 +48,5 @@ public interface ConnectionDataService {
 
     List<ConfigEntity> getConnectorConfigsByClassAndVersion(String classType, String version);
 
-    Long insert(ConnectionEntity connectionEntity);
+    void insert(ConnectionEntity connectionEntity);
 }

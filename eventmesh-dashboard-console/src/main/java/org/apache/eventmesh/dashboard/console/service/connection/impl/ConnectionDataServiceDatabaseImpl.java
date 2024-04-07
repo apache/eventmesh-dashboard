@@ -76,8 +76,8 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
     }
 
     @Override
-    public Long insert(ConnectionEntity connectionEntity) {
-        return connectionMapper.insert(connectionEntity);
+    public void insert(ConnectionEntity connectionEntity) {
+        connectionMapper.insert(connectionEntity);
     }
 
 

@@ -33,12 +33,6 @@ public class StoreServiceImpl implements StoreService {
     private StoreMapper storeMapper;
 
     @Override
-    public void updateConfigById(Long storeId) {
-
-    }
-
-
-    @Override
     public StoreEntity getStoreToFrontListByCluster(Long clusterId) {
         StoreEntity storeEntity = new StoreEntity();
         storeEntity.setClusterId(clusterId);

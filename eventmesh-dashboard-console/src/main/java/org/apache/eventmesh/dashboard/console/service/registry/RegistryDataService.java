@@ -27,11 +27,11 @@ import java.util.List;
  */
 public interface RegistryDataService {
 
-    public List<MetaEntity> selectAll();
+    List<MetaEntity> selectAll();
 
-    public List<Long> batchInsert(List<MetaEntity> metaEntities);
+    void batchInsert(List<MetaEntity> metaEntities);
 
-    public Long insert(MetaEntity metaEntity);
+    void insert(MetaEntity metaEntity);
 
-    public void deactivate(MetaEntity metaEntity);
+    void deactivate(MetaEntity metaEntity);
 }

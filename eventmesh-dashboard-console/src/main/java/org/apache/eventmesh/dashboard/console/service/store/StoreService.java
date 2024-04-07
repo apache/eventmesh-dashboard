@@ -26,8 +26,6 @@ import java.util.List;
  */
 public interface StoreService {
 
-    void updateConfigById(Long storeId);
-
     StoreEntity getStoreToFrontListByCluster(Long clusterId);
 
     List<StoreEntity> selectAll();

@@ -108,10 +108,8 @@ public class ClusterServiceImpl implements ClusterService {
     }
 
     @Override
-    public ClusterEntity selectClusterById(Long clusterId) {
-        ClusterEntity clusterEntity = new ClusterEntity();
-        clusterEntity.setId(clusterId);
-        return clusterMapper.selectClusterById(clusterEntity);
+    public ClusterEntity selectClusterById(ClusterEntity cluster) {
+        return clusterMapper.selectClusterById(cluster);
     }
 
     @Override
@@ -120,7 +118,7 @@ public class ClusterServiceImpl implements ClusterService {
     }
 
     @Override
-    public void deleteClusterById(ClusterEntity cluster) {
+    public void deactivate(ClusterEntity cluster) {
         clusterMapper.deactivate(cluster);
     }
 

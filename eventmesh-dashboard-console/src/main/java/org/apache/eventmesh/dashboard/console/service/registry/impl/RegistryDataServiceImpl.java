@@ -37,13 +37,13 @@ public class RegistryDataServiceImpl implements RegistryDataService {
     }
 
     @Override
-    public List<Long> batchInsert(List<MetaEntity> metaEntities) {
-        return metaMapper.batchInsert(metaEntities);
+    public void batchInsert(List<MetaEntity> metaEntities) {
+        metaMapper.batchInsert(metaEntities);
     }
 
     @Override
-    public Long insert(MetaEntity metaEntity) {
-        return metaMapper.insert(metaEntity);
+    public void insert(MetaEntity metaEntity) {
+        metaMapper.insert(metaEntity);
     }
 
     @Override

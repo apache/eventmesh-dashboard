@@ -57,8 +57,7 @@ public interface ClusterMapper {
     @Insert("INSERT INTO cluster (name, registry_name_list, bootstrap_servers, eventmesh_version, client_properties, "
         + "jmx_properties, reg_properties, description, auth_type, run_state,store_type) VALUES (#{name},#{registryNameList},"
         + "#{bootstrapServers},#{eventmeshVersion},#{clientProperties},#{jmxProperties},#{regProperties},#{description},#{authType},"
-        + "#{runState},#{storeType})"
-        + "ON DUPLICATE KEY UPDATE status = 1")
+        + "#{runState},#{storeType})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addCluster(ClusterEntity cluster);
 

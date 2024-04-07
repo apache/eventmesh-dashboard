@@ -41,9 +41,9 @@ public interface ClusterService {
 
     List<ClusterEntity> selectAllCluster();
 
-    ClusterEntity selectClusterById(Long cluster);
+    ClusterEntity selectClusterById(ClusterEntity cluster);
 
     void updateClusterById(ClusterEntity cluster);
 
-    void deleteClusterById(ClusterEntity cluster);
+    void deactivate(ClusterEntity cluster);
 }

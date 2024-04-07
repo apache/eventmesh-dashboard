@@ -33,7 +33,6 @@ import java.util.List;
 @Mapper
 public interface ConnectorMapper {
 
-
     @Select("SELECT * FROM connector WHERE status=1")
     ConnectorEntity selectAll();
 
@@ -76,7 +75,7 @@ public interface ConnectorMapper {
     void updateConfigIds(ConnectorEntity connectorEntity);
 
     @Update("UPDATE connector SET status = 0 WHERE cluster_id = #{clusterId}")
-    void deactivateById(ConnectorEntity connectorEntity);
+    void deactivateByClusterId(ConnectorEntity connectorEntity);
 
     @Update({
         "<script>",

@@ -61,11 +61,6 @@ public interface ConfigMapper {
     @Select("SELECT * FROM config WHERE status=1 AND is_default=0")
     List<ConfigEntity> selectAll();
 
-    /**
-     * todo Insertion of supplemental version number values;
-     *
-     * @param configEntityList
-     */
     @Insert({
         "<script>",
         "   INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version,",

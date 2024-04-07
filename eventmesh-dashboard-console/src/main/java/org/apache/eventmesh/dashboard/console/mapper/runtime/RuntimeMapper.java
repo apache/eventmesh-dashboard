@@ -52,8 +52,7 @@ public interface RuntimeMapper {
     void batchInsert(List<RuntimeEntity> runtimeEntities);
 
     @Insert("INSERT INTO runtime (cluster_id, host, storage_cluster_id, port, jmx_port, start_timestamp, rack, status, "
-        + "endpoint_map) VALUES(#{clusterId},#{host},#{storageClusterId},#{port},#{jmxPort},#{startTimestamp},#{rack},#{status},#{endpointMap})"
-        + " ON DUPLICATE KEY UPDATE status=1,start_timestamp = now()")
+        + "endpoint_map) VALUES(#{clusterId},#{host},#{storageClusterId},#{port},#{jmxPort},#{startTimestamp},#{rack},#{status},#{endpointMap})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addRuntime(RuntimeEntity runtimeEntity);
 
@@ -78,7 +77,7 @@ public interface RuntimeMapper {
     @Update("UPDATE runtime SET port=#{port} ,jmx_port=#{jmxPort} ,status=#{status} WHERE cluster_id=#{clusterId} AND status=1")
     void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    @Delete("UPDATE runtime SET status=0 WHERE cluster_id=#{clusterId}")
+    @Update("UPDATE runtime SET status=0 WHERE cluster_id=#{clusterId}")
     void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
 
     @Update("UPDATE runtime SET status = 0 WHERE id = #{id}")

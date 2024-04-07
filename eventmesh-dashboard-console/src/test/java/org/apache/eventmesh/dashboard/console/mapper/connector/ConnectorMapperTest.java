@@ -120,7 +120,7 @@ class ConnectorMapperTest {
     public void testDeActiveById() {
         ConnectorEntity connectorEntity = new ConnectorEntity();
         connectorEntity.setId(1L);
-        connectorMapper.deactivateById(connectorEntity);
+        connectorMapper.deactivateByClusterId(connectorEntity);
 
         connectorEntity = connectorMapper.selectById(connectorEntity);
         assertEquals(1, connectorEntity.getStatus());
