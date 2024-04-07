@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
-import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_SUBTYPE_ROCKETMQ_BROKER;
-import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_SUBTYPE_ROCKETMQ_NAMESERVER;
 import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_TYPE_KAFKA;
 import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_TYPE_PULSAR;
 import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_TYPE_RABBITMQ;
@@ -34,8 +32,6 @@ public enum StoreType {
 
     STANDALONE(0, STORE_TYPE_STANDALONE),
     ROCKETMQ(1, STORE_TYPE_ROCKETMQ),
-    ROCKETMQ_BROKER(11, STORE_SUBTYPE_ROCKETMQ_BROKER),
-    ROCKETMQ_NAMESERVER(12, STORE_SUBTYPE_ROCKETMQ_NAMESERVER),
     KAFKA(2, STORE_TYPE_KAFKA),
     PULSAR(3, STORE_TYPE_PULSAR),
     RABBITMQ(4, STORE_TYPE_RABBITMQ),

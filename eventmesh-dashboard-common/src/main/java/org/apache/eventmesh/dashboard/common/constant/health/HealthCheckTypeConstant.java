@@ -32,9 +32,7 @@ public class HealthCheckTypeConstant {
 
     public static final String HEALTH_CHECK_SUBTYPE_REDIS = StoreTypeConstant.STORE_TYPE_REDIS;
     public static final String HEALTH_CHECK_SUBTYPE_MYSQL = StoreTypeConstant.STORE_TYPE_MYSQL;
-    public static final String HEALTH_CHECK_SUBTYPE_ROCKETMQ_BROKER = StoreTypeConstant.STORE_SUBTYPE_ROCKETMQ_BROKER;
-    public static final String HEALTH_CHECK_SUBTYPE_ROCKETMQ_NAMESERVER = StoreTypeConstant.STORE_SUBTYPE_ROCKETMQ_NAMESERVER;
-    public static final String HEALTH_CHECK_SUBTYPE_ROCKETMQ_TOPIC = "rocketmq4-topic";
+    public static final String HEALTH_CHECK_SUBTYPE_ROCKETMQ = StoreTypeConstant.STORE_TYPE_ROCKETMQ;
 
     public static final String HEALTH_CHECK_SUBTYPE_NACOS_CONFIG = "nacos-config";
     public static final String HEALTH_CHECK_SUBTYPE_NACOS_REGISTRY = "nacos-registry";

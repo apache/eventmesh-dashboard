@@ -23,8 +23,6 @@ public class StoreTypeConstant {
     public static final String STORE_TYPE_REDIS = "redis";
     public static final String STORE_TYPE_MYSQL = "mysql";
     public static final String STORE_TYPE_ROCKETMQ = "rocketmq4";
-    public static final String STORE_SUBTYPE_ROCKETMQ_BROKER = "rocketmq4-broker";
-    public static final String STORE_SUBTYPE_ROCKETMQ_NAMESERVER = "rocketmq4-nameserver";
     public static final String STORE_TYPE_KAFKA = "kafka";
     public static final String STORE_TYPE_PULSAR = "pulsar";
     public static final String STORE_TYPE_RABBITMQ = "rabbitmq";
