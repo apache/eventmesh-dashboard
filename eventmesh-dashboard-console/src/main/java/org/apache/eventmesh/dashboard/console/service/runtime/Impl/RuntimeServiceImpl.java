@@ -22,7 +22,6 @@ import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.mapper.health.HealthCheckResultMapper;
 import org.apache.eventmesh.dashboard.console.mapper.runtime.RuntimeMapper;
-import org.apache.eventmesh.dashboard.console.modle.dto.runtime.DynamicGetRuntimeDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.runtime.GetRuntimeListDTO;
 import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
 
@@ -40,12 +39,8 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Autowired
     private HealthCheckResultMapper healthCheckResultMapper;
 
-    public RuntimeEntity setSearchCriteria(DynamicGetRuntimeDTO dynamicGetRuntimeDTO, RuntimeEntity runtimeEntity) {
-        if (dynamicGetRuntimeDTO != null) {
-            if (dynamicGetRuntimeDTO.getHost() != null) {
-                runtimeEntity.setHost(dynamicGetRuntimeDTO.getHost());
-            }
-        }
+    public RuntimeEntity setSearchCriteria(GetRuntimeListDTO getRuntimeListDTO, RuntimeEntity runtimeEntity) {
+        runtimeEntity.setHost(getRuntimeListDTO.getHost());
         return runtimeEntity;
     }
 
@@ -53,7 +48,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     public List<RuntimeEntity> getRuntimeToFrontByClusterId(Long clusterId, GetRuntimeListDTO getRuntimeListDTO) {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setClusterId(clusterId);
-        runtimeEntity = this.setSearchCriteria(getRuntimeListDTO.getDynamicGetRuntimeDTO(), runtimeEntity);
+        runtimeEntity = this.setSearchCriteria(getRuntimeListDTO, runtimeEntity);
         List<RuntimeEntity> runtimeByClusterId = runtimeMapper.getRuntimesToFrontByCluster(runtimeEntity);
         runtimeByClusterId.forEach(n -> {
             n.setStatus(CheckResultCache.getLastHealthyCheckResult("runtime", n.getId()));
@@ -101,7 +96,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public void deActive(RuntimeEntity runtimeEntity) {
-        runtimeMapper.deActive(runtimeEntity);
+    public void deActivate(RuntimeEntity runtimeEntity) {
+        runtimeMapper.deActivate(runtimeEntity);
     }
 }

@@ -69,5 +69,5 @@ public interface ClusterMapper {
     void updateClusterById(ClusterEntity cluster);
 
     @Update("UPDATE cluster SET status=0 WHERE id=#{id}")
-    void deActive(ClusterEntity clusterEntity);
+    void deActivate(ClusterEntity clusterEntity);
 }

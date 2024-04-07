@@ -22,7 +22,7 @@ import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.entity.config.DefaultConfigKey;
 import org.apache.eventmesh.dashboard.console.mapper.config.ConfigMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.ChangeConfigDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.DynamicGetConfigDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigsLog;
 import org.apache.eventmesh.dashboard.console.service.config.ConfigService;
 
@@ -181,27 +181,27 @@ public class ConfigServiceImpl implements ConfigService {
         return configMapper.selectByInstanceId(config);
     }
 
-    public ConfigEntity setSearchCriteria(DynamicGetConfigDTO dynamicGetConfigDto, ConfigEntity configEntity) {
-        if (dynamicGetConfigDto != null) {
-            if (dynamicGetConfigDto.getConfigName() != null) {
-                configEntity.setConfigName(dynamicGetConfigDto.getConfigName());
+    public ConfigEntity setSearchCriteria(GetConfigsListDTO getConfigsListDTO, ConfigEntity configEntity) {
+        if (getConfigsListDTO != null) {
+            if (getConfigsListDTO.getConfigName() != null) {
+                configEntity.setConfigName(getConfigsListDTO.getConfigName());
             }
-            if (dynamicGetConfigDto.getIsModify() != null) {
-                configEntity.setIsModify(dynamicGetConfigDto.getIsModify());
+            if (getConfigsListDTO.getIsModify() != null) {
+                configEntity.setIsModify(getConfigsListDTO.getIsModify());
             }
-            if (dynamicGetConfigDto.getAlreadyUpdate() != null) {
-                configEntity.setAlreadyUpdate(dynamicGetConfigDto.getAlreadyUpdate());
+            if (getConfigsListDTO.getAlreadyUpdate() != null) {
+                configEntity.setAlreadyUpdate(getConfigsListDTO.getAlreadyUpdate());
             }
         }
         return configEntity;
     }
 
     @Override
-    public List<ConfigEntity> selectToFront(Long instanceId, Integer type, DynamicGetConfigDTO dynamicGetConfigDto) {
+    public List<ConfigEntity> selectToFront(Long instanceId, Integer type, GetConfigsListDTO getConfigsListDTO) {
         ConfigEntity config = new ConfigEntity();
         config.setInstanceId(instanceId);
         config.setInstanceType(type);
-        config = this.setSearchCriteria(dynamicGetConfigDto, config);
+        config = this.setSearchCriteria(getConfigsListDTO, config);
         return configMapper.getConfigsToFrontWithDynamic(config);
     }
 

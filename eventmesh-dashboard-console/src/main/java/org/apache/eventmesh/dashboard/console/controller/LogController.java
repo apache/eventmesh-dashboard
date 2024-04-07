@@ -18,12 +18,15 @@
 package org.apache.eventmesh.dashboard.console.controller;
 
 import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
 import org.apache.eventmesh.dashboard.console.service.log.LogService;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -32,9 +35,9 @@ public class LogController {
     @Autowired
     private LogService logService;
 
-    @GetMapping("/cluster/log/getList")
-    public List<LogEntity> getLogLIstToFront(Integer pageIndex, Integer pageNum) {
-        return logService.getLogListByCluster(pageIndex, pageNum);
+    @PostMapping("/cluster/log/getList")
+    public List<LogEntity> getLogLIstToFront(@Validated @RequestBody GetLogListDTO getLogListDTO) {
+        return logService.getLogListByCluster(getLogListDTO);
     }
 
 }

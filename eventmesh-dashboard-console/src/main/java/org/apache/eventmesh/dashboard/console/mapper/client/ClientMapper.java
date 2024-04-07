@@ -69,6 +69,6 @@ public interface ClientMapper {
     void insert(ClientEntity clientEntity);
 
     @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE id = #{id}")
-    void deActive(ClientEntity clientEntity);
+    void deActivate(ClientEntity clientEntity);
 
 }

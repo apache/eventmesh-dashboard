@@ -29,5 +29,5 @@ public class GetTopicListDTO {
 
     private Long clusterId;
 
-    private DynamicGetTopicDTO dynamicGetTopicDTO;
+    private String topicName;
 }

@@ -28,6 +28,6 @@ public class GetConnectionListDTO {
 
     private Long clusterId;
 
-    private DynamicGetConnectionDTO dynamicGetConnectionDTO;
+    private String topicName;
 
 }

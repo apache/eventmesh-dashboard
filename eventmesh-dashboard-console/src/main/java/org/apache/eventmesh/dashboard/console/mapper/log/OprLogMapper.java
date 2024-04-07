@@ -51,7 +51,7 @@ public interface OprLogMapper {
         "</script>"})
     List<LogEntity> getLogList(LogEntity logEntity);
 
-    @Insert("INSERT INTO operation_log ( cluster_id, operation_type,target_Type, content,operation_user,result)"
+    @Insert("INSERT INTO operation_log ( cluster_id, operation_type,target_type, content,operation_user,result)"
         + "VALUE (#{clusterId},#{operationType},#{targetType},#{content},#{operationUser},#{result})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Long addLog(LogEntity logEntity);
@@ -59,6 +59,27 @@ public interface OprLogMapper {
     @Update("UPDATE operation_log SET state=#{state} ,result=#{result} WHERE id=#{id}")
     Integer updateLog(LogEntity logEntity);
 
-    @Select("SELECT * FROM operation_log WHERE is_delete=0")
-    List<LogEntity> getLogListToFront(Integer pageIndex, Integer pageNum);
+    @Select({
+        "<script>",
+        "SELECT * FROM operation_log",
+        "<where>",
+        "<if test='clusterId != null'>",
+        "AND cluster_id = #{clusterId}",
+        "</if>",
+        "<if test='operationType != null'>",
+        "AND operation_type = #{operationType}",
+        "</if>",
+        "<if test='targetType != null'>",
+        "AND target_type = #{targetType}",
+        "</if>",
+        "<if test='state != null'>",
+        "AND state = #{state}",
+        "</if>",
+        "<if test='operationUser != null'>",
+        "AND operation_user = #{operationUser}",
+        "</if>",
+        "</where>",
+        "</script>"
+    })
+    List<LogEntity> getLogListToFront(LogEntity logEntity);
 }

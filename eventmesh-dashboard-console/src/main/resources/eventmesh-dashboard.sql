@@ -47,8 +47,10 @@ create table config
     id                bigint unsigned auto_increment
         primary key,
     cluster_id        bigint        default -1                not null comment '集群ID',
-    business_type     varchar(64)   default ''                not null comment '业务类型',
-    instance_type     tinyint                                 not null comment '配置类型 0:runtime,1:storage,2:connector,3:topic',
+    business_type     varchar(64)   default ''                not null comment '业务类型,storage:可选值(rocketmq,pravega,mongodb,pulsar,redis,kafka
+    ,knative,rabbitmq),sinkConnector:可选值(rocketmq,spring,pravega,wechat,openfunction,file,knative,pulsar,lark,slack,rabbitmq,redis,mongodb,dingtalk)
+    ,sourceConnector:可选值(rocketmq,spring,pravega,openfunction,jdbc,file,http,wecom,knative,pulsar,prometheus,rabbitmq,redis,mongodb)',
+    instance_type     tinyint                                 not null comment '实例类型 0:runtime,1:storage,2:connector,3:topic',
     instance_id       bigint        default -1                not null comment '实例ID，上面配置对应的(比如runtime)的id',
     config_name       varchar(192)  default ''                not null comment '配置名称',
     config_value      text null comment '配置值',

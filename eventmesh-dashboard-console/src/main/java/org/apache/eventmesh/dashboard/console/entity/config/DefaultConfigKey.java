@@ -30,6 +30,4 @@ public class DefaultConfigKey {
     private String businessType;
 
     private String configName;
-
-
 }

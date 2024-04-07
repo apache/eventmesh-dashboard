@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.dto.config;
+package org.apache.eventmesh.dashboard.console.modle.dto.log;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,11 +24,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class DynamicGetConfigDTO {
+public class GetLogListDTO {
 
-    private String configName;
+    private String operationType;
 
-    private Integer isModify;
+    private String targetType;
 
-    private Integer alreadyUpdate;
+    private Long clusterId;
+
+    private Integer state;
+
+    private String operationUser;
 }

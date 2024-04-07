@@ -32,5 +32,9 @@ public class GetConfigsListDTO {
 
     private Integer instanceType;
 
-    private DynamicGetConfigDTO dynamicGetConfigDto;
+    private String configName;
+
+    private Integer isModify;
+
+    private Integer alreadyUpdate;
 }

@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.linkage.log;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
 import org.apache.eventmesh.dashboard.console.service.group.GroupService;
 import org.apache.eventmesh.dashboard.console.service.log.LogService;
 
@@ -49,7 +50,7 @@ public class TestOprLog {
         LogEntity logEntity = new LogEntity(null, 1L, "add", "Group", 2, groupEntity1.toString(), null, null, null, null);
         logEntity.setResult(groupEntity.toString());
         logEntity.setId(groupEntity1.getId());
-        List<LogEntity> logListByCluster = logService.getLogListByCluster(0, 10);
+        List<LogEntity> logListByCluster = logService.getLogListByCluster(new GetLogListDTO());
         logListByCluster.get(0).setId(null);
         logListByCluster.get(0).setCreateTime(null);
         logListByCluster.get(0).setEndTime(null);

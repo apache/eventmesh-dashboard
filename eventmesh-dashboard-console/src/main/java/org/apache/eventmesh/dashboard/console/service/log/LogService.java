@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.service.log;
 
 import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface LogService {
 
-    List<LogEntity> getLogListByCluster(Integer pageIndex, Integer pageNum);
+    List<LogEntity> getLogListByCluster(GetLogListDTO getLogListDTO);
 
     Long addLog(LogEntity logEntity);
 

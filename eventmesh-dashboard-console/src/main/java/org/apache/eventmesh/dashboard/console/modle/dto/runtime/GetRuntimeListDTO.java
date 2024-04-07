@@ -28,6 +28,6 @@ public class GetRuntimeListDTO {
 
     private Long clusterId;
 
-    private DynamicGetRuntimeDTO dynamicGetRuntimeDTO;
+    private String host;
 
 }

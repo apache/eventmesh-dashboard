@@ -54,7 +54,7 @@ public class ConfigController {
     @PostMapping("/cluster/config/getInstanceDetailConfigs")
     public List<DetailConfigsVO> getInstanceDetailConfigs(@Validated @RequestBody GetConfigsListDTO getConfigsListDTO) {
         List<ConfigEntity> configEntityList = configService.selectToFront(getConfigsListDTO.getInstanceId(),
-            getConfigsListDTO.getInstanceType(), getConfigsListDTO.getDynamicGetConfigDto());
+            getConfigsListDTO.getInstanceType(), getConfigsListDTO);
         Map<String, String> stringStringConcurrentHashMap = configService.selectDefaultConfig(getConfigsListDTO.getBusinessType(),
             getConfigsListDTO.getInstanceId(), getConfigsListDTO.getInstanceType());
         ArrayList<DetailConfigsVO> showDetailConfigsVOS = new ArrayList<>();

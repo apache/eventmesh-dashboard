@@ -32,7 +32,6 @@ import org.apache.eventmesh.dashboard.console.mapper.runtime.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.storage.StoreMapper;
 import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.topic.CreateTopicDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.topic.DynamicGetTopicDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
 
@@ -171,12 +170,8 @@ public class TopicServiceImpl implements TopicService {
     }
 
 
-    public TopicEntity setSearchCriteria(DynamicGetTopicDTO dynamicGetTopicDTO, TopicEntity topicEntity) {
-        if (dynamicGetTopicDTO != null) {
-            if (dynamicGetTopicDTO.getTopicName() != null) {
-                topicEntity.setTopicName(dynamicGetTopicDTO.getTopicName());
-            }
-        }
+    public TopicEntity setSearchCriteria(GetTopicListDTO getTopicListDTO, TopicEntity topicEntity) {
+        topicEntity.setTopicName(getTopicListDTO.getTopicName());
         return topicEntity;
     }
 
@@ -184,7 +179,7 @@ public class TopicServiceImpl implements TopicService {
     public List<TopicEntity> getTopicListToFront(Long clusterId, GetTopicListDTO getTopicListDTO) {
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setClusterId(clusterId);
-        topicEntity = this.setSearchCriteria(getTopicListDTO.getDynamicGetTopicDTO(), topicEntity);
+        topicEntity = this.setSearchCriteria(getTopicListDTO, topicEntity);
         List<TopicEntity> topicEntityList = topicMapper.getTopicsToFrontByClusterId(topicEntity);
         topicEntityList.forEach(n -> {
             n.setStatus(CheckResultCache.getLastHealthyCheckResult("topic", n.getId()));

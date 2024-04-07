@@ -27,7 +27,6 @@ import org.apache.eventmesh.dashboard.console.mapper.connection.ConnectionMapper
 import org.apache.eventmesh.dashboard.console.mapper.connector.ConnectorMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.connection.AddConnectionDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.connection.CreateConnectionDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.connection.DynamicGetConnectionDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.connection.GetConnectionListDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.connection.ConnectionListVO;
 import org.apache.eventmesh.dashboard.console.service.connection.ConnectionDataService;
@@ -152,12 +151,8 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
         return connectionMapper.selectAll();
     }
 
-    public ConnectionEntity setSearchCriteria(DynamicGetConnectionDTO dynamicGetConnectionDTO, ConnectionEntity connectionEntity) {
-        if (dynamicGetConnectionDTO != null) {
-            if (dynamicGetConnectionDTO.getTopicName() != null) {
-                connectionEntity.setTopic(dynamicGetConnectionDTO.getTopicName());
-            }
-        }
+    public ConnectionEntity setSearchCriteria(GetConnectionListDTO getConnectionListDTO, ConnectionEntity connectionEntity) {
+        connectionEntity.setTopic(getConnectionListDTO.getTopicName());
         return connectionEntity;
     }
 
@@ -165,7 +160,7 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
     public List<ConnectionListVO> getConnectionToFrontByCluster(Long clusterId, GetConnectionListDTO getConnectionListDTO) {
         ConnectionEntity connectionEntity = new ConnectionEntity();
         connectionEntity.setClusterId(clusterId);
-        connectionEntity = this.setSearchCriteria(getConnectionListDTO.getDynamicGetConnectionDTO(), connectionEntity);
+        connectionEntity = this.setSearchCriteria(getConnectionListDTO, connectionEntity);
         List<ConnectionEntity> allConnectionsByClusterId = connectionMapper.selectToFrontByClusterId(connectionEntity);
         List<ConnectionListVO> connectionListVOs = new ArrayList<>();
         allConnectionsByClusterId.forEach(n -> {

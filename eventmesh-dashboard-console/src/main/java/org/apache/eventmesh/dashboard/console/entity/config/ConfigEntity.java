@@ -72,6 +72,7 @@ public class ConfigEntity extends BaseEntity {
         return (xiaoyu(eventmeshVersion) && dayu(eventmeshVersion));
     }
 
+
     public boolean xiaoyu(String eventmeshVersion) {
         String[] em = eventmeshVersion.split(".");
         String[] startVersion = this.getStartVersion().split(".");

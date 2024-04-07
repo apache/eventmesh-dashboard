@@ -19,6 +19,7 @@ package org.apache.eventmesh.dashboard.console.service.log;
 
 import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
 import org.apache.eventmesh.dashboard.console.mapper.log.OprLogMapper;
+import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
 
 import java.util.List;
 
@@ -32,8 +33,14 @@ public class LogServiceImpl implements LogService {
     OprLogMapper oprLogMapper;
 
     @Override
-    public List<LogEntity> getLogListByCluster(Integer pageIndex, Integer pageNum) {
-        return oprLogMapper.getLogListToFront(pageIndex, pageNum);
+    public List<LogEntity> getLogListByCluster(GetLogListDTO getLogListDTO) {
+        LogEntity logEntity = new LogEntity();
+        logEntity.setClusterId(getLogListDTO.getClusterId());
+        logEntity.setTargetType(getLogListDTO.getTargetType());
+        logEntity.setOperationType(getLogListDTO.getOperationType());
+        logEntity.setState(getLogListDTO.getState());
+        logEntity.setOperationUser(getLogListDTO.getOperationUser());
+        return oprLogMapper.getLogListToFront(logEntity);
     }
 
     @Override

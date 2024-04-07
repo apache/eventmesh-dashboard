@@ -58,5 +58,5 @@ public interface MetaMapper {
     Long insert(MetaEntity metaEntity);
 
     @Update("UPDATE meta SET status = 0 WHERE id = #{id}")
-    void deActive(MetaEntity metaEntity);
+    void deActivate(MetaEntity metaEntity);
 }
