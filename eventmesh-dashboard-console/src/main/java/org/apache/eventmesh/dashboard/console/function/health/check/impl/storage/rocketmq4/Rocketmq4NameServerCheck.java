@@ -34,7 +34,7 @@ import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@HealthCheckType(type = HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE, subType = HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_ROCKETMQ_NAMESERVER)
+@HealthCheckType(type = HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE, subType = HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_ROCKETMQ)
 public class Rocketmq4NameServerCheck extends AbstractHealthCheckService {
 
     private RemotingClient remotingClient;

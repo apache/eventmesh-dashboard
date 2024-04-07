@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.common.constant.health;
 
+import org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant;
+
 public class HealthCheckTypeConstant {
 
     public static final String HEALTH_CHECK_TYPE_UNKNOWN = "unknown";
@@ -28,11 +30,9 @@ public class HealthCheckTypeConstant {
     public static final String HEALTH_CHECK_TYPE_META = "meta";
     public static final String HEALTH_CHECK_TYPE_TOPIC = "topic";
 
-    public static final String HEALTH_CHECK_SUBTYPE_REDIS = "redis";
-    public static final String HEALTH_CHECK_SUBTYPE_MYSQL = "mysql";
-    public static final String HEALTH_CHECK_SUBTYPE_ROCKETMQ_BROKER = "rocketmq4-broker";
-    public static final String HEALTH_CHECK_SUBTYPE_ROCKETMQ_NAMESERVER = "rocketmq4-nameserver";
-    public static final String HEALTH_CHECK_SUBTYPE_ROCKETMQ_TOPIC = "rocketmq4-topic";
+    public static final String HEALTH_CHECK_SUBTYPE_REDIS = StoreTypeConstant.STORE_TYPE_REDIS;
+    public static final String HEALTH_CHECK_SUBTYPE_MYSQL = StoreTypeConstant.STORE_TYPE_MYSQL;
+    public static final String HEALTH_CHECK_SUBTYPE_ROCKETMQ = StoreTypeConstant.STORE_TYPE_ROCKETMQ;
 
     public static final String HEALTH_CHECK_SUBTYPE_NACOS_CONFIG = "nacos-config";
     public static final String HEALTH_CHECK_SUBTYPE_NACOS_REGISTRY = "nacos-registry";
