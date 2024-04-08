@@ -1,0 +1,50 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# eventmesh cluster configs are stored in DB and below is a example which can be deleted after config mgmt completed
+#eventmesh:
+#  meta:
+#    # registry type: nacos, etcd
+#    type: nacos
+#    nacos:
+#      addr: 127.0.0.1:8848
+#      namespace: # namespace id, empty by default
+#      authEnabled: false
+#      protocol: http # http or https
+#      username:
+#      password:
+#      # Alibaba Cloud MSE Nacos auth, not nacos.token.secret.key
+#      accessKey:
+#      secretKey:
+#    etcd:
+#      addr: # TODO
+#    # timeout for admin client
+#    timeoutMs: 5000
+#  store:
+#    # Event Store type, should be consistent with the EventMesh Runtime configuration.
+#    type: rocketmq
+#    standalone:
+#    # TODO
+#    rocketmq:
+#      namesrvAddr: 127.0.0.1:9876;127.0.0.1:9876
+#      clusterName: DefaultCluster
+#      accessKey: '********'
+#      secretKey: '********'
+#    kafka:
+#      namesrvAddr: localhost:9092;localhost:9092
+#      partitions: 1
+#      replicationFactors: 1

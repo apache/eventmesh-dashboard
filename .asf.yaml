@@ -16,7 +16,7 @@
 #
 
 github:
-  description: EventMesh dashboard
+  description: EventMesh Dashboard
   features:
     # Enable issue management
     issues: true
@@ -25,9 +25,17 @@ github:
   homepage: https://eventmesh.apache.org/
   labels:
     - pubsub
+    - event-mesh
+    - admin
+    - dashboard
+    - event-driven
+    - cloud-native
+    - serverless
+    - serverless-workflow
+    - message-bus
   enabled_merge_buttons:
     squash:  true
-    merge:   true
+    merge:   false
     rebase:  false
   protected_branches:
     main:
@@ -35,11 +43,11 @@ github:
         strict: true
       required_pull_request_reviews:
         dismiss_stale_reviews: true
-        required_approving_review_count: 1
+        required_approving_review_count: 0 # Temporary 0 to allow committers to merge themselves PR
 notifications:
-    commits:      commits@eventmesh.apache.org
+    commits: commits@eventmesh.apache.org
     # Send all issue emails (new, closed, comments) to issues@
-    issues:       issues@eventmesh.apache.org
+    issues: issues@eventmesh.apache.org
     # Send new/closed PR notifications to dev@
     pullrequests_status: dev@eventmesh.apache.org
     # Send individual PR comments/reviews to issues@
