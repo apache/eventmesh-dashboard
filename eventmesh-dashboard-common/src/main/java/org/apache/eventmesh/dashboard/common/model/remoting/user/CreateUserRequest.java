@@ -17,9 +17,9 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.user;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.ServiceUserMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
 
 public class CreateUserRequest {
 
-    private ServiceUserMetadata serviceUserMetadata;
+    private InstanceUserMetadata instanceUserMetadata;
 }

@@ -19,10 +19,21 @@
     </properties>
 
     <dependencies>
+        <!-- Spring Boot Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
         <!-- EventMesh Dashboard modules -->
         <dependency>
             <groupId>org.apache.eventmesh.dashboard.common</groupId>
             <artifactId>eventmesh-dashboard-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.eventmesh.dashboard.core</groupId>
+            <artifactId>eventmesh-dashboard-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

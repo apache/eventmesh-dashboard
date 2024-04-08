@@ -18,12 +18,5 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.subscription;
 
 public class GetSubscriptionResponse {
-    // client name
-    private String clientName;
 
-    // group name
-    private String group;
-
-    // config content
-    private String subscription;
 }

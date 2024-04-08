@@ -43,7 +43,8 @@ public class TestConfigMapper {
     @Test
     public void testAddConfig() throws IllegalAccessException {
         ConfigEntity config = new ConfigEntity(null, 1L, "rocketmq", 2, 2L, "port",
-            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0, null, null, 0, 0);
+            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0,
+            null, null, 0, 0, 0);
         configMapper.addConfig(config);
         ConfigEntity configEntity = configMapper.selectByUnique(config);
         configEntity.setUpdateTime(null);
@@ -55,7 +56,8 @@ public class TestConfigMapper {
     @Test
     public void testDeleteConfig() {
         ConfigEntity config = new ConfigEntity(null, 1L, "rocketmq", 2, 2L, "port",
-            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0, null, null, 0, 0);
+            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0,
+            null, null, 0, 0, 0);
         configMapper.addConfig(config);
         configMapper.deleteConfig(config);
         ConfigEntity config1 = configMapper.selectByUnique(config);
@@ -65,9 +67,11 @@ public class TestConfigMapper {
     @Test
     public void testSelectByInstanceId() {
         ConfigEntity config = new ConfigEntity(null, 1L, "rocketmq", 2, 2L, "port",
-            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0, null, null, 0, 0);
+            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0,
+            null, null, 0, 0, 0);
         ConfigEntity config1 = new ConfigEntity(null, 1L, "rocketmq", 2, 2L, "name",
-            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0, null, null, 0, 0);
+            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0,
+            null, null, 0, 0, 0);
         configMapper.addConfig(config1);
         configMapper.addConfig(config);
         List<ConfigEntity> configEntityList = new ArrayList<>();
@@ -93,7 +97,8 @@ public class TestConfigMapper {
     @Test
     public void testUpdateConfig() {
         ConfigEntity config = new ConfigEntity(null, 1L, "rocketmq", 2, 2L, "port",
-            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 2, null, null, 0, 0);
+            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666",
+            2, null, null, 0, 0, 0);
         configMapper.addConfig(config);
         config.setConfigValue("127.1.1.1");
         configMapper.updateConfig(config);

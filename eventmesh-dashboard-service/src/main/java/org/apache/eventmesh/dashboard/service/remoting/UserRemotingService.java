@@ -27,9 +27,9 @@ import org.apache.eventmesh.dashboard.common.model.remoting.user.GetUserResult;
  */
 public interface UserRemotingService {
 
-    CreateUserRequest createServiceUser(CreateUserRequest request);
+    CreateUserRequest createInstanceUser(CreateUserRequest request);
 
-    DeleterUserRequest deleteServiceUser(DeleterUserRequest request);
+    DeleterUserRequest deleteInstanceUser(DeleterUserRequest request);
 
-    GetUserResult getServiceUser(GetUserRequest request);
+    GetUserResult getInstanceUser(GetUserRequest request);
 }

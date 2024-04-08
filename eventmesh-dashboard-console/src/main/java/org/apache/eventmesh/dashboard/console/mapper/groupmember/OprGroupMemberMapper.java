@@ -20,7 +20,6 @@ package org.apache.eventmesh.dashboard.console.mapper.groupmember;
 
 import org.apache.eventmesh.dashboard.console.entity.groupmember.GroupMemberEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -35,6 +34,12 @@ import java.util.List;
 
 @Mapper
 public interface OprGroupMemberMapper {
+
+    @Select("SELECT topic_name FROM group_member WHERE cluster_id=#{clusterId} AND group_name=#{groupName}")
+    List<String> selectTopicsByGroupNameAndClusterId(GroupMemberEntity groupMemberEntity);
+
+    @Select("SELECT DISTINCT (group_name) FROM group_member WHERE cluster_id=#{clusterId} AND topic_name=#{topicName}")
+    List<String> selectGroupNameByTopicName(GroupMemberEntity groupMemberEntity);
 
     @Select("SELECT * FROM group_member WHERE status=1")
     List<GroupMemberEntity> selectAll();
@@ -62,7 +67,7 @@ public interface OprGroupMemberMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void updateGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Delete("UPDATE group_member SET status=0 WHERE id=#{id} ")
+    @Update("UPDATE group_member SET status=0 WHERE id=#{id} ")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
 

@@ -87,7 +87,7 @@ class ClientMapperTest {
     public void testDeactivate() {
         ClientEntity clientEntity = new ClientEntity();
         clientEntity.setId(1L);
-        clientMapper.deActive(clientEntity);
+        clientMapper.deactivate(clientEntity);
         ClientEntity result = clientMapper.selectById(clientEntity);
         Assertions.assertEquals(0, result.getStatus());
         Assertions.assertNotEquals(result.getCreateTime(), result.getEndTime());

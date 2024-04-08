@@ -17,7 +17,12 @@
 
 package org.apache.eventmesh.dashboard.console.service.connection;
 
+import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
+import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.connection.CreateConnectionDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.connection.GetConnectionListDTO;
+import org.apache.eventmesh.dashboard.console.modle.vo.connection.ConnectionListVO;
 
 import java.util.List;
 
@@ -26,11 +31,22 @@ import java.util.List;
  */
 public interface ConnectionDataService {
 
-    Integer selectConnectionNumByCluster(Long clusterId);
+    ConnectorEntity getConnectorById(Long connectorId);
 
-    List<ConnectionEntity> getAllConnections();
+    List<String> getConnectorBusinessType(String type);
 
     List<ConnectionEntity> getAllConnectionsByClusterId(Long clusterId);
 
+    boolean createConnection(CreateConnectionDTO createConnectionDTO);
+
+    List<ConnectionEntity> getAllConnections();
+
+    List<ConnectionListVO> getConnectionToFrontByCluster(Long clusterId, GetConnectionListDTO getConnectionListDTO);
+
     void replaceAllConnections(List<ConnectionEntity> connectionEntityList);
+
+
+    List<ConfigEntity> getConnectorConfigsByClassAndVersion(String classType, String version);
+
+    void insert(ConnectionEntity connectionEntity);
 }

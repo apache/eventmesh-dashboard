@@ -15,20 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.model.metadata;
+package org.apache.eventmesh.dashboard.console.modle.dto.connection;
 
-import org.apache.eventmesh.dashboard.common.enums.StoreType;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * Service users are users that are used by components like mysql, kafka, etc.
- */
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class ServiceUserMetadata {
+public class AddConnectionDTO {
 
-    private String userName;
-    //service users are only store users by now
-    private StoreType serviceType;
-    private String password;
+    private String sinkName;
+
+    private String sourceName;
+
+    private String sinkClass;
+
+    private String sourceClass;
+
+    private String topicName;
+
+    private String sinkHost;
+
+    private String sourceHost;
+
+    private Integer sinkPort;
+
+    private Integer sourcePort;
+
+    private String sinkDescription;
+
+    private String sourceDescription;
+
+    private String connectionDescription;
+
+    private Long groupId;
 }

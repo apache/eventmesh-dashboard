@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.core.function.SDK;
 
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.operation.EtcdSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.NacosConfigSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.NacosNamingSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.NacosSDKOperation;
@@ -69,6 +70,8 @@ public class SDKManager {
         clientCreateOperationMap.put(SDKTypeEnum.META_NACOS, new NacosSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.META_NACOS_CONFIG, new NacosConfigSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.META_NACOS_NAMING, new NacosNamingSDKOperation());
+
+        clientCreateOperationMap.put(SDKTypeEnum.META_ETCD, new EtcdSDKOperation());
 
     }
 

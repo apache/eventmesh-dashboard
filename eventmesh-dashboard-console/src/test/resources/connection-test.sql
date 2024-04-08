@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
-DELETE FROM `eventmesh_dashboard_test`.connection WHERE TRUE;
-ALTER TABLE `eventmesh_dashboard_test`.connection AUTO_INCREMENT = 1;
+DELETE
+FROM `eventmesh_dashboard_test`.connection
+WHERE TRUE;
+ALTER TABLE `eventmesh_dashboard_test`.connection
+    AUTO_INCREMENT = 1;
 
-insert into `eventmesh_dashboard_test`.connection (id, cluster_id, source_type, source_id, sink_type, sink_id, runtime_id, status, topic, group_id, description, create_time, end_time, update_time)
-values  (1, 1, 'connector', 1, 'connector', 1, 1, 0, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11'),
-    (2, 1, 'connector', 2, 'connector', 2, 2, 0, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11'),
-    (3, 1, 'connector', 3, 'connector', 3, 3, 0, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11'),
-    (4, 2, 'connector', 1, 'connector', 1, 1, 0, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11'),
-    (5, 2, 'client', 5, 'client', 5, 5, 0, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11'),
-    (6, 3, 'client', 6, 'client', 6, 6, 0, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11');
+insert into `eventmesh_dashboard_test`.connection (id, cluster_id, source_type, source_id, sink_type, sink_id, runtime_id, status, topic, group_id,
+                                                   description, create_time, end_time, update_time)
+values (1, 1, 'connector', 1, 'connector', 1, 1, 1, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11'),
+       (2, 1, 'connector', 2, 'connector', 2, 2, 1, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11'),
+       (3, 1, 'connector', 3, 'connector', 3, 3, 1, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11'),
+       (4, 2, 'connector', 1, 'connector', 1, 1, 1, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11'),
+       (5, 2, 'client', 5, 'client', 5, 5, 1, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11'),
+       (6, 3, 'client', 6, 'client', 6, 6, 1, 'test-topic', -1, '', '2024-01-27 11:55:11', '2024-01-27 11:55:11', '2024-01-27 11:55:11');
 
 

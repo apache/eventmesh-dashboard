@@ -34,5 +34,5 @@ public enum SDKTypeEnum {
 
     META_NACOS_NAMING,
 
-
+    META_ETCD,
 }

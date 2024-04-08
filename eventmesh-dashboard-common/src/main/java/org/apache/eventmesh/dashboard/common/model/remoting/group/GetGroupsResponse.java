@@ -22,5 +22,6 @@ import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
 import java.util.List;
 
 public class GetGroupsResponse {
+
     private List<GroupMetadata> groupList;
 }
