@@ -45,13 +45,13 @@ is_process_running() {
 
 # Update the git repository
 cd $REPO_PATH
-git fetch origin dev
+git fetch origin main
 LOCAL=$(git rev-parse @)
-REMOTE=$(git rev-parse origin/dev)
+REMOTE=$(git rev-parse origin/main)
 
 if [ $LOCAL != $REMOTE ]; then
-    # If the remote dev branch is newer than the local one, update the local dev branch code
-    git pull origin dev
+    # If the remote branch is newer than the local one, update the local branch code
+    git pull origin main
 
     # Log the event
     echo "$(date +"%Y-%m-%d %H:%M:%S") - change detected." >> $AUTO_DEPLOY_LOG
@@ -76,7 +76,7 @@ if [ $LOCAL != $REMOTE ]; then
     # Log the event
     echo "$(date +"%Y-%m-%d %H:%M:%S") - start new application." >> $AUTO_DEPLOY_LOG
 else
-    # If there are no new changes in the remote dev branch
+    # If there are no new changes in the remote branch
     
     # Log the event
     echo "$(date +"%Y-%m-%d %H:%M:%S") - no change detected." >> $AUTO_DEPLOY_LOG
