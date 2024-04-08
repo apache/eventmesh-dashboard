@@ -54,7 +54,7 @@ body:
       label: EventMesh version
       description: Describe the EventMesh version.
       options:
-        - master
+        - main
         - 1.10.0
         - 1.9.0
         - 1.8.0
