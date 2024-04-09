@@ -42,7 +42,7 @@ public class EtcdSDKCreateOperationTest {
 
     private static final String value = "test";
 
-    private static final String url = "http://127.0.0.1:2379";
+    private static final String url = "http://locaholst:2379";
 
     @Test
     void testCreateClient() {
