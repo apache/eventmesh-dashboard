@@ -48,7 +48,7 @@ public class EtcdSDKOperation extends AbstractSDKOperation<KV> {
     }
 
     private static String[] getSplitEndpoints(CreateEtcdConfig etcdConfig) {
-        return etcdConfig.getEtcdServerAddress().split(",");
+        return etcdConfig.getEtcdServerAddress().split(";");
     }
 
     @Override

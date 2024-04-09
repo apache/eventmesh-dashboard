@@ -44,10 +44,6 @@ public class CreateRuntimeConfig implements CreateSDKConfig {
     // topic
     private String topic;
 
-    // grpc subscriptionItem
-    // private SubscriptionMode mode;
-    // private SubscriptionType type;
-
     // config
     private String env;
     private String idc;
