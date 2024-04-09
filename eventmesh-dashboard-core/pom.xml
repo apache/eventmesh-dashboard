@@ -52,6 +52,18 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+        <!-- eventmesh -->
+        <dependency>
+            <groupId>org.apache.eventmesh</groupId>
+            <artifactId>eventmesh-sdk-java</artifactId>
+            <version>1.10.0-release</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.eventmesh</groupId>
+            <artifactId>eventmesh-common</artifactId>
+            <version>1.10.0-release</version>
+        </dependency>
+
         <!-- meta -->
         <dependency>
             <groupId>com.alibaba.nacos</groupId>
@@ -62,6 +74,12 @@
             <groupId>io.etcd</groupId>
             <artifactId>jetcd-core</artifactId>
             <version>0.3.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.grpc</groupId>
+                    <artifactId>grpc-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Event Store -->

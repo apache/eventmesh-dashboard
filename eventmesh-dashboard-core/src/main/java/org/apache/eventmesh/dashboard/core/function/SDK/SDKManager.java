@@ -114,4 +114,9 @@ public class SDKManager {
     public Object getClient(SDKTypeEnum clientTypeEnum, String uniqueKey) {
         return this.clientMap.get(clientTypeEnum).get(uniqueKey);
     }
+
+    // get all client
+    public Map<String, Object> getClients(SDKTypeEnum clientTypeEnum) {
+        return this.clientMap.get(clientTypeEnum);
+    }
 }
