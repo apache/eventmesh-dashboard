@@ -26,5 +26,5 @@ import lombok.Data;
 @Data
 public class GetRuntimeResponse {
 
-    private List<RuntimeMetadata> runtimeMetadata;
+    private List<RuntimeMetadata> runtimeMetadataList;
 }

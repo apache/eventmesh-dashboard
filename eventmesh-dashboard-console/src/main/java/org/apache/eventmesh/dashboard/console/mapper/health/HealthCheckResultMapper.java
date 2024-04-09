@@ -35,6 +35,9 @@ import java.util.List;
 @Mapper
 public interface HealthCheckResultMapper {
 
+    @Select("SELECT * FROM health_check_result WHERE type_id = #{typeId} AND type=#{type} AND create_time>#{createTime}")
+    List<HealthCheckResultEntity> getInstanceLiveStatusHistory(HealthCheckResultEntity healthCheckResultEntity);
+
     @Select("SELECT * FROM health_check_result")
     List<HealthCheckResultEntity> selectAll();
 

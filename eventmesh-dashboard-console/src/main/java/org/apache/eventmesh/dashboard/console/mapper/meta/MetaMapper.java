@@ -19,7 +19,6 @@ package org.apache.eventmesh.dashboard.console.mapper.meta;
 
 import org.apache.eventmesh.dashboard.console.entity.meta.MetaEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -58,9 +57,6 @@ public interface MetaMapper {
         + " VALUES ( #{name}, #{type}, #{version}, #{clusterId}, #{host}, #{port}, #{role}, #{username}, #{params}, #{status})")
     void insert(MetaEntity metaEntity);
 
-    @Update("UPDATE meta SET status = #{status} WHERE id = #{id}")
-    void update(MetaEntity metaEntity);
-
-    @Delete("DELETE FROM meta WHERE id = #{id}")
-    void deleteById(MetaEntity metaEntity);
+    @Update("UPDATE meta SET status = 0 WHERE id = #{id}")
+    void deactivate(MetaEntity metaEntity);
 }

@@ -52,7 +52,8 @@ public class SyncConnectorConfigTask {
 
             ConfigEntity configEntity = this.getConfigEntityBelongInstance(clusterId, connectorEntity.getId());
 
-            ConcurrentHashMap<String, String> connectorConfigMapFromDb = this.configListToMap(configService.selectByInstanceId(configEntity));
+            ConcurrentHashMap<String, String> connectorConfigMapFromDb =
+                this.configListToMap(configService.selectByInstanceIdAndType(configEntity.getInstanceId(), configEntity.getInstanceType()));
 
             ConcurrentHashMap<String, String> updateConfigMap = new ConcurrentHashMap<>();
 

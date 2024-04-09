@@ -33,7 +33,32 @@ import java.util.List;
 @Mapper
 public interface ConfigMapper {
 
-    @Select("SELECT * FROM config WHERE status=1")
+    @Select({
+        "<script>",
+        "SELECT * FROM config",
+        "<where>",
+        "instance_type = #{instanceType} and instance_id = #{instanceId}",
+        "<if test='isModify != null'>",
+        "and is_modify = #{isModify}",
+        "</if>",
+        "<if test='alreadyUpdate != null'>",
+        "and already_update = #{alreadyUpdate}",
+        "</if>",
+        "<if test='configName != null'>",
+        "and config_name like CONCAT('%',#{configName},'%') and is_default=0",
+        "</if>",
+        "</where>",
+        "</script>"})
+    List<ConfigEntity> getConfigsToFrontWithDynamic(ConfigEntity configEntity);
+
+    @Select("SELECT * FROM config WHERE business_type=#{businessType} AND is_default=1")
+    List<ConfigEntity> selectConnectorConfigsByBusinessType(ConfigEntity configEntity);
+
+    @Select("SELECT DISTINCT business_type FROM config WHERE instance_type=2 AND is_default=1 AND business_type LIKE CONCAT('%',#{businessType},'%')")
+    List<String> selectConnectorBusinessType(ConfigEntity configEntity);
+
+
+    @Select("SELECT * FROM config WHERE status=1 AND is_default=0")
     List<ConfigEntity> selectAll();
 
     @Insert({
@@ -60,16 +85,18 @@ public interface ConfigMapper {
     @Update("UPDATE config SET status=0 WHERE id=#{id}")
     Integer deleteConfig(ConfigEntity configEntity);
 
-    @Update("UPDATE config SET config_value=#{configValue} WHERE status=1 AND edit=2")
+    @Update("UPDATE config SET config_value=#{configValue} ,already_update=#{alreadyUpdate} WHERE instance_type=#{instanceType} AND"
+        + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
     void updateConfig(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE business_type=#{businessType} AND instance_type=#{instanceType} "
-        + "AND instance_id=#{instanceId}")
+    @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId} AND is_default=0")
     List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE cluster_id=-1 AND business_type=#{businessType} AND instance_type=#{instanceType}")
+    @Select("SELECT * FROM config WHERE cluster_id=-1 AND business_type=#{businessType} AND instance_type=#{instanceType} AND is_default=1")
     List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
 
+    @Select("SELECT * FROM config WHERE is_default=1")
+    List<ConfigEntity> selectAllDefaultConfig();
 
     @Select("SELECT * FROM config WHERE cluster_id=#{clusterId} AND instance_type=#{instanceType} "
         + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")

@@ -54,7 +54,8 @@ public class SyncTopicConfigTask {
 
             ConfigEntity configEntity = this.getConfigEntityBelongInstance(clusterId, topicEntity.getId());
 
-            ConcurrentHashMap<String, String> topicConfigMapFromDb = this.configListToMap(configService.selectByInstanceId(configEntity));
+            ConcurrentHashMap<String, String> topicConfigMapFromDb =
+                this.configListToMap(configService.selectByInstanceIdAndType(configEntity.getInstanceId(), configEntity.getInstanceType()));
 
             ConcurrentHashMap<String, String> updateConfigMap = new ConcurrentHashMap<>();
 

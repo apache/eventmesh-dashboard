@@ -71,10 +71,11 @@ public class OprLog implements Ordered, ApplicationContextAware {
         try {
             proceed = joinPoint.proceed();
             logEntity.setState(2);
-            logEntity.setResult(Objects.isNull(proceed) ? "" : proceed.toString());
+            proceed = Objects.isNull(proceed) ? " " : proceed.toString();
             return proceed;
         } catch (Throwable e) {
             logEntity.setState(3);
+            proceed = "error:" + e.getMessage();
             throw new RuntimeException(e);
         } finally {
             logEntity.setResult(proceed.toString());

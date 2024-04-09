@@ -17,10 +17,6 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4;
 
-import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_ROCKETMQ_BROKER;
-import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE;
-
-import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
@@ -36,7 +32,6 @@ import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@HealthCheckType(type = HEALTH_CHECK_TYPE_STORAGE, subType = HEALTH_CHECK_SUBTYPE_ROCKETMQ_BROKER)
 public class Rocketmq4BrokerCheck extends AbstractHealthCheckService {
 
     private RemotingClient remotingClient;

@@ -19,10 +19,10 @@ package org.apache.eventmesh.dashboard.console.mapper.runtime;
 
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -33,6 +33,9 @@ import java.util.List;
  */
 @Mapper
 public interface RuntimeMapper {
+
+    @Select("SELECT COUNT(*) FROM runtime WHERE cluster_id=#{clusterId} AND status=1")
+    Integer getRuntimeNumByCluster(RuntimeEntity runtimeEntity);
 
     @Select("SELECT * FROM runtime WHERE status=1")
     List<RuntimeEntity> selectAll();
@@ -55,10 +58,28 @@ public interface RuntimeMapper {
     @Select("SELECT * FROM runtime WHERE cluster_id=#{clusterId} AND status=1")
     List<RuntimeEntity> selectRuntimeByCluster(RuntimeEntity runtimeEntity);
 
+    @Select({
+        "<script>",
+        "SELECT * FROM runtime",
+        "<where>",
+        "cluster_id =#{runtimeEntity.clusterId}",
+        "<if test='runtimeEntity.host!=null'>",
+        "and host like CONCAT('%',#{runtimeEntity.host},'%')",
+        "</if>",
+        "</where>",
+        "</script>"})
+    List<RuntimeEntity> getRuntimesToFrontByCluster(@Param("runtimeEntity") RuntimeEntity runtimeEntity);
+
+    @Select("SELECT * FROM runtime WHERE host = #{host} and port = #{port} and status = 1")
+    List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity);
+
     @Update("UPDATE runtime SET port=#{port} ,jmx_port=#{jmxPort} ,status=#{status} WHERE cluster_id=#{clusterId} AND status=1")
     void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    @Delete("UPDATE runtime SET status=0 WHERE cluster_id=#{clusterId}")
+    @Update("UPDATE runtime SET status=0 WHERE cluster_id=#{clusterId}")
     void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
+
+    @Update("UPDATE runtime SET status = 0 WHERE id = #{id}")
+    void deactivate(RuntimeEntity runtimeEntity);
 
 }

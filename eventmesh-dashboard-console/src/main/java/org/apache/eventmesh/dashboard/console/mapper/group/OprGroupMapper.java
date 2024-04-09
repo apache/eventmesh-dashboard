@@ -19,7 +19,6 @@ package org.apache.eventmesh.dashboard.console.mapper.group;
 
 import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
 
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -34,11 +33,17 @@ import java.util.List;
 @Mapper
 public interface OprGroupMapper {
 
+    @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND type=0 ")
+    GroupEntity selectGroupByNameAndClusterId(GroupEntity groupEntity);
+
     @Insert("INSERT INTO `group` (cluster_id, name, member_count, members, type, state)"
         + "VALUE (#{clusterId},#{name},#{memberCount},#{members},#{type},#{state}) "
         + "ON DUPLICATE KEY UPDATE status=1")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroup(GroupEntity groupEntity);
+
+    @Select("SELECT COUNT(*) FROM `group` WHERE cluster_id=#{clusterId} AND type=0")
+    Integer getConsumerNumByCluster(GroupEntity groupEntity);
 
     @Insert({
         "<script>",
@@ -58,7 +63,7 @@ public interface OprGroupMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer updateGroup(GroupEntity groupEntity);
 
-    @Delete("UPDATE `group` SET  status=1 WHERE id=#{id}")
+    @Update("UPDATE `group` SET  status=1 WHERE id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer deleteGroup(GroupEntity groupEntity);
 
