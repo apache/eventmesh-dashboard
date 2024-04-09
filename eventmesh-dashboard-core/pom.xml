@@ -62,7 +62,7 @@
             <groupId>org.apache.eventmesh</groupId>
             <artifactId>eventmesh-common</artifactId>
             <version>1.10.0-release</version>
-        </dependency
+        </dependency>
           
         <!-- Meta - nacos client -->
         <dependency>
