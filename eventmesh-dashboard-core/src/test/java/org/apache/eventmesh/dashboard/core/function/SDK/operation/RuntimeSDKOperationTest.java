@@ -62,6 +62,7 @@ class RuntimeSDKOperationTest {
             sdkWrapperSimpleEntry = runtimeSDKOperation.createClient(runtimeConfig);
             Assertions.assertEquals("127.0.0.1:10000", sdkWrapperSimpleEntry.getKey());
             Assertions.assertNotNull(sdkWrapperSimpleEntry.getValue().getTcpEventMeshClient());
+            sdkWrapperSimpleEntry.getValue().close();
         } catch (Exception e) {
             log.error("create runtime client failed", e);
             if (sdkWrapperSimpleEntry != null) {

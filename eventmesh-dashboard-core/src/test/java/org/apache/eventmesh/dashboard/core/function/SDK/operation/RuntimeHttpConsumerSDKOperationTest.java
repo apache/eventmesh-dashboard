@@ -51,6 +51,7 @@ public class RuntimeHttpConsumerSDKOperationTest {
                 .build();
             httpConsumerSimpleEntry = httpConsumerSDKOperation.createClient(runtimeConfig);
             Assertions.assertEquals("127.0.0.1:10105", httpConsumerSimpleEntry.getKey());
+            httpConsumerSimpleEntry.getValue().close();
         } catch (Exception e) {
             log.error("create runtime GRPC consumer client failed", e);
             if (httpConsumerSimpleEntry != null) {

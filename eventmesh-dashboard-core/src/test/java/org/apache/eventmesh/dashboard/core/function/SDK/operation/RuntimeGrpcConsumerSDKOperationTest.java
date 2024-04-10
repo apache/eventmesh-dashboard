@@ -45,6 +45,7 @@ public class RuntimeGrpcConsumerSDKOperationTest {
                 .build();
             grpcConsumerSimpleEntry = grpcConsumerSDKOperation.createClient(runtimeConfig);
             Assertions.assertEquals("127.0.0.1:10205", grpcConsumerSimpleEntry.getKey());
+            grpcConsumerSimpleEntry.getValue().close();
         } catch (Exception e) {
             log.error("create runtime GRPC consumer client failed", e);
             if (grpcConsumerSimpleEntry != null) {

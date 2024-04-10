@@ -60,6 +60,7 @@ public class RuntimeTcpCloudEventSDKOperationTest {
             log.info("{}", runtimeConfig);
             simpleEntry = runtimeTCPPushSDKOperation.createClient(runtimeConfig);
             Assertions.assertEquals("127.0.0.1:10000", simpleEntry.getKey());
+            simpleEntry.getValue().close();
         } catch (Exception e) {
             log.error("create runtime tcp CloudEvent client failed", e);
             if (simpleEntry != null) {

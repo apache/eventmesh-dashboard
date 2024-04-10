@@ -51,6 +51,7 @@ public class RuntimeHttpProducerSDKOperationTest {
                 .build();
             httpProducerSimpleEntry = httpProducerSDKOperation.createClient(runtimeConfig);
             Assertions.assertEquals("127.0.0.1:10105", httpProducerSimpleEntry.getKey());
+            httpProducerSimpleEntry.getValue().close();
         } catch (Exception e) {
             log.error("create runtime EventMesh HTTP producer client failed", e);
             if (httpProducerSimpleEntry != null) {

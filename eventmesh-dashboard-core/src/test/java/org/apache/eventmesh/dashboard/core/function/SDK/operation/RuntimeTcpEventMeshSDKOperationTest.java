@@ -60,6 +60,7 @@ public class RuntimeTcpEventMeshSDKOperationTest {
             log.info("{}", runtimeConfig);
             simpleEntry = eventMeshSDKOperation.createClient(runtimeConfig);
             Assertions.assertEquals("127.0.0.1:10000", simpleEntry.getKey());
+            simpleEntry.getValue().close();
         } catch (Exception e) {
             log.error("create runtime tcp EventMeshMessage client failed", e);
             if (simpleEntry != null) {

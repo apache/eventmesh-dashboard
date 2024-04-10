@@ -24,14 +24,17 @@ import org.apache.eventmesh.client.http.producer.EventMeshHttpProducer;
 import org.apache.eventmesh.client.tcp.impl.cloudevent.CloudEventTCPClient;
 import org.apache.eventmesh.client.tcp.impl.eventmeshmessage.EventMeshMessageTCPClient;
 import org.apache.eventmesh.client.tcp.impl.openmessage.OpenMessageTCPClient;
+import org.apache.eventmesh.common.exception.EventMeshException;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class RuntimeSDKWrapper {
 
     private CloudEventTCPClient tcpCloudEventClient;
@@ -61,8 +64,8 @@ public class RuntimeSDKWrapper {
             } else if (grpcConsumerClient != null) {
                 grpcConsumerClient.close();
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (EventMeshException e) {
+            log.error("runtime client close failed", e);
         }
     }
 }
