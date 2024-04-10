@@ -40,6 +40,18 @@
     </properties>
 
     <dependencies>
+        <!-- grpc -->
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-all</artifactId>
+            <version>1.51.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>32.1.3-jre</version>
+        </dependency>
+
         <!-- EventMesh Dashboard modules -->
         <dependency>
             <groupId>org.apache.eventmesh.dashboard.common</groupId>
@@ -51,6 +63,12 @@
             <artifactId>eventmesh-dashboard-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
+        <!--<dependency>-->
+        <!--    <groupId>io.grpc</groupId>-->
+        <!--    <artifactId>grpc-core</artifactId>-->
+        <!--    <version>1.50.2</version>-->
+        <!--</dependency>-->
 
         <!-- eventmesh -->
         <dependency>
@@ -64,7 +82,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
-          
+
+        <!--<dependency>-->
+        <!--    <groupId>io.grpc</groupId>-->
+        <!--    <artifactId>grpc-netty</artifactId>-->
+        <!--    <version>1.17.1</version>-->
+        <!--</dependency>-->
+
         <!-- Meta - nacos client -->
         <dependency>
             <groupId>com.alibaba.nacos</groupId>
@@ -74,13 +98,7 @@
         <dependency>
             <groupId>io.etcd</groupId>
             <artifactId>jetcd-core</artifactId>
-            <version>0.3.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.grpc</groupId>
-                    <artifactId>grpc-core</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>0.7.5</version>
         </dependency>
 
         <!-- health check client -->
