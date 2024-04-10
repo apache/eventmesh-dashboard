@@ -21,11 +21,13 @@ name: "Continuous Integration"
 
 on:
   push:
+    branches: [ '**' ]
     paths-ignore:
       - 'eventmesh-dashboard-core/src/test/java/org/apache/eventmesh/dashboard/core/function/SDK/**'
-    branches: [ '**' ]
   pull_request:
     branches: [ '**' ]
+    paths-ignore:
+      - 'eventmesh-dashboard-core/src/test/java/org/apache/eventmesh/dashboard/core/function/SDK/**'
 
 jobs:
   build:
