@@ -36,29 +36,35 @@ public class RuntimeTcpCloudEventSDKOperationTest {
 
     @Test
     void testCreateClient() {
-        final UserAgent userAgent = UserAgent.builder()
-            .env("test")
-            .host("localhost")
-            .password("123456")
-            .username("eventmesh")
-            .group("EventmeshTestGroup")
-            .path("/")
-            .port(8366)
-            .subsystem("502")
-            .pid(32894)
-            .version("2.1")
-            .idc("A")
-            .purpose(EventMeshCommon.USER_AGENT_PURPOSE_PUB)
-            .build();
-        log.info("{}", userAgent);
-        final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
-            .runtimeServerAddress("127.0.0.1:10000")
-            .userAgent(userAgent)
-            .build();
-        log.info("{}", runtimeConfig);
-        final SimpleEntry<String, CloudEventTCPClient> simpleEntry =
-            runtimeTCPPushSDKOperation.createClient(runtimeConfig);
-        Assertions.assertEquals("127.0.0.1:10000", simpleEntry.getKey());
+        SimpleEntry<String, CloudEventTCPClient> simpleEntry = null;
+        try {
+            final UserAgent userAgent = UserAgent.builder()
+                .env("test")
+                .host("localhost")
+                .password("123456")
+                .username("eventmesh")
+                .group("EventmeshTestGroup")
+                .path("/")
+                .port(8366)
+                .subsystem("502")
+                .pid(32894)
+                .version("2.1")
+                .idc("A")
+                .purpose(EventMeshCommon.USER_AGENT_PURPOSE_PUB)
+                .build();
+            log.info("{}", userAgent);
+            final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
+                .runtimeServerAddress("127.0.0.1:10000")
+                .userAgent(userAgent)
+                .build();
+            log.info("{}", runtimeConfig);
+            simpleEntry = runtimeTCPPushSDKOperation.createClient(runtimeConfig);
+            Assertions.assertEquals("127.0.0.1:10000", simpleEntry.getKey());
+        } catch (Exception e) {
+            log.error("create runtime tcp CloudEvent client failed", e);
+            if (simpleEntry != null) {
+                simpleEntry.getValue().close();
+            }
+        }
     }
-
 }

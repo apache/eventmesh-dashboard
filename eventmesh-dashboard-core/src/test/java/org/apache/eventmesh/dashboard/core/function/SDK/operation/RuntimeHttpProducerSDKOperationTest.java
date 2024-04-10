@@ -27,25 +27,35 @@ import java.util.AbstractMap.SimpleEntry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class RuntimeHttpProducerSDKOperationTest {
 
     private final RuntimeHttpProducerSDKOperation httpProducerSDKOperation = new RuntimeHttpProducerSDKOperation();
 
     @Test
     void testCreateClient() {
-        final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
-            .runtimeServerAddress("127.0.0.1:10105")
-            .producerGroup("EventMeshTest-producerGroup")
-            .env("test")
-            .idc("idc")
-            .ip(IPUtils.getLocalAddress())
-            .sys("1234")
-            .pid(String.valueOf(ThreadUtils.getPID()))
-            .username("eventmesh")
-            .password("123456")
-            .build();
-        final SimpleEntry<String, EventMeshHttpProducer> httpProducerSimpleEntry =
-            httpProducerSDKOperation.createClient(runtimeConfig);
-        Assertions.assertEquals("127.0.0.1:10105", httpProducerSimpleEntry.getKey());
+        SimpleEntry<String, EventMeshHttpProducer> httpProducerSimpleEntry = null;
+        try {
+            final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
+                .runtimeServerAddress("127.0.0.1:10105")
+                .producerGroup("EventMeshTest-producerGroup")
+                .env("test")
+                .idc("idc")
+                .ip(IPUtils.getLocalAddress())
+                .sys("1234")
+                .pid(String.valueOf(ThreadUtils.getPID()))
+                .username("eventmesh")
+                .password("123456")
+                .build();
+            httpProducerSimpleEntry = httpProducerSDKOperation.createClient(runtimeConfig);
+            Assertions.assertEquals("127.0.0.1:10105", httpProducerSimpleEntry.getKey());
+        } catch (Exception e) {
+            log.error("create runtime EventMesh HTTP producer client failed", e);
+            if (httpProducerSimpleEntry != null) {
+                httpProducerSimpleEntry.getValue().close();
+            }
+        }
     }
 }

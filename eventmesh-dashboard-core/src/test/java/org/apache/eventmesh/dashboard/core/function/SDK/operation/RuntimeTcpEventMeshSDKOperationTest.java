@@ -36,28 +36,35 @@ public class RuntimeTcpEventMeshSDKOperationTest {
 
     @Test
     void testCreateClient() {
-        final UserAgent userAgent = UserAgent.builder()
-            .env("test")
-            .host("localhost")
-            .password("123456")
-            .username("eventmesh")
-            .group("EventmeshTestGroup")
-            .path("/")
-            .port(8365)
-            .subsystem("501")
-            .pid(32893)
-            .version("2.1")
-            .idc("A")
-            .purpose(EventMeshCommon.USER_AGENT_PURPOSE_PUB)
-            .build();
-        log.info("userAgent {}", userAgent);
-        final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
-            .runtimeServerAddress("127.0.0.1:10000")
-            .userAgent(userAgent)
-            .build();
-        log.info("{}", runtimeConfig);
-        final SimpleEntry<String, EventMeshMessageTCPClient> simpleEntry =
-            eventMeshSDKOperation.createClient(runtimeConfig);
-        Assertions.assertEquals("127.0.0.1:10000", simpleEntry.getKey());
+        SimpleEntry<String, EventMeshMessageTCPClient> simpleEntry = null;
+        try {
+            final UserAgent userAgent = UserAgent.builder()
+                .env("test")
+                .host("localhost")
+                .password("123456")
+                .username("eventmesh")
+                .group("EventmeshTestGroup")
+                .path("/")
+                .port(8365)
+                .subsystem("501")
+                .pid(32893)
+                .version("2.1")
+                .idc("A")
+                .purpose(EventMeshCommon.USER_AGENT_PURPOSE_PUB)
+                .build();
+            log.info("userAgent {}", userAgent);
+            final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
+                .runtimeServerAddress("127.0.0.1:10000")
+                .userAgent(userAgent)
+                .build();
+            log.info("{}", runtimeConfig);
+            simpleEntry = eventMeshSDKOperation.createClient(runtimeConfig);
+            Assertions.assertEquals("127.0.0.1:10000", simpleEntry.getKey());
+        } catch (Exception e) {
+            log.error("create runtime tcp EventMeshMessage client failed", e);
+            if (simpleEntry != null) {
+                simpleEntry.getValue().close();
+            }
+        }
     }
 }

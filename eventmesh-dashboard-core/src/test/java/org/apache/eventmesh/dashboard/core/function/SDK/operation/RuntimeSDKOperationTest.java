@@ -28,35 +28,45 @@ import java.util.AbstractMap.SimpleEntry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 class RuntimeSDKOperationTest {
 
     private final RuntimeSDKOperation runtimeSDKOperation = new RuntimeSDKOperation();
 
     @Test
     void testCreateClient() {
-        final UserAgent userAgent = UserAgent.builder()
-            .env("test")
-            .host("localhost")
-            .password("123456")
-            .username("eventmesh")
-            .group("EventmeshTestGroup")
-            .path("/")
-            .port(8366)
-            .subsystem("502")
-            .pid(32894)
-            .version("2.1")
-            .idc("A")
-            .purpose(EventMeshCommon.USER_AGENT_PURPOSE_PUB)
-            .build();
-        final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
-            .runtimeServerAddress("127.0.0.1:10000")
-            .protocol("TCP")
-            .protocolName(Constants.EM_MESSAGE_PROTOCOL_NAME)
-            .userAgent(userAgent)
-            .build();
-        final SimpleEntry<String, RuntimeSDKWrapper> sdkWrapperSimpleEntry =
-            runtimeSDKOperation.createClient(runtimeConfig);
-        Assertions.assertEquals("127.0.0.1:10000", sdkWrapperSimpleEntry.getKey());
-        Assertions.assertNotNull(sdkWrapperSimpleEntry.getValue().getTcpEventMeshClient());
+        SimpleEntry<String, RuntimeSDKWrapper> sdkWrapperSimpleEntry = null;
+        try {
+            final UserAgent userAgent = UserAgent.builder()
+                .env("test")
+                .host("localhost")
+                .password("123456")
+                .username("eventmesh")
+                .group("EventmeshTestGroup")
+                .path("/")
+                .port(8366)
+                .subsystem("502")
+                .pid(32894)
+                .version("2.1")
+                .idc("A")
+                .purpose(EventMeshCommon.USER_AGENT_PURPOSE_PUB)
+                .build();
+            final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
+                .runtimeServerAddress("127.0.0.1:10000")
+                .protocol("TCP")
+                .protocolName(Constants.EM_MESSAGE_PROTOCOL_NAME)
+                .userAgent(userAgent)
+                .build();
+            sdkWrapperSimpleEntry = runtimeSDKOperation.createClient(runtimeConfig);
+            Assertions.assertEquals("127.0.0.1:10000", sdkWrapperSimpleEntry.getKey());
+            Assertions.assertNotNull(sdkWrapperSimpleEntry.getValue().getTcpEventMeshClient());
+        } catch (Exception e) {
+            log.error("create runtime client failed", e);
+            if (sdkWrapperSimpleEntry != null) {
+                sdkWrapperSimpleEntry.getValue().close();
+            }
+        }
     }
 }

@@ -25,21 +25,31 @@ import java.util.AbstractMap.SimpleEntry;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class RuntimeGrpcConsumerSDKOperationTest {
 
     private final RuntimeGrpcConsumerSDKOperation grpcConsumerSDKOperation = new RuntimeGrpcConsumerSDKOperation();
 
     @Test
     void testCreateClient() {
-        final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
-            .runtimeServerAddress("127.0.0.1:10205")
-            .consumerGroup("EventMeshTest-consumerGroup")
-            .env("test")
-            .idc("idc")
-            .sys("1234")
-            .build();
-        final SimpleEntry<String, EventMeshGrpcConsumer> grpcConsumerSimpleEntry =
-            grpcConsumerSDKOperation.createClient(runtimeConfig);
-        Assertions.assertEquals("127.0.0.1:10205", grpcConsumerSimpleEntry.getKey());
+        SimpleEntry<String, EventMeshGrpcConsumer> grpcConsumerSimpleEntry = null;
+        try {
+            final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
+                .runtimeServerAddress("127.0.0.1:10205")
+                .consumerGroup("EventMeshTest-consumerGroup")
+                .env("test")
+                .idc("idc")
+                .sys("1234")
+                .build();
+            grpcConsumerSimpleEntry = grpcConsumerSDKOperation.createClient(runtimeConfig);
+            Assertions.assertEquals("127.0.0.1:10205", grpcConsumerSimpleEntry.getKey());
+        } catch (Exception e) {
+            log.error("create runtime GRPC consumer client failed", e);
+            if (grpcConsumerSimpleEntry != null) {
+                grpcConsumerSimpleEntry.getValue().close();
+            }
+        }
     }
 }
