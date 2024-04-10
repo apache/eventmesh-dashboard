@@ -17,12 +17,22 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateRedisConfig implements CreateSDKConfig {
 
     private String redisUrl;
+
+    private String password;
+
+    private Integer timeOut;
 
     @Override
     public String getUniqueKey() {

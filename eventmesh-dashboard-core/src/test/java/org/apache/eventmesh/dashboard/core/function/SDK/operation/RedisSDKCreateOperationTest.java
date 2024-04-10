@@ -36,12 +36,16 @@ class RedisSDKCreateOperationTest {
 
     @Test
     void testCreateClient() {
-        CreateRedisConfig createClientConfig = new CreateRedisConfig();
-        createClientConfig.setRedisUrl("redis://localhost:6379");
+        CreateRedisConfig createClientConfig = CreateRedisConfig.builder()
+            .redisUrl("localhost:6379")
+            .password("")
+            .timeOut(5)
+            .build();
+        // createClientConfig.setRedisUrl("redis://localhost:6379");
         SimpleEntry<String, StatefulRedisConnection<String, String>> simpleEntry = null;
         try {
             simpleEntry = redisClientCreateOperation.createClient(createClientConfig);
-            assertEquals("redis://localhost:6379", simpleEntry.getKey());
+            assertEquals("localhost:6379", simpleEntry.getKey());
             String response = simpleEntry.getValue().sync().ping();
             log.info("response:{}", response);
             simpleEntry.getValue().close();
