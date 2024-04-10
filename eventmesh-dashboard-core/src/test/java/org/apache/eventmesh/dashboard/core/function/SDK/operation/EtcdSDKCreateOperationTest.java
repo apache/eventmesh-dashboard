@@ -46,8 +46,11 @@ public class EtcdSDKCreateOperationTest {
 
     @Test
     void testCreateClient() {
-        final CreateEtcdConfig etcdConfig = new CreateEtcdConfig();
-        etcdConfig.setEtcdServerAddress(url);
+        final CreateEtcdConfig etcdConfig = CreateEtcdConfig.builder()
+            .etcdServerAddress(url)
+            .connectTime(10L)
+            .build();
+        // etcdConfig.setEtcdServerAddress(url);
         SimpleEntry<String, KV> simpleEntry = null;
         try {
             simpleEntry = etcdSDKOperation.createClient(etcdConfig);
