@@ -46,6 +46,7 @@
             <artifactId>grpc-all</artifactId>
             <version>1.51.0</version>
         </dependency>
+        <!-- guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -64,12 +65,6 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--    <groupId>io.grpc</groupId>-->
-        <!--    <artifactId>grpc-core</artifactId>-->
-        <!--    <version>1.50.2</version>-->
-        <!--</dependency>-->
-
         <!-- eventmesh -->
         <dependency>
             <groupId>org.apache.eventmesh</groupId>
@@ -82,12 +77,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <!--<dependency>-->
-        <!--    <groupId>io.grpc</groupId>-->
-        <!--    <artifactId>grpc-netty</artifactId>-->
-        <!--    <version>1.17.1</version>-->
-        <!--</dependency>-->
 
         <!-- Meta - nacos client -->
         <dependency>
