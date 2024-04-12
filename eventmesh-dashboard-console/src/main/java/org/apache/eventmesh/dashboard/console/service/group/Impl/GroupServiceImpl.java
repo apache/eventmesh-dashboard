@@ -58,9 +58,8 @@ public class GroupServiceImpl implements GroupService {
 
     @EmLog(OprType = "add", OprTarget = "Group")
     @Override
-    public GroupEntity addGroup(GroupEntity groupEntity) {
+    public void addGroup(GroupEntity groupEntity) {
         oprGroupMapper.addGroup(groupEntity);
-        return groupEntity;
     }
 
     @Override

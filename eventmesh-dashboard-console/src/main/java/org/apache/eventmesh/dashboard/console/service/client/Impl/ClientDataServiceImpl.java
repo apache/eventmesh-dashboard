@@ -38,15 +38,27 @@ public class ClientDataServiceImpl implements ClientDataService {
     }
 
     @Override
+    public void deActive(ClientEntity clientEntity) {
+        clientMapper.deactivate(clientEntity);
+    }
+
+    @Override
+    public void deActiveByHostPort(ClientEntity clientEntity) {
+        clientMapper.deActiveByHostPort(clientEntity);
+    }
+
+    @Override
+    public Long addClient(ClientEntity clientEntity) {
+        return clientMapper.insert(clientEntity);
+    }
+
+    @Override
     public void batchInsert(List<ClientEntity> clientEntityList) {
         clientMapper.batchInsert(clientEntityList);
     }
 
     @Override
-    public List<ClientEntity> selectByHostPort(String host, Integer port) {
-        ClientEntity query = new ClientEntity();
-        query.setHost(host);
-        query.setPort(port);
-        return clientMapper.selectByHostPort(query);
+    public List<ClientEntity> selectByHostPort(ClientEntity clientEntity) {
+        return clientMapper.selectByHostPort(clientEntity);
     }
 }
