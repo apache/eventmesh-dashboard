@@ -20,8 +20,12 @@ package org.apache.eventmesh.dashboard.common.model.metadata;
 import org.apache.eventmesh.dashboard.common.enums.StoreType;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
+@NoArgsConstructor
 public class TopicMetadata extends MetadataConfig {
 
     private StoreType storeType;

@@ -17,7 +17,10 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 /**
  * This class is used to represent a piece of metadata, which can be used in create, update or delete operations to metadata service(eventmesh meta
@@ -25,6 +28,9 @@ import lombok.Data;
  * {@code this.setServiceTypeEnums(MetadataServiceTypeEnums.RUNTIME);}
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public class MetadataConfig {
 
     //eventmesh registry url
