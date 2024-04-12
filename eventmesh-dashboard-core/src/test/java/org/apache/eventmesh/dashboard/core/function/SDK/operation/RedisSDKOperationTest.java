@@ -30,7 +30,7 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-class RedisSDKCreateOperationTest {
+class RedisSDKOperationTest {
 
     private RedisSDKOperation redisClientCreateOperation = new RedisSDKOperation();
 
