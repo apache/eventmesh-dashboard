@@ -93,7 +93,7 @@ public class HealthExecutor {
     }
 
     /**
-     * this function should be called before any actual execute behaviour.<br> It will check the execution result of the last check cycle in the
+     * this function should be called before any actual execute behaviour.<p> It will check the execution result of the last check cycle in the
      * memory cache, set tasks that haven't finished status to time out and update the database.
      */
     public void startExecute() {
@@ -112,7 +112,7 @@ public class HealthExecutor {
     }
 
     /**
-     * this function should be called after all actual execute behaviour.<br> It will insert the result of this check cycle into the database. At this
+     * this function should be called after all actual execute behaviour.<p> It will insert the result of this check cycle into the database. At this
      * point the status of the tasks may be CHECKING, they will be updated on the next startExecute.
      */
     public void endExecute() {
@@ -133,6 +133,7 @@ public class HealthExecutor {
      */
     private void addToResultList(CheckResult result, ArrayList<HealthCheckResultEntity> resultList) {
         HealthCheckResultEntity newEntity = new HealthCheckResultEntity();
+
         newEntity.setClusterId(result.getConfig().getClusterId());
         newEntity.setType(HealthCheckType.toNumber(result.getConfig().getHealthCheckResourceType()));
         newEntity.setTypeId(result.getConfig().getInstanceId());

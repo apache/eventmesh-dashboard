@@ -35,12 +35,13 @@ class NacosConfigCheckTest {
 
     @BeforeEach
     public void init() {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.setInstanceId(1L);
-        config.setHealthCheckResourceType("meta");
-        config.setHealthCheckResourceSubType("nacos");
-        config.setClusterId(1L);
-        config.setConnectUrl("127.0.0.1:8848");
+        HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+            .instanceId(1L)
+            .healthCheckResourceType("meta")
+            .healthCheckResourceSubType("nacos")
+            .clusterId(1L)
+            .connectUrl("127.0.0.1:8848")
+            .build();
         nacosCheck = new NacosConfigCheck(config);
     }
 

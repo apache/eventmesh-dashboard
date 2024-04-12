@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.health.callback;
 import org.apache.eventmesh.dashboard.console.function.health.HealthExecutor;
 
 /**
- * Callback used by HealthService.doCheck to notify the caller of the result of the health check.<br>
+ * Callback used by HealthService.doCheck to notify the caller of the result of the health check.<p>
  * @see HealthExecutor
  */
 public interface HealthCheckCallback {

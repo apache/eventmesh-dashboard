@@ -22,10 +22,11 @@ import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthC
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.RedisCheck;
+import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4.Rocketmq4BrokerCheck;
+import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4.Rocketmq4NameServerCheck;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +36,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * HealthService is the manager of all health check services. It is responsible for creating, deleting and executing health check services.<br> In
- * this class there is a {@link HealthExecutor} which is used to execute health check services, and also a map to store all health check services.
- * when the function executeAll is called, health check service will be executed by {@link HealthExecutor}.
+ * HealthService is the manager of all health check services. It is responsible for creating, deleting and executing health check services.<p> In this
+ * class there is a {@link HealthExecutor} which is used to execute health check services, and also a map to store all health check services. when the
+ * function executeAll is called, health check service will be executed by {@link HealthExecutor}.
  */
 @Slf4j
 public class HealthService {
@@ -48,7 +51,7 @@ public class HealthService {
     private HealthExecutor healthExecutor;
 
     /**
-     * class cache used to build healthCheckService instance.<br> key: HealthCheckObjectConfig.SimpleClassName value: HealthCheckService
+     * class cache used to build healthCheckService instance.<p> key: HealthCheckObjectConfig.SimpleClassName value: HealthCheckService
      *
      * @see HealthCheckObjectConfig
      */
@@ -56,6 +59,8 @@ public class HealthService {
 
     static {
         setClassCache(RedisCheck.class);
+        setClassCache(Rocketmq4BrokerCheck.class);
+        setClassCache(Rocketmq4NameServerCheck.class);
     }
 
     private static void setClassCache(Class<?> clazz) {
@@ -63,7 +68,7 @@ public class HealthService {
     }
 
     /**
-     * This map is used to store HealthExecutor.<br> Outside key is Type(runtime, storage etc.), inside key is the id of type instance(runtimeId,
+     * This map is used to store HealthExecutor.<p> Outside key is Type(runtime, storage etc.), inside key is the id of type instance(runtimeId,
      * storageId etc.).
      *
      * @see AbstractHealthCheckService
@@ -98,22 +103,23 @@ public class HealthService {
                 for (Entry<String, Class<?>> entry : HEALTH_CHECK_CLASS_CACHE.entrySet()) {
                     Class<?> clazz = entry.getValue();
                     HealthCheckType annotation = clazz.getAnnotation(HealthCheckType.class);
-                    if (annotation != null && annotation.type().equals(config.getHealthCheckResourceType()) && annotation.subType()
+                    if (Objects.isNull(annotation)) {
+                        continue;
+                    }
+                    if (annotation.type().equals(config.getHealthCheckResourceType()) && annotation.subType()
                         .equals(config.getHealthCheckResourceSubType())) {
                         healthCheckService = createCheckService(clazz, config);
-                        break;
                     }
                 }
             }
+            // if all above creation method failed
+            if (Objects.isNull(healthCheckService)) {
+                throw new RuntimeException("No construct method of Health Check Service is found, config is {}" + config);
+            }
+            insertCheckService(healthCheckService);
         } catch (Exception e) {
             log.error("create healthCheckService failed, healthCheckObjectConfig:{}", config, e);
         }
-
-        // if all above creation method failed
-        if (Objects.isNull(healthCheckService)) {
-            throw new RuntimeException("No construct method of Health Check Service is found, config is {}" + config);
-        }
-        insertCheckService(healthCheckService);
     }
 
     public void insertCheckService(AbstractHealthCheckService checkService) {
@@ -134,6 +140,10 @@ public class HealthService {
         }
     }
 
+    public void replaceCheckService(List<HealthCheckObjectConfig> configList) {
+        checkServiceMap.clear();
+        insertCheckService(configList);
+    }
 
     public void createExecutor(HealthDataService dataService, CheckResultCache cache) {
         healthExecutor = new HealthExecutor();
@@ -142,21 +152,30 @@ public class HealthService {
     }
 
     public void executeAll() {
-        healthExecutor.startExecute();
+        try {
 
-        checkServiceMap.forEach((type, subMap) -> {
-            subMap.forEach((typeId, healthCheckService) -> {
-                healthExecutor.execute(healthCheckService);
+            healthExecutor.startExecute();
+
+            checkServiceMap.forEach((type, subMap) -> {
+                subMap.forEach((typeId, healthCheckService) -> {
+                    healthExecutor.execute(healthCheckService);
+                });
             });
-        });
+        } catch (Exception e) {
+            log.error("execute health check failed", e);
+        }
 
         healthExecutor.endExecute();
     }
 
-    private AbstractHealthCheckService createCheckService(Class<?> clazz, HealthCheckObjectConfig config)
-        throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Constructor<?> constructor = clazz.getConstructor(HealthCheckObjectConfig.class);
-        return (AbstractHealthCheckService) constructor.newInstance(config);
+    @NotNull
+    private AbstractHealthCheckService createCheckService(Class<?> clazz, HealthCheckObjectConfig config) {
+        try {
+            Constructor<?> constructor = clazz.getConstructor(HealthCheckObjectConfig.class);
+            return (AbstractHealthCheckService) constructor.newInstance(config);
+        } catch (Exception e) {
+            throw new RuntimeException("createCheckService failed", e);
+        }
     }
 
     /**

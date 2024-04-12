@@ -29,19 +29,20 @@ import org.junit.jupiter.api.Test;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-class NacosRegisterCheckTest {
+class NacosNamingServiceCheckTest {
 
-    private NacosRegisterCheck nacosRegisterCheck;
+    private NacosNamingServiceCheck nacosRegisterCheck;
 
     @BeforeEach
     public void init() {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.setInstanceId(1L);
-        config.setHealthCheckResourceType("meta");
-        config.setHealthCheckResourceSubType("nacos");
-        config.setClusterId(1L);
-        config.setConnectUrl("127.0.0.1:8848");
-        nacosRegisterCheck = new NacosRegisterCheck(config);
+        HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+            .instanceId(1L)
+            .healthCheckResourceType("meta")
+            .healthCheckResourceSubType("nacos")
+            .clusterId(1L)
+            .connectUrl("175.27.155.139:8848")
+            .build();
+        nacosRegisterCheck = new NacosNamingServiceCheck(config);
     }
 
     @Test
@@ -57,7 +58,7 @@ class NacosRegisterCheckTest {
             @Override
             public void onFail(Exception e) {
                 latch.countDown();
-                log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
+                log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e.getMessage());
             }
         });
         latch.await();
