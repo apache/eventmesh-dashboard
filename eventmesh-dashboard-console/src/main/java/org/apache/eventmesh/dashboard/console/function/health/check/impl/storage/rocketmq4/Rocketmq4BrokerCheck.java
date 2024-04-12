@@ -20,21 +20,24 @@ package org.apache.eventmesh.dashboard.console.function.health.check.impl.storag
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKManager;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqConfig;
 
 import org.apache.rocketmq.common.protocol.RequestCode;
 import org.apache.rocketmq.remoting.InvokeCallback;
 import org.apache.rocketmq.remoting.RemotingClient;
-import org.apache.rocketmq.remoting.netty.NettyClientConfig;
-import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
 import org.apache.rocketmq.remoting.netty.ResponseFuture;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
+
+import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Rocketmq4BrokerCheck extends AbstractHealthCheckService {
 
-    private RemotingClient remotingClient;
+    private CreateRocketmqConfig config;
 
 
     public Rocketmq4BrokerCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
@@ -45,7 +48,8 @@ public class Rocketmq4BrokerCheck extends AbstractHealthCheckService {
     public void doCheck(HealthCheckCallback callback) {
         try {
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_BROKER_RUNTIME_INFO, null);
-            remotingClient.invokeAsync(getConfig().getRocketmqConfig().getBrokerUrl(), request, getConfig().getRequestTimeoutMillis(),
+            RemotingClient client = (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, config.getUniqueKey());
+            client.invokeAsync(getConfig().getRocketmqConfig().getBrokerUrl(), request, getConfig().getRequestTimeoutMillis(),
                 new InvokeCallback() {
                     @Override
                     public void operationComplete(ResponseFuture responseFuture) {
@@ -65,28 +69,30 @@ public class Rocketmq4BrokerCheck extends AbstractHealthCheckService {
 
     @Override
     public void init() {
-        if (getConfig().getRocketmqConfig().getBrokerUrl() == null || getConfig().getRocketmqConfig().getBrokerUrl().isEmpty()) {
-            throw new IllegalArgumentException("RocketmqCheck failed. BrokerUrl is null.");
-        }
+        setBrokerUrl();
 
-        NettyClientConfig config = new NettyClientConfig();
-        config.setUseTLS(false);
-        remotingClient = new NettyRemotingClient(config);
-        remotingClient.start();
+        config = new CreateRocketmqConfig();
+        config.setBrokerUrl(getConfig().getRocketmqConfig().getBrokerUrl());
+        SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, config);
+    }
 
-        if (getConfig().getConnectUrl() == null || getConfig().getConnectUrl().isEmpty()) {
-            if (getConfig().getHost() != null && getConfig().getPort() != null) {
-                getConfig().setConnectUrl(getConfig().getHost() + ":" + getConfig().getPort());
-            }
+    private void setBrokerUrl() {
+        if (Objects.nonNull(getConfig().getRocketmqConfig()) && Objects.nonNull(getConfig().getRocketmqConfig().getBrokerUrl())) {
+            return;
         }
-
-        if (getConfig().getConnectUrl() == null) {
-            log.error("RocketmqCheck failed. ConnectUrl is null.");
+        if (Objects.nonNull(getConfig().getConnectUrl()) && !getConfig().getConnectUrl().isEmpty()) {
+            getConfig().getRocketmqConfig().setBrokerUrl(getConfig().getConnectUrl());
+            return;
         }
+        if (Objects.nonNull(getConfig().getHost()) && Objects.nonNull(getConfig().getPort())) {
+            getConfig().getRocketmqConfig().setBrokerUrl(getConfig().getHost() + ":" + getConfig().getPort());
+            return;
+        }
+        throw new RuntimeException("RocketmqNameServerCheck init failed, brokerUrl is empty");
     }
 
     @Override
     public void destroy() {
-
+        SDKManager.getInstance().deleteClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, config.getUniqueKey());
     }
 }

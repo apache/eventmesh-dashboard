@@ -28,16 +28,18 @@ import org.junit.jupiter.api.Test;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-class RocketmqNameserverCheckTest {
+class Rocketmq4BrokerCheckTest {
 
-    private Rocketmq4NameServerCheck rocketmqCheck;
+    private Rocketmq4BrokerCheck rocketmqCheck;
 
     @BeforeEach
     public void init() {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.getRocketmqConfig().setNameServerUrl("127.0.0.1:9876");
-        config.setRequestTimeoutMillis(1000L);
-        rocketmqCheck = new Rocketmq4NameServerCheck(config);
+        HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+            .host("127.0.0.1")
+            .port(10911)
+            .requestTimeoutMillis(1000L)
+            .build();
+        rocketmqCheck = new Rocketmq4BrokerCheck(config);
     }
 
     @Test

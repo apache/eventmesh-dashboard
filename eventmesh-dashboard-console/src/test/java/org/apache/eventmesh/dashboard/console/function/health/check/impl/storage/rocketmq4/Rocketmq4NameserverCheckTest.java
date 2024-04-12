@@ -28,35 +28,23 @@ import org.junit.jupiter.api.Test;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-class RocketmqTopicCheckTest {
+class Rocketmq4NameserverCheckTest {
 
-    private Rocketmq4TopicCheck rocketmqCheck;
+    private Rocketmq4NameServerCheck rocketmqCheck;
 
     @BeforeEach
-    public void init() throws InterruptedException {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.getRocketmqConfig().setBrokerUrl("127.0.0.1:10911");
-        config.getRocketmqConfig().setNameServerUrl("127.0.0.1:9876");
-        config.setRequestTimeoutMillis(1000000L);
-        rocketmqCheck = new Rocketmq4TopicCheck(config);
+    public void init() {
+        HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+
+            .connectUrl("127.0.0.1:9876")
+            .requestTimeoutMillis(1000L)
+            .build();
+        rocketmqCheck = new Rocketmq4NameServerCheck(config);
     }
 
     @Test
     public void testDoCheck() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(2);
-        rocketmqCheck.doCheck(new HealthCheckCallback() {
-            @Override
-            public void onSuccess() {
-                latch.countDown();
-                log.info("{} success", this.getClass().getSimpleName());
-            }
-
-            @Override
-            public void onFail(Exception e) {
-                latch.countDown();
-                log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
-            }
-        });
+        CountDownLatch latch = new CountDownLatch(1);
         rocketmqCheck.doCheck(new HealthCheckCallback() {
             @Override
             public void onSuccess() {
