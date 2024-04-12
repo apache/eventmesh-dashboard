@@ -19,22 +19,22 @@ package org.apache.eventmesh.dashboard.console.entity.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
-import java.sql.Timestamp;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true, exclude = "status")
 public class ClusterEntity extends BaseEntity {
-
-    private Long id;
 
     private String name;
 
-    private String registryNameList;
+    private String registryAddress;
 
     private String bootstrapServers;
 
@@ -54,12 +54,5 @@ public class ClusterEntity extends BaseEntity {
 
     private Integer status;
 
-    private Timestamp createTime;
-
-    private Timestamp updateTime;
-
-    /**
-     * @See StoreType
-     */
     private Integer storeType;
 }

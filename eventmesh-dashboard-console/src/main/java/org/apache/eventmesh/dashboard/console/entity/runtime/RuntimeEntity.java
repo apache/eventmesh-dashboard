@@ -23,16 +23,16 @@ import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
+@EqualsAndHashCode(callSuper = true, exclude = "status")
+@SuperBuilder
 public class RuntimeEntity extends BaseEntity {
-
-    private Long id;
-
     private Long clusterId;
 
     private String host;

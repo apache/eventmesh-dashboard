@@ -23,11 +23,15 @@ import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@SuperBuilder
 public class ConfigEntity extends BaseEntity {
 
     private Long id;
@@ -36,6 +40,9 @@ public class ConfigEntity extends BaseEntity {
 
     private String businessType;
 
+    /**
+     * config type 0:runtime,1:storage,2:connector,3:topic
+     */
     private Integer instanceType;
 
     private Long instanceId;

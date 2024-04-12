@@ -26,11 +26,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = "status")
+@SuperBuilder
 public class ClientEntity extends BaseEntity {
 
     private static final long serialVersionUID = 8204133370609215856L;

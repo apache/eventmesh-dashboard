@@ -23,11 +23,15 @@ import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true, exclude = "status")
 public class GroupEntity extends BaseEntity {
 
     private Long id;

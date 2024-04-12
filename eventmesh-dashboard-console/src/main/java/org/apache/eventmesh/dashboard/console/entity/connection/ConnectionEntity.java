@@ -21,13 +21,14 @@ import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 
 /**
@@ -36,6 +37,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = {"status", "endTime"})
+@SuperBuilder
 public class ConnectionEntity extends BaseEntity {
 
     private static final long serialVersionUID = 6565578252656944905L;
@@ -83,28 +86,7 @@ public class ConnectionEntity extends BaseEntity {
 
     private String description;
 
-    public void setDataStatus(RecordStatus dataStatus) {
-        this.status = dataStatus.getNumber();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ConnectionEntity that = (ConnectionEntity) o;
-        return Objects.equals(sourceType, that.sourceType)
-            && Objects.equals(sourceId, that.sourceId)
-
-            && Objects.equals(sinkType, that.sinkType)
-            && Objects.equals(sinkId, that.sinkId)
-
-            && Objects.equals(runtimeId, that.runtimeId)
-            && Objects.equals(status, that.status)
-
-            && Objects.equals(description, that.description);
+    public void setStatusEnum(RecordStatus statusEnum) {
+        this.status = statusEnum.getNumber();
     }
 }
