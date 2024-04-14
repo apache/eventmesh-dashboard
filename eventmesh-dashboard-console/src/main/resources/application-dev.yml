@@ -53,5 +53,24 @@ logging:
 mybatis:
   type-aliases-package: org.apache.eventmesh.dashboard.console.entity
 
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
 
+function:
+  healthCheck:
+    doCheck:
+      initialDelay: 60
+      period: 60
+    updateConfig:
+      initialDelay: 30
+      period: 60
+  sync:
+    enable: true
+    initialDelay: 120
+    period: 60
+    toDb:
+      runtime: true
 
