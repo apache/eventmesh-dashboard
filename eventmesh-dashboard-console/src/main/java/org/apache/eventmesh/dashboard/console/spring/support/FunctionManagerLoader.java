@@ -17,15 +17,20 @@
 
 package org.apache.eventmesh.dashboard.console.spring.support;
 
+import org.apache.eventmesh.dashboard.console.config.FunctionManagerConfigs;
 import org.apache.eventmesh.dashboard.console.function.health.HealthService;
-import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
+import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandlerWrapper;
+import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.SyncDataServiceWrapper;
+import org.apache.eventmesh.dashboard.console.service.DataServiceWrapper;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile("!test")
 @Component
 public class FunctionManagerLoader {
 
@@ -34,18 +39,34 @@ public class FunctionManagerLoader {
     private FunctionManagerProperties properties;
 
     @Autowired
-    private HealthDataService healthDataService;
+    private DataServiceWrapper dataServiceContainer;
+    @Autowired
+    private SyncDataServiceWrapper syncDataServiceWrapper;
+    @Autowired
+    private MetadataHandlerWrapper metadataHandlerWrapper;
+
+    @Autowired
+    private FunctionManagerConfigs functionManagerConfigs;
 
     @Bean
     public HealthService getHealthService() {
         return functionManager.getHealthService();
     }
 
+
     @PostConstruct
     void initManager() {
         functionManager = new FunctionManager();
+        properties = new FunctionManagerProperties();
+        properties.setDataServiceContainer(
+            dataServiceContainer);
+        properties.setSyncDataServiceWrapper(
+            syncDataServiceWrapper);
+        properties.setMetadataHandlerWrapper(metadataHandlerWrapper);
+
         functionManager.setProperties(properties);
-        functionManager.setHealthDataService(healthDataService);
+        functionManager.setConfigs(functionManagerConfigs);
         functionManager.initFunctionManager();
     }
+
 }
