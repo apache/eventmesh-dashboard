@@ -49,7 +49,7 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
 
     @Override
     public void addMetadata(RuntimeMetadata meta) {
-        ClusterEntity cluster = ClusterCache.getINSTANCE().getClusterByRegistryAddress(meta.getClusterRegistryAddress());
+        ClusterEntity cluster = ClusterCache.getINSTANCE().getClusterByRegistryAddress(meta.getRegistryAddress());
         if (Objects.isNull(cluster)) {
             log.info("new cluster detected syncing runtime, adding cluster to db, cluster:{}", meta.getClusterName());
             ClusterEntity clusterEntity = new ClusterEntity();

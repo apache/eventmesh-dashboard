@@ -27,7 +27,10 @@ import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateNacosConfig
 import org.apache.eventmesh.dashboard.service.remoting.MetaRemotingService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -47,24 +50,32 @@ public class NacosRuntimeCore implements MetaRemotingService {
 
         CompletableFuture<GetRuntimeResponse> future = CompletableFuture.supplyAsync(() -> {
             try {
-                List<Instance> instances =
-                    nacosNamingService.getAllInstances("EVENTMESH-runtime-GRPC", "GRPC-GROUP");
-                List<RuntimeMetadata> runtimeMetadataList = new ArrayList<>();
-                instances.forEach(instance -> {
-                    RuntimeMetadata runtimeMetadata = RuntimeMetadata.builder()
-                        .host(instance.getIp())
-                        .port(instance.getPort())
-                        .rack(instance.getClusterName())
-                        .storageClusterId(0L)
-                        .clusterName(Objects.isNull(instance.getClusterName()) ? instance.getClusterName() : "NORMAL")
-                        .clusterRegistryAddress(getRuntimeRequest.getRegistryAddress())
-                        .jmxPort(0)
-                        .endpointMap("")
-                        .build();
-                    runtimeMetadata.setRegistryAddress(getRuntimeRequest.getRegistryAddress());
-                    runtimeMetadataList.add(runtimeMetadata);
-                });
-                return new GetRuntimeResponse(runtimeMetadataList);
+                Map<String, RuntimeMetadata> runtimeMetadataMap = new HashMap<>();
+                //If service name or group name is changed, please modify the following code
+                List<String> protocols = Arrays.asList("GRPC", "HTTP", "TCP");
+
+                for (String protocol : protocols) {
+                    List<Instance> instances =
+                        nacosNamingService.getAllInstances("EVENTMESH-runtime-" + protocol, protocol + "-GROUP");
+                    instances.forEach(instance -> {
+                        if (!runtimeMetadataMap.containsKey(instance.getIp())) {
+                            RuntimeMetadata runtimeMetadata = RuntimeMetadata.builder()
+                                .host(instance.getIp())
+                                .port(instance.getPort())
+                                .rack(instance.getClusterName())
+                                .storageClusterId(0L)
+                                .clusterName(Objects.isNull(instance.getClusterName()) ? instance.getClusterName() : "NORMAL")
+                                .registryAddress(getRuntimeRequest.getRegistryAddress())
+                                .jmxPort(0)
+                                .endpointMap("")
+                                .build();
+                            runtimeMetadata.setRegistryAddress(getRuntimeRequest.getRegistryAddress());
+                            runtimeMetadataMap.put(instance.getIp(), runtimeMetadata);
+                        }
+                    });
+                }
+
+                return new GetRuntimeResponse(new ArrayList<>(runtimeMetadataMap.values()));
             } catch (NacosException e) {
                 throw new RuntimeException(e);
             }

@@ -285,7 +285,7 @@ CREATE TABLE `topic`
     `description`   varchar(1024)            DEFAULT '' COMMENT '备注信息',
     `create_time`   timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间(尽量与Topic实际创建时间一致)',
     `update_time`   timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间(尽量与Topic实际创建时间一致)',
-    `status`        int             NOT NULL DEFAULT '1',
+    `status`        int             NOT NULL DEFAULT 1,
     create_progress int             NOT NULL DEFAULT 1 COMMENT '0:创建成功，1：创建中，2：创建失败',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_cluster_phy_id_topic_name` (`cluster_id`, `topic_name`),
@@ -403,7 +403,7 @@ CREATE TABLE `meta`
     `role`        varchar(16)         NOT NULL DEFAULT '-1' COMMENT '角色, leader follower observer',
     `username`    varchar(192)        NOT NULL DEFAULT '' COMMENT '注册中心用户名',
     `params`      varchar(192)        NOT NULL DEFAULT '' COMMENT '注册中心启动参数',
-    `status`      tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '状态: 1启用，0未启用',
+    `status`      tinyint(4) unsigned NOT NULL DEFAULT 1 COMMENT '状态: 1启用，0未启用',
 
     `create_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',

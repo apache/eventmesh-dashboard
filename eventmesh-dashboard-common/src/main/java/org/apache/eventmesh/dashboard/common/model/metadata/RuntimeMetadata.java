@@ -19,6 +19,7 @@ package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -26,6 +27,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class RuntimeMetadata extends MetadataConfig {
 
     private String host;
@@ -43,6 +45,4 @@ public class RuntimeMetadata extends MetadataConfig {
     private Long startTimestamp;
 
     private String clusterName;
-
-    private String clusterRegistryAddress;
 }
