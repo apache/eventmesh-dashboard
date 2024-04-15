@@ -46,10 +46,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SDKManager {
 
-    private static final SDKManager INSTANCE = new SDKManager();
+    private static volatile SDKManager INSTANCE = null;
 
 
-    public static SDKManager getInstance() {
+    public static synchronized SDKManager getInstance() {
+        if (INSTANCE == null) {
+            synchronized (SDKManager.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new SDKManager();
+                }
+            }
+        }
         return INSTANCE;
     }
 

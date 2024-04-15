@@ -30,7 +30,8 @@ public class CreateEtcdConfig implements CreateSDKConfig {
 
     private String etcdServerAddress;
 
-    private Long connectTime;
+    @Builder.Default()
+    private int connectTime = 10;
 
     @Override
     public String getUniqueKey() {

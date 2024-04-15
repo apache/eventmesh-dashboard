@@ -32,7 +32,8 @@ public class CreateRedisConfig implements CreateSDKConfig {
 
     private String password;
 
-    private Integer timeOut;
+    @Builder.Default
+    private int timeOut = 10;
 
     @Override
     public String getUniqueKey() {
