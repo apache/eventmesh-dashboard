@@ -22,6 +22,7 @@ import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.wrapper.NacosSDKWrapper;
 
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Objects;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
@@ -34,8 +35,8 @@ public class NacosSDKOperation extends AbstractSDKOperation<NacosSDKWrapper> {
     @Override
     public SimpleEntry<String, NacosSDKWrapper> createClient(CreateSDKConfig createClientConfig) {
         SimpleEntry<String, ConfigService> configSimpleEntry = nacosConfigClientCreateOperation.createClient(createClientConfig);
-        SimpleEntry namingSimpleEntry = nacosNamingClientCreateOperation.createClient(createClientConfig);
-        if (configSimpleEntry.getKey() != namingSimpleEntry.getKey()) {
+        SimpleEntry<String, NamingService> namingSimpleEntry = nacosNamingClientCreateOperation.createClient(createClientConfig);
+        if (!Objects.equals(configSimpleEntry.getKey(), namingSimpleEntry.getKey())) {
             throw new RuntimeException("Nacos config and naming server address not match");
         }
         NacosSDKWrapper nacosClient = new NacosSDKWrapper(

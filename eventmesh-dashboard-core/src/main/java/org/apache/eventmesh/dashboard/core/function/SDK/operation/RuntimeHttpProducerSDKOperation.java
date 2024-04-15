@@ -17,33 +17,33 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
+import static org.apache.eventmesh.dashboard.core.function.SDK.util.RuntimeSDKOperationUtils.buildEventMeshHttpProducerConfig;
+
+import org.apache.eventmesh.client.http.conf.EventMeshHttpClientConfig;
+import org.apache.eventmesh.client.http.producer.EventMeshHttpProducer;
+import org.apache.eventmesh.common.exception.EventMeshException;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRedisConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRuntimeConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 
-import java.time.Duration;
 import java.util.AbstractMap.SimpleEntry;
 
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisURI;
-import io.lettuce.core.api.StatefulRedisConnection;
+import lombok.extern.slf4j.Slf4j;
 
-public class RedisSDKOperation extends AbstractSDKOperation<StatefulRedisConnection<String, String>> {
+@Slf4j
+public class RuntimeHttpProducerSDKOperation extends AbstractSDKOperation<EventMeshHttpProducer> {
 
     @Override
-    public SimpleEntry<String, StatefulRedisConnection<String, String>> createClient(CreateSDKConfig clientConfig) {
-        CreateRedisConfig redisConfig = (CreateRedisConfig) clientConfig;
-        String redisUrl = redisConfig.getRedisUrl();
-        String clientHost = redisUrl.split(":")[0];
-        int clientPort = Integer.parseInt(redisUrl.split(":")[1]);
-        RedisURI redisURI = RedisURI.builder()
-            .withHost(clientHost)
-            .withPort(clientPort)
-            .withPassword(redisConfig.getPassword())
-            .withTimeout(Duration.ofSeconds(redisConfig.getTimeOut()))
-            .build();
-        RedisClient redisClient = RedisClient.create(redisURI);
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), redisClient.connect());
+    public SimpleEntry<String, EventMeshHttpProducer> createClient(CreateSDKConfig clientConfig) {
+        final CreateRuntimeConfig runtimeConfig = (CreateRuntimeConfig) clientConfig;
+        final EventMeshHttpClientConfig httpClientConfig = buildEventMeshHttpProducerConfig(runtimeConfig);
+        EventMeshHttpProducer httpProducer = null;
+        try {
+            httpProducer = new EventMeshHttpProducer(httpClientConfig);
+        } catch (EventMeshException e) {
+            log.error("create runtime http Producer client failed", e);
+        }
+        return new SimpleEntry<>(clientConfig.getUniqueKey(), httpProducer);
     }
 
     @Override

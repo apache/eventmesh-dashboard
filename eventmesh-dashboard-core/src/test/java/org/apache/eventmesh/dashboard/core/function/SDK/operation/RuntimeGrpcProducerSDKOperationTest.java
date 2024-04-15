@@ -17,39 +17,39 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateEtcdConfig;
+import org.apache.eventmesh.client.grpc.producer.EventMeshGrpcProducer;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRuntimeConfig;
 
 import java.util.AbstractMap.SimpleEntry;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.etcd.jetcd.KV;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class EtcdSDKCreateOperationTest {
+public class RuntimeGrpcProducerSDKOperationTest {
 
-    private final EtcdSDKOperation etcdSDKOperation = new EtcdSDKOperation();
-
-    private static final String url = "http://localhost:2379";
+    private final RuntimeGrpcProducerSDKOperation grpcProducerSDKOperation = new RuntimeGrpcProducerSDKOperation();
 
     @Test
     void testCreateClient() {
-        final CreateEtcdConfig etcdConfig = CreateEtcdConfig.builder()
-            .etcdServerAddress(url)
-            .connectTime(5)
-            .build();
-        SimpleEntry<String, KV> simpleEntry = null;
+        SimpleEntry<String, EventMeshGrpcProducer> grpcProducerSimpleEntry = null;
         try {
-            simpleEntry = etcdSDKOperation.createClient(etcdConfig);
-            Assertions.assertEquals(url, simpleEntry.getKey());
-            simpleEntry.getValue().close();
+            final CreateRuntimeConfig runtimeConfig = CreateRuntimeConfig.builder()
+                .runtimeServerAddress("127.0.0.1:10205")
+                .producerGroup("EventMeshTest-producerGroup")
+                .env("test")
+                .idc("idc")
+                .sys("1234")
+                .build();
+            grpcProducerSimpleEntry = grpcProducerSDKOperation.createClient(runtimeConfig);
+            Assertions.assertEquals("127.0.0.1:10205", grpcProducerSimpleEntry.getKey());
+            grpcProducerSimpleEntry.getValue().close();
         } catch (Exception e) {
-            log.error("create etcd client failed", e);
-            if (simpleEntry != null) {
-                simpleEntry.getValue().close();
+            log.error("create runtime GRPC producer client failed", e);
+            if (grpcProducerSimpleEntry != null) {
+                grpcProducerSimpleEntry.getValue().close();
             }
         }
     }

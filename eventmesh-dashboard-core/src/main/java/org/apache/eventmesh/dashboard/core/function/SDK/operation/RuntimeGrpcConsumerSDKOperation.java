@@ -17,40 +17,34 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
+import static org.apache.eventmesh.dashboard.core.function.SDK.util.RuntimeSDKOperationUtils.buildEventMeshGrpcConsumerConfig;
+
+import org.apache.eventmesh.client.grpc.config.EventMeshGrpcClientConfig;
+import org.apache.eventmesh.client.grpc.consumer.EventMeshGrpcConsumer;
+import org.apache.eventmesh.common.exception.EventMeshException;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateEtcdConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRuntimeConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 
-import java.time.Duration;
 import java.util.AbstractMap.SimpleEntry;
-
-import io.etcd.jetcd.Client;
-import io.etcd.jetcd.KV;
-import io.etcd.jetcd.common.exception.EtcdException;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class EtcdSDKOperation extends AbstractSDKOperation<KV> {
+public class RuntimeGrpcConsumerSDKOperation extends AbstractSDKOperation<EventMeshGrpcConsumer> {
 
     @Override
-    public SimpleEntry<String, KV> createClient(CreateSDKConfig clientConfig) {
-        final CreateEtcdConfig etcdConfig = (CreateEtcdConfig) clientConfig;
-        KV kvClient = null;
+    public SimpleEntry<String, EventMeshGrpcConsumer> createClient(CreateSDKConfig clientConfig) {
+        final CreateRuntimeConfig runtimeConfig = (CreateRuntimeConfig) clientConfig;
+        final EventMeshGrpcClientConfig grpcClientConfig = buildEventMeshGrpcConsumerConfig(runtimeConfig);
+        EventMeshGrpcConsumer grpcConsumer = null;
         try {
-            final Client client = Client.builder()
-                .endpoints(getSplitEndpoints(etcdConfig))
-                .connectTimeout(Duration.ofSeconds(etcdConfig.getConnectTime()))
-                .build();
-            kvClient = client.getKVClient();
-        } catch (EtcdException e) {
-            log.error("create etcd client failed", e);
+            grpcConsumer = new EventMeshGrpcConsumer(grpcClientConfig);
+            grpcConsumer.init();
+        } catch (EventMeshException e) {
+            log.error("create runtime grpc Consumer client failed", e);
         }
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), kvClient);
-    }
-
-    private static String[] getSplitEndpoints(CreateEtcdConfig etcdConfig) {
-        return etcdConfig.getEtcdServerAddress().split(";");
+        return new SimpleEntry<>(clientConfig.getUniqueKey(), grpcConsumer);
     }
 
     @Override

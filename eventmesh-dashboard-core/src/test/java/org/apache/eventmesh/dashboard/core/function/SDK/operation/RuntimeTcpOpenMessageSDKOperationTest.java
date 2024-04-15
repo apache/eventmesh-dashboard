@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.function.SDK.config;
+package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class CreateEtcdConfig implements CreateSDKConfig {
+import org.junit.jupiter.api.Test;
 
-    private String etcdServerAddress;
+public class RuntimeTcpOpenMessageSDKOperationTest {
 
-    @Builder.Default()
-    private int connectTime = 10;
+    private final RuntimeTcpOpenMessageSDKOperation tcpOpenMessageSDKOperation = new RuntimeTcpOpenMessageSDKOperation();
 
-    @Override
-    public String getUniqueKey() {
-        return etcdServerAddress;
+    @Test
+    void testCreateClient() {
+        // todo no impl
     }
+
 }

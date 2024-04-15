@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
+import org.apache.eventmesh.common.protocol.tcp.UserAgent;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,15 +28,43 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateEtcdConfig implements CreateSDKConfig {
+public class CreateRuntimeConfig implements CreateSDKConfig {
 
-    private String etcdServerAddress;
+    // 127.0.0.1:10105;127.0.0.2:10105
+    private String runtimeServerAddress;
 
-    @Builder.Default()
-    private int connectTime = 10;
+    // protocol example:HTTP,TCP,GRPC
+    private String protocol;
+    // for tcp:cloudevents,eventmeshmessage,openmessage
+    private String protocolName;
+
+    // producer or consumer
+    private String clientType;
+
+    // topic
+    private String topic;
+
+    // config
+    private String env;
+    private String idc;
+    private String ip;
+    private String sys;
+    private String pid;
+    private String username;
+    private String password;
+
+    // producer
+    private String producerGroup;
+
+    // consumer
+    private String consumerGroup;
+    private String subUrl;
+
+    // Agent
+    private UserAgent userAgent;
 
     @Override
     public String getUniqueKey() {
-        return etcdServerAddress;
+        return runtimeServerAddress;
     }
 }
