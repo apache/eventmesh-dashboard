@@ -83,7 +83,7 @@
         <dependency>
             <groupId>io.etcd</groupId>
             <artifactId>jetcd-core</artifactId>
-            <version>0.7.5</version>
+            <version>0.7.7</version>
         </dependency>
 
         <!-- health check client -->
