@@ -64,8 +64,10 @@ crontab -e
 
 ```
 cd eventmesh-dashboard
-mvn clean package
+./mvnw clean package
 ```
+
+>TODO download mysql-connector-j manually
 
 ```
 java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar
