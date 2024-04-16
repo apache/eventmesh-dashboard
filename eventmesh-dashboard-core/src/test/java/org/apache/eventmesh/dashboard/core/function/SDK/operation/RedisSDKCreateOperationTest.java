@@ -32,20 +32,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class RedisSDKCreateOperationTest {
 
-    private RedisSDKOperation redisClientCreateOperation = new RedisSDKOperation();
+    private final RedisSDKOperation redisClientCreateOperation = new RedisSDKOperation();
 
     @Test
     void testCreateClient() {
-        CreateRedisConfig createClientConfig = new CreateRedisConfig();
-        createClientConfig.setRedisUrl("redis://localhost:6379");
+        CreateRedisConfig createClientConfig = CreateRedisConfig.builder()
+            .redisUrl("localhost:6379")
+            .password("")
+            .timeOut(5)
+            .build();
+        SimpleEntry<String, StatefulRedisConnection<String, String>> simpleEntry = null;
         try {
-            SimpleEntry<String, StatefulRedisConnection<String, String>> simpleEntry = redisClientCreateOperation.createClient(createClientConfig);
-            assertEquals("redis://localhost:6379", simpleEntry.getKey());
+            simpleEntry = redisClientCreateOperation.createClient(createClientConfig);
+            assertEquals("localhost:6379", simpleEntry.getKey());
             String response = simpleEntry.getValue().sync().ping();
             log.info("response:{}", response);
+            simpleEntry.getValue().close();
         } catch (Exception e) {
             log.error("create redis client failed", e);
+            if (simpleEntry != null) {
+                simpleEntry.getValue().close();
+            }
         }
-
     }
 }
