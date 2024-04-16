@@ -121,7 +121,7 @@
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-tools</artifactId>
-            <version>4.9.4</version>
+            <version>4.9.8</version>
         </dependency>
         <!-- kafka client -->
         <dependency>
