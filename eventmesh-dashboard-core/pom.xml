@@ -116,7 +116,7 @@
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
-            <version>4.9.4</version>
+            <version>4.9.8</version>
         </dependency>
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
