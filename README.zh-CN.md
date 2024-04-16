@@ -17,7 +17,7 @@ EventMesh Dashboard 每周开发例会文档：https://docs.qq.com/doc/DQmhVbklU
 ### 环境
 
 - JDK 8/11
-- Maven 3.8.1
+- Maven 3.9.x
 - Spring Boot 2.7.x
 
 ### 模块介绍

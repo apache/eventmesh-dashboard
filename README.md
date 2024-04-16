@@ -17,7 +17,7 @@ Weekly development meeting documents for EventMesh Dashboard: https://docs.qq.co
 ### Environment
 
 - JDK 8/11
-- Maven 3.8.1
+- Maven 3.9.x
 - Spring Boot 2.7.x
 
 ### Module Introduction
