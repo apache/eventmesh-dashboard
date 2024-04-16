@@ -53,5 +53,10 @@ logging:
 mybatis:
   type-aliases-package: org.apache.eventmesh.dashboard.console.entity
 
+decoration:
+  constantConfig:
+    all: true
+  corsEnable: true
+
 
 
