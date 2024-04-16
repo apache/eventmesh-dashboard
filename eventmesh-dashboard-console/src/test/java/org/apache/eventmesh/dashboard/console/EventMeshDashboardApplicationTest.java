@@ -79,7 +79,7 @@ class EventMeshDashboardApplicationTest {
 
     @Test
     public void IntegrationTest() throws InterruptedException {
-        //To make a test, add registry 175.27.155.139:8848 in web endpoint
+        //To make a test, add cluster with registry address 175.27.155.139:8848 in web endpoint
 
         if (Objects.equals(System.getenv("APPLICATION_TEST"), "on")) {
             EventMeshDashboardApplication.main(new String[]{});

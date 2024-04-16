@@ -47,6 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = {"classpath:client-test.sql", "classpath:connection-test.sql",
     "classpath:connector-test.sql", "classpath:meta-test.sql", "classpath:store-test.sql"})
 class FunctionManagerTest {
+
     @Autowired
     private DataServiceWrapper dataServiceWrapper;
 
@@ -72,7 +73,7 @@ class FunctionManagerTest {
 
     @Test
     void testHealthCheck() {
-        functionManager.updateHealthCheckConfigs();
+        functionManager.getHealthService().updateHealthCheckConfigs(dataServiceWrapper);
         healthService.executeAll();
         healthService.executeAll();
         Assertions.assertNotEquals(4, dataServiceWrapper.getHealthDataService().selectAll().size());

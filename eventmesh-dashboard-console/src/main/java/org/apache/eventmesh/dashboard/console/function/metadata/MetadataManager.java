@@ -18,6 +18,8 @@
 package org.apache.eventmesh.dashboard.console.function.metadata;
 
 import org.apache.eventmesh.dashboard.console.function.metadata.MetadataServiceWrapper.SingleMetadataServiceWrapper;
+import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandlerWrapper;
+import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.SyncDataServiceWrapper;
 import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.Converter;
 import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.ConverterFactory;
 
@@ -184,6 +186,15 @@ public class MetadataManager {
         } catch (Throwable e) {
             log.error("metadata manager handler error", e);
         }
+    }
+
+    public void setUpSyncMetadataManager(SyncDataServiceWrapper syncDataServiceWrapper, MetadataHandlerWrapper metadataHandlerWrapper) {
+        MetadataServiceWrapper metadataServiceWrapper = new MetadataServiceWrapper();
+        SingleMetadataServiceWrapper singleMetadataServiceWrapper = SingleMetadataServiceWrapper.builder()
+            .syncService(syncDataServiceWrapper.getRuntimeSyncFromClusterService())
+            .handler(metadataHandlerWrapper.getRuntimeMetadataHandlerToDb()).build();
+        metadataServiceWrapper.setServiceToDb(singleMetadataServiceWrapper);
+        this.addMetadataService(metadataServiceWrapper);
     }
 
     //TODO if database is modified by other service, we need to update the cache

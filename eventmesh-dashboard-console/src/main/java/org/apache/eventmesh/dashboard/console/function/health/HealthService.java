@@ -17,6 +17,10 @@
 
 package org.apache.eventmesh.dashboard.console.function.health;
 
+import org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant;
+import org.apache.eventmesh.dashboard.common.enums.StoreType;
+import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
+import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache.CheckResult;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
@@ -24,9 +28,11 @@ import org.apache.eventmesh.dashboard.console.function.health.check.config.Healt
 import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.RedisCheck;
 import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4.Rocketmq4BrokerCheck;
 import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4.Rocketmq4NameServerCheck;
+import org.apache.eventmesh.dashboard.console.service.DataServiceWrapper;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -184,16 +190,104 @@ public class HealthService {
      * @param initialDelay unit is second
      * @param period       unit is second
      */
-    public void startScheduledExecution(long initialDelay, long period) {
+    public void startScheduledExecution(long initialDelay, int period) {
         if (scheduledExecutor == null) {
-            scheduledExecutor = new ScheduledThreadPoolExecutor(1);
+            scheduledExecutor = new ScheduledThreadPoolExecutor(2);
         }
         scheduledExecutor.scheduleAtFixedRate(this::executeAll, initialDelay, period, TimeUnit.SECONDS);
+    }
+
+    public void startScheduledUpdateConfig(int initialDelay, int period, DataServiceWrapper dataServiceWrapper) {
+        if (scheduledExecutor == null) {
+            scheduledExecutor = new ScheduledThreadPoolExecutor(2);
+        }
+        scheduledExecutor.scheduleAtFixedRate(() -> this.updateHealthCheckConfigs(dataServiceWrapper), initialDelay,
+            period, TimeUnit.SECONDS);
     }
 
     public void stopScheduledExecution() {
         if (scheduledExecutor != null) {
             scheduledExecutor.shutdown();
+        }
+    }
+
+    public void updateHealthCheckConfigs(DataServiceWrapper dataServiceWrapper) {
+        try {
+            List<HealthCheckObjectConfig> checkConfigs = new ArrayList<>();
+            List<HealthCheckResultEntity> checkResultEntities = new ArrayList<>();
+            //TODO add health check service, only storage check is usable for now
+
+            //            List<ClusterEntity> clusters = properties.getDataServiceContainer().getClusterDataService().selectAll();
+            //            for (ClusterEntity cluster : clusters) {
+            //                checkConfigs.add(HealthCheckObjectConfig.builder()
+            //                    .instanceId(cluster.getId())
+            //                    .healthCheckResourceType(HealthCheckTypeConstant.HEALTH_CHECK_TYPE_CLUSTER)
+            //                    .connectUrl(cluster.getRegistryAddress())
+            //                    .build());
+            //                checkResultEntities.add(HealthCheckResultEntity.builder()
+            //                    .clusterId(cluster.getId())
+            //                    .type(1)
+            //                    .typeId(cluster.getId())
+            //                    .state(4)
+            //                    .resultDesc("initializing check client")
+            //                    .build());
+            //            }
+            //
+            //            List<RuntimeEntity> runtimes = properties.getDataServiceContainer().getRuntimeDataService().selectAll();
+            //            for (RuntimeEntity runtime : runtimes) {
+            //                checkConfigs.add(HealthCheckObjectConfig.builder()
+            //                    .instanceId(runtime.getId())
+            //                    .healthCheckResourceType(HealthCheckTypeConstant.HEALTH_CHECK_TYPE_RUNTIME)
+            //                    .connectUrl(runtime.getHost() + ":" + runtime.getPort())
+            //                    .build());
+            //                checkResultEntities.add(HealthCheckResultEntity.builder()
+            //                    .clusterId(runtime.getClusterId())
+            //                    .type(2)
+            //                    .typeId(runtime.getId())
+            //                    .state(4)
+            //                    .resultDesc("initializing check client")
+            //                    .build());
+            //            }
+            //
+            //            List<TopicEntity> topics = properties.getDataServiceContainer().getTopicDataService().selectAll();
+            //            for (TopicEntity topic : topics) {
+            //                checkConfigs.add(HealthCheckObjectConfig.builder()
+            //                    .instanceId(topic.getId())
+            //                    .healthCheckResourceType(HealthCheckTypeConstant.HEALTH_CHECK_TYPE_TOPIC)
+            //                    .build());
+            //                checkResultEntities.add(HealthCheckResultEntity.builder()
+            //                    .clusterId(topic.getClusterId())
+            //                    .type(3)
+            //                    .typeId(topic.getId())
+            //                    .state(4)
+            //                    .resultDesc("initializing check client")
+            //                    .build());
+            //            }
+
+            List<StoreEntity> stores = dataServiceWrapper.getStoreDataService().selectAll();
+            for (StoreEntity store : stores) {
+                checkConfigs.add(HealthCheckObjectConfig.builder()
+                    .instanceId(store.getId())
+                    .clusterId(store.getClusterId())
+                    .healthCheckResourceType(HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE)
+                    .healthCheckResourceSubType(
+                        StoreType.fromNumber(store.getStoreType()).toString())
+                    .host(store.getHost())
+                    .port(store.getPort())
+                    .build());
+                checkResultEntities.add(HealthCheckResultEntity.builder()
+                    .clusterId(store.getClusterId())
+                    .type(4)
+                    .typeId(store.getId())
+                    .state(4)
+                    .resultDesc("initializing check client")
+                    .build());
+            }
+
+            dataServiceWrapper.getHealthDataService().batchInsertNewCheckResult(checkResultEntities);
+            this.replaceCheckService(checkConfigs);
+        } catch (Exception e) {
+            log.error("updateHealthCheckConfigs error", e);
         }
     }
 }
