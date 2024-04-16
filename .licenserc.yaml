@@ -39,3 +39,4 @@ header:
 dependency:
   files:
     - pom.xml
+    - eventmesh-dashboard-view/package.json

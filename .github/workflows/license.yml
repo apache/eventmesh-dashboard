@@ -47,6 +47,4 @@ jobs:
           # Artifacts with multiple licenses, where at least one license is compatible with Apache 2.0, are allowed.
           # TODO This attribute can be removed after https://github.com/actions/dependency-review-action/issues/670 is resolved.
           allow-dependencies-licenses: >
-            pkg:maven/com.rabbitmq/amqp-client,
-            pkg:maven/ch.qos.logback/logback-classic, pkg:maven/ch.qos.logback/logback-core,
-            pkg:maven/javax.xml.stream/stax-api
+            pkg:maven/ch.qos.logback/logback-classic, pkg:maven/ch.qos.logback/logback-core
