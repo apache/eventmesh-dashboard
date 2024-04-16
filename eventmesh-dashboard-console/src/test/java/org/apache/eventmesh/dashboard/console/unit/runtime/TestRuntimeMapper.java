@@ -21,7 +21,6 @@ import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapper.runtime.RuntimeMapper;
 
-
 import java.util.List;
 
 import org.junit.Assert;

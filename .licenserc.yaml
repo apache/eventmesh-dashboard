@@ -29,6 +29,13 @@ header:
     - '**/*.md'
     - 'LICENSE'
     - 'NOTICE'
+    - '**/*.json'
+    - '**/*.svg'
     - '**/*.txt'
+    - '**/.env*'
 
   comment: on-failure
+
+dependency:
+  files:
+    - pom.xml

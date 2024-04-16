@@ -19,7 +19,6 @@ package org.apache.eventmesh.dashboard.console.modle.dto.topic;
 
 import java.sql.Timestamp;
 
-
 import lombok.Data;
 
 /**
