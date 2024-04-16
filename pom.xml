@@ -76,7 +76,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>2.7.6</spring-boot.version>
         <mybatis-spring-boot.version>2.3.2</mybatis-spring-boot.version>
-        <nacos.version>2.1.2</nacos.version>
+        <nacos.version>2.3.2</nacos.version>
         <rocketmq.version>4.9.8</rocketmq.version>
     </properties>
 
