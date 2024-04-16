@@ -12,10 +12,12 @@ Weekly development meeting documents for EventMesh Dashboard: https://docs.qq.co
 
 ## Technical Architecture
 
+![](https://github.com/apache/eventmesh/assets/34571087/f61103a8-e9a4-419f-ab42-ae99feb4f431)
+
 ### Environment
 
 - JDK 8/11
-- Maven 3.8.1
+- Maven 3.9.x
 - Spring Boot 2.7.x
 
 ### Module Introduction
@@ -62,8 +64,10 @@ crontab -e
 
 ```
 cd eventmesh-dashboard
-mvn clean package
+./mvnw clean package
 ```
+
+>TODO download mysql-connector-j manually
 
 ```
 java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar

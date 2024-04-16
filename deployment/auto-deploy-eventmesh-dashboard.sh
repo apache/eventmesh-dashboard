@@ -67,7 +67,7 @@ if [ $LOCAL != $REMOTE ]; then
     fi
     
     # Compile and package the Jar file
-    mvn clean package -DskipTests -Dcheckstyle.skip=true
+    ./mvnw clean package -DskipTests -Dcheckstyle.skip=true
     
     # Start the springboot application and record the process id to pid.log file
     nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > /dev/null 2>&1 &
@@ -83,7 +83,7 @@ else
     
     if [ ! -s $PID_LOG ] || ! is_process_running $(cat $PID_LOG); then
         # If the pid.log file does not exist or the process is not running, compile and package the Jar file
-        mvn clean package -DskipTests -Dcheckstyle.skip=true
+        ./mvnw clean package -DskipTests -Dcheckstyle.skip=true
 
         # Start the springboot application and record the process id to pid.log file
         nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > /dev/null 2>&1 &
