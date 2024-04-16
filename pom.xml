@@ -81,11 +81,11 @@
     </properties>
 
   <modules>
-    <module>eventmesh-dashboard-console</module>
-    <module>eventmesh-dashboard-observe</module>
-    <module>eventmesh-dashboard-core</module>
-    <module>eventmesh-dashboard-service</module>
     <module>eventmesh-dashboard-common</module>
+    <module>eventmesh-dashboard-console</module>
+    <module>eventmesh-dashboard-service</module>
+    <module>eventmesh-dashboard-core</module>
+    <module>eventmesh-dashboard-observe</module>
   </modules>
 
   <dependencyManagement>
