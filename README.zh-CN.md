@@ -12,6 +12,8 @@ EventMesh Dashboard 每周开发例会文档：https://docs.qq.com/doc/DQmhVbklU
 
 ## 技术架构
 
+![](https://github.com/apache/eventmesh/assets/34571087/f61103a8-e9a4-419f-ab42-ae99feb4f431)
+
 ### 环境
 
 - JDK 8/11

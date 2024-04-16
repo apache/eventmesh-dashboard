@@ -12,6 +12,8 @@ Weekly development meeting documents for EventMesh Dashboard: https://docs.qq.co
 
 ## Technical Architecture
 
+![](https://github.com/apache/eventmesh/assets/34571087/f61103a8-e9a4-419f-ab42-ae99feb4f431)
+
 ### Environment
 
 - JDK 8/11
