@@ -37,4 +37,6 @@ spring:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
+    org.apache.eventmesh: DEBUG
+    org.apache.eventmesh.dashboard: DEBUG
