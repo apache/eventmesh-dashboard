@@ -1,0 +1,5 @@
+License: {Name: Apache 2.0, URL: http://www.apache.org/licenses/LICENSE-2.0, Distribution: repo, Comments: 
+				While the EULA for the Android SDK restricts distribution of those binaries, the source code 
+				is licensed under Apache 2.0 which allows compiling binaries from source and then distributing
+				those versions. 
+			, }
