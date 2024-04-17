@@ -42,13 +42,11 @@
             <artifactId>eventmesh-dashboard-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.eventmesh.dashboard.common</groupId>
             <artifactId>eventmesh-dashboard-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.eventmesh.dashboard.service</groupId>
             <artifactId>eventmesh-dashboard-service</artifactId>
@@ -67,7 +65,6 @@
             <artifactId>mybatis-dependent</artifactId>
             <version>0.1.4</version>
         </dependency>
-
          <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper-spring-boot-starter</artifactId>
@@ -86,7 +83,7 @@
             <version>1.8.0</version>
         </dependency>
 
-        <!-- github laohu-->
+        <!-- GitHub laohu springmvc(contain spring boot starter)-->
         <dependency>
             <groupId>io.github.githublaohu</groupId>
             <artifactId>dubbo-springmvc</artifactId>
@@ -95,8 +92,10 @@
                 <exclusion>
                     <groupId>org.apache.dubbo</groupId>
                     <artifactId>dubbo-spring-boot-starter</artifactId>
-                </exclusion></exclusions>
+                </exclusion>
+            </exclusions>
         </dependency>
+
         <!--lampup -->
         <dependency>
             <groupId>cn.lampup</groupId>
@@ -116,7 +115,6 @@
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>

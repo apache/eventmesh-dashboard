@@ -55,10 +55,10 @@ mybatis:
 
 decoration:
   constantConfig:
+    #The 'all' configuration item indicates that the decoration component is allowed to enable pagination and return the front-end style function in a unified manner
     all: true
+    #the 'corsEnable' configuration item indicates that cross-domain is enabled
   corsEnable: true
-#The 'all' configuration item indicates that the decoration component is allowed to enable pagination
-#and return the front-end style function in a unified manner, and the 'corsEnable' configuration item indicates that cross-domain is enabled
 
 
 
