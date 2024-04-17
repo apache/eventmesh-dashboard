@@ -21,13 +21,12 @@ updates:
     directory: "/"
     open-pull-requests-limit: 10
     schedule:
-      interval: "weekly"
+      interval: "daily" # TODO Temporary daily for testing auto-merge
     ignore:
       - dependency-name: "*"
         update-types: [ "version-update:semver-major" ]
   - package-ecosystem: "npm"
     directory: "./eventmesh-dashboard-view"
-    open-pull-requests-limit: 5
     schedule:
       interval: "monthly"
     ignore:
