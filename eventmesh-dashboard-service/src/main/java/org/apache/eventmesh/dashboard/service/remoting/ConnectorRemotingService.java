@@ -27,7 +27,7 @@ import org.apache.eventmesh.dashboard.common.model.remoting.connector.GetConnect
  */
 public interface ConnectorRemotingService {
 
-    public GetConnectorResult getConnectors(GetConnectorRequest getConnectorRequest);
+    GetConnectorResult getConnectors(GetConnectorRequest getConnectorRequest);
 
-    public CreateConnectorResult createConnector(CreateConnectorRequest createConnectorRequest);
+    CreateConnectorResult createConnector(CreateConnectorRequest createConnectorRequest);
 }

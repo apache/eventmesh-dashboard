@@ -48,7 +48,6 @@ public class SDKManager {
 
     private static volatile SDKManager INSTANCE = null;
 
-
     public static synchronized SDKManager getInstance() {
         if (INSTANCE == null) {
             synchronized (SDKManager.class) {
@@ -62,16 +61,23 @@ public class SDKManager {
 
     /**
      * inner key is the unique key of a client, such as (ip + port) they are defined in CreateClientConfig
-     *
+     * <p>
+     * key: SDKTypeEnum
+     * value: Map<String(ip + port), Object(client)>
      * @see CreateSDKConfig#getUniqueKey()
      */
+    private static final Map<SDKTypeEnum, Map<String, Object>> clientMap = new ConcurrentHashMap<>();
 
-    private final Map<SDKTypeEnum, Map<String, Object>> clientMap = new ConcurrentHashMap<>();
-
-    private final Map<SDKTypeEnum, SDKOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
+    /**
+     * Initialise the SDKOperation object instance according to SDKTypeEnum.
+     * <p>
+     * key: SDKTypeEnum
+     * value: SDKOperation
+     */
+    private static final Map<SDKTypeEnum, SDKOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
 
     // register all client create operation
-    {
+    static {
         for (SDKTypeEnum clientTypeEnum : SDKTypeEnum.values()) {
             clientMap.put(clientTypeEnum, new ConcurrentHashMap<>());
         }
@@ -104,18 +110,19 @@ public class SDKManager {
     private SDKManager() {
     }
 
+    /**
+     * Create SDK client through (SDKTypeEnum) clientTypeEnum, (CreateSDKConfig) config.
+     */
     public <T> SimpleEntry<String, T> createClient(SDKTypeEnum clientTypeEnum, CreateSDKConfig config) {
-        return createClient(clientTypeEnum, config.getUniqueKey(), config);
-    }
 
-    public <T> SimpleEntry<String, T> createClient(SDKTypeEnum clientTypeEnum, String uniqueKey, CreateSDKConfig config) {
+        final String uniqueKey = config.getUniqueKey();
 
-        Map<String, Object> clients = this.clientMap.get(clientTypeEnum);
+        Map<String, Object> clients = clientMap.get(clientTypeEnum);
 
         Object client = clients.get(uniqueKey);
         SimpleEntry<String, ?> result = new SimpleEntry<>(uniqueKey, client);
         if (Objects.isNull(client)) {
-            SDKOperation<?> clientCreateOperation = this.clientCreateOperationMap.get(clientTypeEnum);
+            SDKOperation<?> clientCreateOperation = clientCreateOperationMap.get(clientTypeEnum);
             result = clientCreateOperation.createClient(config);
             clients.put(result.getKey(), result.getValue());
         }
@@ -127,8 +134,8 @@ public class SDKManager {
     }
 
     public void deleteClient(SDKTypeEnum clientTypeEnum, String uniqueKey) {
-        Map<String, Object> clients = this.clientMap.get(clientTypeEnum);
-        SDKOperation<?> operation = this.clientCreateOperationMap.get(clientTypeEnum);
+        Map<String, Object> clients = clientMap.get(clientTypeEnum);
+        SDKOperation<?> operation = clientCreateOperationMap.get(clientTypeEnum);
         try {
             operation.close(clients.get(uniqueKey));
         } catch (Exception e) {
@@ -138,11 +145,11 @@ public class SDKManager {
     }
 
     public Object getClient(SDKTypeEnum clientTypeEnum, String uniqueKey) {
-        return this.clientMap.get(clientTypeEnum).get(uniqueKey);
+        return clientMap.get(clientTypeEnum).get(uniqueKey);
     }
 
     // get all client
     public Map<String, Object> getClients(SDKTypeEnum clientTypeEnum) {
-        return this.clientMap.get(clientTypeEnum);
+        return clientMap.get(clientTypeEnum);
     }
 }
