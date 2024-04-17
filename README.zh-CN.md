@@ -1,4 +1,4 @@
-# EventMesh Dashboard
+# Apache EventMesh Dashboard
 
 [🌐 English Version](README.md)
 

@@ -21,10 +21,18 @@ updates:
     directory: "/"
     open-pull-requests-limit: 10
     schedule:
-      interval: "weekly"
+      interval: "daily" # TODO Temporary daily for testing auto-merge
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types: [ "version-update:semver-major" ]
+  - package-ecosystem: "npm"
+    directory: "./eventmesh-dashboard-view"
+    schedule:
+      interval: "monthly"
+    ignore:
+      - dependency-name: "*"
+        # Disable front-end PRs temporarily since 'npm run build' fails
+        update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
