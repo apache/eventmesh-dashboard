@@ -24,7 +24,16 @@ updates:
       interval: "weekly"
     ignore:
       - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+        update-types: [ "version-update:semver-major" ]
+  - package-ecosystem: "npm"
+    directory: "./eventmesh-dashboard-view"
+    open-pull-requests-limit: 5
+    schedule:
+      interval: "monthly"
+    ignore:
+      - dependency-name: "*"
+        # Disable front-end PRs temporarily since 'npm run build' fails
+        update-types: [ "version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch" ]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

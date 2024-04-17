@@ -16,7 +16,7 @@
 #
 
 github:
-  description: EventMesh Dashboard
+  description: Apache EventMesh Dashboard
   features:
     # Enable issue management
     issues: true
