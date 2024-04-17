@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.entity.runtime;
 
+import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
@@ -54,4 +55,16 @@ public class RuntimeEntity extends BaseEntity {
     private Timestamp updateTime;
 
     private String endpointMap;
+
+    public RuntimeEntity(RuntimeMetadata source) {
+        setHost(source.getHost());
+        setPort(source.getPort());
+        setClusterId(source.getClusterId());
+        setStatus(1);
+        setEndpointMap(source.getEndpointMap());
+        setJmxPort(source.getJmxPort());
+        setRack(source.getRack());
+        setStorageClusterId(source.getStorageClusterId());
+        setStartTimestamp(source.getStartTimestamp());
+    }
 }

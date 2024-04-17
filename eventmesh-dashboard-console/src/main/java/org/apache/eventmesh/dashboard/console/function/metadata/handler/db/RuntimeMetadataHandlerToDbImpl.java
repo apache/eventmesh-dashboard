@@ -23,8 +23,6 @@ import org.apache.eventmesh.dashboard.console.cache.RuntimeCache;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.Converter;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.metadata.RuntimeMetadata2EntityConverter;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
 
@@ -45,8 +43,6 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
     @Autowired
     ClusterService clusterService;
 
-    private static final Converter<RuntimeMetadata, RuntimeEntity> converter = new RuntimeMetadata2EntityConverter();
-
     @Override
     public void addMetadata(RuntimeMetadata meta) {
         ClusterEntity cluster = ClusterCache.getINSTANCE().getClusterByRegistryAddress(meta.getRegistryAddress());
@@ -65,7 +61,7 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
             clusterEntity.setAuthType(0);
             clusterEntity.setRunState(0);
             clusterEntity.setStoreType(0);
-            
+
             clusterService.addCluster(clusterEntity);
         } else {
             cluster.setName(meta.getClusterName());
@@ -74,13 +70,13 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
         if (Objects.isNull(meta.getClusterId())) {
             meta.setClusterId(ClusterCache.getINSTANCE().getClusterByName(meta.getClusterName()).getId());
         }
-        runtimeService.addRuntime(converter.convert(meta));
-        RuntimeCache.getInstance().addRuntime(converter.convert(meta));
+        runtimeService.addRuntime(new RuntimeEntity(meta));
+        RuntimeCache.getInstance().addRuntime(new RuntimeEntity(meta));
     }
 
     @Override
     public void deleteMetadata(RuntimeMetadata meta) {
-        runtimeService.deactivate(converter.convert(meta));
-        RuntimeCache.getInstance().deleteRuntime(converter.convert(meta));
+        runtimeService.deactivate(new RuntimeEntity(meta));
+        RuntimeCache.getInstance().deleteRuntime(new RuntimeEntity(meta));
     }
 }

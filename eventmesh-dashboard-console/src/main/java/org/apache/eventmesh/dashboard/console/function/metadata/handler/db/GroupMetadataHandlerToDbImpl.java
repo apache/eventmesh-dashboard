@@ -20,11 +20,10 @@ package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
 import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.Converter;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.metadata.GroupMetadata2EntityConverter;
 import org.apache.eventmesh.dashboard.console.service.group.GroupService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,18 +34,17 @@ public class GroupMetadataHandlerToDbImpl implements MetadataHandler<GroupMetada
     @Autowired
     GroupService groupService;
 
-    private static final Converter<GroupMetadata, GroupEntity> converter = new GroupMetadata2EntityConverter();
-
     @Override
     public void addMetadata(GroupMetadata meta) {
         meta.setMemberCount(0);
-        GroupEntity groupEntity = converter.convert(meta);
+        GroupEntity groupEntity = new GroupEntity(meta);
         groupService.addGroup(groupEntity);
     }
 
     @Override
     public void addMetadata(List<GroupMetadata> metadata) {
-        groupService.batchInsert(converter.convert(metadata));
+        List<GroupEntity> entityList = metadata.stream().map(GroupEntity::new).collect(Collectors.toList());
+        groupService.batchInsert(entityList);
     }
 
     @Override

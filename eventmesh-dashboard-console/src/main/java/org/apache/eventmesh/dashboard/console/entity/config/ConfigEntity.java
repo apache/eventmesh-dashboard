@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.entity.config;
 
+import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
@@ -112,5 +113,23 @@ public class ConfigEntity extends BaseEntity {
             }
         }
         return flag;
+    }
+
+    public ConfigEntity(ConfigMetadata source) {
+        setConfigName(source.getConfigKey());
+        setConfigValue(source.getConfigValue());
+        setClusterId(source.getClusterId());
+        setEdit(1);
+        setBusinessType("");
+        setInstanceId(source.getInstanceId());
+        setDescription("");
+        setInstanceType(source.getInstanceType());
+        setIsDefault(0);
+        setStartVersion("");
+        setEndVersion("");
+        setEventmeshVersion("");
+        setDiffType(0);
+        setIsModify(0);
+        setStatus(1);
     }
 }

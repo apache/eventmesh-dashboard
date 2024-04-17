@@ -17,16 +17,18 @@
 
 package org.apache.eventmesh.dashboard.console.function.metadata;
 
+import org.apache.eventmesh.dashboard.common.model.metadata.MetadataConfig;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 import org.apache.eventmesh.dashboard.console.function.metadata.MetadataServiceWrapper.SingleMetadataServiceWrapper;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandlerWrapper;
 import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.SyncDataServiceWrapper;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.Converter;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.ConverterFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -145,10 +147,8 @@ public class MetadataManager {
             //update old cache
             cacheData.put(cacheID, newObjectList);
 
-            Converter<?, ?> converter = ConverterFactory.createConverter(newObjectList.get(0).getClass());
-
-            Map<String, Object> newObjectMap = converter.getUniqueKeyMapFromObject(newObjectList);
-            Map<String, Object> oldObjectMap = converter.getUniqueKeyMapFromObject(cacheDataList);
+            Map<String, Object> newObjectMap = getUniqueKeyMap(newObjectList);
+            Map<String, Object> oldObjectMap = getUniqueKeyMap(cacheDataList);
 
             //these three List are in target type
             List<Object> toUpdate = new ArrayList<>();
@@ -195,6 +195,27 @@ public class MetadataManager {
             .handler(metadataHandlerWrapper.getRuntimeMetadataHandlerToDb()).build();
         metadataServiceWrapper.setServiceToDb(singleMetadataServiceWrapper);
         this.addMetadataService(metadataServiceWrapper);
+    }
+
+    private Map<String, Object> getUniqueKeyMap(List<Object> list) {
+        Map<String, Object> map = new HashMap<>();
+        if (Objects.nonNull(list) && !list.isEmpty()) {
+            Object firstItem = list.get(0);
+            if (firstItem instanceof MetadataConfig) {
+                for (Object item : list) {
+                    MetadataConfig metadataItem = (MetadataConfig) item;
+                    map.put(metadataItem.getUnique(), metadataItem);
+                }
+            } else if (firstItem instanceof BaseEntity) {
+                for (Object item : list) {
+                    BaseEntity baseEntityItem = (BaseEntity) item;
+                    //TODO we don't have db2service method and getUniqueKeyMap from entity is not used
+
+                    // map.put(baseEntityItem.getUniqueKey(), baseEntityItem);
+                }
+            }
+        }
+        return map;
     }
 
     //TODO if database is modified by other service, we need to update the cache

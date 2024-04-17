@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.entity.meta;
 
 import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
+import org.apache.eventmesh.dashboard.common.model.metadata.RegistryMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -65,5 +66,18 @@ public class MetaEntity extends BaseEntity {
 
     public void setStatusEnum(RecordStatus statusEnum) {
         this.status = statusEnum.getNumber();
+    }
+
+    public MetaEntity(RegistryMetadata source) {
+        setHost(source.getHost());
+        setPort(source.getPort());
+        setClusterId(source.getClusterId());
+        setName(source.getName());
+        setVersion(source.getVersion());
+        setParams(source.getParams());
+        setRole(source.getRole());
+        setStatus(RecordStatus.ACTIVE.getNumber());
+        setType(source.getType());
+        setUsername(source.getUsername());
     }
 }

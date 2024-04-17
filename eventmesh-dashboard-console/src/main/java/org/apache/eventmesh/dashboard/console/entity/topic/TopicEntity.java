@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.entity.topic;
 
+import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
@@ -62,4 +63,15 @@ public class TopicEntity extends BaseEntity {
     private Integer status;
 
     private Integer createProgress;
+
+    public TopicEntity(TopicMetadata source) {
+        setClusterId(source.getClusterId());
+        setTopicName(source.getTopicName());
+        setStorageId(source.getStorageId());
+        setRetentionMs(source.getRetentionMs());
+        setType(source.getType());
+        setDescription(source.getDescription());
+        setStatus(1);
+        setCreateProgress(1);
+    }
 }

@@ -21,8 +21,6 @@ import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
 import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.Converter;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.metadata.TopicMetadata2EntityConverter;
 import org.apache.eventmesh.dashboard.console.service.store.StoreService;
 import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
 
@@ -44,8 +42,6 @@ public class TopicMetadataHandlerToDbImpl implements MetadataHandler<TopicMetada
     @Autowired
     private StoreService storeService;
 
-    private static final Converter<TopicMetadata, TopicEntity> converter = new TopicMetadata2EntityConverter();
-
     @Override
     public void addMetadata(TopicMetadata meta) {
         if (Objects.nonNull(meta.getConnectionUrl())) {
@@ -58,7 +54,7 @@ public class TopicMetadataHandlerToDbImpl implements MetadataHandler<TopicMetada
             }
         }
 
-        topicService.addTopic(converter.convert(meta));
+        topicService.addTopic(new TopicEntity(meta));
     }
 
     @Override

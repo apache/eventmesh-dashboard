@@ -31,10 +31,15 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class MetadataConfig {
+public abstract class MetadataConfig {
 
     //eventmesh registry url
     private String registryAddress;
     //cluster id in database
     private Long clusterId;
+
+    /**
+     * @return A string that is unique to the source, usually a url
+     */
+    public abstract String getUnique();
 }

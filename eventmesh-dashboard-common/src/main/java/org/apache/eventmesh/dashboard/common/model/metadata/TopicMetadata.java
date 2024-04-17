@@ -46,4 +46,9 @@ public class TopicMetadata extends MetadataConfig {
     private Integer type;
 
     private String description;
+
+    @Override
+    public String getUnique() {
+        return topicName;
+    }
 }

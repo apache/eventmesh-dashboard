@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.entity.connection;
 
 import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
+import org.apache.eventmesh.dashboard.common.model.metadata.ConnectionMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
@@ -88,5 +89,18 @@ public class ConnectionEntity extends BaseEntity {
 
     public void setStatusEnum(RecordStatus statusEnum) {
         this.status = statusEnum.getNumber();
+    }
+
+    public ConnectionEntity(ConnectionMetadata source) {
+        setClusterId(source.getClusterId());
+        setSourceId(source.getSourceId());
+        setSourceType(source.getSourceType());
+        setSinkId(source.getSinkId());
+        setSinkType(source.getSinkType());
+        setRuntimeId(source.getRuntimeId());
+        setStatus(1);
+        setTopic(source.getTopic());
+        setGroupId(source.getGroupId());
+        setDescription(source.getDescription());
     }
 }

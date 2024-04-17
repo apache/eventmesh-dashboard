@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.entity.group;
 
+import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
+import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
@@ -54,4 +56,13 @@ public class GroupEntity extends BaseEntity {
 
     private Integer status;
 
+    public GroupEntity(GroupMetadata source) {
+        setClusterId(source.getClusterId());
+        setName(source.getName());
+        setMembers(source.getMembers());
+        setType(source.getType());
+        setState(source.getState());
+        setStatus(RecordStatus.ACTIVE.getNumber());
+        setMemberCount(source.getMemberCount());
+    }
 }

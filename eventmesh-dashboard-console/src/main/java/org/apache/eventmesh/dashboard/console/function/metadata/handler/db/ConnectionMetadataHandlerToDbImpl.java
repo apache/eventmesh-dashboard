@@ -23,8 +23,6 @@ import org.apache.eventmesh.dashboard.console.entity.client.ClientEntity;
 import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.Converter;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.metadata.ConnectionMetadata2EntityConverter;
 import org.apache.eventmesh.dashboard.console.service.client.ClientDataService;
 import org.apache.eventmesh.dashboard.console.service.connection.ConnectionDataService;
 import org.apache.eventmesh.dashboard.console.service.connector.ConnectorDataService;
@@ -49,8 +47,6 @@ public class ConnectionMetadataHandlerToDbImpl implements MetadataHandler<Connec
 
     @Autowired
     private ConnectorDataService connectorDataService;
-
-    private static final Converter<ConnectionMetadata, ConnectionEntity> converter = new ConnectionMetadata2EntityConverter();
 
     @Override
     public void addMetadata(ConnectionMetadata meta) {
@@ -148,7 +144,7 @@ public class ConnectionMetadataHandlerToDbImpl implements MetadataHandler<Connec
             }
         }
 
-        connectionService.insert(converter.convert(meta));
+        connectionService.insert(new ConnectionEntity(meta));
     }
 
     @Override

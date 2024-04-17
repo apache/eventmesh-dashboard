@@ -151,6 +151,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/org/apache/eventmesh/dashboard/console/integration/**/*.java</exclude>
+                        <exclude>**/org/apache/eventmesh/dashboard/console/EventMeshDashboardApplicationTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

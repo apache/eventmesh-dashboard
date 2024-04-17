@@ -53,4 +53,9 @@ public class RegistryMetadata extends MetadataConfig {
      * @see RecordStatus
      */
     private Integer status;
+
+    @Override
+    public String getUnique() {
+        return host + ":" + port;
+    }
 }

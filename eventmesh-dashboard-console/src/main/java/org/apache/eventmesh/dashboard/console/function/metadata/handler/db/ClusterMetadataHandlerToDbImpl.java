@@ -20,11 +20,10 @@ package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.Converter;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.metadata.ClusterMetadata2EntityConverter;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,16 +34,17 @@ public class ClusterMetadataHandlerToDbImpl implements MetadataHandler<ClusterMe
     @Autowired
     private ClusterService clusterService;
 
-    private static final Converter<ClusterMetadata, ClusterEntity> converter = new ClusterMetadata2EntityConverter();
-
     @Override
     public void addMetadata(ClusterMetadata meta) {
-        clusterService.addCluster(converter.convert(meta));
+        clusterService.addCluster(new ClusterEntity(meta));
     }
 
     @Override
     public void addMetadata(List<ClusterMetadata> metadataList) {
-        clusterService.batchInsert(converter.convert(metadataList));
+        List<ClusterEntity> entityList = metadataList.stream()
+            .map(ClusterEntity::new)
+            .collect(Collectors.toList());
+        clusterService.batchInsert(entityList);
     }
 
     @Override

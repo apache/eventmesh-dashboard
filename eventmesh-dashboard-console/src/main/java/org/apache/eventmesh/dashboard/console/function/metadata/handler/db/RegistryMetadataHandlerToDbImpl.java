@@ -20,11 +20,10 @@ package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 import org.apache.eventmesh.dashboard.common.model.metadata.RegistryMetadata;
 import org.apache.eventmesh.dashboard.console.entity.meta.MetaEntity;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.Converter;
-import org.apache.eventmesh.dashboard.console.function.metadata.util.convert.metadata.RegistryMetadata2EntityConverter;
 import org.apache.eventmesh.dashboard.console.service.registry.RegistryDataService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,21 +37,21 @@ public class RegistryMetadataHandlerToDbImpl implements MetadataHandler<Registry
     @Autowired
     private RegistryDataService registryDataService;
 
-    private static final Converter<RegistryMetadata, MetaEntity> converter = new RegistryMetadata2EntityConverter();
-
-
     @Override
     public void addMetadata(RegistryMetadata meta) {
-        registryDataService.insert(converter.convert(meta));
+        registryDataService.insert(new MetaEntity(meta));
     }
 
     @Override
     public void addMetadata(List<RegistryMetadata> meta) {
-        registryDataService.batchInsert(converter.convert(meta));
+        List<MetaEntity> entityList = meta.stream()
+            .map(MetaEntity::new)
+            .collect(Collectors.toList());
+        registryDataService.batchInsert(entityList);
     }
 
     @Override
     public void deleteMetadata(RegistryMetadata meta) {
-        registryDataService.deactivate(converter.convert(meta));
+        registryDataService.deactivate(new MetaEntity(meta));
     }
 }
