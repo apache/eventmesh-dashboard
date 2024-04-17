@@ -73,6 +73,8 @@ public class SDKManager {
      * <p>
      * key: SDKTypeEnum
      * value: SDKOperation
+     * @see SDKTypeEnum
+     * @see SDKOperation
      */
     private static final Map<SDKTypeEnum, SDKOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
 
@@ -81,28 +83,35 @@ public class SDKManager {
         for (SDKTypeEnum clientTypeEnum : SDKTypeEnum.values()) {
             clientMap.put(clientTypeEnum, new ConcurrentHashMap<>());
         }
-
+        // redis
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_REDIS, new RedisSDKOperation());
 
+        // rocketmq
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, new RocketMQRemotingSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_PRODUCER, new RocketMQProduceSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_CONSUMER, new RocketMQPushConsumerSDKOperation());
 
+        // nacos
         clientCreateOperationMap.put(SDKTypeEnum.META_NACOS, new NacosSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.META_NACOS_CONFIG, new NacosConfigSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.META_NACOS_NAMING, new NacosNamingSDKOperation());
 
+        // etcd
         clientCreateOperationMap.put(SDKTypeEnum.META_ETCD, new EtcdSDKOperation());
 
+        // eventmesh_runtime
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_EVENTMESH_CLIENT, new RuntimeSDKOperation());
 
+        // eventmesh_runtime_tcp
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_TCP_CLOUDEVENT_CLIENT, new RuntimeTcpCloudEventSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_TCP_EVENTMESH_CLIENT, new RuntimeTcpEventMeshSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_TCP_OPENMESSAGE_CLIENT, new RuntimeTcpOpenMessageSDKOperation());
 
+        // eventmesh_runtime_http
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_HTTP_PRODUCER, new RuntimeHttpProducerSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_HTTP_CONSUMER, new RuntimeHttpConsumerSDKOperation());
 
+        // eventmesh_runtime_grpc
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_GRPC_PRODUCER, new RuntimeGrpcProducerSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_GRPC_CONSUMER, new RuntimeGrpcConsumerSDKOperation());
     }
