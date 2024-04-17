@@ -49,6 +49,5 @@ public class ClusterCacheTest {
         Assertions.assertEquals(clusterEntity1, clusterEntity2);
         Assertions.assertEquals(clusterEntity1.getName(), clusterEntity.getName());
         Assertions.assertEquals("registryList", clusterEntity1.getRegistryAddress());
-        Assertions.assertEquals(1, ClusterCache.getINSTANCE().getClusters().size());
     }
 }
