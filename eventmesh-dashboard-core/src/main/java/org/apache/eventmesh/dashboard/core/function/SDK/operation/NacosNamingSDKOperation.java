@@ -25,6 +25,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.Properties;
 
 import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
@@ -40,7 +41,7 @@ public class NacosNamingSDKOperation extends AbstractSDKOperation<NamingService>
         CreateNacosConfig config = (CreateNacosConfig) clientConfig;
         try {
             Properties properties = new Properties();
-            properties.put("serverAddr", config.getServerAddress());
+            properties.put(PropertyKeyConst.SERVER_ADDR, config.getServerAddress());
             namingService = NacosFactory.createNamingService(properties);
         } catch (NacosException e) {
             log.error("NacosCheck init failed caused by {}", e.getErrMsg());

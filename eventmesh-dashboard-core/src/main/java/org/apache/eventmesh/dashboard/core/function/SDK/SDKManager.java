@@ -48,7 +48,6 @@ public class SDKManager {
 
     private static volatile SDKManager INSTANCE = null;
 
-
     public static synchronized SDKManager getInstance() {
         if (INSTANCE == null) {
             synchronized (SDKManager.class) {
@@ -62,41 +61,57 @@ public class SDKManager {
 
     /**
      * inner key is the unique key of a client, such as (ip + port) they are defined in CreateClientConfig
-     *
+     * <p>
+     * key: SDKTypeEnum
+     * value: A map collection is used with key being (ip+port) and value being client.
      * @see CreateSDKConfig#getUniqueKey()
      */
+    private static final Map<SDKTypeEnum, Map<String, Object>> clientMap = new ConcurrentHashMap<>();
 
-    private final Map<SDKTypeEnum, Map<String, Object>> clientMap = new ConcurrentHashMap<>();
-
-    private final Map<SDKTypeEnum, SDKOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
+    /**
+     * Initialise the SDKOperation object instance according to SDKTypeEnum.
+     * <p>
+     * key: SDKTypeEnum
+     * value: SDKOperation
+     * @see SDKTypeEnum
+     * @see SDKOperation
+     */
+    private static final Map<SDKTypeEnum, SDKOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
 
     // register all client create operation
-    {
+    static {
         for (SDKTypeEnum clientTypeEnum : SDKTypeEnum.values()) {
             clientMap.put(clientTypeEnum, new ConcurrentHashMap<>());
         }
-
+        // redis
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_REDIS, new RedisSDKOperation());
 
+        // rocketmq
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, new RocketMQRemotingSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_PRODUCER, new RocketMQProduceSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_CONSUMER, new RocketMQPushConsumerSDKOperation());
 
+        // nacos
         clientCreateOperationMap.put(SDKTypeEnum.META_NACOS, new NacosSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.META_NACOS_CONFIG, new NacosConfigSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.META_NACOS_NAMING, new NacosNamingSDKOperation());
 
+        // etcd
         clientCreateOperationMap.put(SDKTypeEnum.META_ETCD, new EtcdSDKOperation());
 
+        // eventmesh_runtime
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_EVENTMESH_CLIENT, new RuntimeSDKOperation());
 
+        // eventmesh_runtime_tcp
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_TCP_CLOUDEVENT_CLIENT, new RuntimeTcpCloudEventSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_TCP_EVENTMESH_CLIENT, new RuntimeTcpEventMeshSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_TCP_OPENMESSAGE_CLIENT, new RuntimeTcpOpenMessageSDKOperation());
 
+        // eventmesh_runtime_http
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_HTTP_PRODUCER, new RuntimeHttpProducerSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_HTTP_CONSUMER, new RuntimeHttpConsumerSDKOperation());
 
+        // eventmesh_runtime_grpc
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_GRPC_PRODUCER, new RuntimeGrpcProducerSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.RUNTIME_GRPC_CONSUMER, new RuntimeGrpcConsumerSDKOperation());
     }
@@ -104,18 +119,19 @@ public class SDKManager {
     private SDKManager() {
     }
 
+    /**
+     * Create SDK client through (SDKTypeEnum) clientTypeEnum, (CreateSDKConfig) config.
+     */
     public <T> SimpleEntry<String, T> createClient(SDKTypeEnum clientTypeEnum, CreateSDKConfig config) {
-        return createClient(clientTypeEnum, config.getUniqueKey(), config);
-    }
 
-    public <T> SimpleEntry<String, T> createClient(SDKTypeEnum clientTypeEnum, String uniqueKey, CreateSDKConfig config) {
+        final String uniqueKey = config.getUniqueKey();
 
-        Map<String, Object> clients = this.clientMap.get(clientTypeEnum);
+        Map<String, Object> clients = clientMap.get(clientTypeEnum);
 
         Object client = clients.get(uniqueKey);
         SimpleEntry<String, ?> result = new SimpleEntry<>(uniqueKey, client);
         if (Objects.isNull(client)) {
-            SDKOperation<?> clientCreateOperation = this.clientCreateOperationMap.get(clientTypeEnum);
+            SDKOperation<?> clientCreateOperation = clientCreateOperationMap.get(clientTypeEnum);
             result = clientCreateOperation.createClient(config);
             clients.put(result.getKey(), result.getValue());
         }
@@ -127,8 +143,8 @@ public class SDKManager {
     }
 
     public void deleteClient(SDKTypeEnum clientTypeEnum, String uniqueKey) {
-        Map<String, Object> clients = this.clientMap.get(clientTypeEnum);
-        SDKOperation<?> operation = this.clientCreateOperationMap.get(clientTypeEnum);
+        Map<String, Object> clients = clientMap.get(clientTypeEnum);
+        SDKOperation<?> operation = clientCreateOperationMap.get(clientTypeEnum);
         try {
             operation.close(clients.get(uniqueKey));
         } catch (Exception e) {
@@ -138,11 +154,11 @@ public class SDKManager {
     }
 
     public Object getClient(SDKTypeEnum clientTypeEnum, String uniqueKey) {
-        return this.clientMap.get(clientTypeEnum).get(uniqueKey);
+        return clientMap.get(clientTypeEnum).get(uniqueKey);
     }
 
     // get all client
     public Map<String, Object> getClients(SDKTypeEnum clientTypeEnum) {
-        return this.clientMap.get(clientTypeEnum);
+        return clientMap.get(clientTypeEnum);
     }
 }

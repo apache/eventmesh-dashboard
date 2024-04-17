@@ -40,7 +40,6 @@ class SDKManagerTest {
                 .password("")
                 .timeOut(30)
                 .build();
-            // createRedisConfig.setRedisUrl("redis://localhost:6379");
             redisKey = SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_REDIS, createRedisConfig).getKey();
         } catch (Exception e) {
             log.warn("SDK manager test init failed, possible reason: redis-server is offline. {}", this.getClass().getSimpleName(), e);
