@@ -63,7 +63,7 @@ public class SDKManager {
      * inner key is the unique key of a client, such as (ip + port) they are defined in CreateClientConfig
      * <p>
      * key: SDKTypeEnum
-     * value: Map<String(ip + port), Object(client)>
+     * value: Map<ip + port, client>
      * @see CreateSDKConfig#getUniqueKey()
      */
     private static final Map<SDKTypeEnum, Map<String, Object>> clientMap = new ConcurrentHashMap<>();
