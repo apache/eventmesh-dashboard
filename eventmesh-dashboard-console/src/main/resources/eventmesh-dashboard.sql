@@ -290,6 +290,7 @@ CREATE TABLE `topic`
     `create_time`  timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间(尽量与Topic实际创建时间一致)',
     `update_time`  timestamp       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间(尽量与Topic实际创建时间一致)',
     `status`       int             NOT NULL DEFAULT '1',
+    create_progress int            NOT NULL DEFAULT 1 COMMENT '0:创建成功，1：创建中，2：创建失败',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_cluster_phy_id_topic_name` (`cluster_id`, `topic_name`),
     KEY            `cluster_id` (`cluster_id`, `topic_name`)
