@@ -23,6 +23,8 @@ permissions:
   pull-requests: write
 
 jobs:
+  # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
+  # Pull request Auto merge is not enabled for this repository
   dependabot:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
@@ -33,15 +35,16 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Approve a PR
+      - name: Approve PR
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Enable auto-merge for Dependabot PRs
+      # comment '@dependabot merge' to merge the PR
+      - name: Comment and Merge PR
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
-        run: gh pr merge --auto --merge "$PR_URL"
+        run: gh pr comment $PR_URL -b "@dependabot merge"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
