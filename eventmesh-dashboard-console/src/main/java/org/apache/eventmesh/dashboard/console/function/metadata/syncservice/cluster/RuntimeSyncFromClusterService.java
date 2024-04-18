@@ -19,9 +19,8 @@ package org.apache.eventmesh.dashboard.console.function.metadata.syncservice.clu
 
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeRequest;
-import org.apache.eventmesh.dashboard.console.entity.meta.MetaEntity;
 import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.SyncDataService;
-import org.apache.eventmesh.dashboard.console.service.registry.RegistryDataService;
+import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.core.meta.runtime.NacosRuntimeCore;
 import org.apache.eventmesh.dashboard.service.remoting.MetaRemotingService;
 
@@ -45,17 +44,16 @@ public class RuntimeSyncFromClusterService implements SyncDataService<RuntimeMet
     private final MetaRemotingService metaRemotingService = new NacosRuntimeCore();
 
     @Autowired
-    private RegistryDataService registryDataService;
+    private ClusterService clusterDataService;
 
     @Override
     public List<RuntimeMetadata> getData() {
         List<GetRuntimeRequest> requestList = new ArrayList<>();
         ConcurrentLinkedDeque<RuntimeMetadata> runtimeMetadata = new ConcurrentLinkedDeque<>();
-        List<MetaEntity> metaEntityList = registryDataService.selectAll();
-        registryDataService.selectAll().forEach(
-            metaEntity -> {
+        clusterDataService.selectAll().forEach(
+            clusterEntity -> {
                 GetRuntimeRequest request = new GetRuntimeRequest();
-                request.setRegistryAddress(metaEntity.getHost() + ":" + metaEntity.getPort());
+                request.setRegistryAddress(clusterEntity.getRegistryAddress());
                 requestList.add(request);
             }
         );
