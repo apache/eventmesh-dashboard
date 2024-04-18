@@ -21,7 +21,7 @@ updates:
     directory: "/"
     open-pull-requests-limit: 10
     schedule:
-      interval: "daily" # TODO Temporary daily for testing auto-merge
+      interval: "weekly"
     ignore:
       - dependency-name: "*"
         update-types: [ "version-update:semver-major" ]
