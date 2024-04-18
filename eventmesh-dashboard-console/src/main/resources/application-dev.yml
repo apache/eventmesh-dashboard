@@ -53,11 +53,13 @@ logging:
 mybatis:
   type-aliases-package: org.apache.eventmesh.dashboard.console.entity
 
-pagehelper:
-  helperDialect: mysql
-  reasonable: true
-  supportMethodsArguments: true
-  params: count=countSql
+decoration:
+  constantConfig:
+    #The 'all' configuration item indicates that the decoration component is allowed to enable pagination and return the front-end style function in a unified manner
+    all: true
+    #the 'corsEnable' configuration item indicates that cross-domain is enabled
+  corsEnable: true
+
 
 function:
   healthCheck:

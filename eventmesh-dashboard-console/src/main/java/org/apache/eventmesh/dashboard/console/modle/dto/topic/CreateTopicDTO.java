@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.dashboard.console.modle.dto.topic;
 
-import java.sql.Timestamp;
-
 
 import lombok.Data;
 
@@ -39,7 +37,7 @@ public class CreateTopicDTO {
 
     private Integer replicasNums;
 
-    private Timestamp saveTime;
+    private Long saveTime;
 
     private Integer cleanupStrategy;
 }

@@ -21,17 +21,28 @@ import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRedisConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 
+import java.time.Duration;
 import java.util.AbstractMap.SimpleEntry;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 
 public class RedisSDKOperation extends AbstractSDKOperation<StatefulRedisConnection<String, String>> {
 
     @Override
     public SimpleEntry<String, StatefulRedisConnection<String, String>> createClient(CreateSDKConfig clientConfig) {
-        String redisUrl = ((CreateRedisConfig) clientConfig).getRedisUrl();
-        RedisClient redisClient = RedisClient.create(redisUrl);
+        CreateRedisConfig redisConfig = (CreateRedisConfig) clientConfig;
+        String redisUrl = redisConfig.getRedisUrl();
+        String clientHost = redisUrl.split(":")[0];
+        int clientPort = Integer.parseInt(redisUrl.split(":")[1]);
+        RedisURI redisURI = RedisURI.builder()
+            .withHost(clientHost)
+            .withPort(clientPort)
+            .withPassword(redisConfig.getPassword())
+            .withTimeout(Duration.ofSeconds(redisConfig.getTimeOut()))
+            .build();
+        RedisClient redisClient = RedisClient.create(redisURI);
         return new SimpleEntry<>(clientConfig.getUniqueKey(), redisClient.connect());
     }
 

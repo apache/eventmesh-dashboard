@@ -99,7 +99,7 @@ public class TopicServiceImpl implements TopicService {
         topicEntity.setClusterId(createTopicDTO.getClusterId());
         topicEntity.setTopicName(createTopicDTO.getName());
         topicEntity.setDescription(createTopicDTO.getDescription());
-        topicEntity.setRetentionMs(createTopicDTO.getSaveTime().getTime());
+        topicEntity.setRetentionMs(createTopicDTO.getSaveTime());
         StoreEntity storeEntity = new StoreEntity();
         storeEntity.setClusterId(topicEntity.getClusterId());
         topicEntity.setStorageId(storeMapper.selectStoreByCluster(storeEntity).getId());

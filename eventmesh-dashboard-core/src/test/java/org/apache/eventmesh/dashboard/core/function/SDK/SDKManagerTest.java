@@ -34,13 +34,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class SDKManagerTest {
 
-    private final CreateRedisConfig createRedisConfig = new CreateRedisConfig();
     private String redisKey;
 
     @BeforeEach
     void setUp() {
         try {
-            createRedisConfig.setRedisUrl("redis://localhost:6379");
+            CreateRedisConfig createRedisConfig = CreateRedisConfig.builder()
+                .redisUrl("localhost:6379")
+                .password("")
+                .timeOut(30)
+                .build();
             redisKey = SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_REDIS, createRedisConfig).getKey();
         } catch (Exception e) {
             log.warn("SDK manager test init failed, possible reason: redis-server is offline. {}", this.getClass().getSimpleName(), e);

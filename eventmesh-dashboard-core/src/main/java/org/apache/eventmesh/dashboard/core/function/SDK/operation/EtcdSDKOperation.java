@@ -21,6 +21,7 @@ import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateEtcdConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 
+import java.time.Duration;
 import java.util.AbstractMap.SimpleEntry;
 
 import io.etcd.jetcd.Client;
@@ -39,6 +40,7 @@ public class EtcdSDKOperation extends AbstractSDKOperation<KV> {
         try {
             final Client client = Client.builder()
                 .endpoints(getSplitEndpoints(etcdConfig))
+                .connectTimeout(Duration.ofSeconds(etcdConfig.getConnectTime()))
                 .build();
             kvClient = client.getKVClient();
         } catch (EtcdException e) {
@@ -48,7 +50,7 @@ public class EtcdSDKOperation extends AbstractSDKOperation<KV> {
     }
 
     private static String[] getSplitEndpoints(CreateEtcdConfig etcdConfig) {
-        return etcdConfig.getEtcdServerAddress().split(",");
+        return etcdConfig.getEtcdServerAddress().split(";");
     }
 
     @Override
