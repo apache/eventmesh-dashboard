@@ -22,7 +22,7 @@ github:
     issues: true
     # Enable wiki
     wiki: true
-  homepage: https://eventmesh.apache.org/
+  homepage: https://eventmesh.apache.org
   labels:
     - pubsub
     - event-mesh
@@ -40,7 +40,7 @@ github:
   protected_branches:
     main:
       required_status_checks:
-        strict: true
+        strict: false
         contexts:
           - dependency-review
           - Build (ubuntu-latest, 8, java)
