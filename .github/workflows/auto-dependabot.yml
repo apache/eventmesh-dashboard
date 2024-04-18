@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-name: Dependabot auto-merge
-on: pull_request
+name: Dependabot Auto-approve
+on: pull_request_target
 
 permissions:
   contents: write
@@ -38,13 +38,5 @@ jobs:
       - name: Approve PR
         run: gh pr review --approve "$PR_URL"
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-      # comment '@dependabot merge' to merge the PR
-      - name: Comment and Merge PR
-        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
-        run: gh pr comment $PR_URL -b "@dependabot merge"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
