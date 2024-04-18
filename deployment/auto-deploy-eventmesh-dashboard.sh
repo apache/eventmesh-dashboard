@@ -21,16 +21,16 @@
 REPO_PATH=~/service/eventmesh-dashboard
 
 # SpringBoot process ID file path
-PID_LOG=~/service/eventmesh-dashboard/deployment/eventmesh-dashboard-pid.log
+PID_LOG=$REPO_PATH/deployment/eventmesh-dashboard-pid.log
 
 # Automatic deployment shell script log file path
-AUTO_DEPLOY_LOG=~/service/eventmesh-dashboard/deployment/auto-deploy-eventmesh-dashboard.log
+AUTO_DEPLOY_LOG=$REPO_PATH/deployment/auto-deploy-eventmesh-dashboard.log
 
 # Jar file path
-JAR_FILE_PATH=~/service/eventmesh-dashboard/eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar
+JAR_FILE_PATH=$REPO_PATH/eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar
 
 # Load environment variables from external file
-ENV_FILE=~/service/eventmesh-dashboard/deployment/.env
+ENV_FILE=$REPO_PATH/deployment/.env
 source $ENV_FILE
 
 # Function to check if a process with given PID is running
@@ -67,7 +67,7 @@ if [ $LOCAL != $REMOTE ]; then
     fi
     
     # Compile and package the Jar file
-    ./mvnw clean package -DskipTests -Dcheckstyle.skip=true
+    $REPO_PATH/mvnw clean package -DskipTests -Dcheckstyle.skip=true
     
     # Start the springboot application and record the process id to pid.log file
     nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > /dev/null 2>&1 &
@@ -83,7 +83,7 @@ else
     
     if [ ! -s $PID_LOG ] || ! is_process_running $(cat $PID_LOG); then
         # If the pid.log file does not exist or the process is not running, compile and package the Jar file
-        ./mvnw clean package -DskipTests -Dcheckstyle.skip=true
+        $REPO_PATH/mvnw clean package -DskipTests -Dcheckstyle.skip=true
 
         # Start the springboot application and record the process id to pid.log file
         nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > /dev/null 2>&1 &
