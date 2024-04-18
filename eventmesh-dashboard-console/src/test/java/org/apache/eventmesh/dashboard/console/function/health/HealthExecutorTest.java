@@ -147,6 +147,7 @@ class HealthExecutorTest {
         healthExecutor.execute(failHealthCheckService);
         //to test startExecute(), we need to call endExecute() first
         healthExecutor.endExecute();
+        Thread.sleep(500);
         healthExecutor.startExecute();
         HealthCheckResultEntity query = new HealthCheckResultEntity();
         query.setClusterId(1L);

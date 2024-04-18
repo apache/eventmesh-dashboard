@@ -63,6 +63,8 @@ public class NacosNamingServiceCheck extends AbstractHealthCheckService {
                 }
             } catch (NacosException e) {
                 callback.onFail(e);
+            } finally {
+                destroy();
             }
         });
     }

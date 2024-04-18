@@ -21,6 +21,7 @@ import org.apache.eventmesh.dashboard.console.function.health.callback.HealthChe
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,8 @@ class NacosConfigCheckTest {
             .healthCheckResourceType("meta")
             .healthCheckResourceSubType("nacos")
             .clusterId(1L)
-            .connectUrl("127.0.0.1:8848")
+            .connectUrl("175.27.155.139:8848")
+            .requestTimeoutMillis(1000L)
             .build();
         nacosCheck = new NacosConfigCheck(config);
     }
@@ -48,6 +50,7 @@ class NacosConfigCheckTest {
     @Test
     public void testDoCheck() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
+        Thread.sleep(100);
         nacosCheck.doCheck(new HealthCheckCallback() {
             @Override
             public void onSuccess() {
@@ -61,7 +64,7 @@ class NacosConfigCheckTest {
                 log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
             }
         });
-        latch.await();
+        latch.await(2, TimeUnit.SECONDS);
     }
 
     @AfterEach
