@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @HealthCheckType(type = HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE, subType = HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_REDIS)
 public class RedisCheck extends AbstractHealthCheckService {
 
-    private CreateRedisConfig config;
+    private CreateRedisConfig sdkConfig;
 
     public RedisCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
         super(healthCheckObjectConfig);
@@ -50,7 +50,7 @@ public class RedisCheck extends AbstractHealthCheckService {
     public void doCheck(HealthCheckCallback callback) {
         try {
             StatefulRedisConnection<String, String> connection = (StatefulRedisConnection<String, String>) SDKManager.getInstance()
-                .getClient(SDKTypeEnum.STORAGE_REDIS, config.getUniqueKey());
+                .getClient(SDKTypeEnum.STORAGE_REDIS, sdkConfig.getUniqueKey());
             RedisAsyncCommands<String, String> commands = connection.async();
             commands.ping().thenAccept(result -> {
                 callback.onSuccess();
@@ -71,7 +71,7 @@ public class RedisCheck extends AbstractHealthCheckService {
     @Override
     public void init() {
         String redisUrl;
-        config = new CreateRedisConfig();
+        sdkConfig = new CreateRedisConfig();
         if (Objects.nonNull(getConfig().getConnectUrl()) && !getConfig().getConnectUrl().isEmpty()) {
             redisUrl = getConfig().getConnectUrl();
         } else {
@@ -87,12 +87,12 @@ public class RedisCheck extends AbstractHealthCheckService {
             }
             redisUrl = builder.build().toString();
         }
-        config.setRedisUrl(redisUrl);
-        SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_REDIS, config);
+        sdkConfig.setRedisUrl(redisUrl);
+        SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_REDIS, sdkConfig);
     }
 
     @Override
     public void destroy() {
-        SDKManager.getInstance().deleteClient(SDKTypeEnum.STORAGE_REDIS, config.getUniqueKey());
+        SDKManager.getInstance().deleteClient(SDKTypeEnum.STORAGE_REDIS, sdkConfig.getUniqueKey());
     }
 }

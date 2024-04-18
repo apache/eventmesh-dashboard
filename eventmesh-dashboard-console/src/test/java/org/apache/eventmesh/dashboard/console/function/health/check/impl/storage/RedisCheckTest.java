@@ -43,7 +43,8 @@ class RedisCheckTest {
                 .healthCheckResourceSubType("redis")
                 .simpleClassName("RedisCheck")
                 .clusterId(1L)
-                .connectUrl("redis://127.0.0.1:6379")
+                .connectUrl("127.0.0.1:6379")
+                .password("")
                 .build();
             redisCheck = new RedisCheck(config);
         } catch (RedisException e) {
