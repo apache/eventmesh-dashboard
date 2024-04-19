@@ -26,10 +26,12 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Timeout(value = 5)
 class NacosConfigCheckTest {
 
     private NacosConfigCheck nacosCheck;
@@ -41,7 +43,7 @@ class NacosConfigCheckTest {
             .healthCheckResourceType("meta")
             .healthCheckResourceSubType("nacos")
             .clusterId(1L)
-            .connectUrl("175.27.155.139:8848")
+            .connectUrl("127.0.0.1:8848")
             .requestTimeoutMillis(1000L)
             .build();
         nacosCheck = new NacosConfigCheck(config);

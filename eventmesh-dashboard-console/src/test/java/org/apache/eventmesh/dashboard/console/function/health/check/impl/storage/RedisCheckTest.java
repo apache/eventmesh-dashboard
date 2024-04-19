@@ -24,12 +24,14 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import io.lettuce.core.RedisException;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Timeout(value = 5)
 class RedisCheckTest {
 
     private RedisCheck redisCheck;

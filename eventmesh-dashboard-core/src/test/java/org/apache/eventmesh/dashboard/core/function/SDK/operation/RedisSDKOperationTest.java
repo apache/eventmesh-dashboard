@@ -24,12 +24,14 @@ import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRedisConfig
 import java.util.AbstractMap.SimpleEntry;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import io.lettuce.core.api.StatefulRedisConnection;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Timeout(value = 5)
 class RedisSDKOperationTest {
 
     private final RedisSDKOperation redisClientCreateOperation = new RedisSDKOperation();

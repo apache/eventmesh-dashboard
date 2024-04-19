@@ -24,11 +24,13 @@ import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
+@Timeout(value = 5)
 class HealthServiceTest {
 
     HealthService healthService = new HealthService();

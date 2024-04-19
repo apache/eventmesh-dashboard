@@ -23,12 +23,14 @@ import java.util.AbstractMap.SimpleEntry;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import io.etcd.jetcd.KV;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Timeout(value = 5)
 public class EtcdSDKCreateOperationTest {
 
     private final EtcdSDKOperation etcdSDKOperation = new EtcdSDKOperation();

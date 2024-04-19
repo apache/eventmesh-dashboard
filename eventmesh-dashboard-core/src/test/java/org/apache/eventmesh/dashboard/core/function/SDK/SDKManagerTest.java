@@ -27,11 +27,13 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
+@Timeout(value = 10)
 class SDKManagerTest {
 
     private String redisKey;

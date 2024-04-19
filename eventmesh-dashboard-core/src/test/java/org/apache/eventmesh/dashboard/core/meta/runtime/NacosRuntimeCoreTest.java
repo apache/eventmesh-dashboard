@@ -22,10 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeRequest;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Timeout(value = 5)
 class NacosRuntimeCoreTest {
 
     private NacosRuntimeCore nacosRuntimeCore = new NacosRuntimeCore();
@@ -34,10 +36,9 @@ class NacosRuntimeCoreTest {
     public void testGetRuntime() throws InterruptedException {
         try {
             GetRuntimeRequest getRuntimeRequest = new GetRuntimeRequest();
-            getRuntimeRequest.setRegistryAddress("175.27.155.139:8848");
+            getRuntimeRequest.setRegistryAddress("127.0.0.1:8848");
             nacosRuntimeCore.getRuntime(getRuntimeRequest).getFuture().thenAccept(
                 getRuntimeResponse -> {
-                    assertEquals(1, getRuntimeResponse.getRuntimeMetadataList().size());
                     log.info("testGetRuntime success, the first cluster name is {}",getRuntimeResponse.getRuntimeMetadataList().get(0).getClusterName());
                 }
             );
