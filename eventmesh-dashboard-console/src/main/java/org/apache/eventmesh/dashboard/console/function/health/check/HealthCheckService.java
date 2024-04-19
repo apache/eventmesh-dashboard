@@ -21,14 +21,14 @@ import org.apache.eventmesh.dashboard.console.function.health.HealthExecutor;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 
 /**
- * Health check service interface.<br>
+ * Health check service interface.<p>
  * To add a new check service, extend the {@link AbstractHealthCheckService}.
  * @see AbstractHealthCheckService
  */
 public interface HealthCheckService {
 
     /**
-     * Do the health check.<br>
+     * Do the health check.<p>
      * To implement a new check service, add the necessary logic to call the success and fail functions of the callback.
      * @param callback The behaviour of the callback is defined as a lambda function when used. Please refer to {@link HealthExecutor} for usage.
      */

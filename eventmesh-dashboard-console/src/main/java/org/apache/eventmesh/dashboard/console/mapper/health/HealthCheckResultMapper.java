@@ -61,21 +61,34 @@ public interface HealthCheckResultMapper {
 
     @Insert({
         "<script>",
-        "   <choose>",
-        "   <when test='list.size() > 0'>",
-        "       INSERT INTO health_check_result(type, type_id, cluster_id, state, result_desc) VALUES ",
+        "   <if test='list.size() > 0'>",
+        "   INSERT INTO health_check_result(type, type_id, cluster_id, state, result_desc)",
+        "       VALUES ",
         "       <foreach collection='list' item='healthCheckResultEntity' index='index' separator=','>",
         "           (#{healthCheckResultEntity.type}, #{healthCheckResultEntity.typeId}, #{healthCheckResultEntity.clusterId},",
         "           #{healthCheckResultEntity.state}, #{healthCheckResultEntity.resultDesc})",
         "       </foreach>",
-        "   </when>",
-        "   <otherwise>",
-        "       SELECT 1 FROM DUAL WHERE FALSE",
-        "   </otherwise>",
-        "   </choose>",
+        "       ON DUPLICATE KEY UPDATE",
+        "       state = VALUES(state),",
+        "       result_desc = VALUES(result_desc)",
+        "   </if>",
         "</script>"
     })
     void batchInsert(List<HealthCheckResultEntity> healthCheckResultEntityList);
+
+    @Insert({
+        "<script>",
+        "   <if test='list.size() > 0'>",
+        "   INSERT INTO health_check_result(type, type_id, cluster_id, state, result_desc)",
+        "       VALUES ",
+        "       <foreach collection='list' item='healthCheckResultEntity' index='index' separator=','>",
+        "           (#{healthCheckResultEntity.type}, #{healthCheckResultEntity.typeId}, #{healthCheckResultEntity.clusterId},",
+        "           4, #{healthCheckResultEntity.resultDesc})",
+        "       </foreach>",
+        "   </if>",
+        "</script>"
+    })
+    void insertNewChecks(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     @Update("UPDATE health_check_result SET state = #{state}, result_desc = #{resultDesc} WHERE id = #{id}")
     void update(HealthCheckResultEntity healthCheckResultEntity);
@@ -92,10 +105,13 @@ public interface HealthCheckResultMapper {
     @Select({
         "<script>",
         "   SELECT * FROM health_check_result",
-        "   WHERE (cluster_id, type, type_id, state) IN",
-        "   <foreach collection='list' item='item' open='(' separator=',' close=')'>",
-        "       (#{item.clusterId}, #{item.type}, #{item.typeId}, 2)",
-        "   </foreach>",
+        "   <if test='list != null and list.size() > 0'>",
+        "       WHERE (cluster_id, type, type_id) IN",
+        "       <foreach collection='list' item='item' open='(' separator=',' close=')'>",
+        "           (#{item.clusterId}, #{item.type}, #{item.typeId})",
+        "       </foreach>",
+        "       AND (state = 2 OR state = 4)",
+        "   </if>",
         "   ORDER BY create_time DESC",
         "</script>"
     })

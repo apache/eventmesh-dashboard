@@ -43,10 +43,7 @@ public interface ConnectionDataService {
 
     List<ConnectionListVO> getConnectionToFrontByCluster(Long clusterId, GetConnectionListDTO getConnectionListDTO);
 
-    void replaceAllConnections(List<ConnectionEntity> connectionEntityList);
-
-
     List<ConfigEntity> getConnectorConfigsByClassAndVersion(String classType, String version);
 
-    void insert(ConnectionEntity connectionEntity);
+    Long insert(ConnectionEntity connectionEntity);
 }

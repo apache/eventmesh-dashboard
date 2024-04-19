@@ -69,7 +69,7 @@ class ConnectorMapperTest {
 
     @Test
     public void testInsert() {
-        ConnectorEntity connectorEntity = new ConnectorEntity(1L, "test", "test", "test", 1, "2", 0, 2, "test");
+        ConnectorEntity connectorEntity = new ConnectorEntity(1L, "test", "test", "test", 0, "127.0.0.1", 80808, 2, "test");
         connectorMapper.insert(connectorEntity);
 
         assertNotNull(connectorEntity);
@@ -78,9 +78,9 @@ class ConnectorMapperTest {
 
     @Test
     public void testBatchInsert() {
-        ConnectorEntity connectorEntity1 = new ConnectorEntity(1L, "test", "test", "test", 1, "2", 0, 2, "test");
-        ConnectorEntity connectorEntity2 = new ConnectorEntity(1L, "test", "test", "test", 1, "2", 0, 2, "test");
-        ConnectorEntity connectorEntity3 = new ConnectorEntity(1L, "test", "test", "test", 1, "2", 0, 2, "test");
+        ConnectorEntity connectorEntity1 = new ConnectorEntity(1L, "test", "test", "test", 0, "127.0.0.1", 80808, 2, "test");
+        ConnectorEntity connectorEntity2 = new ConnectorEntity(1L, "test", "test", "test", 1, "127.0.0.1", 80808, 2, "test");
+        ConnectorEntity connectorEntity3 = new ConnectorEntity(1L, "test", "test", "test", 0, "127.0.0.1", 80808, 2, "test");
         List<ConnectorEntity> connectorEntityList = new ArrayList<>();
         connectorEntityList.add(connectorEntity1);
         connectorEntityList.add(connectorEntity2);
@@ -91,7 +91,7 @@ class ConnectorMapperTest {
         ConnectorEntity connectorEntity = new ConnectorEntity();
         connectorEntity.setClusterId(1L);
         List<ConnectorEntity> results = connectorMapper.selectByClusterId(connectorEntity);
-        assertEquals(6, results.size());
+        assertEquals(4, results.size());
     }
 
     @Test
@@ -117,12 +117,11 @@ class ConnectorMapperTest {
     }
 
     @Test
-    public void testDeActiveById() {
+    public void testDeActiveByClusterId() {
         ConnectorEntity connectorEntity = new ConnectorEntity();
-        connectorEntity.setId(1L);
+        connectorEntity.setClusterId(1L);
         connectorMapper.deactivateByClusterId(connectorEntity);
 
-        connectorEntity = connectorMapper.selectById(connectorEntity);
-        assertEquals(1, connectorEntity.getStatus());
+        assertEquals(2, connectorMapper.selectAll().size());
     }
 }

@@ -19,7 +19,9 @@ package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
+@Timeout(value = 5)
 public class RuntimeTcpOpenMessageSDKOperationTest {
 
     private final RuntimeTcpOpenMessageSDKOperation tcpOpenMessageSDKOperation = new RuntimeTcpOpenMessageSDKOperation();

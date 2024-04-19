@@ -25,11 +25,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = "status")
+@SuperBuilder
 public class ConnectorEntity extends BaseEntity {
 
     private static final long serialVersionUID = -8226303660232951326L;
@@ -67,11 +71,11 @@ public class ConnectorEntity extends BaseEntity {
      */
     private String configIds;
 
-    public void setDataStatus(RecordStatus dataStatus) {
-        this.status = dataStatus.getNumber();
+    public void setStatusEnum(RecordStatus statusEnum) {
+        this.status = statusEnum.getNumber();
     }
 
-    public void setKubernetesPodDataStatus(KubernetesPodStatus kubernetesPodDataStatus) {
-        this.podState = kubernetesPodDataStatus.getNumber();
+    public void setKubernetesPodStatusEnum(KubernetesPodStatus kubernetesPodStatusEnum) {
+        this.podState = kubernetesPodStatusEnum.getNumber();
     }
 }

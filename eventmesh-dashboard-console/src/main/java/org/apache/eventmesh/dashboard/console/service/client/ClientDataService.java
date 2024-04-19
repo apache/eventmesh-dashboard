@@ -28,7 +28,13 @@ public interface ClientDataService {
 
     List<ClientEntity> selectAll();
 
+    void deActive(ClientEntity clientEntity);
+
+    void deActiveByHostPort(ClientEntity clientEntity);
+
+    Long addClient(ClientEntity clientEntity);
+
     void batchInsert(List<ClientEntity> clientEntityList);
 
-    List<ClientEntity> selectByHostPort(String host, Integer port);
+    List<ClientEntity> selectByHostPort(ClientEntity clientEntity);
 }

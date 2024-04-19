@@ -44,4 +44,9 @@ public class ClientMetadata extends MetadataConfig {
      * protocol used to connect to runtime.
      */
     private String protocol;
+
+    @Override
+    public String getUnique() {
+        return host + ":" + port;
+    }
 }

@@ -22,14 +22,17 @@ import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthC
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKManager;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqConfig;
 
 import org.apache.rocketmq.common.protocol.RequestCode;
 import org.apache.rocketmq.remoting.InvokeCallback;
 import org.apache.rocketmq.remoting.RemotingClient;
-import org.apache.rocketmq.remoting.netty.NettyClientConfig;
-import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
 import org.apache.rocketmq.remoting.netty.ResponseFuture;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
+
+import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @HealthCheckType(type = HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE, subType = HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_ROCKETMQ)
 public class Rocketmq4NameServerCheck extends AbstractHealthCheckService {
 
-    private RemotingClient remotingClient;
+    private CreateRocketmqConfig config;
 
     public Rocketmq4NameServerCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
         super(healthCheckObjectConfig);
@@ -47,7 +50,8 @@ public class Rocketmq4NameServerCheck extends AbstractHealthCheckService {
     public void doCheck(HealthCheckCallback callback) {
         try {
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_NAMESRV_CONFIG, null);
-            remotingClient.invokeAsync(getConfig().getRocketmqConfig().getNameServerUrl(), request, getConfig().getRequestTimeoutMillis(),
+            RemotingClient client = (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, config.getUniqueKey());
+            client.invokeAsync(getConfig().getRocketmqConfig().getNameServerUrl(), request, getConfig().getRequestTimeoutMillis(),
                 new InvokeCallback() {
                     @Override
                     public void operationComplete(ResponseFuture responseFuture) {
@@ -67,15 +71,26 @@ public class Rocketmq4NameServerCheck extends AbstractHealthCheckService {
 
     @Override
     public void init() {
-        if (getConfig().getRocketmqConfig().getNameServerUrl() == null || getConfig().getRocketmqConfig().getNameServerUrl().isEmpty()) {
-            throw new RuntimeException("RocketmqNameServerCheck init failed, nameServerUrl is empty");
+        setNameServerUrl();
+
+        config = new CreateRocketmqConfig();
+        config.setNameServerUrl(getConfig().getRocketmqConfig().getNameServerUrl());
+        SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, config);
+    }
+
+    private void setNameServerUrl() {
+        if (Objects.nonNull(getConfig().getRocketmqConfig().getNameServerUrl())) {
+            return;
         }
-
-        NettyClientConfig config = new NettyClientConfig();
-        config.setUseTLS(false);
-        remotingClient = new NettyRemotingClient(config);
-        remotingClient.start();
-
+        if (Objects.nonNull(getConfig().getConnectUrl()) && !getConfig().getConnectUrl().isEmpty()) {
+            getConfig().getRocketmqConfig().setNameServerUrl(getConfig().getConnectUrl());
+            return;
+        }
+        if (Objects.nonNull(getConfig().getHost()) && Objects.nonNull(getConfig().getPort())) {
+            getConfig().getRocketmqConfig().setNameServerUrl(getConfig().getHost() + ":" + getConfig().getPort());
+            return;
+        }
+        throw new RuntimeException("RocketmqNameServerCheck init failed, NameServerUrl is empty");
     }
 
     @Override

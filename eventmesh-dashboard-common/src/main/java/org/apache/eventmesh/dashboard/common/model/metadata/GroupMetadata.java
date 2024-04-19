@@ -31,4 +31,9 @@ public class GroupMetadata extends MetadataConfig {
     private Integer type;
 
     private String state;
+
+    @Override
+    public String getUnique() {
+        return name;
+    }
 }

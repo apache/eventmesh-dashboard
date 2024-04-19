@@ -51,7 +51,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         runtimeEntity = this.setSearchCriteria(getRuntimeListDTO, runtimeEntity);
         List<RuntimeEntity> runtimeByClusterId = runtimeMapper.getRuntimesToFrontByCluster(runtimeEntity);
         runtimeByClusterId.forEach(n -> {
-            n.setStatus(CheckResultCache.getLastHealthyCheckResult("runtime", n.getId()));
+            n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", n.getId()));
         });
         return runtimeByClusterId;
     }
