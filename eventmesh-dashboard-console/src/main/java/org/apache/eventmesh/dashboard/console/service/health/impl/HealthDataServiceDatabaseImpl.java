@@ -17,7 +17,6 @@
 
 package org.apache.eventmesh.dashboard.console.service.health.impl;
 
-
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
@@ -70,7 +69,7 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
         List<TopicEntity> topicEntityList = topicMapper.selectTopicByCluster(topicEntity);
         int abnormalNum = 0;
         for (TopicEntity n : topicEntityList) {
-            if (CheckResultCache.getLastHealthyCheckResult("topic", n.getId()) == 0) {
+            if (CheckResultCache.getINSTANCE().getLastHealthyCheckResult("topic", n.getId()) == 0) {
                 abnormalNum++;
             }
         }
@@ -85,7 +84,7 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
         List<RuntimeEntity> runtimeEntities = runtimeMapper.selectRuntimeByCluster(runtimeEntity);
         int abnormalNum = 0;
         for (RuntimeEntity n : runtimeEntities) {
-            if (CheckResultCache.getLastHealthyCheckResult("runtime", n.getId()) == 0) {
+            if (CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", n.getId()) == 0) {
                 abnormalNum++;
             }
         }
@@ -110,7 +109,23 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
 
     @Override
     public void batchInsertHealthCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList) {
+        if (healthCheckResultEntityList.isEmpty()) {
+            return;
+        }
         healthCheckResultMapper.batchInsert(healthCheckResultEntityList);
+    }
+
+    @Override
+    public void batchInsertNewCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList) {
+        if (healthCheckResultEntityList.isEmpty()) {
+            return;
+        }
+        healthCheckResultMapper.insertNewChecks(healthCheckResultEntityList);
+    }
+
+    @Override
+    public List<HealthCheckResultEntity> selectAll() {
+        return healthCheckResultMapper.selectAll();
     }
 
     @Override
@@ -125,17 +140,24 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
 
     @Override
     public void batchUpdateCheckResultByClusterIdAndTypeAndTypeId(List<HealthCheckResultEntity> healthCheckResultEntityList) {
-        List<HealthCheckResultEntity> idsNeedToBeUpdate = healthCheckResultMapper.getIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(
+        if (healthCheckResultEntityList.isEmpty()) {
+            return;
+        }
+        List<HealthCheckResultEntity> entitiesNeedToBeUpdate = healthCheckResultMapper.getIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(
             healthCheckResultEntityList);
-        idsNeedToBeUpdate.forEach(entity -> {
+        if (entitiesNeedToBeUpdate.isEmpty()) {
+            return;
+        }
+        entitiesNeedToBeUpdate.forEach(entity -> {
             healthCheckResultEntityList.forEach(updateEntity -> {
                 if (entity.getClusterId().equals(updateEntity.getClusterId()) && entity.getType().equals(updateEntity.getType())
                     && entity.getTypeId().equals(updateEntity.getTypeId())) {
-                    updateEntity.setId(entity.getId());
+                    entity.setState(updateEntity.getState());
+                    entity.setResultDesc(updateEntity.getResultDesc());
                 }
             });
         });
-        healthCheckResultMapper.batchUpdate(healthCheckResultEntityList);
+        healthCheckResultMapper.batchUpdate(entitiesNeedToBeUpdate);
     }
 
 

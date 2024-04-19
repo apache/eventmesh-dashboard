@@ -21,9 +21,13 @@ import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class GetRuntimeResponse {
 
     private List<RuntimeMetadata> runtimeMetadataList;

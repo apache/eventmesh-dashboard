@@ -17,32 +17,47 @@
 
 package org.apache.eventmesh.dashboard.console.spring.support;
 
+import org.apache.eventmesh.dashboard.console.config.FunctionManagerConfigs;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.function.health.HealthService;
-import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
+import org.apache.eventmesh.dashboard.console.function.metadata.MetadataManager;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * FunctionManager is in charge of tasks such as scheduled health checks
  */
+@Slf4j
 public class FunctionManager {
 
     @Setter
     private FunctionManagerProperties properties;
 
+    @Setter
+    private FunctionManagerConfigs configs;
+
+    @Setter
     @Getter
     private HealthService healthService;
 
     @Setter
-    private HealthDataService healthDataService;
+    @Getter
+    private MetadataManager metadataManager;
 
     public void initFunctionManager() {
-        // HealthService Initialization
+        //Health Check
         healthService = new HealthService();
-        CheckResultCache checkResultCache = new CheckResultCache();
-        healthService.createExecutor(healthDataService, checkResultCache);
-        healthService.startScheduledExecution(120, 60);
+        healthService.createExecutor(properties.getDataServiceContainer().getHealthDataService(), CheckResultCache.getINSTANCE());
+        healthService.startScheduledUpdateConfig(configs.getHealthCheck().getUpdateConfig().getInitialDelay(),
+            configs.getHealthCheck().getUpdateConfig().getPeriod(), properties.getDataServiceContainer());
+        healthService.startScheduledExecution(configs.getHealthCheck().getDoCheck().getInitialDelay(),
+            configs.getHealthCheck().getDoCheck().getPeriod());
+
+        metadataManager = new MetadataManager();
+        metadataManager.setUpSyncMetadataManager(properties.getSyncDataServiceWrapper(), properties.getMetadataHandlerWrapper());
+        metadataManager.init(configs.getSync().getInitialDelay(), configs.getSync().getPeriod());
     }
+
 }

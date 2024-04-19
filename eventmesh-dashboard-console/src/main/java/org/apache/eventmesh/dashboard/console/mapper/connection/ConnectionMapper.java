@@ -39,7 +39,7 @@ public interface ConnectionMapper {
     @Select("SELECT COUNT(*) FROM connection WHERE cluster_id=#{clusterId} AND status=1")
     Integer selectConnectionNumByCluster(ConnectionEntity connectionEntity);
 
-    @Select("SELECT * FROM connection WHERE status=1")
+    @Select("SELECT * FROM connection WHERE status = 1")
     List<ConnectionEntity> selectAll();
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND status=1")
@@ -76,19 +76,21 @@ public interface ConnectionMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO connection (cluster_id, source_type, source_id," + " sink_type, sink_id, runtime_id, status, topic, group_id, description)"
         + " VALUES ( #{clusterId}, #{sourceType}, #{sourceId}, "
-        + " #{sinkType}, #{sinkId},  #{runtimeId}, #{status}, #{topic}, #{groupId}, #{description})")
-    void insert(ConnectionEntity connectionEntity);
+        + " #{sinkType}, #{sinkId},  #{runtimeId}, 1, #{topic}, #{groupId}, #{description})"
+        + "ON DUPLICATE KEY UPDATE status = 1")
+    Long insert(ConnectionEntity connectionEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert({
         "<script>",
-        "   INSERT INTO connection (cluster_id, source_type, source_id," + " sink_type, sink_id, runtime_id, status,",
+        "   INSERT INTO connection (cluster_id, source_type, source_id," + " sink_type, sink_id, runtime_id,",
         "   topic, group_id, description) VALUES ",
         "   <foreach collection='list' item='connectionEntity' index='index' separator=','>",
         "       (#{connectionEntity.clusterId}, #{connectionEntity.sourceType}, #{connectionEntity.sourceId},",
-        "       #{connectionEntity.sinkType}, #{connectionEntity.sinkId}, #{connectionEntity.runtimeId}, #{connectionEntity.status},",
+        "       #{connectionEntity.sinkType}, #{connectionEntity.sinkId}, #{connectionEntity.runtimeId},",
         "       #{connectionEntity.topic}, #{connectionEntity.groupId}, #{connectionEntity.description})",
         "   </foreach>",
+        "ON DUPLICATE KEY UPDATE status = 1",
         "</script>"})
     void batchInsert(List<ConnectionEntity> connectionEntityList);
 

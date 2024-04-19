@@ -18,14 +18,16 @@
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class RuntimeMetadata extends MetadataConfig {
 
     private String host;
@@ -40,7 +42,12 @@ public class RuntimeMetadata extends MetadataConfig {
 
     private Long storageClusterId;
 
-    private Long startTimeStamp;
+    private Long startTimestamp;
 
     private String clusterName;
+
+    @Override
+    public String getUnique() {
+        return host + ":" + port;
+    }
 }

@@ -33,6 +33,16 @@ public class ConnectorDataServiceImpl implements ConnectorDataService {
     private ConnectorMapper connectorMapper;
 
     @Override
+    public Long createConnector(ConnectorEntity connectorEntity) {
+        return connectorMapper.insert(connectorEntity);
+    }
+
+    @Override
+    public List<ConnectorEntity> selectAll() {
+        return connectorMapper.selectAll();
+    }
+
+    @Override
     public List<ConnectorEntity> selectConnectorByCluster(Long clusterId) {
         ConnectorEntity connectorEntity = new ConnectorEntity();
         connectorEntity.setClusterId(clusterId);
@@ -41,6 +51,6 @@ public class ConnectorDataServiceImpl implements ConnectorDataService {
 
     @Override
     public List<ConnectorEntity> selectByHostPort(ConnectorEntity connectorEntity) {
-        return null;
+        return connectorMapper.selectByHostAndPort(connectorEntity);
     }
 }

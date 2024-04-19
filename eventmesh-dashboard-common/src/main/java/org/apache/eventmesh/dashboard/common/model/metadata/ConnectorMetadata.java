@@ -36,4 +36,9 @@ public class ConnectorMetadata extends MetadataConfig {
      * @see KubernetesPodStatus
      */
     private Integer podState;
+
+    @Override
+    public String getUnique() {
+        return host + ":" + port;
+    }
 }

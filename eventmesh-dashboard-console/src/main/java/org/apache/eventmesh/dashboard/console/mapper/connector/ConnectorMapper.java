@@ -34,7 +34,7 @@ import java.util.List;
 public interface ConnectorMapper {
 
     @Select("SELECT * FROM connector WHERE status=1")
-    ConnectorEntity selectAll();
+    List<ConnectorEntity> selectAll();
 
     @Select("SELECT * FROM connector WHERE id = #{id} AND status=1")
     ConnectorEntity selectById(ConnectorEntity connectorEntity);
@@ -47,8 +47,9 @@ public interface ConnectorMapper {
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO connector (cluster_id,name, class_name, type, status, pod_state, config_ids, host, port) "
-        + "VALUES (#{clusterId}, #{name}, #{className}, #{type}, #{status}, #{podState}, #{configIds}, #{host}, #{port})")
-    void insert(ConnectorEntity connectorEntity);
+        + "VALUES (#{clusterId}, #{name}, #{className}, #{type}, #{status}, #{podState}, #{configIds}, #{host}, #{port})"
+        + "ON DUPLICATE KEY UPDATE status = 1, pod_state = #{podState}, config_ids = #{configIds}, host = #{host}, port = #{port}")
+    Long insert(ConnectorEntity connectorEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert({
@@ -66,7 +67,7 @@ public interface ConnectorMapper {
     void active(ConnectorEntity connectorEntity);
 
     @Update("UPDATE connector SET status = 0 WHERE id = #{id}")
-    void deactivate(ConnectorEntity connectorEntity);
+    void deActive(ConnectorEntity connectorEntity);
 
     @Update("UPDATE connector SET pod_state = #{podState} WHERE id = #{id}")
     void updatePodState(ConnectorEntity connectorEntity);

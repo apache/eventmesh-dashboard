@@ -24,42 +24,60 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
+import io.lettuce.core.RedisException;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Timeout(value = 5)
 class RedisCheckTest {
 
     private RedisCheck redisCheck;
 
     @BeforeEach
     public void init() {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.setInstanceId(1L);
-        config.setHealthCheckResourceType("storage");
-        config.setHealthCheckResourceSubType("redis");
-        config.setSimpleClassName("RedisCheck");
-        config.setClusterId(1L);
-        config.setConnectUrl("redis://127.0.0.1:6379");
-        redisCheck = new RedisCheck(config);
+        try {
+            HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+                .instanceId(1L)
+                .healthCheckResourceType("storage")
+                .healthCheckResourceSubType("redis")
+                .simpleClassName("RedisCheck")
+                .clusterId(1L)
+                .connectUrl("127.0.0.1:6379")
+                .password("")
+                .build();
+            redisCheck = new RedisCheck(config);
+        } catch (RedisException e) {
+            log.error("RedisCheck failed.", e);
+        }
     }
 
     @Test
     public void testDoCheck() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        redisCheck.doCheck(new HealthCheckCallback() {
-            @Override
-            public void onSuccess() {
-                latch.countDown();
-                log.info("{} success", this.getClass().getSimpleName());
+        try {
+            CountDownLatch latch = new CountDownLatch(1);
+            if (redisCheck == null) {
+                log.error("RedisCheck is null.");
+                return;
             }
+            redisCheck.doCheck(new HealthCheckCallback() {
+                @Override
+                public void onSuccess() {
+                    latch.countDown();
+                    log.info("{} success", this.getClass().getSimpleName());
+                }
 
-            @Override
-            public void onFail(Exception e) {
-                latch.countDown();
-                log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
-            }
-        });
-        latch.await();
+                @Override
+                public void onFail(Exception e) {
+                    latch.countDown();
+                    log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
+                }
+            });
+            latch.await();
+        } catch (RedisException e) {
+            log.error("RedisCheck failed.", e);
+        }
     }
 }

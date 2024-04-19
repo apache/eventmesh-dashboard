@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.service.connection;
+package org.apache.eventmesh.dashboard.console.function.metadata.syncservice.db;
 
-import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
-import org.apache.eventmesh.dashboard.console.service.connection.impl.ConnectionDataServiceDatabaseImpl;
+
+import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.SyncDataService;
+import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
 
 import java.util.List;
 
@@ -29,22 +31,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class ConnectionService {
-    @Autowired
-    ConnectionDataService metaConnectionService;
+public class TopicSyncFromDbService implements SyncDataService<TopicEntity> {
 
     @Autowired
-    ConnectionDataServiceDatabaseImpl databaseConnectionService;
+    private TopicService topicDataService;
 
-    public void syncConnection() {
-        try {
-            List<ConnectionEntity> connectionEntityList = metaConnectionService.getAllConnections();
-            databaseConnectionService.replaceAllConnections(connectionEntityList);
-        } catch (Exception e) {
-            log.error("sync connection info from {} to {} failed for reason:{}.",
-                metaConnectionService.getClass().getSimpleName(),
-                databaseConnectionService.getClass().getSimpleName(),
-                e.getMessage());
-        }
+    @Override
+    public List<TopicEntity> getData() {
+        return topicDataService.selectAll();
     }
 }

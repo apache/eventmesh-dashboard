@@ -19,6 +19,8 @@ package org.apache.eventmesh.dashboard.service.remoting;
 
 import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.offset.ResetOffsetRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.offset.ResetOffsetResult;
 
 /**
  * interface to operate storage offset
@@ -27,5 +29,5 @@ public interface OffsetRemotingService {
 
     GetOffsetResult getOffset(GetOffsetRequest getOffsetRequest);
 
-    GetOffsetResult resetOffset(GetOffsetRequest getOffsetRequest);
+    ResetOffsetResult resetOffset(ResetOffsetRequest resetOffsetRequest);
 }

@@ -39,7 +39,7 @@ public class RedisSDKOperation extends AbstractSDKOperation<StatefulRedisConnect
         RedisURI redisURI = RedisURI.builder()
             .withHost(clientHost)
             .withPort(clientPort)
-            .withPassword(redisConfig.getPassword())
+            .withPassword(redisConfig.getPassword() == null ? "" : redisConfig.getPassword())
             .withTimeout(Duration.ofSeconds(redisConfig.getTimeOut()))
             .build();
         RedisClient redisClient = RedisClient.create(redisURI);

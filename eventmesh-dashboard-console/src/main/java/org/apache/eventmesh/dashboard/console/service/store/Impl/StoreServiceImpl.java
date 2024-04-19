@@ -53,6 +53,14 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
+    public StoreEntity selectByHostPort(String host, Integer port) {
+        StoreEntity query = new StoreEntity();
+        query.setHost(host);
+        query.setPort(port);
+        return storeMapper.selectByHostPort(query);
+    }
+
+    @Override
     public void batchInsert(List<StoreEntity> storeEntities) {
         storeMapper.batchInsert(storeEntities);
     }

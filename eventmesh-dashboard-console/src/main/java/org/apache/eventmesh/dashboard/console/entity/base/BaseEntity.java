@@ -22,13 +22,21 @@ import java.sql.Timestamp;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Base Entity provide some basic fields that every Eventmesh Dashboard Entity would have
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = false, exclude = {"createTime", "updateTime"})
 @Schema(name = "BaseEntity", description = "Base entity")
+@SuperBuilder
 public class BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -2697805837923579585L;

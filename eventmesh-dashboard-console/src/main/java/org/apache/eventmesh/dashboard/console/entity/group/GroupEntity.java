@@ -17,17 +17,23 @@
 
 package org.apache.eventmesh.dashboard.console.entity.group;
 
+import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
+import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true, exclude = "status")
 public class GroupEntity extends BaseEntity {
 
     private Long id;
@@ -50,4 +56,13 @@ public class GroupEntity extends BaseEntity {
 
     private Integer status;
 
+    public GroupEntity(GroupMetadata source) {
+        setClusterId(source.getClusterId());
+        setName(source.getName());
+        setMembers(source.getMembers());
+        setType(source.getType());
+        setState(source.getState());
+        setStatus(RecordStatus.ACTIVE.getNumber());
+        setMemberCount(source.getMemberCount());
+    }
 }

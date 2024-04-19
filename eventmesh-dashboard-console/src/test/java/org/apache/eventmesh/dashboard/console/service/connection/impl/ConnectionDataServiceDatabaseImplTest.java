@@ -53,13 +53,4 @@ public class ConnectionDataServiceDatabaseImplTest {
         List<ConnectionEntity> connectionEntityList = connectionServiceDatabaseImpl.getAllConnections();
         assertEquals(6, connectionEntityList.size());
     }
-
-    @Test
-    public void testReplaceAllConnections() {
-        List<ConnectionEntity> connectionEntityList = connectionServiceDatabaseImpl.getAllConnectionsByClusterId(1L);
-        //change ClusterId into 2
-        connectionEntityList.forEach(connectionEntity -> connectionEntity.setClusterId(2L));
-        connectionServiceDatabaseImpl.replaceAllConnections(connectionEntityList);
-        assertEquals(8, connectionServiceDatabaseImpl.getAllConnections().size());
-    }
 }

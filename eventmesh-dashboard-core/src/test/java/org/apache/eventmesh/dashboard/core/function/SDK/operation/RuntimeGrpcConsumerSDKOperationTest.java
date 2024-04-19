@@ -24,10 +24,12 @@ import java.util.AbstractMap.SimpleEntry;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Timeout(value = 5)
 public class RuntimeGrpcConsumerSDKOperationTest {
 
     private final RuntimeGrpcConsumerSDKOperation grpcConsumerSDKOperation = new RuntimeGrpcConsumerSDKOperation();
