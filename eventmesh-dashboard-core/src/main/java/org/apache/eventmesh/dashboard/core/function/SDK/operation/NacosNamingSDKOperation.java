@@ -42,6 +42,11 @@ public class NacosNamingSDKOperation extends AbstractSDKOperation<NamingService>
         try {
             Properties properties = new Properties();
             properties.put(PropertyKeyConst.SERVER_ADDR, config.getServerAddress());
+            properties.put(PropertyKeyConst.NAMESPACE, config.getNamespace());
+            properties.put(PropertyKeyConst.USERNAME, config.getUsername());
+            properties.put(PropertyKeyConst.PASSWORD, config.getPassword());
+            properties.put(PropertyKeyConst.ACCESS_KEY, config.getAccessKey());
+            properties.put(PropertyKeyConst.SECRET_KEY, config.getSecretKey());
             namingService = NacosFactory.createNamingService(properties);
         } catch (NacosException e) {
             log.error("NacosCheck init failed caused by {}", e.getErrMsg());
