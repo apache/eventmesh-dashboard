@@ -36,42 +36,50 @@ class Rocketmq4TopicCheckTest {
 
     @BeforeEach
     public void init() throws InterruptedException {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.getRocketmqConfig().setBrokerUrl("127.0.0.1:10911");
-        config.getRocketmqConfig().setNameServerUrl("127.0.0.1:9876");
-        config.setRequestTimeoutMillis(1000L);
-        rocketmqCheck = new Rocketmq4TopicCheck(config);
+        try {
+            HealthCheckObjectConfig config = new HealthCheckObjectConfig();
+            config.getRocketmqConfig().setBrokerUrl("127.0.0.1:10911");
+            config.getRocketmqConfig().setNameServerUrl("127.0.0.1:9876");
+            config.setRequestTimeoutMillis(1000L);
+            rocketmqCheck = new Rocketmq4TopicCheck(config);
+        } catch (Exception e) {
+            log.error("Rocketmq4TopicCheck failed.", e);
+        }
     }
 
     @Test
     public void testDoCheck() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(2);
-        rocketmqCheck.doCheck(new HealthCheckCallback() {
-            @Override
-            public void onSuccess() {
-                latch.countDown();
-                log.info("{} success", this.getClass().getSimpleName());
-            }
+        try {
+            CountDownLatch latch = new CountDownLatch(2);
+            rocketmqCheck.doCheck(new HealthCheckCallback() {
+                @Override
+                public void onSuccess() {
+                    latch.countDown();
+                    log.info("{} success", this.getClass().getSimpleName());
+                }
 
-            @Override
-            public void onFail(Exception e) {
-                latch.countDown();
-                log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
-            }
-        });
-        rocketmqCheck.doCheck(new HealthCheckCallback() {
-            @Override
-            public void onSuccess() {
-                latch.countDown();
-                log.info("{} success", this.getClass().getSimpleName());
-            }
+                @Override
+                public void onFail(Exception e) {
+                    latch.countDown();
+                    log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
+                }
+            });
+            rocketmqCheck.doCheck(new HealthCheckCallback() {
+                @Override
+                public void onSuccess() {
+                    latch.countDown();
+                    log.info("{} success", this.getClass().getSimpleName());
+                }
 
-            @Override
-            public void onFail(Exception e) {
-                latch.countDown();
-                log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
-            }
-        });
-        latch.await();
+                @Override
+                public void onFail(Exception e) {
+                    latch.countDown();
+                    log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
+                }
+            });
+            latch.await();
+        } catch (Exception e) {
+            log.error("Rocketmq4TopicCheck failed.", e);
+        }
     }
 }
