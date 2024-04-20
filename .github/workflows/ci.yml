@@ -83,7 +83,7 @@ jobs:
 
       - name: Build EventMesh Runtime
         working-directory: eventmesh
-        run: ./gradlew clean dist jacocoTestReport -x spotlessJava -x generateGrammarSource --parallel --daemon && ./gradlew installPlugin
+        run: ./gradlew clean dist -x spotlessJava -x generateGrammarSource --parallel --daemon && ./gradlew installPlugin
 
       - name: Set up Meta
         working-directory: nacos
