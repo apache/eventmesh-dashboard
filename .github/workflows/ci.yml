@@ -48,6 +48,11 @@ jobs:
           - 3306:3306
         # Set health checks to wait until MySQL has started
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout repository
@@ -84,6 +89,9 @@ jobs:
       - name: Build EventMesh Runtime
         working-directory: eventmesh
         run: ./gradlew clean dist -x spotlessJava -x generateGrammarSource --parallel --daemon && ./gradlew installPlugin
+
+      - name: Copy configuration files
+        run: cp config/eventmesh.properties eventmesh/dist/conf/eventmesh.properties
 
       - name: Set up Meta
         working-directory: nacos
