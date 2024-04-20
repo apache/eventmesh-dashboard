@@ -90,8 +90,8 @@ jobs:
         working-directory: eventmesh
         run: ./gradlew clean dist -x spotlessJava -x generateGrammarSource --parallel --daemon && ./gradlew installPlugin
 
-      - name: Copy configuration files
-        run: cp config/eventmesh.properties eventmesh/dist/conf/eventmesh.properties
+      - name: Apply configuration file
+        run: cp .github/workflows/config/eventmesh.properties eventmesh/dist/conf/eventmesh.properties
 
       - name: Set up Meta
         working-directory: nacos
