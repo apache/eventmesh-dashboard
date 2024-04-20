@@ -28,8 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import com.alibaba.nacos.api.exception.NacosException;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -70,7 +68,7 @@ class NacosConfigCheckTest {
                 @Override
                 public void onFail(Exception e) {
                     latch.countDown();
-                    log.error("{}, failed for reason {}", this.getClass().getSimpleName(), e);
+                    log.error("{}, failed", this.getClass().getSimpleName(), e);
                 }
             });
             latch.await(2, TimeUnit.SECONDS);
