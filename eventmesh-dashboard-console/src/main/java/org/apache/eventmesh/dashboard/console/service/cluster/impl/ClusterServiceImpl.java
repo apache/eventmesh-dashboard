@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
+import org.apache.eventmesh.dashboard.console.cache.ClusterCache;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
@@ -90,6 +91,7 @@ public class ClusterServiceImpl implements ClusterService {
     @Override
     public void batchInsert(List<ClusterEntity> clusterEntities) {
         clusterMapper.batchInsert(clusterEntities);
+        updateClusterCache();
     }
 
     @Override
@@ -100,6 +102,7 @@ public class ClusterServiceImpl implements ClusterService {
     @Override
     public void addCluster(ClusterEntity cluster) {
         clusterMapper.addCluster(cluster);
+        updateClusterCache();
     }
 
     @Override
@@ -115,6 +118,7 @@ public class ClusterServiceImpl implements ClusterService {
     @Override
     public void updateClusterById(ClusterEntity cluster) {
         clusterMapper.updateClusterById(cluster);
+        updateClusterCache();
     }
 
     @Override
@@ -122,4 +126,8 @@ public class ClusterServiceImpl implements ClusterService {
         clusterMapper.deactivate(cluster);
     }
 
+    private void updateClusterCache() {
+        List<ClusterEntity> clusters = selectAll();
+        ClusterCache.getINSTANCE().syncClusters(clusters);
+    }
 }

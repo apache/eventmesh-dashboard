@@ -24,20 +24,23 @@ import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = "status")
+@SuperBuilder
 public class StoreEntity extends BaseEntity {
-
-    private Long id;
 
     private Long clusterId;
 
-    private Integer storeId;
-
-    private String storeType;
+    /**
+     * @see org.apache.eventmesh.dashboard.common.enums.StoreType
+     */
+    private Integer storeType;
 
     private String host;
 

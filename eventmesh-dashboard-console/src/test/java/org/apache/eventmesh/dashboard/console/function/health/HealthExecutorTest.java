@@ -29,12 +29,15 @@ import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEnt
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
-import org.apache.eventmesh.dashboard.console.service.health.impl.HealthDataServiceDatabaseImpl;
+import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
+import org.apache.eventmesh.dashboard.console.spring.support.FunctionManager;
+import org.apache.eventmesh.dashboard.console.spring.support.FunctionManagerLoader;
 
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -42,6 +45,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -51,13 +55,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest(classes = EventMeshDashboardApplication.class)
 @ActiveProfiles("test")
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = {"classpath:use-test-schema.sql", "classpath:eventmesh-dashboard.sql"})
+@Timeout(value = 5)
 class HealthExecutorTest {
 
     private HealthExecutor healthExecutor = new HealthExecutor();
-    private CheckResultCache memoryCache = new CheckResultCache();
+    private CheckResultCache memoryCache = CheckResultCache.getINSTANCE();
 
     @Autowired
-    HealthDataServiceDatabaseImpl healthDataService;
+    HealthDataService healthDataService;
 
     @Mock
     AbstractHealthCheckService successHealthCheckService;
@@ -95,22 +100,24 @@ class HealthExecutorTest {
 
         healthExecutor.setDataService(healthDataService);
         healthExecutor.setMemoryCache(memoryCache);
-        HealthCheckObjectConfig config1 = new HealthCheckObjectConfig();
-        config1.setInstanceId(1L);
-        config1.setHealthCheckResourceType("storage");
-        config1.setHealthCheckResourceSubType("redis");
-        config1.setConnectUrl("redis://localhost:6379");
-        config1.setSimpleClassName("RedisCheck");
-        config1.setClusterId(1L);
+        HealthCheckObjectConfig config1 = HealthCheckObjectConfig.builder()
+            .instanceId(1L)
+            .healthCheckResourceType("storage")
+            .healthCheckResourceSubType("redis")
+            .connectUrl("redis://localhost:6379")
+            .simpleClassName("RedisCheck")
+            .clusterId(1L)
+            .build();
         Mockito.lenient().when(successHealthCheckService.getConfig()).thenReturn(config1);
         Mockito.lenient().when(timeoutHealthCheckService.getConfig()).thenReturn(config1);
-        HealthCheckObjectConfig config2 = new HealthCheckObjectConfig();
-        config2.setInstanceId(2L);
-        config2.setHealthCheckResourceType("storage");
-        config2.setHealthCheckResourceSubType("redis");
-        config2.setConnectUrl("redis://localhost:6379");
-        config2.setSimpleClassName("RedisCheck");
-        config2.setClusterId(1L);
+        HealthCheckObjectConfig config2 = HealthCheckObjectConfig.builder()
+            .instanceId(2L)
+            .healthCheckResourceType("storage")
+            .healthCheckResourceSubType("redis")
+            .connectUrl("redis://localhost:6379")
+            .simpleClassName("RedisCheck")
+            .clusterId(1L)
+            .build();
         Mockito.lenient().when(failHealthCheckService.getConfig()).thenReturn(config2);
     }
 
@@ -137,11 +144,12 @@ class HealthExecutorTest {
     }
 
     @Test
-    public void testStartExecute() {
+    public void testStartExecute() throws InterruptedException {
         healthExecutor.execute(successHealthCheckService);
         healthExecutor.execute(failHealthCheckService);
         //to test startExecute(), we need to call endExecute() first
         healthExecutor.endExecute();
+        Thread.sleep(500);
         healthExecutor.startExecute();
         HealthCheckResultEntity query = new HealthCheckResultEntity();
         query.setClusterId(1L);

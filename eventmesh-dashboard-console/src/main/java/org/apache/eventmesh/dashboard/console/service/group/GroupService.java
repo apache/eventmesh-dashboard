@@ -34,7 +34,7 @@ public interface GroupService {
 
     List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
 
-    GroupEntity addGroup(GroupEntity groupEntity);
+    void addGroup(GroupEntity groupEntity);
 
     void updateGroup(GroupEntity groupEntity);
 

@@ -66,4 +66,9 @@ public class ConnectionMetadata extends MetadataConfig {
     private Long groupId;
 
     private String description;
+
+    @Override
+    public String getUnique() {
+        return getClusterId() + "/" + sourceId + "/" + sinkId + "/" + topic;
+    }
 }

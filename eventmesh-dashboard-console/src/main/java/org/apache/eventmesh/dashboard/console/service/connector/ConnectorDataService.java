@@ -26,6 +26,10 @@ import java.util.List;
  */
 public interface ConnectorDataService {
 
+    Long createConnector(ConnectorEntity connectorEntity);
+
+    List<ConnectorEntity> selectAll();
+
     List<ConnectorEntity> selectConnectorByCluster(Long clusterId);
 
     List<ConnectorEntity> selectByHostPort(ConnectorEntity connectorEntity);

@@ -29,6 +29,7 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -37,6 +38,7 @@ import org.springframework.test.context.jdbc.Sql;
 @SpringBootTest
 @ActiveProfiles("test")
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = {"classpath:use-test-schema.sql", "classpath:eventmesh-dashboard.sql"})
+@Timeout(value = 10)
 public class HealthServiceIntegrateTest {
 
     HealthService healthService = new HealthService();
@@ -44,7 +46,7 @@ public class HealthServiceIntegrateTest {
     @Autowired
     private HealthDataService healthDataService;
 
-    private final CheckResultCache checkResultCache = new CheckResultCache();
+    private final CheckResultCache checkResultCache = CheckResultCache.getINSTANCE();
 
     @BeforeEach
     void init() {
@@ -53,12 +55,13 @@ public class HealthServiceIntegrateTest {
 
     @Test
     void testStorageRedis() throws InterruptedException {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.setClusterId(1L);
-        config.setInstanceId(1L);
-        config.setHealthCheckResourceType("storage");
-        config.setHealthCheckResourceSubType("redis");
-        config.setConnectUrl("redis://localhost:6379");
+        HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+                .clusterId(1L)
+                .instanceId(1L)
+                .healthCheckResourceType("storage")
+                .healthCheckResourceSubType("redis")
+                .connectUrl("redis://localhost:6379")
+                .build();
         healthService.insertCheckService(config);
         healthService.executeAll();
         Thread.sleep(1000);

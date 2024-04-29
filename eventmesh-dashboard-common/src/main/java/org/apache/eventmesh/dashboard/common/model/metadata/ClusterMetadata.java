@@ -50,4 +50,9 @@ public class ClusterMetadata extends MetadataConfig {
     private StoreType storeType;
 
     private String description;
+
+    @Override
+    public String getUnique() {
+        return clusterName + "/" + registryAddress;
+    }
 }

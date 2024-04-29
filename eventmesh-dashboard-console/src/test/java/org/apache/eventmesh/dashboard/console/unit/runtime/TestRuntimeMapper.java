@@ -39,7 +39,7 @@ public class TestRuntimeMapper {
 
     @Test
     public void testAddRuntimeMapper() {
-        RuntimeEntity runtimeEntity = new RuntimeEntity(null, 1L, "runtime1", 2L, 1019, 1099, 1L, "null", 1, null, null, "null");
+        RuntimeEntity runtimeEntity = new RuntimeEntity(1L, "runtime1", 2L, 1019, 1099, 1L, "null", 1, null, null, "null");
         runtimeMapper.addRuntime(runtimeEntity);
         List<RuntimeEntity> runtimeEntities = runtimeMapper.selectRuntimeByCluster(runtimeEntity);
         RuntimeEntity runtimeEntity1 = runtimeEntities.get(0);
@@ -50,7 +50,7 @@ public class TestRuntimeMapper {
 
     @Test
     public void testUpdateRuntimeByCluster() {
-        RuntimeEntity runtimeEntity = new RuntimeEntity(null, 1L, "runtime1", 2L, 1019, 1099, 1L, "null", 1, null, null, "null");
+        RuntimeEntity runtimeEntity = new RuntimeEntity(1L, "runtime1", 2L, 1019, 1099, 1L, "null", 1, null, null, "null");
         runtimeMapper.addRuntime(runtimeEntity);
         runtimeEntity.setPort(1000);
         runtimeEntity.setJmxPort(1099);
@@ -65,7 +65,7 @@ public class TestRuntimeMapper {
 
     @Test
     public void testDeleteRuntime() {
-        RuntimeEntity runtimeEntity = new RuntimeEntity(null, 1L, "runtime1", 2L, 1019, 1099, 1L, "null", 1, null, null, "null");
+        RuntimeEntity runtimeEntity = new RuntimeEntity(1L, "runtime1", 2L, 1019, 1099, 1L, "null", 1, null, null, "null");
         runtimeMapper.addRuntime(runtimeEntity);
         runtimeMapper.deleteRuntimeByCluster(runtimeEntity);
         List<RuntimeEntity> runtimeEntities = runtimeMapper.selectRuntimeByCluster(runtimeEntity);

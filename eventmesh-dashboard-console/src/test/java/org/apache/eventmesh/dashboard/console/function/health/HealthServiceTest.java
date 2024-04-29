@@ -24,11 +24,13 @@ import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
+@Timeout(value = 5)
 class HealthServiceTest {
 
     HealthService healthService = new HealthService();
@@ -46,55 +48,62 @@ class HealthServiceTest {
 
     @Test
     void testInsertCheckServiceWithAnnotation() {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.setInstanceId(2L);
-        config.setHealthCheckResourceType("storage");
-        config.setHealthCheckResourceSubType("redis");
-        config.setConnectUrl("redis://localhost:6379");
+        HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+            .instanceId(1L)
+            .healthCheckResourceType("storage")
+            .healthCheckResourceSubType("redis")
+            .connectUrl("redis://localhost:6379")
+            .build();
         healthService.insertCheckService(config);
     }
 
     @Test
     void testInsertCheckServiceWithSimpleClassName() {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.setInstanceId(1L);
-        config.setSimpleClassName("RedisCheck");
-        config.setHealthCheckResourceType("storage");
-        config.setHealthCheckResourceSubType("redis");
-        config.setClusterId(1L);
-        config.setConnectUrl("redis://localhost:6379");
+        HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+            .instanceId(1L)
+            .simpleClassName("RedisCheck")
+            .healthCheckResourceType("storage")
+            .healthCheckResourceSubType("redis")
+            .clusterId(1L)
+            .connectUrl("redis://localhost:6379")
+            .build();
         healthService.insertCheckService(config);
     }
 
     @Test
     void testInsertCheckServiceWithClass() {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.setInstanceId(1L);
-        config.setHealthCheckResourceType("storage");
-        config.setHealthCheckResourceSubType("redis");
-        config.setClusterId(1L);
-        config.setCheckClass(TestHealthCheckService.class);
+        HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+            .instanceId(1L)
+            .healthCheckResourceType("storage")
+            .healthCheckResourceSubType("redis")
+            .clusterId(1L)
+            .checkClass(TestHealthCheckService.class)
+            .build();
         healthService.insertCheckService(config);
     }
 
     @Test
     void testDeleteCheckService() {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.setInstanceId(1L);
-        config.setHealthCheckResourceType("storage");
-        config.setClusterId(1L);
-        config.setCheckClass(TestHealthCheckService.class);
+        HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+            .instanceId(1L)
+            .healthCheckResourceType("storage")
+            .healthCheckResourceSubType("redis")
+            .clusterId(1L)
+            .checkClass(TestHealthCheckService.class)
+            .build();
         healthService.insertCheckService(config);
         healthService.deleteCheckService("storage", 1L);
     }
 
     @Test
     void testExecuteAll() {
-        HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-        config.setInstanceId(1L);
-        config.setHealthCheckResourceType("storage");
-        config.setClusterId(1L);
-        config.setCheckClass(TestHealthCheckService.class);
+        HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
+            .instanceId(1L)
+            .healthCheckResourceType("storage")
+            .healthCheckResourceSubType("redis")
+            .clusterId(1L)
+            .checkClass(TestHealthCheckService.class)
+            .build();
         healthService.insertCheckService(config);
         healthService.executeAll();
     }

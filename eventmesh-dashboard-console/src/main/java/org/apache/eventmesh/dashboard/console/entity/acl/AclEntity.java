@@ -23,11 +23,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = "status")
+@SuperBuilder
 public class AclEntity extends BaseEntity {
 
     private static final long serialVersionUID = 6057071983428111947L;

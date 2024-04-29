@@ -102,7 +102,7 @@ public class TopicServiceImpl implements TopicService {
         topicEntity.setRetentionMs(createTopicDTO.getSaveTime());
         StoreEntity storeEntity = new StoreEntity();
         storeEntity.setClusterId(topicEntity.getClusterId());
-        topicEntity.setStorageId(String.valueOf(storeMapper.selectStoreByCluster(storeEntity).getId()));
+        topicEntity.setStorageId(storeMapper.selectStoreByCluster(storeEntity).getId());
         topicEntity.setCreateProgress(1);
         topicMapper.addTopic(topicEntity);
     }
@@ -116,7 +116,6 @@ public class TopicServiceImpl implements TopicService {
     public List<TopicEntity> selectAll() {
         return topicMapper.selectAll();
     }
-
 
 
     @Override
@@ -181,7 +180,7 @@ public class TopicServiceImpl implements TopicService {
         topicEntity = this.setSearchCriteria(getTopicListDTO, topicEntity);
         List<TopicEntity> topicEntityList = topicMapper.getTopicsToFrontByClusterId(topicEntity);
         topicEntityList.forEach(n -> {
-            n.setStatus(CheckResultCache.getLastHealthyCheckResult("topic", n.getId()));
+            n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("topic", n.getId()));
         });
         return topicEntityList;
     }

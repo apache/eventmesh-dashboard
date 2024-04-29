@@ -17,7 +17,6 @@
 
 package org.apache.eventmesh.dashboard.console.service.health;
 
-
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.modle.vo.health.InstanceLiveProportionVo;
 
@@ -36,6 +35,13 @@ public interface HealthDataService {
     HealthCheckResultEntity insertHealthCheckResult(HealthCheckResultEntity healthCheckResultEntity);
 
     void batchInsertHealthCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
+
+    /**
+     * New check results have state 4: SDK client not created or connected
+     */
+    void batchInsertNewCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
+
+    List<HealthCheckResultEntity> selectAll();
 
     List<HealthCheckResultEntity> queryHealthCheckResultByClusterIdAndTypeAndTypeId(HealthCheckResultEntity entity);
 

@@ -30,4 +30,9 @@ public class AclMetadata extends MetadataConfig {
     private String resourceType;
     private String resourceName;
     private Integer patternType;
+
+    @Override
+    public String getUnique() {
+        return null;
+    }
 }

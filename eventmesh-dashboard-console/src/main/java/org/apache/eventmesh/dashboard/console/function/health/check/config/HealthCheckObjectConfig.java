@@ -19,16 +19,24 @@ package org.apache.eventmesh.dashboard.console.function.health.check.config;
 
 import java.util.Properties;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder.Default;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class HealthCheckObjectConfig {
 
     private Long instanceId;
 
     private String healthCheckResourceType;
 
-    private String healthCheckResourceSubType;
+    @Default
+    private String healthCheckResourceSubType = "";
 
     private String simpleClassName;
 
@@ -54,15 +62,10 @@ public class HealthCheckObjectConfig {
     //mysql, redis
     private String database;
 
+    @Default
     private Long requestTimeoutMillis = 100000L;
 
+    @Default
     private RocketmqConfig rocketmqConfig = new RocketmqConfig();
 
-    @Data
-    public class RocketmqConfig {
-
-        private String nameServerUrl;
-        private String brokerUrl;
-        private String endPoint;
-    }
 }

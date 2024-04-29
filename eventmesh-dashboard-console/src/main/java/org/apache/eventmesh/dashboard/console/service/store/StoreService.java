@@ -32,6 +32,8 @@ public interface StoreService {
 
     StoreEntity selectById(Long storeId);
 
+    StoreEntity selectByHostPort(String host, Integer port);
+
     void batchInsert(List<StoreEntity> storeEntities);
 
     void addStore(StoreEntity storeEntity);

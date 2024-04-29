@@ -17,6 +17,22 @@
 
 package org.apache.eventmesh.dashboard.console.spring.support;
 
+import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandlerWrapper;
+import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.SyncDataServiceWrapper;
+import org.apache.eventmesh.dashboard.console.service.DataServiceWrapper;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class FunctionManagerProperties {
 
+    private DataServiceWrapper dataServiceContainer;
+    private SyncDataServiceWrapper syncDataServiceWrapper;
+    private MetadataHandlerWrapper metadataHandlerWrapper;
 }

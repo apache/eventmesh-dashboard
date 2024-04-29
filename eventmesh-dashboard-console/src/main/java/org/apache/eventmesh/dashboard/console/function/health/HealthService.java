@@ -17,15 +17,22 @@
 
 package org.apache.eventmesh.dashboard.console.function.health;
 
+import org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant;
+import org.apache.eventmesh.dashboard.common.enums.StoreType;
+import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
+import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache.CheckResult;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.RedisCheck;
+import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4.Rocketmq4BrokerCheck;
+import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4.Rocketmq4NameServerCheck;
+import org.apache.eventmesh.dashboard.console.service.DataServiceWrapper;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +42,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * HealthService is the manager of all health check services. It is responsible for creating, deleting and executing health check services.<br> In
- * this class there is a {@link HealthExecutor} which is used to execute health check services, and also a map to store all health check services.
- * when the function executeAll is called, health check service will be executed by {@link HealthExecutor}.
+ * HealthService is the manager of all health check services. It is responsible for creating, deleting and executing health check services.<p> In this
+ * class there is a {@link HealthExecutor} which is used to execute health check services, and also a map to store all health check services. when the
+ * function executeAll is called, health check service will be executed by {@link HealthExecutor}.
  */
 @Slf4j
 public class HealthService {
@@ -48,7 +57,7 @@ public class HealthService {
     private HealthExecutor healthExecutor;
 
     /**
-     * class cache used to build healthCheckService instance.<br> key: HealthCheckObjectConfig.SimpleClassName value: HealthCheckService
+     * class cache used to build healthCheckService instance.<p> key: HealthCheckObjectConfig.SimpleClassName value: HealthCheckService
      *
      * @see HealthCheckObjectConfig
      */
@@ -56,6 +65,8 @@ public class HealthService {
 
     static {
         setClassCache(RedisCheck.class);
+        setClassCache(Rocketmq4BrokerCheck.class);
+        setClassCache(Rocketmq4NameServerCheck.class);
     }
 
     private static void setClassCache(Class<?> clazz) {
@@ -63,7 +74,7 @@ public class HealthService {
     }
 
     /**
-     * This map is used to store HealthExecutor.<br> Outside key is Type(runtime, storage etc.), inside key is the id of type instance(runtimeId,
+     * This map is used to store HealthExecutor.<p> Outside key is Type(runtime, storage etc.), inside key is the id of type instance(runtimeId,
      * storageId etc.).
      *
      * @see AbstractHealthCheckService
@@ -98,22 +109,23 @@ public class HealthService {
                 for (Entry<String, Class<?>> entry : HEALTH_CHECK_CLASS_CACHE.entrySet()) {
                     Class<?> clazz = entry.getValue();
                     HealthCheckType annotation = clazz.getAnnotation(HealthCheckType.class);
-                    if (annotation != null && annotation.type().equals(config.getHealthCheckResourceType()) && annotation.subType()
+                    if (Objects.isNull(annotation)) {
+                        continue;
+                    }
+                    if (annotation.type().equals(config.getHealthCheckResourceType()) && annotation.subType()
                         .equals(config.getHealthCheckResourceSubType())) {
                         healthCheckService = createCheckService(clazz, config);
-                        break;
                     }
                 }
             }
+            // if all above creation method failed
+            if (Objects.isNull(healthCheckService)) {
+                throw new RuntimeException("No construct method of Health Check Service is found, config is {}" + config);
+            }
+            insertCheckService(healthCheckService);
         } catch (Exception e) {
             log.error("create healthCheckService failed, healthCheckObjectConfig:{}", config, e);
         }
-
-        // if all above creation method failed
-        if (Objects.isNull(healthCheckService)) {
-            throw new RuntimeException("No construct method of Health Check Service is found, config is {}" + config);
-        }
-        insertCheckService(healthCheckService);
     }
 
     public void insertCheckService(AbstractHealthCheckService checkService) {
@@ -134,6 +146,10 @@ public class HealthService {
         }
     }
 
+    public void replaceCheckService(List<HealthCheckObjectConfig> configList) {
+        checkServiceMap.clear();
+        insertCheckService(configList);
+    }
 
     public void createExecutor(HealthDataService dataService, CheckResultCache cache) {
         healthExecutor = new HealthExecutor();
@@ -142,21 +158,30 @@ public class HealthService {
     }
 
     public void executeAll() {
-        healthExecutor.startExecute();
+        try {
 
-        checkServiceMap.forEach((type, subMap) -> {
-            subMap.forEach((typeId, healthCheckService) -> {
-                healthExecutor.execute(healthCheckService);
+            healthExecutor.startExecute();
+
+            checkServiceMap.forEach((type, subMap) -> {
+                subMap.forEach((typeId, healthCheckService) -> {
+                    healthExecutor.execute(healthCheckService);
+                });
             });
-        });
+        } catch (Exception e) {
+            log.error("execute health check failed", e);
+        }
 
         healthExecutor.endExecute();
     }
 
-    private AbstractHealthCheckService createCheckService(Class<?> clazz, HealthCheckObjectConfig config)
-        throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Constructor<?> constructor = clazz.getConstructor(HealthCheckObjectConfig.class);
-        return (AbstractHealthCheckService) constructor.newInstance(config);
+    @NotNull
+    private AbstractHealthCheckService createCheckService(Class<?> clazz, HealthCheckObjectConfig config) {
+        try {
+            Constructor<?> constructor = clazz.getConstructor(HealthCheckObjectConfig.class);
+            return (AbstractHealthCheckService) constructor.newInstance(config);
+        } catch (Exception e) {
+            throw new RuntimeException("createCheckService failed", e);
+        }
     }
 
     /**
@@ -165,16 +190,104 @@ public class HealthService {
      * @param initialDelay unit is second
      * @param period       unit is second
      */
-    public void startScheduledExecution(long initialDelay, long period) {
+    public void startScheduledExecution(long initialDelay, int period) {
         if (scheduledExecutor == null) {
-            scheduledExecutor = new ScheduledThreadPoolExecutor(1);
+            scheduledExecutor = new ScheduledThreadPoolExecutor(2);
         }
         scheduledExecutor.scheduleAtFixedRate(this::executeAll, initialDelay, period, TimeUnit.SECONDS);
+    }
+
+    public void startScheduledUpdateConfig(int initialDelay, int period, DataServiceWrapper dataServiceWrapper) {
+        if (scheduledExecutor == null) {
+            scheduledExecutor = new ScheduledThreadPoolExecutor(2);
+        }
+        scheduledExecutor.scheduleAtFixedRate(() -> this.updateHealthCheckConfigs(dataServiceWrapper), initialDelay,
+            period, TimeUnit.SECONDS);
     }
 
     public void stopScheduledExecution() {
         if (scheduledExecutor != null) {
             scheduledExecutor.shutdown();
+        }
+    }
+
+    public void updateHealthCheckConfigs(DataServiceWrapper dataServiceWrapper) {
+        try {
+            List<HealthCheckObjectConfig> checkConfigs = new ArrayList<>();
+            List<HealthCheckResultEntity> checkResultEntities = new ArrayList<>();
+            //TODO add health check service, only storage check is usable for now
+
+            //            List<ClusterEntity> clusters = properties.getDataServiceContainer().getClusterDataService().selectAll();
+            //            for (ClusterEntity cluster : clusters) {
+            //                checkConfigs.add(HealthCheckObjectConfig.builder()
+            //                    .instanceId(cluster.getId())
+            //                    .healthCheckResourceType(HealthCheckTypeConstant.HEALTH_CHECK_TYPE_CLUSTER)
+            //                    .connectUrl(cluster.getRegistryAddress())
+            //                    .build());
+            //                checkResultEntities.add(HealthCheckResultEntity.builder()
+            //                    .clusterId(cluster.getId())
+            //                    .type(1)
+            //                    .typeId(cluster.getId())
+            //                    .state(4)
+            //                    .resultDesc("initializing check client")
+            //                    .build());
+            //            }
+            //
+            //            List<RuntimeEntity> runtimes = properties.getDataServiceContainer().getRuntimeDataService().selectAll();
+            //            for (RuntimeEntity runtime : runtimes) {
+            //                checkConfigs.add(HealthCheckObjectConfig.builder()
+            //                    .instanceId(runtime.getId())
+            //                    .healthCheckResourceType(HealthCheckTypeConstant.HEALTH_CHECK_TYPE_RUNTIME)
+            //                    .connectUrl(runtime.getHost() + ":" + runtime.getPort())
+            //                    .build());
+            //                checkResultEntities.add(HealthCheckResultEntity.builder()
+            //                    .clusterId(runtime.getClusterId())
+            //                    .type(2)
+            //                    .typeId(runtime.getId())
+            //                    .state(4)
+            //                    .resultDesc("initializing check client")
+            //                    .build());
+            //            }
+            //
+            //            List<TopicEntity> topics = properties.getDataServiceContainer().getTopicDataService().selectAll();
+            //            for (TopicEntity topic : topics) {
+            //                checkConfigs.add(HealthCheckObjectConfig.builder()
+            //                    .instanceId(topic.getId())
+            //                    .healthCheckResourceType(HealthCheckTypeConstant.HEALTH_CHECK_TYPE_TOPIC)
+            //                    .build());
+            //                checkResultEntities.add(HealthCheckResultEntity.builder()
+            //                    .clusterId(topic.getClusterId())
+            //                    .type(3)
+            //                    .typeId(topic.getId())
+            //                    .state(4)
+            //                    .resultDesc("initializing check client")
+            //                    .build());
+            //            }
+
+            List<StoreEntity> stores = dataServiceWrapper.getStoreDataService().selectAll();
+            for (StoreEntity store : stores) {
+                checkConfigs.add(HealthCheckObjectConfig.builder()
+                    .instanceId(store.getId())
+                    .clusterId(store.getClusterId())
+                    .healthCheckResourceType(HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE)
+                    .healthCheckResourceSubType(
+                        StoreType.fromNumber(store.getStoreType()).toString())
+                    .host(store.getHost())
+                    .port(store.getPort())
+                    .build());
+                checkResultEntities.add(HealthCheckResultEntity.builder()
+                    .clusterId(store.getClusterId())
+                    .type(4)
+                    .typeId(store.getId())
+                    .state(4)
+                    .resultDesc("initializing check client")
+                    .build());
+            }
+
+            dataServiceWrapper.getHealthDataService().batchInsertNewCheckResult(checkResultEntities);
+            this.replaceCheckService(checkConfigs);
+        } catch (Exception e) {
+            log.error("updateHealthCheckConfigs error", e);
         }
     }
 }

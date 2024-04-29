@@ -24,7 +24,7 @@ import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigResu
  * A remoting service for config operations. Getting configs from different sources
  */
 public interface ConfigRemotingService {
-
+    // get from meta service
     public GetConfigResult getConfigsFromRegistry(GetConfigRequest getConfigRequest);
 
     public GetConfigResult getConfigsFromRuntime(GetConfigRequest getConfigRequest);

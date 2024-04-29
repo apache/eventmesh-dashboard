@@ -17,24 +17,25 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
+import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
-
-import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true, exclude = "status")
 public class ClusterEntity extends BaseEntity {
-
-    private Long id;
 
     private String name;
 
-    private String registryNameList;
+    private String registryAddress;
 
     private String bootstrapServers;
 
@@ -54,12 +55,24 @@ public class ClusterEntity extends BaseEntity {
 
     private Integer status;
 
-    private Timestamp createTime;
-
-    private Timestamp updateTime;
-
-    /**
-     * @See StoreType
-     */
     private Integer storeType;
+
+    public ClusterEntity(ClusterMetadata source) {
+        if (source.getClusterName() != null && !source.getClusterName().isEmpty()) {
+            setAuthType(source.getAuthType());
+            setBootstrapServers(source.getBootstrapServers());
+            setClientProperties(source.getClientProperties());
+            setRegistryAddress(source.getRegistryAddress());
+            setEventmeshVersion(source.getEventmeshVersion());
+            setJmxProperties(source.getJmxProperties());
+            setRegProperties(source.getRegProperties());
+            setDescription(source.getDescription());
+            setAuthType(source.getAuthType());
+            setRunState(source.getRunState());
+            setStoreType(source.getStoreType().getNumber());
+            setName(source.getClusterName());
+        } else {
+            throw new RuntimeException("cluster name is empty");
+        }
+    }
 }

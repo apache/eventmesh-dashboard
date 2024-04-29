@@ -61,6 +61,9 @@ public interface ConfigMapper {
     @Select("SELECT * FROM config WHERE status=1 AND is_default=0")
     List<ConfigEntity> selectAll();
 
+    @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId}")
+    List<ConfigEntity> selectConfigsByInstance(ConfigEntity configEntity);
+
     @Insert({
         "<script>",
         "INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version,",
@@ -76,11 +79,12 @@ public interface ConfigMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void batchInsert(List<ConfigEntity> configEntityList);
 
-    @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version, "
-        + "status, is_default, end_version, diff_type, description, edit, is_modify, eventmesh_version) VALUE "
+    @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, "
+        + "status, is_default,  diff_type, description, edit, is_modify,start_version,"
+        + "eventmesh_version,end_version) VALUE "
         + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
-        + "#{configValue},#{startVersion},#{status},#{isDefault},#{endVersion},#{diffType},"
-        + "#{description},#{edit},#{isModify},#{eventmeshVersion})")
+        + "#{configValue},#{status},#{isDefault},#{diffType},#{description},#{edit},#{isModify},"
+        + "#{startVersion},#{eventmeshVersion},#{endVersion})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer addConfig(ConfigEntity configEntity);
 

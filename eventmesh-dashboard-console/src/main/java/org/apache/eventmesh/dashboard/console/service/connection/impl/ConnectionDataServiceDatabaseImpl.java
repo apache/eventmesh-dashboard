@@ -33,13 +33,9 @@ import org.apache.eventmesh.dashboard.console.service.connection.ConnectionDataS
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService {
@@ -76,9 +72,10 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
     }
 
     @Override
-    public void insert(ConnectionEntity connectionEntity) {
-        connectionMapper.insert(connectionEntity);
+    public Long insert(ConnectionEntity connectionEntity) {
+        return connectionMapper.insert(connectionEntity);
     }
+
 
 
     @EmLog(OprType = "add", OprTarget = "Connection")
@@ -185,39 +182,6 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
         connectionListVO.setTopicName(connectionEntity.getTopic());
         connectionListVO.setStatus(connectionEntity.getStatus());
         return connectionListVO;
-    }
-
-    @Override
-    @Transactional
-    public void replaceAllConnections(List<ConnectionEntity> connectionEntityList) {
-        Map<Long, List<ConnectionEntity>> connectionsGroupedByClusterId = connectionEntityList.stream()
-            .collect(Collectors.groupingBy(ConnectionEntity::getClusterId));
-
-        connectionsGroupedByClusterId.forEach((clusterId, newConnections) -> {
-            ConnectionEntity connectionEntity = new ConnectionEntity();
-            connectionEntity.setClusterId(clusterId);
-            List<ConnectionEntity> existingConnections = connectionMapper.selectByClusterId(connectionEntity);
-
-            // Collect connections that are not in the new list
-            List<ConnectionEntity> connectionsToInactive = existingConnections.stream()
-                .filter(existingConnection -> !newConnections.contains(existingConnection))
-                .collect(Collectors.toList());
-
-            // Collect new connections that are not in the existing list
-            List<ConnectionEntity> connectionsToInsert = newConnections.stream()
-                .filter(connection -> !existingConnections.contains(connection))
-                .collect(Collectors.toList());
-
-            // Delete connections in batch
-            if (!connectionsToInactive.isEmpty()) {
-                connectionMapper.batchEndConnectionById(connectionsToInactive);
-            }
-
-            // Insert new connections in batch
-            if (!connectionsToInsert.isEmpty()) {
-                connectionMapper.batchInsert(connectionsToInsert);
-            }
-        });
     }
 
 
