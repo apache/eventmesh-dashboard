@@ -58,7 +58,6 @@ public class ConfigController {
         Map<String, ConfigEntity> stringStringConcurrentHashMap = configService.selectDefaultConfig(getConfigsListDTO.getBusinessType(),
             getConfigsListDTO.getInstanceType());
         ArrayList<DetailConfigsVO> showDetailConfigsVOS = new ArrayList<>();
-        System.out.println(stringStringConcurrentHashMap.get("eventMesh.server.global.scheduler"));
         configEntityList.forEach(n -> {
             DetailConfigsVO showDetailConfigsVO = new DetailConfigsVO();
             ConfigEntity defaultConfig = stringStringConcurrentHashMap.get(n.getConfigName());

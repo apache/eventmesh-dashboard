@@ -23,7 +23,6 @@ import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapper.config.ConfigMapper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
