@@ -17,3 +17,8 @@ export type NavMenuType = {
     route: string
     count?: number
 }
+
+export type ResourceStats = {
+    topicsNum: number,
+    connectionsNum: number
+}

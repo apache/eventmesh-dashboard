@@ -4,11 +4,7 @@ import AppRoutes from './routes/Routes'
 import GlobalStyles from '@mui/material/GlobalStyles'
 
 const inputGlobalStyles = (
-  <GlobalStyles
-    styles={{
-      backgroundColor: '#f9fafb'
-    }}
-  />
+  <GlobalStyles styles={{ backgroundColor: '#f9fafb' }} />
 )
 
 function App() {
@@ -23,8 +19,7 @@ function App() {
         },
         typography: {
           fontSize: 12
-        },
-        
+        }
       }),
     []
   ) // [prefersDarkMode]

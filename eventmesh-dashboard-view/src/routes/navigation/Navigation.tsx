@@ -1,10 +1,11 @@
-import React, { forwardRef, useState } from 'react'
+import React, { forwardRef, useEffect, useState } from 'react'
 import { Stack, StackProps, Box, Divider, Typography } from '@mui/material'
 import { Icons } from '../../assets/icons'
 import { grey } from '@mui/material/colors'
 import NavigationItem from './NavigationItem'
 import { NavMenuIdEnum, NavMenuType } from './navigation.types'
 import { useNavigate } from 'react-router-dom'
+import { fetchResourceStats } from '../../service/topics'
 
 const DefGeneralMenus: NavMenuType[] = [
   {
@@ -26,7 +27,7 @@ const DefGeneralMenus: NavMenuType[] = [
     icon: <Icons.Topic />,
     text: 'Topic',
     route: 'topic',
-    count: 5
+    count: 0
   },
   {
     id: NavMenuIdEnum.Connection,
@@ -72,11 +73,37 @@ interface NavigationProps extends StackProps {}
 const Navigation = forwardRef<typeof Stack, NavigationProps>(
   ({ ...props }, ref) => {
     const navigate = useNavigate()
-    const [generalMenus] = useState(DefGeneralMenus)
+    const [generalMenus, setGeneralMenus] = useState(DefGeneralMenus)
+    const [clusterId, setClusterId] = useState(1)
 
     const [activeMenuId, setActiveMenuId] = useState<NavMenuIdEnum>(
       NavMenuIdEnum.Home
     )
+
+    const getResourceStats = async () => {
+      const resp = await fetchResourceStats(clusterId)
+      if (resp.data) {
+        const respData = resp.data
+        const newGeneralMenus = generalMenus.map((menu) => {
+          switch (menu.id) {
+            case NavMenuIdEnum.Topic: {
+              return { ...menu, count: respData.topicsNum }
+            }
+            case NavMenuIdEnum.Connection: {
+              return { ...menu, count: respData.connectionsNum }
+            }
+            default: {
+              return menu
+            }
+          }
+        })
+        setGeneralMenus(newGeneralMenus)
+      }
+    }
+
+    useEffect(() => {
+      getResourceStats()
+    }, [])
 
     return (
       <Stack sx={{ width: 260, px: 3 }}>

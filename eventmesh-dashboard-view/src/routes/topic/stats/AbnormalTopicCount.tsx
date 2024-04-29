@@ -2,10 +2,12 @@ import React, { forwardRef } from 'react'
 import { Paper, PaperProps, Stack, Typography, Button } from '@mui/material'
 import { grey } from '@mui/material/colors'
 
-interface AbnormalTopicCountProps extends PaperProps {}
+interface AbnormalTopicCountProps extends PaperProps {
+  value?: number
+}
 
 const AbnormalTopicCount = forwardRef<typeof Paper, AbnormalTopicCountProps>(
-  ({ ...props }, ref) => {
+  ({ value = 0, ...props }, ref) => {
     return (
       <Paper
         sx={{
@@ -29,14 +31,16 @@ const AbnormalTopicCount = forwardRef<typeof Paper, AbnormalTopicCountProps>(
             color={grey[600]}>
             异常状态 Topic 数量
           </Typography>
-          <Button size="small">查看详情</Button>
+          <Button sx={{ color: grey[400] }} disabled size="small">
+            <span>&nbsp;</span>
+          </Button>
         </Stack>
         <Typography
           paragraph
           variant="h6"
           color="primary"
           sx={{ m: 0, fontWeight: 'bold', color: '#43497a' }}>
-          5
+          {value}
         </Typography>
       </Paper>
     )

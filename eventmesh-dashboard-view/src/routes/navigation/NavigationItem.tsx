@@ -45,6 +45,11 @@ interface NavigationItemProps extends ButtonProps {
 
 const NavigationItem = forwardRef<typeof NavButton, NavigationItemProps>(
   ({ text, count, icon, active, onClick, ...props }, ref) => {
+
+    const getResourceStats = ()=>{
+      
+    }
+
     return (
       <NavButton
         startIcon={icon}
