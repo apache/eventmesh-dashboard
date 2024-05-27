@@ -1,7 +1,16 @@
 import React, { forwardRef } from 'react'
-import { Button, ButtonProps, Stack, Typography, Chip } from '@mui/material'
+import {
+  Button,
+  ButtonProps,
+  Stack,
+  Typography,
+  Chip,
+  IconButton
+} from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { grey } from '@mui/material/colors'
+import { Icons } from '../../assets/icons'
+import { NavMenuType } from './navigation.types'
 
 const NavButton = styled(Button)({
   boxShadow: 'none',
@@ -41,28 +50,66 @@ interface NavigationItemProps extends ButtonProps {
   text: string
   count?: number
   active: boolean
+  hasSubmenu: boolean
+  pinSubmenu?: boolean
+  onMenuActived: () => void
+  onPinChange: (pinStatus: boolean) => void
 }
 
 const NavigationItem = forwardRef<typeof NavButton, NavigationItemProps>(
-  ({ text, count, icon, active, onClick, ...props }, ref) => {
-
-    const getResourceStats = ()=>{
-      
-    }
-
+  (
+    {
+      text,
+      count,
+      icon,
+      active,
+      hasSubmenu,
+      pinSubmenu,
+      onPinChange,
+      onMenuActived,
+      ...props
+    },
+    ref
+  ) => {
     return (
       <NavButton
         startIcon={icon}
         variant={active ? 'contained' : 'text'}
         className={active ? 'active' : ''}
-        // sx={{ color: active ? 'white' : 'inherit' }}
-        onClick={onClick}>
+        sx={{
+          ...(hasSubmenu &&
+            active && {
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0
+            })
+        }}
+        onClick={() => onMenuActived()}>
         <Stack
           sx={{ width: 1 }}
           direction="row"
           justifyContent="space-between"
           alignItems="center">
           <Typography fontSize="inherit">{text}</Typography>
+
+          {hasSubmenu && (
+            <span
+              onClick={(event) => {
+                event.stopPropagation()
+                onPinChange(!pinSubmenu)
+              }}>
+              {pinSubmenu ? (
+                <Icons.PushPin fontSize="inherit" />
+              ) : (
+                <Icons.PushPinOutlined
+                  fontSize="inherit"
+                  sx={{ transform: 'rotate(45deg) translateY(5px)' }}
+                />
+              )}
+            </span>
+          )}
+
           {(count ?? 0) > 0 && (
             <Chip
               sx={{

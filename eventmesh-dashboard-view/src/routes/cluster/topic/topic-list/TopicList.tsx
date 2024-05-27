@@ -9,14 +9,16 @@ import {
 } from '@mui/material'
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid'
 import { grey } from '@mui/material/colors'
-import { fetchTopics } from '../../../service/topics'
-import { useAppSelector } from '../../../store'
+import { fetchTopics } from '../../../../service/topics'
+import { useAppSelector } from '../../../../store'
 import {
   Topic,
   TopicCreationStatusEnum,
   TopicHealthStatusEnum
 } from '../topic.types'
 import { TopicCreationStatusText, TopicHealthStatusText } from '../topic.const'
+import { useParams } from 'react-router-dom'
+import { AppSectionBoxShadow } from '../../../../app.const'
 
 export type TopicListParams = {
   page: number
@@ -34,36 +36,36 @@ interface TopicListProps extends StackProps {}
 
 const TopicList = forwardRef<typeof Stack, TopicListProps>(
   ({ ...props }, ref) => {
-    const seletedClusterId = useAppSelector(
-      (state) => state.public.seletedClusterId
-    )
+    const routeParams = useParams()
+    const clusterId = routeParams?.clusterId
     const [loading, setLoading] = useState(false)
+
     const [listParams, setListParams] = useState<TopicListParams>({
       page: 1,
       pageSize: 10,
-      clusterId: 0
+      clusterId: Number(clusterId)
     })
+
     const [listDatas, setListDatas] = useState<TopicListDatas>({
       topics: [],
       totalCount: 0
     })
 
     const getTopics = async () => {
-      if (loading) {
+      if (loading && Boolean(clusterId)) {
         return
       }
       setLoading(true)
       const resp = await fetchTopics(listParams)
-      setListDatas(resp.data)
+      if (resp?.code) {
+        setListDatas(resp.data)
+      }
       setLoading(false)
     }
 
     useEffect(() => {
-      if (seletedClusterId) {
-        console.log(seletedClusterId)
-        setListParams({ ...listParams, clusterId: seletedClusterId })
-      }
-    }, [seletedClusterId])
+      setListParams({ ...listParams, clusterId: Number(clusterId) })
+    }, [clusterId])
 
     useEffect(() => {
       getTopics()
@@ -74,7 +76,7 @@ const TopicList = forwardRef<typeof Stack, TopicListProps>(
         sx={{
           flexGrow: 1,
           borderRadius: 4,
-          boxShadow: '2px 2px 40px 2px rgba(0,0,0,.05)'
+          boxShadow: AppSectionBoxShadow
         }}>
         <Stack
           sx={{ px: 2, py: 3 }}
@@ -157,6 +159,11 @@ const getTopicColumns = (): GridColDef<Topic>[] => {
           </Typography>
         )
       }
+    },
+    {
+      field: 'retentionMs',
+      headerName: '保留时间（ms）',
+      width: 150
     },
     { field: 'description', headerName: '描述', flex: 1 },
     {

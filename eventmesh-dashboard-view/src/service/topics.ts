@@ -1,10 +1,10 @@
 import { ResourceStats } from '../routes/navigation/navigation.types'
-import { TopicStats } from '../routes/topic/stats/topic-stats.types'
+import { TopicStats } from '../routes/cluster/topic/stats/topic-stats.types'
 import {
   TopicListDatas,
   TopicListParams
-} from '../routes/topic/topic-list/TopicList'
-import { Topic } from '../routes/topic/topic.types'
+} from '../routes/cluster/topic/topic-list/TopicList'
+import { Topic } from '../routes/cluster/topic/topic.types'
 import { InstanceTypeEnum } from '../types/types'
 import { FetchRespone, ListApiRespone } from './request.types'
 
@@ -25,10 +25,10 @@ export const fetchResourceStats = async (
     `${ServiceHost}/cluster/getResourceNum?${queryParams}`,
     { method: 'GET', headers: EventMeshHeaders }
   )
-  const respData: FetchRespone<ResourceStats> = {
-    data: await resp.json()
-  }
-  return respData
+
+  const respJson = (await resp.json()) as unknown as FetchRespone<ResourceStats>
+
+  return respJson
 }
 
 export const fetchTopicStats = async (
@@ -48,10 +48,9 @@ export const fetchTopicStats = async (
     { method: 'GET', headers }
   )
 
-  const respData: FetchRespone<TopicStats> = {
-    data: await resp.json()
-  }
-  return respData
+  const respJson = (await resp.json()) as unknown as FetchRespone<TopicStats>
+
+  return respJson
 }
 
 export const fetchTopics = async (
@@ -82,7 +81,9 @@ export const fetchTopics = async (
   const respJson = (await resp.json()) as unknown as ListApiRespone<Topic>
 
   const respData: FetchRespone<TopicListDatas> = {
-    data: { topics: respJson.data, totalCount: respJson.total }
+    code: respJson.code,
+    data: { topics: respJson.data, totalCount: respJson.total },
+    message: respJson.message
   }
   return respData
 }

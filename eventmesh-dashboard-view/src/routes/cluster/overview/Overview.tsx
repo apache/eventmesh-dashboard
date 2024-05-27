@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react'
 import { Box, BoxProps } from '@mui/material'
-import Construction from '../../components/Construction'
-import RootLayout from '../../components/page/RootLayout'
+import Construction from '../../../components/Construction'
+import RootLayout from '../../../components/page/RootLayout'
 
 interface HomeProps extends BoxProps {}
 

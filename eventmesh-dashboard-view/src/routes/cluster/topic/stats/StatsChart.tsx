@@ -1,6 +1,6 @@
 import React, { forwardRef, useRef, useEffect } from 'react'
 import { Box, BoxProps, Paper } from '@mui/material'
-import echarts from '../../../utils/chart'
+import echarts from '../../../../utils/chart'
 import { grey } from '@mui/material/colors'
 
 interface StatsChartProps extends BoxProps {

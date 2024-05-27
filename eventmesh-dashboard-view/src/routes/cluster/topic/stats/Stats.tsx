@@ -2,12 +2,12 @@ import React, { forwardRef, useState, useEffect } from 'react'
 import { Stack, StackProps, Select, MenuItem, Grid } from '@mui/material'
 import TopicCount from './TopicCount'
 import AbnormalTopicCount from './AbnormalTopicCount'
-import { Icons } from '../../../assets/icons'
+import { Icons } from '../../../../assets/icons'
 import StatsChart from './StatsChart'
 import { grey } from '@mui/material/colors'
 
-import { useAppSelector } from '../../../store'
-import { fetchResourceStats, fetchTopicStats } from '../../../service/topics'
+import { useAppSelector } from '../../../../store'
+import { fetchTopicStats } from '../../../../service/topics'
 import { TopicStats } from './topic-stats.types'
 
 enum TimeOptionEnum {
