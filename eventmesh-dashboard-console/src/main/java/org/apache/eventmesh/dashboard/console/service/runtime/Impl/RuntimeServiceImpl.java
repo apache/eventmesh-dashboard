@@ -68,6 +68,11 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
+    public List<RuntimeEntity> selectNewlyIncreased(RuntimeEntity runtimeEntity){
+        return null;
+    }
+
+    @Override
     public List<RuntimeEntity> getRuntimeByClusterId(Long clusterId) {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setClusterId(clusterId);

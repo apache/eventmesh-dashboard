@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
@@ -46,6 +47,13 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * MetadataManager is a manager for metadata service, it will sync the data between cluster service and database. database should be empty when this
  * manager booted
+ * 启动应该进行差异化对比。进行差异化增量，差异化删除
+ * 表 -> increment-> remote -> function -> data -> convert
+ * 流程，前端页面
+ * 梳理并整理现在的代码，业务，模块
+ * functionManager
+ *
+ * @author hahaha
  */
 @Slf4j
 public class MetadataManager {
@@ -99,13 +107,16 @@ public class MetadataManager {
 
     public void run(Boolean toDbOn, Boolean toServiceOn) {
         try {
-            metaDataServiceWrapperMap.forEach((cacheId, metaDataServiceWrapper) -> handlers(cacheId, metaDataServiceWrapper, toDbOn, toServiceOn));
+            CountDownLatch countDownLatch = new CountDownLatch(metaDataServiceWrapperMap.size());
+            // sync
+            metaDataServiceWrapperMap.forEach((cacheId, metaDataServiceWrapper) -> handlers(countDownLatch,cacheId, metaDataServiceWrapper, toDbOn, toServiceOn));
+            // Exclude unhealthy raw data from services
         } catch (Exception e) {
             log.error("metadata manager run error", e);
         }
     }
 
-    public void handlers(Long cacheId, MetadataServiceWrapper metaDataServiceWrapper, Boolean toDbOn, Boolean toServiceOn) {
+    public void handlers(CountDownLatch countDownLatch,Long cacheId, MetadataServiceWrapper metaDataServiceWrapper, Boolean toDbOn, Boolean toServiceOn) {
         this.threadPoolExecutor.execute(() -> {
             try {
                 if (toDbOn) {
@@ -116,7 +127,10 @@ public class MetadataManager {
                 }
             } catch (Throwable e) {
                 log.error("metadata manager handler error", e);
+            }finally {
+                countDownLatch.countDown();
             }
+
         });
     }
 

@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
+import lombok.EqualsAndHashCode;
 import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 
 import lombok.Data;
@@ -26,6 +27,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class RegistryMetadata extends MetadataConfig {
 
 

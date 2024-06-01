@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.config.ConfigService;
 
 import java.util.List;

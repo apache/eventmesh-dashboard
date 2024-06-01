@@ -26,7 +26,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.eventmesh.dashboard.console</groupId>
+    <groupId>org.apache.eventmesh.dashboard</groupId>
     <artifactId>eventmesh-dashboard-console</artifactId>
 
     <properties>
@@ -38,17 +38,17 @@
     <dependencies>
         <!-- EventMesh Dashboard modules -->
         <dependency>
-            <groupId>org.apache.eventmesh.dashboard.core</groupId>
+            <groupId>org.apache.eventmesh.dashboard</groupId>
             <artifactId>eventmesh-dashboard-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.eventmesh.dashboard.common</groupId>
+            <groupId>org.apache.eventmesh.dashboard</groupId>
             <artifactId>eventmesh-dashboard-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.eventmesh.dashboard.service</groupId>
+            <groupId>org.apache.eventmesh.dashboard</groupId>
             <artifactId>eventmesh-dashboard-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>

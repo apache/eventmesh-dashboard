@@ -31,11 +31,10 @@ import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.ResourceNumVO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -100,6 +99,11 @@ public class ClusterServiceImpl implements ClusterService {
     }
 
     @Override
+    public List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity){
+        return clusterMapper.selectAllCluster();
+    }
+
+    @Override
     public void addCluster(ClusterEntity cluster) {
         clusterMapper.addCluster(cluster);
         updateClusterCache();
@@ -113,6 +117,11 @@ public class ClusterServiceImpl implements ClusterService {
     @Override
     public ClusterEntity selectClusterById(ClusterEntity cluster) {
         return clusterMapper.selectClusterById(cluster);
+    }
+
+
+    public List<ClusterEntity> selectIncrementCluster(){
+        return null;
     }
 
     @Override

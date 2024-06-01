@@ -86,3 +86,67 @@ docker build -t yourname/eventmesh-dashboard -f docker/Dockerfile .
 ```
 docker run -d --name eventmesh-dashboard -p 8080:8080 yourname/eventmesh-dashboard
 ```
+
+
+1. 注册中心的 创建，添加，删除， 扩容，缩容。
+2. runtime  创建，添加，删除， 扩容，缩容。
+3. 连接的 创建 ， 添加，删除，扩容，缩容。
+4. rocketmq 的 创建，添加，删除。
+
+### 基础页面
+1. 用户登录页面
+
+### 业务方面页面
+1. 用户欢迎页面
+   2. 基础统计信息
+   3. 常用 集群，关注集群
+   4. 事件
+2. eventmesh 集群
+   1. runtime
+      1. overview
+      2. 列表页面
+         1. 详情
+         2. topic
+         3. group
+         4. config
+      3. runtime操作
+   2. 注册中心
+      3. 列表
+      4. 添加注册中心
+      5. 删除注册中心
+      6. 
+   3. topic
+   4. 消费组
+   5. 安全
+   6. 消息
+      7. 消息生产与消费
+3. eventmesh 注册中心
+4. eventmesh runtime
+5. 
+
+5. 集群
+   1. 集群创建
+      1. eventmesh  and rocketmq
+         1. runtime 的 自动创建
+         2. 注册中心的创建
+         3. eventmesh 的 自动创建
+      2. 手动创建
+         1. 注册中心
+      3. k8s创建
+         1. 整体集群创建
+         2. 单个集群创建
+   2. 集群暂停
+      1. 需要解除依赖，才能暂停
+   3. 集群删除
+      1. 需要解除依赖，才能暂停
+   4. 集群的关联
+6. runtime group topic
+   1. 创建
+      1. 手动创建
+      2. 自动创建
+   2. 删除
+   3. 修改
+   4. config
+   5. 关联
+7. 集群元数据复制并创建
+8. 集群恢复

@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.function.metadata;
 
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
-import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.SyncDataService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
+import org.apache.eventmesh.dashboard.core.metadata.SyncDataService;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

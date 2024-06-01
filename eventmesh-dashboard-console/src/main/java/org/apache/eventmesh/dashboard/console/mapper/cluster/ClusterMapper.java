@@ -18,10 +18,10 @@
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -35,6 +35,9 @@ public interface ClusterMapper {
 
     @Select("SELECT * FROM cluster WHERE status=1")
     List<ClusterEntity> selectAllCluster();
+
+    @Select("SELECT * FROM cluster where update_time >  #{updateTime}")
+    List<ClusterEntity> selectClusterByUpdate(@Param("updateTime")long updateTime);
 
     @Select("SELECT * FROM cluster WHERE status=1 LIMIT #{rowIndex},#{pageNum}")
     List<ClusterEntity> selectAllClusterToFront(Integer rowIndex, Integer pageNum);

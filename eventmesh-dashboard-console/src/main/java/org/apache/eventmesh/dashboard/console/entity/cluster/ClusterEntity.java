@@ -17,14 +17,15 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
-import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 @Data
 @NoArgsConstructor
@@ -35,11 +36,15 @@ public class ClusterEntity extends BaseEntity {
 
     private String name;
 
+    private ClusterTrusteeshipType trusteeshipType;
+
+    private ClusterType clusterType;
+
     private String registryAddress;
 
     private String bootstrapServers;
 
-    private String eventmeshVersion;
+    private String version;
 
     private String clientProperties;
 
@@ -55,7 +60,6 @@ public class ClusterEntity extends BaseEntity {
 
     private Integer status;
 
-    private Integer storeType;
 
     public ClusterEntity(ClusterMetadata source) {
         if (source.getClusterName() != null && !source.getClusterName().isEmpty()) {
@@ -63,13 +67,12 @@ public class ClusterEntity extends BaseEntity {
             setBootstrapServers(source.getBootstrapServers());
             setClientProperties(source.getClientProperties());
             setRegistryAddress(source.getRegistryAddress());
-            setEventmeshVersion(source.getEventmeshVersion());
+            setVersion(source.getEventmeshVersion());
             setJmxProperties(source.getJmxProperties());
             setRegProperties(source.getRegProperties());
             setDescription(source.getDescription());
             setAuthType(source.getAuthType());
             setRunState(source.getRunState());
-            setStoreType(source.getStoreType().getNumber());
             setName(source.getClusterName());
         } else {
             throw new RuntimeException("cluster name is empty");

@@ -17,12 +17,13 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.runtime;
 
+import lombok.Data;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
+
 import java.util.concurrent.CompletableFuture;
 
-import lombok.Data;
-
 @Data
-public class GetRuntimeResult {
+public class GetRuntimeResult extends GlobalResult<GetRuntimeResponse> {
 
     private CompletableFuture<GetRuntimeResponse> future;
 }

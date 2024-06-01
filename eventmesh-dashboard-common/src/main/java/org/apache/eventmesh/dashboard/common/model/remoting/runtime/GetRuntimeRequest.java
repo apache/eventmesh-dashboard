@@ -18,9 +18,10 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.runtime;
 
 import lombok.Data;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 
 @Data
-public class GetRuntimeRequest {
+public class GetRuntimeRequest  extends GlobalRequest {
 
     private String registryAddress;
 }

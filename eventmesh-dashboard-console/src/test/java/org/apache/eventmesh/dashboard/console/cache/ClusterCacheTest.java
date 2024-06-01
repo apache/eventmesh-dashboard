@@ -16,7 +16,6 @@
  */
 
 package org.apache.eventmesh.dashboard.console.cache;
-import java.sql.Timestamp;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 
@@ -31,7 +30,7 @@ public class ClusterCacheTest {
         clusterEntity.setName("cl1");
         clusterEntity.setRegistryAddress("registryList");
         clusterEntity.setBootstrapServers("server");
-        clusterEntity.setEventmeshVersion("1.7.0");
+        clusterEntity.setVersion("1.7.0");
         clusterEntity.setClientProperties("");
         clusterEntity.setJmxProperties("");
         clusterEntity.setRegProperties("");

@@ -36,6 +36,8 @@ public interface ClusterService {
 
     List<ClusterEntity> selectAll();
 
+    List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity);
+
     void addCluster(ClusterEntity cluster);
 
     List<ClusterEntity> selectAllCluster();

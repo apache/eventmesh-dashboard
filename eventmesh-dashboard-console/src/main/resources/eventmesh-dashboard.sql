@@ -17,8 +17,9 @@
 DROP TABLE IF EXISTS `cluster`;
 create table cluster
 (
-    id                bigint unsigned auto_increment comment '集群id'
-        primary key,
+    id                bigint unsigned auto_increment comment '集群id' primary key,
+    cluster_type      varchar(16)                             not null comment '集群类型',
+    trusteeship_type  varchar(16)                             not null comment '托管类型',
     name              varchar(128)  default ''                not null comment '集群名称',
     registry_address  varchar(4096) default ''                not null comment '注册中心名字',
     bootstrap_servers varchar(2048) default ''                not null comment 'server地址',
@@ -40,6 +41,22 @@ create table cluster
 create index idx_uniq_name
     on cluster (name);
 
+drop table if exists `cluster_relationship`;
+create table `cluster_relationship`
+(
+    id                bigint unsigned auto_increment primary key,
+    cluster_type      varchar(16)   not null comment '集群类型',
+    cluster_id        bigint        not null comment '集群ID',
+    relationship_type varchar(16)   not null comment '集群类型',
+    relationship_id   bigint        not null comment '集群ID',
+    create_time       timestamp     default CURRENT_TIMESTAMP not null comment '接入时间',
+    update_time       timestamp     default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '修改时间',
+    status            int default 1 not null comment '0',
+    is_delete         int default 0 not null comment '0',
+    unique key cluster_id_relationship_id_unique(`cluster_id`,`relationship_id`),
+    key cluster_id_key(`cluster_id`),
+    key relationship_id_key(`relationship_id`)
+);
 
 DROP TABLE IF EXISTS `config`;
 create table config

@@ -30,10 +30,26 @@ import Users from './users/Users'
 import Logs from './logs/Logs'
 import Settings from './settings/Settings'
 
+// 登录，修改修改密码
+// 首页
+// 个人路由
+// 注册中心路由
+// 集群路由
+// 管理路由
+
+// 集群
+// 注册中心
+//   1. 注册信息( 增删改查 )
+//   2. 集群列表
+//   3. 空间名
+// k8s  运动
+// 连接器集群  -> k8s
+// 设置
+
 const AppRoutes = () => {
   return useRoutes([
     {
-      path: '/',
+      path: '/cluster/{clusterid}',
       element: <RootLayout />,
       children: [
         {

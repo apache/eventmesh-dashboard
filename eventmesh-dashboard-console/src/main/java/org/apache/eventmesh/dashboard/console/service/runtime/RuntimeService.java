@@ -34,6 +34,8 @@ public interface RuntimeService {
 
     List<RuntimeEntity> selectAll();
 
+    List<RuntimeEntity> selectNewlyIncreased(RuntimeEntity runtimeEntity);
+
     List<RuntimeEntity> getRuntimeByClusterId(Long cluster);
 
     List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity);

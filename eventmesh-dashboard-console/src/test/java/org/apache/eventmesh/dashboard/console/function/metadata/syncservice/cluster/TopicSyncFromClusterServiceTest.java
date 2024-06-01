@@ -24,6 +24,7 @@ import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsRespo
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
 import org.apache.eventmesh.dashboard.console.cache.RuntimeCache;
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
+import org.apache.eventmesh.dashboard.core.metadata.cluster.TopicSyncFromClusterService;
 import org.apache.eventmesh.dashboard.service.remoting.TopicRemotingService;
 
 import java.util.Arrays;

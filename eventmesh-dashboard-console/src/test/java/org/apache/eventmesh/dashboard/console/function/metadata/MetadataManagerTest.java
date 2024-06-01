@@ -25,10 +25,10 @@ import org.apache.eventmesh.dashboard.console.cache.ClusterCacheBase;
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
 import org.apache.eventmesh.dashboard.console.function.metadata.MetadataServiceWrapper.SingleMetadataServiceWrapper;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.db.RuntimeMetadataHandlerToDbImpl;
-import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.SyncDataService;
-import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.cluster.RuntimeSyncFromClusterService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
+import org.apache.eventmesh.dashboard.core.metadata.SyncDataService;
+import org.apache.eventmesh.dashboard.core.metadata.cluster.RuntimeSyncFromClusterService;
 import org.apache.eventmesh.dashboard.console.function.optration.TopicMetadataHandlerToClusterImpl;
 import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
 

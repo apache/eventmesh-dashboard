@@ -42,16 +42,22 @@ public class MetadataHandlerWrapper {
 
     @Autowired
     private ClusterMetadataHandlerToDbImpl clusterMetadataHandlerToDb;
+
     @Autowired
     private ConfigMetadataHandlerToDbImpl configMetadataHandlerToDb;
+
     @Autowired
     private ConnectionMetadataHandlerToDbImpl connectionMetadataHandlerToDb;
+
     @Autowired
     private GroupMetadataHandlerToDbImpl groupMetadataHandlerToDb;
+
     @Autowired
     private RegistryMetadataHandlerToDbImpl registryMetadataHandlerToDb;
+
     @Autowired
     private RuntimeMetadataHandlerToDbImpl runtimeMetadataHandlerToDb;
+
     @Autowired
     private TopicMetadataHandlerToDbImpl topicMetadataHandlerToDb;
 }

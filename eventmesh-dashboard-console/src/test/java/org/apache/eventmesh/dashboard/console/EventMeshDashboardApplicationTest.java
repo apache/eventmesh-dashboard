@@ -17,38 +17,16 @@
 
 package org.apache.eventmesh.dashboard.console;
 
-import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
-
-import java.sql.Timestamp;
-
 import static org.mockito.ArgumentMatchers.any;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeResponse;
-import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeResult;
-import org.apache.eventmesh.dashboard.console.cache.ClusterCache;
-import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.entity.meta.MetaEntity;
-import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.cluster.RuntimeSyncFromClusterService;
-import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.registry.RegistryDataService;
-import org.apache.eventmesh.dashboard.service.remoting.MetaRemotingService;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;

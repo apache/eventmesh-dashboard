@@ -17,15 +17,10 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
-import java.util.concurrent.CompletableFuture;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class GetTopicsResult {
-    CompletableFuture<GetTopicsResponse> getTopicsResponseFuture;
+/**
+ * @author hahaha
+ */
+public class GetTopicsResult extends GlobalResult<GetTopicsResponse> {
 }

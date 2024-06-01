@@ -17,16 +17,16 @@
 
 package org.apache.eventmesh.dashboard.console.entity.runtime;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
-
-import java.sql.Timestamp;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+
+import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
@@ -34,7 +34,10 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true, exclude = "status")
 @SuperBuilder
 public class RuntimeEntity extends BaseEntity {
+
     private Long clusterId;
+
+    private ClusterType clusterType;
 
     private String host;
 

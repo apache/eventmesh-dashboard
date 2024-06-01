@@ -17,12 +17,13 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.group;
 
+import lombok.Data;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
+
 import java.util.concurrent.CompletableFuture;
 
-import lombok.Data;
-
 @Data
-public class GetGroupResult {
+public class GetGroupResult extends GlobalResult<GetGroupsResponse> {
 
     private CompletableFuture<GetGroupsResponse> future;
 }

@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
 import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.store.StoreService;
 import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
 

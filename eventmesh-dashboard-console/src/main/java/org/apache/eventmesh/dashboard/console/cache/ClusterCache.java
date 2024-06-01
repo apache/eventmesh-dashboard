@@ -39,15 +39,15 @@ public class ClusterCache {
     private static final Object lock = new Object();
 
     public ClusterEntity getClusterById(Long id) {
-        return INSTANCE.clusterIdMap.get(id);
+        return clusterIdMap.get(id);
     }
 
     public ClusterEntity getClusterByName(String name) {
-        return INSTANCE.clusterNameMap.get(name);
+        return clusterNameMap.get(name);
     }
 
     public ClusterEntity getClusterByRegistryAddress(String registryAddress) {
-        for (ClusterEntity clusterEntity : INSTANCE.clusterIdMap.values()) {
+        for (ClusterEntity clusterEntity : clusterIdMap.values()) {
             if (clusterEntity.getRegistryAddress().equals(registryAddress)) {
                 return clusterEntity;
             }
@@ -87,6 +87,7 @@ public class ClusterCache {
     }
 
     public void syncClusters(List<ClusterEntity> clusters) {
+        // TODO 性能问题严总
         synchronized (lock) {
             INSTANCE.clusterIdMap.clear();
             INSTANCE.clusterNameMap.clear();

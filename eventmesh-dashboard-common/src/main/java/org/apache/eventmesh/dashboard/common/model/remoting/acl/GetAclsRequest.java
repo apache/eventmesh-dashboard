@@ -17,6 +17,9 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.acl;
 
-public class GetAclsRequest {
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+
+public class GetAclsRequest extends GlobalRequest {
+
 
 }

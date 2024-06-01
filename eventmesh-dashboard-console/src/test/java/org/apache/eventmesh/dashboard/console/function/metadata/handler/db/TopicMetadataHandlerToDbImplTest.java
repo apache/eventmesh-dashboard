@@ -23,7 +23,7 @@ import org.apache.eventmesh.dashboard.common.enums.StoreType;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.cache.ClusterCacheBase;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
 
 import org.junit.jupiter.api.Test;

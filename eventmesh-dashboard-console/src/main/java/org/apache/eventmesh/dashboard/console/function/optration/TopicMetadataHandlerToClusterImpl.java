@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.optration;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopicRequest;
 import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 import org.apache.eventmesh.dashboard.service.remoting.TopicRemotingService;
 
 import org.springframework.stereotype.Service;

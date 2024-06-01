@@ -17,21 +17,21 @@
 
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.console.cache.ClusterCache;
 import org.apache.eventmesh.dashboard.console.cache.RuntimeCache;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
-
-import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -50,18 +50,18 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
             log.info("new cluster detected syncing runtime, adding cluster to db, cluster:{}", meta.getClusterName());
             ClusterEntity clusterEntity = new ClusterEntity();
             clusterEntity.setId(0L);
+            clusterEntity.setClusterType(ClusterType.EVENTMESH_CLUSTER);
+            clusterEntity.setTrusteeshipType(ClusterTrusteeshipType.TRUSTEESHIP);
             clusterEntity.setName(meta.getClusterName());
             clusterEntity.setRegistryAddress(meta.getRegistryAddress());
             clusterEntity.setBootstrapServers("");
-            clusterEntity.setEventmeshVersion("");
+            clusterEntity.setVersion("");
             clusterEntity.setClientProperties("");
             clusterEntity.setJmxProperties("");
             clusterEntity.setRegProperties("");
             clusterEntity.setDescription("");
             clusterEntity.setAuthType(0);
             clusterEntity.setRunState(0);
-            clusterEntity.setStoreType(0);
-
             clusterService.addCluster(clusterEntity);
         } else {
             cluster.setName(meta.getClusterName());
@@ -72,6 +72,20 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
         }
         runtimeService.addRuntime(new RuntimeEntity(meta));
         RuntimeCache.getInstance().addRuntime(new RuntimeEntity(meta));
+
+        // 集群存在且不过时。 直接同步就可以。
+
+        // 集群不存在 or 集群存在且过时。那么需要全部读出来，整理
+
+        // 创建 cluster do cache
+
+        //  在一个事务中，从 runtime 同步 元数据
+
+        // 读取 config ， topic ， acl ，user ， group，订阅关系，
+
+        // 同步成功修改 状态，同步成功，修改状态
+
+        //
     }
 
     @Override

@@ -81,7 +81,7 @@ public class TestClusterMapper {
         clusterEntity.setAuthType(1);
         clusterEntity.setBootstrapServers("1999");
         clusterEntity.setClientProperties("nothing");
-        clusterEntity.setEventmeshVersion("1.10.0");
+        clusterEntity.setVersion("1.10.0");
         clusterEntity.setJmxProperties("nothing");
         clusterEntity.setRegistryAddress("1.23.18");
         clusterEntity.setRunState(1);

@@ -28,7 +28,7 @@ public class ClusterCacheBase {
         clusterEntity.setName("cluster1");
         clusterEntity.setRegistryAddress("registryList");
         clusterEntity.setBootstrapServers("server");
-        clusterEntity.setEventmeshVersion("1.7.0");
+        clusterEntity.setVersion("1.7.0");
         clusterEntity.setClientProperties("");
         clusterEntity.setJmxProperties("");
         clusterEntity.setRegProperties("");
