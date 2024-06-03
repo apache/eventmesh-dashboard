@@ -17,20 +17,17 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
-import Construction from '../../components/Construction'
-import RootLayout from '../../components/page/RootLayout'
+import { configureStore } from '@reduxjs/toolkit'
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
+import publicSlice from './reducers/public/public.slice'
 
-interface HomeProps extends BoxProps {}
-
-const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
-  return (
-    <RootLayout>
-      <Construction />
-    </RootLayout>
-  )
+export const store = configureStore({
+  reducer: {
+    public: publicSlice,
+  }
 })
 
-Home.displayName = 'Home'
-export default Home
+export const useAppSelector: TypedUseSelectorHook<
+  ReturnType<typeof store.getState>
+> = useSelector
+export const useAppDispatch = () => useDispatch<typeof store.dispatch>()

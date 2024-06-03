@@ -17,20 +17,26 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
-import Page from '../../components/Page'
-import Construction from '../../components/Construction'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { PublicState } from './public.types'
+import { NavMenuIdEnum } from '../../../routes/navigation/navigation.types'
 
-interface MessageProps extends BoxProps {}
+const initialState = {
+  navigation: { activeMenuId: NavMenuIdEnum.Home, pinSubmenuIds: [] }
+} as PublicState
 
-const Message = forwardRef<typeof Box, MessageProps>(({ ...props }, ref) => {
-  return (
-    <Page ref={ref}>
-      <Construction />
-    </Page>
-  )
+export const globalSlice = createSlice({
+  name: 'public',
+  initialState,
+  reducers: {
+    setNavigationActiveMenuId(state, action: PayloadAction<NavMenuIdEnum>) {
+      state.navigation.activeMenuId = action.payload
+    },
+    setNavigationPinMenuIds(state, action: PayloadAction<NavMenuIdEnum[]>) {
+      state.navigation.pinSubmenuIds = action.payload
+    }
+  },
+  extraReducers: (builder) => {}
 })
 
-Message.displayName = 'Message'
-export default Message
+export default globalSlice.reducer

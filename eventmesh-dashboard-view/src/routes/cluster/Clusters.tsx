@@ -17,24 +17,15 @@
  * under the License.
  */
 
-import React, { forwardRef, useState } from 'react'
-import { Box, BoxProps, Paper, Stack } from '@mui/material'
-import Page from '../../components/Page'
-import Stats from './stats/Stats'
-import TopicList from './topic-list/TopicList'
+import React, { forwardRef } from 'react'
+import { Box, BoxProps } from '@mui/material'
+import RootLayout from '../../components/page/RootLayout'
 
-interface TopicProps extends BoxProps {}
+interface ClustersProps extends BoxProps {}
 
-const Topic = forwardRef<typeof Box, TopicProps>(({ ...props }, ref) => {
-  return (
-    <Page>
-      <Stack sx={{ width: 1, height: 1, p: 2 }} spacing={3}>
-        <Stats />
-        <TopicList />
-      </Stack>
-    </Page>
-  )
+const Clusters = forwardRef<typeof Box, ClustersProps>(({ ...props }, ref) => {
+  return <RootLayout>Clusters</RootLayout>
 })
 
-Topic.displayName = 'Topic'
-export default Topic
+Clusters.displayName = 'Clusters'
+export default Clusters

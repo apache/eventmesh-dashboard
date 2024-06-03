@@ -17,20 +17,18 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
-import Construction from '../../components/Construction'
-import RootLayout from '../../components/page/RootLayout'
+export type ListApiRespone<D> = {
+  code: number
+  message: string
 
-interface HomeProps extends BoxProps {}
+  currentPage: number
+  data: D[]
+  pageSize: number
+  total: number
+}
 
-const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
-  return (
-    <RootLayout>
-      <Construction />
-    </RootLayout>
-  )
-})
-
-Home.displayName = 'Home'
-export default Home
+export type FetchRespone<T> = {
+  code: number
+  message: string
+  data: T
+}

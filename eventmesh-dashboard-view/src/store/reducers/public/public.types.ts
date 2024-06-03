@@ -17,20 +17,9 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
-import Construction from '../../components/Construction'
-import RootLayout from '../../components/page/RootLayout'
+import { NavMenuIdEnum } from '../../../routes/navigation/navigation.types'
 
-interface HomeProps extends BoxProps {}
-
-const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
-  return (
-    <RootLayout>
-      <Construction />
-    </RootLayout>
-  )
-})
-
-Home.displayName = 'Home'
-export default Home
+export interface PublicState {
+  navigation: { activeMenuId: NavMenuIdEnum; pinSubmenuIds: NavMenuIdEnum[] }
+  seletedClusterId?: number
+}

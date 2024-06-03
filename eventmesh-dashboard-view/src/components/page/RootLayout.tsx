@@ -18,19 +18,29 @@
  */
 
 import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
-import Construction from '../../components/Construction'
-import RootLayout from '../../components/page/RootLayout'
+import { Box, Stack, StackProps } from '@mui/material'
 
-interface HomeProps extends BoxProps {}
+import { Outlet } from 'react-router-dom'
+import { grey } from '@mui/material/colors'
+import Navigation from '../../routes/navigation/Navigation'
 
-const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
-  return (
-    <RootLayout>
-      <Construction />
-    </RootLayout>
-  )
-})
+interface RootLayoutProps extends StackProps {}
 
-Home.displayName = 'Home'
-export default Home
+const RootLayout = forwardRef<typeof Box, RootLayoutProps>(
+  ({ children, ...props }, ref) => {
+    return (
+      <Stack
+        direction="row"
+        sx={{
+          position: 'relative',
+          height: '100vh',
+          bgcolor: grey[100]
+        }}>
+        <Navigation />
+        <Box sx={{ flexGrow: 1, pl: 4, overflow: 'hidden' }}>{children}</Box>
+      </Stack>
+    )
+  }
+)
+RootLayout.displayName = 'RootLayout'
+export default RootLayout

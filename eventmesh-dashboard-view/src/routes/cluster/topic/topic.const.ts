@@ -17,20 +17,19 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
-import Construction from '../../components/Construction'
-import RootLayout from '../../components/page/RootLayout'
+import { TopicCreationStatusEnum, TopicHealthStatusEnum } from './topic.types'
 
-interface HomeProps extends BoxProps {}
+export const TopicHealthStatusText = {
+  [TopicHealthStatusEnum.Failed]: '失败',
+  [TopicHealthStatusEnum.Succeed]: '成功',
+  [TopicHealthStatusEnum.Checking]: '正在检查',
+  [TopicHealthStatusEnum.Expired]: '已超时'
+}
 
-const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
-  return (
-    <RootLayout>
-      <Construction />
-    </RootLayout>
-  )
-})
-
-Home.displayName = 'Home'
-export default Home
+export const TopicCreationStatusText = {
+  [TopicCreationStatusEnum.Pending]: '等待创建',
+  [TopicCreationStatusEnum.Processing]: '正在创建',
+  [TopicCreationStatusEnum.Created]: '创建成功',
+  [TopicCreationStatusEnum.Failed]: '创建失败',
+  [TopicCreationStatusEnum.Unkown]: '未知'
+}

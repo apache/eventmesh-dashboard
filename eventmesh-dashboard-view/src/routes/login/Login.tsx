@@ -17,20 +17,21 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
-import Construction from '../../components/Construction'
-import RootLayout from '../../components/page/RootLayout'
+import React, { forwardRef } from "react";
+import { Box, BoxProps, Stack } from "@mui/material";
+import { LoginOutlined } from "@mui/icons-material";
 
-interface HomeProps extends BoxProps {}
+interface LoginProps extends BoxProps {}
 
-const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
-  return (
-    <RootLayout>
-      <Construction />
-    </RootLayout>
-  )
-})
+const Login = forwardRef<typeof Box, LoginProps>(({ ...props }, ref) => {
+  return <Box ref={ref}>
+    <LoginOutlined />
+    <Stack>
+        <span>1</span>
+        <span>2</span>
+    </Stack>
+  </Box>;
+});
 
-Home.displayName = 'Home'
-export default Home
+Login.displayName = "Login";
+export default Login;

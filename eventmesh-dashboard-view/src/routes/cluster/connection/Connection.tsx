@@ -19,18 +19,20 @@
 
 import React, { forwardRef } from 'react'
 import { Box, BoxProps } from '@mui/material'
-import Page from '../../components/Page'
-import Construction from '../../components/Construction'
+import Page from '../../../components/page/Layout'
+import Construction from '../../../components/Construction'
 
-interface RuntimeProps extends BoxProps {}
+interface ConnectionProps extends BoxProps {}
 
-const Runtime = forwardRef<typeof Box, RuntimeProps>(({ ...props }, ref) => {
-  return (
-    <Page>
-      <Construction />
-    </Page>
-  )
-})
+const Connection = forwardRef<typeof Box, ConnectionProps>(
+  ({ ...props }, ref) => {
+    return (
+      <Page>
+        <Construction />
+      </Page>
+    )
+  }
+)
 
-Runtime.displayName = 'Runtime'
-export default Runtime
+Connection.displayName = 'Connection'
+export default Connection

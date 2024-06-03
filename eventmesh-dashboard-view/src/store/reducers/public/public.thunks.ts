@@ -17,22 +17,13 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
-import Page from '../../components/Page'
-import Construction from '../../components/Construction'
+import { createAsyncThunk } from '@reduxjs/toolkit'
+import { IValidationErrors } from '../store.types'
 
-interface ConnectionProps extends BoxProps {}
-
-const Connection = forwardRef<typeof Box, ConnectionProps>(
-  ({ ...props }, ref) => {
-    return (
-      <Page>
-        <Construction />
-      </Page>
-    )
+export const getUsersAsync = createAsyncThunk<
+  any,
+  void,
+  {
+    rejectValue: IValidationErrors
   }
-)
-
-Connection.displayName = 'Connection'
-export default Connection
+>('users/getUsers', async (_, { rejectWithValue }) => {})
