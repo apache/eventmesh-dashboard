@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.entity.client;
 
 import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
+import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
@@ -26,11 +27,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = "status")
+@SuperBuilder
 public class ClientEntity extends BaseEntity {
 
     private static final long serialVersionUID = 8204133370609215856L;
@@ -69,15 +74,15 @@ public class ClientEntity extends BaseEntity {
 
     /**
      * 0: not active, 1: active
+     *
      * @see RecordStatus
      */
     @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
     private Integer status;
 
     /**
-     * csv format config id list.<br>
-     * Example value: 1,2,7<br>
-     * This field is updated when the configuration is modified via the web API, but is not used during the configuration retrieval process.
+     * csv format config id list.<br> Example value: 1,2,7<br> This field is updated when the configuration is modified via the web API, but is not
+     * used during the configuration retrieval process.
      */
     private String configIds;
 
@@ -90,6 +95,20 @@ public class ClientEntity extends BaseEntity {
 
     public void setStatusEntity(RecordStatus status) {
         this.status = status.getNumber();
+    }
+
+    public ClientEntity(ClientMetadata source) {
+        setName(source.getName());
+        setPlatform(source.getPlatform());
+        setLanguage(source.getLanguage());
+        setPid(source.getPid());
+        setHost(source.getHost());
+        setPort(source.getPort());
+        setClusterId(source.getClusterId());
+        setProtocol(source.getProtocol());
+        setDescription("");
+        setConfigIds("");
+        setStatus(1);
     }
 }
     

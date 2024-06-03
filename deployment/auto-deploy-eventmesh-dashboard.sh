@@ -21,16 +21,16 @@
 REPO_PATH=~/service/eventmesh-dashboard
 
 # SpringBoot process ID file path
-PID_LOG=~/service/eventmesh-dashboard/deployment/eventmesh-dashboard-pid.log
+PID_LOG=$REPO_PATH/deployment/eventmesh-dashboard-pid.log
 
 # Automatic deployment shell script log file path
-AUTO_DEPLOY_LOG=~/service/eventmesh-dashboard/deployment/auto-deploy-eventmesh-dashboard.log
+AUTO_DEPLOY_LOG=$REPO_PATH/deployment/auto-deploy-eventmesh-dashboard.log
 
 # Jar file path
-JAR_FILE_PATH=~/service/eventmesh-dashboard/eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar
+JAR_FILE_PATH=$REPO_PATH/eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar
 
 # Load environment variables from external file
-ENV_FILE=~/service/eventmesh-dashboard/deployment/.env
+ENV_FILE=$REPO_PATH/deployment/.env
 source $ENV_FILE
 
 # Function to check if a process with given PID is running
@@ -45,13 +45,13 @@ is_process_running() {
 
 # Update the git repository
 cd $REPO_PATH
-git fetch origin dev
+git fetch origin main
 LOCAL=$(git rev-parse @)
-REMOTE=$(git rev-parse origin/dev)
+REMOTE=$(git rev-parse origin/main)
 
 if [ $LOCAL != $REMOTE ]; then
-    # If the remote dev branch is newer than the local one, update the local dev branch code
-    git pull origin dev
+    # If the remote branch is newer than the local one, update the local branch code
+    git pull origin main
 
     # Log the event
     echo "$(date +"%Y-%m-%d %H:%M:%S") - change detected." >> $AUTO_DEPLOY_LOG
@@ -67,7 +67,7 @@ if [ $LOCAL != $REMOTE ]; then
     fi
     
     # Compile and package the Jar file
-    mvn clean package -DskipTests -Dcheckstyle.skip=true
+    $REPO_PATH/mvnw clean package -DskipTests -Dcheckstyle.skip=true
     
     # Start the springboot application and record the process id to pid.log file
     nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > /dev/null 2>&1 &
@@ -76,14 +76,14 @@ if [ $LOCAL != $REMOTE ]; then
     # Log the event
     echo "$(date +"%Y-%m-%d %H:%M:%S") - start new application." >> $AUTO_DEPLOY_LOG
 else
-    # If there are no new changes in the remote dev branch
+    # If there are no new changes in the remote branch
     
     # Log the event
     echo "$(date +"%Y-%m-%d %H:%M:%S") - no change detected." >> $AUTO_DEPLOY_LOG
     
     if [ ! -s $PID_LOG ] || ! is_process_running $(cat $PID_LOG); then
         # If the pid.log file does not exist or the process is not running, compile and package the Jar file
-        mvn clean package -DskipTests -Dcheckstyle.skip=true
+        $REPO_PATH/mvnw clean package -DskipTests -Dcheckstyle.skip=true
 
         # Start the springboot application and record the process id to pid.log file
         nohup java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar $JAR_FILE_PATH > /dev/null 2>&1 &

@@ -17,22 +17,23 @@
 
 package org.apache.eventmesh.dashboard.console.entity.runtime;
 
+import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
+@EqualsAndHashCode(callSuper = true, exclude = "status")
+@SuperBuilder
 public class RuntimeEntity extends BaseEntity {
-
-    private Long id;
-
     private Long clusterId;
 
     private String host;
@@ -54,4 +55,16 @@ public class RuntimeEntity extends BaseEntity {
     private Timestamp updateTime;
 
     private String endpointMap;
+
+    public RuntimeEntity(RuntimeMetadata source) {
+        setHost(source.getHost());
+        setPort(source.getPort());
+        setClusterId(source.getClusterId());
+        setStatus(1);
+        setEndpointMap(source.getEndpointMap());
+        setJmxPort(source.getJmxPort());
+        setRack(source.getRack());
+        setStorageClusterId(source.getStorageClusterId());
+        setStartTimestamp(source.getStartTimestamp());
+    }
 }

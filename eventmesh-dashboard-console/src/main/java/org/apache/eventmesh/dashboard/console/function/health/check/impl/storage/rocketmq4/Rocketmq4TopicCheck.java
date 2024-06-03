@@ -134,6 +134,7 @@ public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
         remotingClient.start();
 
         //TODO there are many functions that can be reused, they should be collected in a util module
+        //TODO: refactor all health check to use client manager
         //this function that create topics can be reused
         try {
             CreateTopicRequestHeader requestHeader = new CreateTopicRequestHeader();

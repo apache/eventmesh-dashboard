@@ -46,16 +46,16 @@ public class TestOprLog {
     @Test
     public void testGroupServiceOprLog() {
         GroupEntity groupEntity = new GroupEntity(null, 1L, "logTest", 0, null, 1, "OK", null, null, 0);
-        GroupEntity groupEntity1 = groupService.addGroup(groupEntity);
-        LogEntity logEntity = new LogEntity(null, 1L, "add", "Group", 2, groupEntity1.toString(), null, null, null, null);
+        groupService.addGroup(groupEntity);
+        LogEntity logEntity = new LogEntity(null, 1L, "add", "Group", 2, groupEntity.toString(), null, null, null, null);
         logEntity.setResult(groupEntity.toString());
-        logEntity.setId(groupEntity1.getId());
+        logEntity.setId(groupEntity.getId());
         List<LogEntity> logListByCluster = logService.getLogListByCluster(new GetLogListDTO());
         logListByCluster.get(0).setId(null);
         logListByCluster.get(0).setCreateTime(null);
         logListByCluster.get(0).setEndTime(null);
         Assert.assertEquals(logListByCluster.get(0), logEntity);
-        Assert.assertEquals(logListByCluster.size(), 1);
+        Assert.assertEquals(1, logListByCluster.size());
     }
 
 }

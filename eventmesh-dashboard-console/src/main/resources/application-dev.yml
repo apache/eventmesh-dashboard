@@ -47,11 +47,32 @@ spring:
 logging:
   level:
     root: INFO
-    org.apache.eventmesh: DEBUG
-    org.apache.eventmesh.dashboard: DEBUG
+    org.apache.eventmesh: INFO
+    org.apache.eventmesh.dashboard: INFO
 
 mybatis:
   type-aliases-package: org.apache.eventmesh.dashboard.console.entity
 
+decoration:
+  constantConfig:
+    #The 'all' configuration item indicates that the decoration component is allowed to enable pagination and return the front-end style function in a unified manner
+    all: true
+    #the 'corsEnable' configuration item indicates that cross-domain is enabled
+  corsEnable: true
 
+
+function:
+  healthCheck:
+    doCheck:
+      initialDelay: 60
+      period: 60
+    updateConfig:
+      initialDelay: 30
+      period: 60
+  sync:
+    enable: true
+    initialDelay: 120
+    period: 60
+    toDb:
+      runtime: true
 

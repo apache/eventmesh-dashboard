@@ -17,17 +17,22 @@
 
 package org.apache.eventmesh.dashboard.console.entity.config;
 
+import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@SuperBuilder
 public class ConfigEntity extends BaseEntity {
 
     private Long id;
@@ -36,6 +41,9 @@ public class ConfigEntity extends BaseEntity {
 
     private String businessType;
 
+    /**
+     * config type 0:runtime,1:storage,2:connector,3:topic
+     */
     private Integer instanceType;
 
     private Long instanceId;
@@ -105,5 +113,23 @@ public class ConfigEntity extends BaseEntity {
             }
         }
         return flag;
+    }
+
+    public ConfigEntity(ConfigMetadata source) {
+        setConfigName(source.getConfigKey());
+        setConfigValue(source.getConfigValue());
+        setClusterId(source.getClusterId());
+        setEdit(1);
+        setBusinessType("");
+        setInstanceId(source.getInstanceId());
+        setDescription("");
+        setInstanceType(source.getInstanceType());
+        setIsDefault(0);
+        setStartVersion("");
+        setEndVersion("");
+        setEventmeshVersion("");
+        setDiffType(0);
+        setIsModify(0);
+        setStatus(1);
     }
 }

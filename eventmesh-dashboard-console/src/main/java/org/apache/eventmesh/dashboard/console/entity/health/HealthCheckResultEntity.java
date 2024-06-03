@@ -23,11 +23,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = "resultDesc")
 @Schema(name = "HealthCheckResultEntity", description = "Health check result entity")
 public class HealthCheckResultEntity extends BaseEntity {
 
@@ -44,7 +48,7 @@ public class HealthCheckResultEntity extends BaseEntity {
 
     private String resultDesc;
 
-    @Schema(description = "state of a health check, 0: failed, 1: passed, 2: doing check, 3: out of time")
+    @Schema(description = "state of a health check, 0: failed, 1: passed, 2: doing check, 3: out of time, 4: not connected")
     private Integer state;
 
 }

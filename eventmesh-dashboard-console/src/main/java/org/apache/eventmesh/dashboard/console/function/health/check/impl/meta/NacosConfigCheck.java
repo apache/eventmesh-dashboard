@@ -37,6 +37,9 @@ import com.alibaba.nacos.api.exception.NacosException;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Interface to check the state of nacos
+ */
 @Slf4j
 @HealthCheckType(type = HEALTH_CHECK_TYPE_META, subType = HEALTH_CHECK_SUBTYPE_NACOS_CONFIG)
 public class NacosConfigCheck extends AbstractHealthCheckService {

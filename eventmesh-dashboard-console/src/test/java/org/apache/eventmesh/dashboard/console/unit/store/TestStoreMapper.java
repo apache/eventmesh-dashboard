@@ -17,11 +17,10 @@
 
 package org.apache.eventmesh.dashboard.console.unit.store;
 
+import org.apache.eventmesh.dashboard.common.enums.StoreType;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
 import org.apache.eventmesh.dashboard.console.mapper.storage.StoreMapper;
-
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,9 +40,12 @@ public class TestStoreMapper {
     @Test
     public void testAddStore() {
         StoreEntity storeEntity =
-            new StoreEntity(1L, 2l, 1, "run1", "10.0.0", "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing", 1L);
+            new StoreEntity(1L, StoreType.ROCKETMQ.getNumber(), "run1", "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing",
+                1L);
         StoreEntity storeEntity1 =
-            new StoreEntity(1L, 1l, 2, "run1", "1.0.0", "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing", 1L);
+            new StoreEntity(2L,  StoreType.ROCKETMQ.getNumber(), "run1", "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing",
+                1L);
+
         storeMapper.addStore(storeEntity);
         storeMapper.addStore(storeEntity1);
         StoreEntity storeEntities = storeMapper.selectStoreByCluster(storeEntity);
@@ -57,7 +59,7 @@ public class TestStoreMapper {
     @Test
     public void testDeleteStoreByUnique() {
         StoreEntity storeEntity =
-            new StoreEntity(1L, 2l, 2, "run1", "1.01.0", "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing", 1L);
+            new StoreEntity(2L, StoreType.ROCKETMQ.getNumber(), "run1", "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing", 1L);
         storeMapper.addStore(storeEntity);
         storeMapper.deleteStoreByUnique(storeEntity);
         StoreEntity storeEntities = storeMapper.selectStoreByCluster(storeEntity);
@@ -67,11 +69,11 @@ public class TestStoreMapper {
     @Test
     public void testUpdateStoreByUnique() {
         StoreEntity storeEntity =
-            new StoreEntity(1L, 2l, 2, "run1", "4.0.01", "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing", 1L);
+            new StoreEntity(1L,  StoreType.ROCKETMQ.getNumber(), "run1", "n,j", (short) -1, 1098, 1099, "nothing", (short) 1, null, null, "nothing", 1L);
         storeMapper.addStore(storeEntity);
         storeEntity.setStatus((short) 5);
         storeMapper.updateStoreByUnique(storeEntity);
-        StoreEntity storeEntities = storeMapper.selectStoreByCluster(storeEntity);
-
+        StoreEntity storeEntity1 = storeMapper.selectStoreByCluster(storeEntity);
+        Assert.assertEquals(storeEntity1.getStatus(), storeEntity.getStatus());
     }
 }

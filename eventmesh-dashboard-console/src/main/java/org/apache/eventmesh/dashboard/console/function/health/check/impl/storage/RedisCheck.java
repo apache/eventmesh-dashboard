@@ -17,28 +17,30 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage;
 
-import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE;
-
+import org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKManager;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRedisConfig;
 
 import java.time.Duration;
 import java.util.Objects;
 
-import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.RedisURI.Builder;
+import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@HealthCheckType(type = HEALTH_CHECK_TYPE_STORAGE, subType = "redis")
+@HealthCheckType(type = HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE, subType = HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_REDIS)
 public class RedisCheck extends AbstractHealthCheckService {
 
-    private RedisClient redisClient;
+    private CreateRedisConfig sdkConfig;
 
     public RedisCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
         super(healthCheckObjectConfig);
@@ -47,7 +49,9 @@ public class RedisCheck extends AbstractHealthCheckService {
     @Override
     public void doCheck(HealthCheckCallback callback) {
         try {
-            RedisAsyncCommands<String, String> commands = redisClient.connect().async();
+            StatefulRedisConnection<String, String> connection = (StatefulRedisConnection<String, String>) SDKManager.getInstance()
+                .getClient(SDKTypeEnum.STORAGE_REDIS, sdkConfig.getUniqueKey());
+            RedisAsyncCommands<String, String> commands = connection.async();
             commands.ping().thenAccept(result -> {
                 callback.onSuccess();
             }).exceptionally(e -> {
@@ -67,6 +71,7 @@ public class RedisCheck extends AbstractHealthCheckService {
     @Override
     public void init() {
         String redisUrl;
+        sdkConfig = new CreateRedisConfig();
         if (Objects.nonNull(getConfig().getConnectUrl()) && !getConfig().getConnectUrl().isEmpty()) {
             redisUrl = getConfig().getConnectUrl();
         } else {
@@ -82,13 +87,12 @@ public class RedisCheck extends AbstractHealthCheckService {
             }
             redisUrl = builder.build().toString();
         }
-        redisClient = RedisClient.create(redisUrl);
+        sdkConfig.setRedisUrl(redisUrl);
+        SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_REDIS, sdkConfig);
     }
 
     @Override
     public void destroy() {
-        if (redisClient != null) {
-            redisClient.shutdown();
-        }
+        SDKManager.getInstance().deleteClient(SDKTypeEnum.STORAGE_REDIS, sdkConfig.getUniqueKey());
     }
 }

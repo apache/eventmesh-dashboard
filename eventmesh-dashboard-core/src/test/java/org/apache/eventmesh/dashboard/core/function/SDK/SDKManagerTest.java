@@ -17,26 +17,35 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRedisConfig;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
+@Timeout(value = 10)
 class SDKManagerTest {
 
-    private final CreateRedisConfig createRedisConfig = new CreateRedisConfig();
     private String redisKey;
 
     @BeforeEach
     void setUp() {
         try {
-            createRedisConfig.setRedisUrl("redis://localhost:6379");
+            CreateRedisConfig createRedisConfig = CreateRedisConfig.builder()
+                .redisUrl("localhost:6379")
+                .password("")
+                .timeOut(30)
+                .build();
             redisKey = SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_REDIS, createRedisConfig).getKey();
         } catch (Exception e) {
             log.warn("SDK manager test init failed, possible reason: redis-server is offline. {}", this.getClass().getSimpleName(), e);
@@ -48,6 +57,22 @@ class SDKManagerTest {
         try {
             Object redisClient = SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_REDIS, redisKey);
             assertNotNull(redisClient);
+        } catch (Exception e) {
+            log.warn("SDK manager test failed, possible reason: redis-server is offline. {}", this.getClass().getSimpleName(), e);
+        }
+    }
+
+    @Test
+    public void testGetSameClient() {
+        try {
+            SDKManager sdkManager = SDKManager.getInstance();
+            Object redisClient = sdkManager.getClient(SDKTypeEnum.STORAGE_REDIS, redisKey);
+            assertNotNull(redisClient);
+            Class<?> sdkManagerClass = sdkManager.getClass();
+            Field clientMapField = sdkManagerClass.getDeclaredField("clientMap");
+            clientMapField.setAccessible(true);
+            Map<SDKTypeEnum, Map<String, Object>> clientMap = (Map<SDKTypeEnum, Map<String, Object>>) clientMapField.get(sdkManager);
+            assertEquals(1, clientMap.get(SDKTypeEnum.STORAGE_REDIS).size());
         } catch (Exception e) {
             log.warn("SDK manager test failed, possible reason: redis-server is offline. {}", this.getClass().getSimpleName(), e);
         }

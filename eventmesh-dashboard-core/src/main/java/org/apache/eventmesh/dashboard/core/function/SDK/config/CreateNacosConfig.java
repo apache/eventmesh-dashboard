@@ -17,12 +17,28 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateNacosConfig implements CreateSDKConfig {
 
-    private String serverAddress;
+    private String serverAddress = "127.0.0.1:8848";
+
+    private String namespace = "";
+
+    private String username = "nacos";
+
+    private String password = "nacos";
+
+    private String accessKey = "";
+
+    private String secretKey = "";
 
     @Override
     public String getUniqueKey() {

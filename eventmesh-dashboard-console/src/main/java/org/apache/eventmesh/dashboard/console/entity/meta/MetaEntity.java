@@ -18,17 +18,22 @@
 package org.apache.eventmesh.dashboard.console.entity.meta;
 
 import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
+import org.apache.eventmesh.dashboard.common.model.metadata.RegistryMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = "status")
+@SuperBuilder
 public class MetaEntity extends BaseEntity {
 
     private static final long serialVersionUID = 7176263169716424469L;
@@ -59,7 +64,20 @@ public class MetaEntity extends BaseEntity {
     @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")
     private Integer status;
 
-    public void setDataStatus(RecordStatus dataStatus) {
-        this.status = dataStatus.getNumber();
+    public void setStatusEnum(RecordStatus statusEnum) {
+        this.status = statusEnum.getNumber();
+    }
+
+    public MetaEntity(RegistryMetadata source) {
+        setHost(source.getHost());
+        setPort(source.getPort());
+        setClusterId(source.getClusterId());
+        setName(source.getName());
+        setVersion(source.getVersion());
+        setParams(source.getParams());
+        setRole(source.getRole());
+        setStatus(RecordStatus.ACTIVE.getNumber());
+        setType(source.getType());
+        setUsername(source.getUsername());
     }
 }

@@ -27,5 +27,6 @@ import java.util.List;
     Not implemented in eventmesh by now
  */
 public interface ClientRemotingService {
+    // get consumer only for now
     List<ClientMetadata> getClientList();
 }

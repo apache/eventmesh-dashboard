@@ -65,10 +65,14 @@ public interface ClientMapper {
             + "`status`, `config_ids`, `description`) "
             + "VALUES (#{clusterId}, #{name}, #{platform},"
             + "#{language}, #{pid}, #{host}, #{port}, #{protocol},"
-            + "#{status}, #{configIds}, #{description})")
-    void insert(ClientEntity clientEntity);
+            + "#{status}, #{configIds}, #{description})"
+            + "ON DUPLICATE KEY UPDATE `status` = 1, `pid` = #{pid}, `config_ids` = #{configIds}, `host` = #{host}, `port` = #{port}")
+    Long insert(ClientEntity clientEntity);
 
     @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE id = #{id}")
     void deactivate(ClientEntity clientEntity);
+
+    @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE `host` = #{host} AND `port` = #{port}")
+    void deActiveByHostPort(ClientEntity clientEntity);
 
 }

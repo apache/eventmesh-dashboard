@@ -35,4 +35,9 @@ public class ConfigMetadata extends MetadataConfig {
     private Integer instanceType;
 
     private Long instanceId;
+
+    @Override
+    public String getUnique() {
+        return configKey;
+    }
 }

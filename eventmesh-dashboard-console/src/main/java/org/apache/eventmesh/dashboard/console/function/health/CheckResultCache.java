@@ -33,15 +33,20 @@ import lombok.Setter;
 
 public class CheckResultCache {
 
-    private static final HashMap<String, HashMap<Long, CheckResult>> cacheMap = new HashMap<>();
+    @Getter
+    private static final CheckResultCache INSTANCE = new CheckResultCache();
 
-    public static Integer getLastHealthyCheckResult(String type, Long typeId) {
+    private final HashMap<String, HashMap<Long, CheckResult>> cacheMap = new HashMap<>();
+
+    public  Integer getLastHealthyCheckResult(String type, Long typeId) {
         if (!Objects.isNull(cacheMap.get(type)) && !Objects.isNull(cacheMap.get(type).get(typeId))) {
             return cacheMap.get(type).get(typeId).getStatus().getNumber();
         }
         return HealthCheckStatus.CHECKING.getNumber();
     }
 
+    private CheckResultCache() {
+    }
 
     public void update(String type, Long typeId, HealthCheckStatus status, String resultDesc, Long latency) {
         HashMap<Long, CheckResult> subMap = cacheMap.get(type);

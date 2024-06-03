@@ -17,17 +17,24 @@
 
 package org.apache.eventmesh.dashboard.console.entity.topic;
 
+import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
 import java.sql.Timestamp;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = "status")
+@SuperBuilder
 public class TopicEntity extends BaseEntity {
 
     private Long id;
@@ -36,10 +43,15 @@ public class TopicEntity extends BaseEntity {
 
     private String topicName;
 
-    private String storageId;
+    private Long storageId;
 
+    @Schema(description = "time to live in milliseconds, -2 unknown, -1 no limit;", example = "1000")
     private Long retentionMs;
 
+    /**
+     * topic type, 0: normal, 1: EventMesh internal;
+     */
+    @Schema(description = "topic type, 0: normal, 1: EventMesh internal;", example = "0")
     private Integer type;
 
     private String description;
@@ -51,4 +63,15 @@ public class TopicEntity extends BaseEntity {
     private Integer status;
 
     private Integer createProgress;
+
+    public TopicEntity(TopicMetadata source) {
+        setClusterId(source.getClusterId());
+        setTopicName(source.getTopicName());
+        setStorageId(source.getStorageId());
+        setRetentionMs(source.getRetentionMs());
+        setType(source.getType());
+        setDescription(source.getDescription());
+        setStatus(1);
+        setCreateProgress(1);
+    }
 }

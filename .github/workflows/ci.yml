@@ -33,7 +33,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         java: [ 8, 11 ]
-        language: ['java']
+        language: [ 'java' ]
     runs-on: ${{ matrix.os }}
 
     services:
@@ -48,17 +48,68 @@ jobs:
           - 3306:3306
         # Set health checks to wait until MySQL has started
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Download middlewares
+        run: |
+          wget https://github.com/alibaba/nacos/releases/download/2.3.2/nacos-server-2.3.2.zip
+          unzip nacos-server-2.3.2.zip
+          wget https://dist.apache.org/repos/dist/release/rocketmq/4.9.8/rocketmq-all-4.9.8-bin-release.zip
+          unzip rocketmq-all-4.9.8-bin-release.zip
+          git clone https://github.com/apache/eventmesh.git
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: 11
+
+      - name: Build EventMesh GenerateGrammarSource
+        working-directory: eventmesh
+        run: ./gradlew clean generateGrammarSource --parallel --daemon
 
       - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
           java-version: ${{ matrix.java }}
           cache: maven
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Build EventMesh Runtime
+        working-directory: eventmesh
+        run: ./gradlew clean dist -x spotlessJava -x generateGrammarSource --parallel --daemon && ./gradlew installPlugin
+
+      - name: Apply configuration file
+        run: cp .github/workflows/config/eventmesh.properties eventmesh/dist/conf/eventmesh.properties
+
+      - name: Set up Meta
+        working-directory: nacos
+        run: nohup bash bin/startup.sh -m standalone &
+
+      - name: Set up Event Store
+        working-directory: rocketmq-all-4.9.8-bin-release
+        run: |
+          nohup sh bin/mqnamesrv &
+          sleep 5
+          nohup sh bin/mqbroker -n localhost:9876 &
+
+      - name: Set up EventMesh Runtime
+        working-directory: eventmesh/dist
+        run: bash bin/start.sh
+
+      - name: Build Dashboard
+        run: ./mvnw -B package -DskipTests --file pom.xml
+
+      - name: Run Unit Tests
+        run: ./mvnw -B test --file pom.xml

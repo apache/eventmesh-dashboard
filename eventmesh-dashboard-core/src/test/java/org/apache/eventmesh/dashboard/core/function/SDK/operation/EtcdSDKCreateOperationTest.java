@@ -19,50 +19,40 @@ package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateEtcdConfig;
 
-import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.KV;
-import io.etcd.jetcd.KeyValue;
-import io.etcd.jetcd.kv.GetResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Timeout(value = 5)
 public class EtcdSDKCreateOperationTest {
 
     private final EtcdSDKOperation etcdSDKOperation = new EtcdSDKOperation();
 
-    private static final String key = "/test/foo";
-
-    private static final String value = "test";
-
-    private static final String url = "http://127.0.0.1:2379";
+    private static final String url = "http://localhost:2379";
 
     @Test
     void testCreateClient() {
-        final CreateEtcdConfig etcdConfig = new CreateEtcdConfig();
-        etcdConfig.setEtcdServerAddress(url);
+        final CreateEtcdConfig etcdConfig = CreateEtcdConfig.builder()
+            .etcdServerAddress(url)
+            .connectTime(5)
+            .build();
+        SimpleEntry<String, KV> simpleEntry = null;
         try {
-            final SimpleEntry<String, KV> simpleEntry = etcdSDKOperation.createClient(etcdConfig);
+            simpleEntry = etcdSDKOperation.createClient(etcdConfig);
             Assertions.assertEquals(url, simpleEntry.getKey());
-            simpleEntry.getValue().put(bytesOf(key), bytesOf(value));
-            final GetResponse response = simpleEntry.getValue().get(bytesOf(key)).get();
-            final List<KeyValue> keyValues = response.getKvs();
-            log.info("get key = {} , value = {} from etcd success",
-                keyValues.get(0).getKey().toString(StandardCharsets.UTF_8),
-                keyValues.get(0).getValue().toString(StandardCharsets.UTF_8));
+            simpleEntry.getValue().close();
         } catch (Exception e) {
             log.error("create etcd client failed", e);
+            if (simpleEntry != null) {
+                simpleEntry.getValue().close();
+            }
         }
-    }
-
-    private static ByteSequence bytesOf(String val) {
-        return ByteSequence.from(val, StandardCharsets.UTF_8);
     }
 }

@@ -28,9 +28,9 @@ import java.util.AbstractMap.SimpleEntry;
  */
 public interface SDKOperation<T> {
 
-    public SimpleEntry<String, T> createClient(CreateSDKConfig clientConfig);
+    SimpleEntry<String, T> createClient(CreateSDKConfig clientConfig);
 
 
-    public void close(Object client);
+    void close(Object client);
 
 }
