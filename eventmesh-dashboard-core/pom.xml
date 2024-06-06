@@ -25,6 +25,7 @@
         <artifactId>eventmesh-dashboard</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+    <groupId>org.apache.eventmesh.dashboard.core</groupId>
     <artifactId>eventmesh-dashboard-core</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>eventmesh-dashboard-core</name>
@@ -50,12 +51,12 @@
 
         <!-- EventMesh Dashboard modules -->
         <dependency>
-            <groupId>org.apache.eventmesh.dashboard</groupId>
+            <groupId>org.apache.eventmesh.dashboard.common</groupId>
             <artifactId>eventmesh-dashboard-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.eventmesh.dashboard</groupId>
+            <groupId>org.apache.eventmesh.dashboard.service</groupId>
             <artifactId>eventmesh-dashboard-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
@@ -94,12 +95,12 @@
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
-            <version>5.2.0</version>
+            <version>4.9.8</version>
         </dependency>
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-tools</artifactId>
-            <version>5.2.0</version>
+            <version>4.9.8</version>
         </dependency>
         <!-- kafka client -->
         <dependency>
