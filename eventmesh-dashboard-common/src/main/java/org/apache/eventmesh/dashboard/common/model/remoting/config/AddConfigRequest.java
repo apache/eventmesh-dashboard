@@ -18,11 +18,10 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.config;
 
 import org.apache.eventmesh.dashboard.common.model.remoting.RemotingOperate;
-import lombok.Data;
-
-
 
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 public class AddConfigRequest {

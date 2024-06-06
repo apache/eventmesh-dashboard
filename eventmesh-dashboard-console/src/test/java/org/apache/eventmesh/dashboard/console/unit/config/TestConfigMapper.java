@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import lombok.Builder;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = EventMeshDashboardApplication.class)
@@ -40,11 +42,41 @@ public class TestConfigMapper {
     @Autowired
     private ConfigMapper configMapper;
 
+    private ConfigEntity config;
+
+    private ConfigEntity config1;
+
+    @Builder
+    public void init(){
+        this.config = new ConfigEntity();
+        this.config.setClusterId(1L);
+        this.config.setBusinessType("rocketmq");
+        this.config.setInstanceType(2);
+        this.config.setInstanceId(2L);
+        this.config.setConfigName("port");
+        this.config.setConfigValue("127.0.0.1");
+        this.config.setStartVersion("1.0.0");
+        this.config.setEndVersion("1.1.1");
+        this.config.setDiffType(1);
+        this.config.setDescription("1.1.1.1.1");
+        this.config.setEdit(-1);
+
+        this.config1 = new ConfigEntity();
+        this.config1.setClusterId(1L);
+        this.config1.setBusinessType("rocketmq");
+        this.config1.setInstanceType(2);
+        this.config1.setInstanceId(2L);
+        this.config1.setConfigName("port");
+        this.config1.setConfigValue("127.0.0.1");
+        this.config1.setStartVersion("1.0.0");
+        this.config1.setEndVersion("1.1.1");
+        this.config1.setDiffType(1);
+        this.config1.setDescription("1.1.1.1.1");
+        this.config1.setEdit(-1);
+    }
+
     @Test
     public void testAddConfig() throws IllegalAccessException {
-        ConfigEntity config = new ConfigEntity(null, 1L, "rocketmq", 2, 2L, "port",
-            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0,
-            null, null, 0, 0, 0);
         configMapper.addConfig(config);
         ConfigEntity configEntity = configMapper.selectByUnique(config);
         configEntity.setUpdateTime(null);
@@ -55,9 +87,6 @@ public class TestConfigMapper {
 
     @Test
     public void testDeleteConfig() {
-        ConfigEntity config = new ConfigEntity(null, 1L, "rocketmq", 2, 2L, "port",
-            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0,
-            null, null, 0, 0, 0);
         configMapper.addConfig(config);
         configMapper.deleteConfig(config);
         ConfigEntity config1 = configMapper.selectByUnique(config);
@@ -66,12 +95,6 @@ public class TestConfigMapper {
 
     @Test
     public void testSelectByInstanceId() {
-        ConfigEntity config = new ConfigEntity(null, 1L, "rocketmq", 2, 2L, "port",
-            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0,
-            null, null, 0, 0, 0);
-        ConfigEntity config1 = new ConfigEntity(null, 1L, "rocketmq", 2, 2L, "name",
-            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666", 0,
-            null, null, 0, 0, 0);
         configMapper.addConfig(config1);
         configMapper.addConfig(config);
         List<ConfigEntity> configEntityList = new ArrayList<>();
@@ -96,9 +119,6 @@ public class TestConfigMapper {
 
     @Test
     public void testUpdateConfig() {
-        ConfigEntity config = new ConfigEntity(null, 1L, "rocketmq", 2, 2L, "port",
-            "127.0.0.1", "1.7.0", "1.8.0", 1, "1.10.0", -1, "666",
-            2, null, null, 0, 0, 0);
         configMapper.addConfig(config);
         config.setConfigValue("127.1.1.1");
         configMapper.updateConfig(config);

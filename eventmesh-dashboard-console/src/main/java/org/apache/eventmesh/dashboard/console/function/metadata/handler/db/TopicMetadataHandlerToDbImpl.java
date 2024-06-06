@@ -18,13 +18,14 @@
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
-import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
-import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.store.StoreService;
 import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +55,21 @@ public class TopicMetadataHandlerToDbImpl implements MetadataHandler<TopicMetada
             }
         }
 
-        topicService.addTopic(new TopicEntity(meta));
+        //topicService.addTopic(new TopicEntity(meta));
     }
 
     @Override
     public void deleteMetadata(TopicMetadata meta) {
         topicService.deleteTopic(null);
+    }
+
+    @Override
+    public List<TopicMetadata> getData() {
+        return null;
+    }
+
+    @Override
+    public List<TopicMetadata> getData(GlobalRequest globalRequest) {
+        return null;
     }
 }

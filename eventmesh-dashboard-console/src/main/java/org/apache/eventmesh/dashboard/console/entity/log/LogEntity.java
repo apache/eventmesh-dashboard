@@ -44,7 +44,6 @@ public class LogEntity extends BaseEntity {
 
     private String content;
 
-    private Timestamp createTime;
 
     private Timestamp endTime;
 

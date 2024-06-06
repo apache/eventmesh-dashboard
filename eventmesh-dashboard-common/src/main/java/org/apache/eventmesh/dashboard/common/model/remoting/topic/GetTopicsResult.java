@@ -20,7 +20,8 @@ package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 
 /**
- * @author hahaha
+ *
  */
 public class GetTopicsResult extends GlobalResult<GetTopicsResponse> {
+
 }

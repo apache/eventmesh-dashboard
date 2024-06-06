@@ -20,19 +20,11 @@ package org.apache.eventmesh.dashboard.console.entity.storage;
 
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
-import java.sql.Timestamp;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = "status")
-@SuperBuilder
 public class StoreEntity extends BaseEntity {
 
     private Long clusterId;
@@ -55,10 +47,6 @@ public class StoreEntity extends BaseEntity {
     private String rack;
 
     private Short status;
-
-    private Timestamp createTime;
-
-    private Timestamp updateTime;
 
     private String endpointMap;
 

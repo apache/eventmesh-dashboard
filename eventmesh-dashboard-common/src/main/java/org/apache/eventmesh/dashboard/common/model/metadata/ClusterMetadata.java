@@ -17,11 +17,12 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.StoreType;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

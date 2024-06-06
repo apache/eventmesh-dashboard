@@ -19,8 +19,6 @@ package org.apache.eventmesh.dashboard.console.entity.groupmember;
 
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
-import java.sql.Timestamp;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -45,10 +43,6 @@ public class GroupMemberEntity extends BaseEntity {
     private String eventMeshUser;
 
     private String state;
-
-    private Timestamp createTime;
-
-    private Timestamp updateTime;
 
     private Integer status;
 }

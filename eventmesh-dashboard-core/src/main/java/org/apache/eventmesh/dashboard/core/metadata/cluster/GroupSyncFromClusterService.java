@@ -23,13 +23,14 @@ import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupsRequest;
 import org.apache.eventmesh.dashboard.core.remoting.RemotingManager;
 import org.apache.eventmesh.dashboard.service.remoting.GroupRemotingService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 @Service
-public class GroupSyncFromClusterService extends  AbstractMetadataHandler<GroupMetadata, GroupRemotingService, GetGroupsRequest>{
+public class GroupSyncFromClusterService extends AbstractMetadataHandler<GroupMetadata, GroupRemotingService, GetGroupsRequest> {
 
     @Autowired
     private RemotingManager remotingManager;
@@ -46,7 +47,7 @@ public class GroupSyncFromClusterService extends  AbstractMetadataHandler<GroupM
 
     @Override
     public List<GroupMetadata> getData() {
-        List<GroupMetadata> eventMeshGroupList = this.remotingManager.request(this,remotingManager.getEventMeshClusterDO());
+        List<GroupMetadata> eventMeshGroupList = this.remotingManager.request(this, remotingManager.getEventMeshClusterDO());
         //List<GroupMetadata> rocketMQMeshGroupList = this.remotingManager.request(this,remotingManager.getRocketMQClusterDO() );
         //eventMeshGroupList.addAll(rocketMQMeshGroupList);
         return eventMeshGroupList;

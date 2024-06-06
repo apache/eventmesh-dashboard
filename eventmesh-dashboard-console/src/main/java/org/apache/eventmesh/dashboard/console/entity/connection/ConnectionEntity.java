@@ -87,10 +87,6 @@ public class ConnectionEntity extends BaseEntity {
 
     private String description;
 
-    public void setStatusEnum(RecordStatus statusEnum) {
-        this.status = statusEnum.getNumber();
-    }
-
     public ConnectionEntity(ConnectionMetadata source) {
         setClusterId(source.getClusterId());
         setSourceId(source.getSourceId());
@@ -102,5 +98,9 @@ public class ConnectionEntity extends BaseEntity {
         setTopic(source.getTopic());
         setGroupId(source.getGroupId());
         setDescription(source.getDescription());
+    }
+
+    public void setStatusEnum(RecordStatus statusEnum) {
+        this.status = statusEnum.getNumber();
     }
 }

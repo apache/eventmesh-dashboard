@@ -31,10 +31,11 @@ import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.ResourceNumVO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 
 @Service
@@ -99,7 +100,7 @@ public class ClusterServiceImpl implements ClusterService {
     }
 
     @Override
-    public List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity){
+    public List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity) {
         return clusterMapper.selectAllCluster();
     }
 
@@ -120,7 +121,7 @@ public class ClusterServiceImpl implements ClusterService {
     }
 
 
-    public List<ClusterEntity> selectIncrementCluster(){
+    public List<ClusterEntity> selectIncrementCluster() {
         return null;
     }
 

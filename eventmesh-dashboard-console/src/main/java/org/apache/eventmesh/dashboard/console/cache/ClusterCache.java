@@ -30,13 +30,10 @@ public class ClusterCache {
 
     @Getter
     private static final ClusterCache INSTANCE = new ClusterCache();
-
+    private static final Object lock = new Object();
     //cluster name
     private HashMap<String, ClusterEntity> clusterNameMap = new HashMap<>();
-
     private HashMap<Long, ClusterEntity> clusterIdMap = new HashMap<>();
-
-    private static final Object lock = new Object();
 
     public ClusterEntity getClusterById(Long id) {
         return clusterIdMap.get(id);

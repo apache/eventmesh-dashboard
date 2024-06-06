@@ -38,14 +38,14 @@ public class CheckResultCache {
 
     private final HashMap<String, HashMap<Long, CheckResult>> cacheMap = new HashMap<>();
 
-    public  Integer getLastHealthyCheckResult(String type, Long typeId) {
+    private CheckResultCache() {
+    }
+
+    public Integer getLastHealthyCheckResult(String type, Long typeId) {
         if (!Objects.isNull(cacheMap.get(type)) && !Objects.isNull(cacheMap.get(type).get(typeId))) {
             return cacheMap.get(type).get(typeId).getStatus().getNumber();
         }
         return HealthCheckStatus.CHECKING.getNumber();
-    }
-
-    private CheckResultCache() {
     }
 
     public void update(String type, Long typeId, HealthCheckStatus status, String resultDesc, Long latency) {

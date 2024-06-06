@@ -1,7 +1,22 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.eventmesh.dashboard.core.metadata;
 
-import lombok.Data;
-import lombok.Setter;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.model.metadata.MetadataConfig;
 import org.apache.eventmesh.dashboard.core.remoting.RemotingManager;
@@ -19,48 +34,46 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import lombok.Data;
+import lombok.Setter;
+
 /**
- * 启动应该进行差异化对比。进行差异化增量，差异化删除
- * 表 -> increment-> remote -> function -> data -> conver -> request
+ * 启动应该进行差异化对比。进行差异化增量，差异化删除 表 -> increment-> remote -> function -> data -> conver -> request
  */
 public class MetadataSyncManager {
 
-    @Setter
-    private Map<Class<?>,MetadataSyncWrapper> metadataSyncWrapperMap = new HashMap<>();
-
     private final ScheduledThreadPoolExecutor scheduledExecutorService = new ScheduledThreadPoolExecutor(2);
-
     private final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(32, 32, 10, TimeUnit.MINUTES, new LinkedBlockingQueue<>(),
-            new ThreadFactory() {
-                final AtomicInteger counter = new AtomicInteger(0);
+        new ThreadFactory() {
+            final AtomicInteger counter = new AtomicInteger(0);
 
-                @Override
-                public Thread newThread(Runnable r) {
-                    return new Thread(r, "metadata-manager-" + counter.incrementAndGet());
-                }
-            });
-
-
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "metadata-manager-" + counter.incrementAndGet());
+            }
+        });
+    @Setter
+    private Map<Class<?>, MetadataSyncWrapper> metadataSyncWrapperMap = new HashMap<>();
     @Setter
     private RemotingManager remotingManager;
 
 
-    public void register(MetadataSyncConfig metadataSyncConfig){
+    public void register(MetadataSyncConfig metadataSyncConfig) {
         MetadataSyncWrapper metadataSyncWrapper = new MetadataSyncWrapper();
         metadataSyncWrapper.setMetadataClass(metadataSyncConfig.getMetadataClass());
         metadataSyncWrapper.setEntityClass(metadataSyncConfig.getEntityClass());
         metadataSyncWrapper.setDataBasesHandler(metadataSyncConfig.getDataBasesHandler());
         metadataSyncWrapper.setClusterService(metadataSyncConfig.getClusterService());
-        metadataSyncWrapperMap.put(metadataSyncWrapper.getMetadataClass(),metadataSyncWrapper);
+        metadataSyncWrapperMap.put(metadataSyncWrapper.getMetadataClass(), metadataSyncWrapper);
     }
 
-    public void init(Integer initialDelay, Integer period){
-        scheduledExecutorService.scheduleAtFixedRate(this::run , initialDelay, period,TimeUnit.SECONDS);
+    public void init(Integer initialDelay, Integer period) {
+        scheduledExecutorService.scheduleAtFixedRate(this::run, initialDelay, period, TimeUnit.SECONDS);
     }
 
 
-    public void run(){
-        for(MetadataSyncWrapper metadataSyncWrapper : metadataSyncWrapperMap.values()){
+    public void run() {
+        for (MetadataSyncWrapper metadataSyncWrapper : metadataSyncWrapperMap.values()) {
             // 一个MetadataSyncWrapper 一个线程
             threadPoolExecutor.execute(metadataSyncWrapper);
         }
@@ -68,7 +81,7 @@ public class MetadataSyncManager {
 
 
     @Data
-    public static class MetadataSyncConfig{
+    public static class MetadataSyncConfig {
 
         private Class<?> metadataClass;
 
@@ -83,7 +96,7 @@ public class MetadataSyncManager {
     }
 
     @Data
-    public class MetadataSyncWrapper implements  Runnable{
+    public class MetadataSyncWrapper implements Runnable {
 
         private Class<?> metadataClass;
 
@@ -99,14 +112,14 @@ public class MetadataSyncManager {
         private CountDownLatch countDownLatch = new CountDownLatch(2);
 
 
-        private Map<String,MetadataConfig> clusterData = new HashMap<>();
+        private Map<String, MetadataConfig> clusterData = new HashMap<>();
 
-        private Map<String,MetadataConfig> dataBasesData = new HashMap<>();
+        private Map<String, MetadataConfig> dataBasesData = new HashMap<>();
 
         private List<MetadataConfig> toClusterUpdate = new ArrayList<>();
 
 
-        private List<MetadataConfig> toDataUpdate =  new ArrayList<>();
+        private List<MetadataConfig> toDataUpdate = new ArrayList<>();
 
         private List<MetadataConfig> toDelete = new ArrayList<>();
 
@@ -115,7 +128,7 @@ public class MetadataSyncManager {
         private long lastTime = System.currentTimeMillis();
 
         @Override
-        public void run(){
+        public void run() {
 
             try {
                 // 全程托管，托管都需要，异步 读取 cluster 信息
@@ -127,7 +140,7 @@ public class MetadataSyncManager {
                 // 对读取的数据进行分类，
                 this.difference();
                 // 托管的进行差异化之后。进行写库。
-                if(this.toInsert.isEmpty() && this.toClusterUpdate.isEmpty() && this.toDelete.isEmpty() && this.toDataUpdate.isEmpty()){
+                if (this.toInsert.isEmpty() && this.toClusterUpdate.isEmpty() && this.toDelete.isEmpty() && this.toDataUpdate.isEmpty()) {
                     return;
                 }
                 this.toTrusteeship();
@@ -136,7 +149,7 @@ public class MetadataSyncManager {
 
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
-            }finally {
+            } finally {
                 countDownLatch = new CountDownLatch(2);
                 clusterData.clear();
                 dataBasesData.clear();
@@ -145,42 +158,43 @@ public class MetadataSyncManager {
 
         }
 
-        public void syncClusterData(){
+        public void syncClusterData() {
             try {
                 List<MetadataConfig> metadataConfigList = this.clusterService.getData();
-                this.arrange(this.clusterData , metadataConfigList);
-            }finally {
+                this.arrange(this.clusterData, metadataConfigList);
+            } finally {
                 countDownLatch.countDown();
             }
 
         }
 
-        public void syncDatabasesData(){
+        public void syncDatabasesData() {
             try {
                 List<MetadataConfig> metadataConfigList = this.dataBasesHandler.getData();
                 this.arrange(this.dataBasesData, metadataConfigList);
-            }finally {
+            } finally {
                 countDownLatch.countDown();
             }
         }
 
-        public void arrange(Map<String,MetadataConfig> data , List<MetadataConfig> metadataConfigList){
-                for(MetadataConfig metadataConfig : metadataConfigList){
-                    data.put(metadataConfig.getUnique(), metadataConfig);
-                }
+        public void arrange(Map<String, MetadataConfig> data, List<MetadataConfig> metadataConfigList) {
+            for (MetadataConfig metadataConfig : metadataConfigList) {
+                data.put(metadataConfig.getUnique(), metadataConfig);
+            }
         }
 
         /**
          * TODO 一定要注意。这个就得是 cluster 的差集。如果要对 database 操作 就要反翻过啦
          */
-        public void difference(){
-            Map<String,MetadataConfig> newClusterData = new HashMap<>(this.clusterData);
-            Map<String,MetadataConfig> newDataBasesData = new HashMap<>(this.dataBasesData);
+        public void difference() {
+
             this.toDataUpdate = new ArrayList<>();
             this.toClusterUpdate = new ArrayList<>();
             this.toDelete = new ArrayList<>();
             this.toInsert = new ArrayList<>();
-            for(Map.Entry<String,MetadataConfig> entry : newClusterData.entrySet()){
+            Map<String, MetadataConfig> newClusterData = new HashMap<>(this.clusterData);
+            Map<String, MetadataConfig> newDataBasesData = new HashMap<>(this.dataBasesData);
+            for (Map.Entry<String, MetadataConfig> entry : newClusterData.entrySet()) {
                 MetadataConfig serviceObject = newDataBasesData.remove(entry.getKey());
                 if (Objects.isNull(serviceObject)) {
                     toDelete.add(entry.getValue());
@@ -195,32 +209,32 @@ public class MetadataSyncManager {
 
         }
 
-        public void toTrusteeship(){
+        public void toTrusteeship() {
             // 如果 update 中 cluster 与  databases 数据不一致。 以谁为主
             //
             this.dataBasesHandler.updateMetadata(this.filterTrusteeship(this.toClusterUpdate));
             this.dataBasesHandler.addMetadata(this.filterTrusteeship(this.toDelete));
         }
 
-        public void toFullTrusteeship(){
+        public void toFullTrusteeship() {
             //
             this.clusterService.addMetadata(this.filterFullTrusteeship(this.toInsert));
             this.clusterService.addMetadata(this.filterFullTrusteeship(this.toDataUpdate));
             this.clusterService.deleteMetadata(this.filterTrusteeship(this.toDelete));
         }
 
-        private List<MetadataConfig> filterFullTrusteeship(List<MetadataConfig> metadataConfigList){
-            return this.filter(metadataConfigList,ClusterTrusteeshipType.FIRE_AND_FORGET_TRUSTEESHIP);
+        private List<MetadataConfig> filterFullTrusteeship(List<MetadataConfig> metadataConfigList) {
+            return this.filter(metadataConfigList, ClusterTrusteeshipType.FIRE_AND_FORGET_TRUSTEESHIP);
         }
 
-        private List<MetadataConfig> filterTrusteeship(List<MetadataConfig> metadataConfigList){
-            return this.filter(metadataConfigList,ClusterTrusteeshipType.TRUSTEESHIP);
+        private List<MetadataConfig> filterTrusteeship(List<MetadataConfig> metadataConfigList) {
+            return this.filter(metadataConfigList, ClusterTrusteeshipType.TRUSTEESHIP);
         }
 
-        private List<MetadataConfig> filter(List<MetadataConfig> metadataConfigList,ClusterTrusteeshipType clusterTrusteeshipType){
+        private List<MetadataConfig> filter(List<MetadataConfig> metadataConfigList, ClusterTrusteeshipType clusterTrusteeshipType) {
             List<MetadataConfig> newMetadataConfigList = new ArrayList<>();
-            for(MetadataConfig metadataConfig: metadataConfigList){
-                if(remotingManager.isClusterTrusteeshipType(metadataConfig.getClusterId(), clusterTrusteeshipType)){
+            for (MetadataConfig metadataConfig : metadataConfigList) {
+                if (remotingManager.isClusterTrusteeshipType(metadataConfig.getClusterId(), clusterTrusteeshipType)) {
                     newMetadataConfigList.add(metadataConfig);
                 }
             }

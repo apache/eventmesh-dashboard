@@ -24,5 +24,6 @@ import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeRe
  * service to get data from remote meta
  */
 public interface MetaRemotingService {
+
     GetRuntimeResult getRuntime(GetRuntimeRequest getRuntimeRequest);
 }

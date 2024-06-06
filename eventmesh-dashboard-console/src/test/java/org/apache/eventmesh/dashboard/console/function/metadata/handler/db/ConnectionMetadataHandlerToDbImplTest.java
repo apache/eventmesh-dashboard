@@ -24,10 +24,10 @@ import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.client.ClientEntity;
 import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
-import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.client.ClientDataService;
 import org.apache.eventmesh.dashboard.console.service.connection.ConnectionDataService;
 import org.apache.eventmesh.dashboard.console.service.connector.ConnectorDataService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.util.List;
 

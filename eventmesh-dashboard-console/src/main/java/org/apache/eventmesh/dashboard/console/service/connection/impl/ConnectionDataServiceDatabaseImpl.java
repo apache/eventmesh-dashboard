@@ -77,7 +77,6 @@ public class ConnectionDataServiceDatabaseImpl implements ConnectionDataService 
     }
 
 
-
     @EmLog(OprType = "add", OprTarget = "Connection")
     @Override
     public boolean createConnection(CreateConnectionDTO createConnectionDTO) {

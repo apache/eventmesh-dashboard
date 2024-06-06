@@ -17,21 +17,23 @@
 
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 import org.apache.eventmesh.dashboard.console.cache.ClusterCache;
-import org.apache.eventmesh.dashboard.console.cache.RuntimeCache;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
-import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
+
+import java.util.List;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -70,8 +72,8 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
         if (Objects.isNull(meta.getClusterId())) {
             meta.setClusterId(ClusterCache.getINSTANCE().getClusterByName(meta.getClusterName()).getId());
         }
-        runtimeService.addRuntime(new RuntimeEntity(meta));
-        RuntimeCache.getInstance().addRuntime(new RuntimeEntity(meta));
+        //runtimeService.addRuntime(new RuntimeEntity(meta));
+        //RuntimeCache.getInstance().addRuntime(new RuntimeEntity(meta));
 
         // 集群存在且不过时。 直接同步就可以。
 
@@ -90,7 +92,17 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
 
     @Override
     public void deleteMetadata(RuntimeMetadata meta) {
-        runtimeService.deactivate(new RuntimeEntity(meta));
-        RuntimeCache.getInstance().deleteRuntime(new RuntimeEntity(meta));
+        //runtimeService.deactivate(new RuntimeEntity(meta));
+
+    }
+
+    @Override
+    public List<RuntimeMetadata> getData() {
+        return null;
+    }
+
+    @Override
+    public List<RuntimeMetadata> getData(GlobalRequest globalRequest) {
+        return null;
     }
 }

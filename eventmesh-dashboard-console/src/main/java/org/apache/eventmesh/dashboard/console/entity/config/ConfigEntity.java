@@ -17,22 +17,13 @@
 
 package org.apache.eventmesh.dashboard.console.entity.config;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
-import java.sql.Timestamp;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
 public class ConfigEntity extends BaseEntity {
 
     private Long id;
@@ -66,70 +57,14 @@ public class ConfigEntity extends BaseEntity {
 
     private Integer edit;
 
-    private Timestamp createTime;
-
-    private Timestamp updateTime;
-
     private Integer isDefault;
 
     private Integer isModify;
 
     private Integer alreadyUpdate;
 
+
     public boolean matchVersion(String eventmeshVersion) {
-        return (xiaoyu(eventmeshVersion) && dayu(eventmeshVersion));
-    }
-
-
-    public boolean xiaoyu(String eventmeshVersion) {
-        String[] em = eventmeshVersion.split(".");
-        String[] startVersion = this.getStartVersion().split(".");
-        boolean flag = true;
-        for (int i = 0; i < em.length; i++) {
-            if (Integer.valueOf(em[i]) < Integer.valueOf(startVersion[i])) {
-                flag = false;
-                break;
-            } else if (Integer.valueOf(em[i]) == Integer.valueOf(startVersion[i])) {
-                continue;
-            } else {
-                break;
-            }
-        }
-        return flag;
-    }
-
-    public boolean dayu(String eventmeshVersion) {
-        String[] em = eventmeshVersion.split(".");
-        String[] endVersion = this.getEndVersion().split(".");
-        boolean flag = true;
-        for (int i = 0; i < em.length; i++) {
-            if (Integer.valueOf(em[i]) < Integer.valueOf(endVersion[i])) {
-                break;
-            } else if (Integer.valueOf(em[i]) == Integer.valueOf(endVersion[i])) {
-                continue;
-            } else {
-                flag = false;
-                break;
-            }
-        }
-        return flag;
-    }
-
-    public ConfigEntity(ConfigMetadata source) {
-        setConfigName(source.getConfigKey());
-        setConfigValue(source.getConfigValue());
-        setClusterId(source.getClusterId());
-        setEdit(1);
-        setBusinessType("");
-        setInstanceId(source.getInstanceId());
-        setDescription("");
-        setInstanceType(source.getInstanceType());
-        setIsDefault(0);
-        setStartVersion("");
-        setEndVersion("");
-        setEventmeshVersion("");
-        setDiffType(0);
-        setIsModify(0);
-        setStatus(1);
+        return true;
     }
 }

@@ -33,9 +33,8 @@ import lombok.extern.slf4j.Slf4j;
 @Timeout(value = 5)
 public class EtcdSDKCreateOperationTest {
 
-    private final EtcdSDKOperation etcdSDKOperation = new EtcdSDKOperation();
-
     private static final String url = "http://localhost:2379";
+    private final EtcdSDKOperation etcdSDKOperation = new EtcdSDKOperation();
 
     @Test
     void testCreateClient() {

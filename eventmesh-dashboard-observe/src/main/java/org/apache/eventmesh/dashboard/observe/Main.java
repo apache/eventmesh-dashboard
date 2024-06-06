@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.observe;
 
 public class Main {
+
     public static void main(String[] args) {
     }
 }

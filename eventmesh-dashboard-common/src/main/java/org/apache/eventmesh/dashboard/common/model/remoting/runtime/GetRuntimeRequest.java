@@ -17,11 +17,12 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.runtime;
 
-import lombok.Data;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 
+import lombok.Data;
+
 @Data
-public class GetRuntimeRequest  extends GlobalRequest {
+public class GetRuntimeRequest extends GlobalRequest {
 
     private String registryAddress;
 }

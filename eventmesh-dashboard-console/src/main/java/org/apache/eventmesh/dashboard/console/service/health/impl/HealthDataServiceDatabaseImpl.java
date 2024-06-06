@@ -28,6 +28,7 @@ import org.apache.eventmesh.dashboard.console.modle.vo.health.InstanceLivePropor
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +94,7 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
 
 
     @Override
-    public List<HealthCheckResultEntity> getInstanceLiveStatusHistory(Integer type, Long instanceId, Timestamp startTime) {
+    public List<HealthCheckResultEntity> getInstanceLiveStatusHistory(Integer type, Long instanceId, LocalDateTime startTime) {
         HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity();
         healthCheckResultEntity.setType(type);
         healthCheckResultEntity.setTypeId(instanceId);

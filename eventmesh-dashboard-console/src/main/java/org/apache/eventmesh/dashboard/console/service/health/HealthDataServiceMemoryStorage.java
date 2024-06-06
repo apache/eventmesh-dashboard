@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.service.health;
 import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -36,7 +37,7 @@ public class HealthDataServiceMemoryStorage {
     public HealthCheckResultEntity insertHealthCheckResult(HealthCheckResultEntity healthCheckResultEntity) {
         lock.writeLock().lock();
         try {
-            healthCheckResultEntity.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            healthCheckResultEntity.setCreateTime(LocalDateTime.now());
             cache.add(healthCheckResultEntity);
             return healthCheckResultEntity;
         } finally {
@@ -49,7 +50,7 @@ public class HealthDataServiceMemoryStorage {
         lock.writeLock().lock();
         try {
             for (HealthCheckResultEntity entity : healthCheckResultEntityList) {
-                entity.setCreateTime(new Timestamp(System.currentTimeMillis()));
+                entity.setCreateTime(LocalDateTime.now());
                 cache.add(entity);
             }
         } finally {
@@ -63,9 +64,10 @@ public class HealthDataServiceMemoryStorage {
         try {
             List<HealthCheckResultEntity> result = new ArrayList<>();
             for (HealthCheckResultEntity entity : cache) {
-                if (entity.getClusterId().equals(clusterId) && entity.getCreateTime().after(startTime) && entity.getCreateTime().before(endTime)) {
-                    result.add(entity);
-                }
+                result.add(entity);
+                //if (entity.getClusterId().equals(clusterId) && entity.getCreateTime().after(startTime) && entity.getCreateTime().before(endTime)) {
+
+                //}
             }
             return result;
         } finally {

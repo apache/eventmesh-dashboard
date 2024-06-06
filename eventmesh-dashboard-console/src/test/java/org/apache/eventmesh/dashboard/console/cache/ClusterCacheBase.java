@@ -22,6 +22,7 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.junit.jupiter.api.BeforeAll;
 
 public class ClusterCacheBase {
+
     @BeforeAll
     public static void addTestCluster() {
         ClusterEntity clusterEntity = new ClusterEntity();
@@ -36,7 +37,6 @@ public class ClusterCacheBase {
         clusterEntity.setAuthType(0);
         clusterEntity.setRunState(0);
         clusterEntity.setStatus(0);
-        clusterEntity.setStoreType(0);
         clusterEntity.setId(0L);
         clusterEntity.setClusterId(0L);
 

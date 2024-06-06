@@ -41,7 +41,8 @@ public class TopicMapperTest {
     public List<TopicEntity> insertGroupData(String topicName) {
         List<TopicEntity> topicEntities = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            TopicEntity topicEntity = new TopicEntity(null, (long) i, topicName, 10L, 100L, 1, "testTopic", null, null, 0, 0);
+            TopicEntity topicEntity = new TopicEntity();
+            topicEntity.setTopicName(topicName);
             topicMapper.addTopic(topicEntity);
             topicEntities.add(topicEntity);
         }

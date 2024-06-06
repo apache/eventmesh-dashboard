@@ -17,14 +17,14 @@
 
 package org.apache.eventmesh.dashboard.core.store;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKManager;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 import org.apache.eventmesh.dashboard.service.dto.RocketmqProperties;
 import org.apache.eventmesh.dashboard.service.dto.TopicProperties;
 import org.apache.eventmesh.dashboard.service.store.TopicCore;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.TopicFilterType;
 import org.apache.rocketmq.common.constant.PermName;
@@ -35,12 +35,15 @@ import org.apache.rocketmq.remoting.protocol.RequestCode;
 import org.apache.rocketmq.remoting.protocol.body.TopicConfigSerializeWrapper;
 import org.apache.rocketmq.remoting.protocol.header.CreateTopicRequestHeader;
 import org.apache.rocketmq.remoting.protocol.header.DeleteTopicRequestHeader;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -48,16 +51,15 @@ public class RocketmqTopicCore implements TopicCore {
 
     private final RocketmqProperties rocketmqProperties;
 
+    public RocketmqTopicCore(RocketmqProperties rocketmqProperties) {
+        this.rocketmqProperties = rocketmqProperties;
+    }
+
     private RemotingClient createRemotingClient(String brokerUrl) {
         CreateSDKConfig createSDKConfig = () -> brokerUrl;
 
         SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, createSDKConfig);
         return (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, brokerUrl);
-    }
-
-
-    public RocketmqTopicCore(RocketmqProperties rocketmqProperties) {
-        this.rocketmqProperties = rocketmqProperties;
     }
 
     @Override

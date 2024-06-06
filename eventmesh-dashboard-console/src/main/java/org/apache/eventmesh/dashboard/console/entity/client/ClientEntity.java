@@ -93,10 +93,6 @@ public class ClientEntity extends BaseEntity {
      */
     private Timestamp endTime;
 
-    public void setStatusEntity(RecordStatus status) {
-        this.status = status.getNumber();
-    }
-
     public ClientEntity(ClientMetadata source) {
         setName(source.getName());
         setPlatform(source.getPlatform());
@@ -109,6 +105,10 @@ public class ClientEntity extends BaseEntity {
         setDescription("");
         setConfigIds("");
         setStatus(1);
+    }
+
+    public void setStatusEntity(RecordStatus status) {
+        this.status = status.getNumber();
     }
 }
     

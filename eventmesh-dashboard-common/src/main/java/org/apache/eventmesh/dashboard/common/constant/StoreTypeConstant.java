@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.common.constant;
 
 public class StoreTypeConstant {
+
     public static final String STORE_TYPE_TYPE_UNKNOWN = "unknown";
     public static final String STORE_TYPE_STANDALONE = "standalone";
     public static final String STORE_TYPE_REDIS = "redis";

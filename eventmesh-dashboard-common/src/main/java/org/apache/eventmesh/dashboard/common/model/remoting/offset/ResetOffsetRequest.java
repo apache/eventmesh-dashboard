@@ -26,15 +26,10 @@ public class ResetOffsetRequest {
     Long timestamp;
 
     Long offset;
-
-    private String topic;
-
-    private String bootstrapServers;
-
-    private Integer partitionId;
-
     ResetOffsetMode resetOffsetMode;
-
+    private String topic;
+    private String bootstrapServers;
+    private Integer partitionId;
     private String groupName;
 
     public enum ResetOffsetMode {

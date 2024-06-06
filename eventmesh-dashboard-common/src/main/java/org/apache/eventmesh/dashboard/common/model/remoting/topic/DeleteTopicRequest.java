@@ -28,5 +28,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteTopicRequest {
+
     TopicMetadata topicMetadata;
 }

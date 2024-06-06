@@ -47,6 +47,7 @@ public class AdminProperties {
 
         @Data
         public static class NacosProperties {
+
             private String addr = "127.0.0.1:8848";
             private String namespace = "";
             private boolean authEnabled = false;
@@ -59,6 +60,7 @@ public class AdminProperties {
 
         @Data
         public static class EtcdProperties {
+
             private String addr;
         }
     }
@@ -72,6 +74,7 @@ public class AdminProperties {
 
         @Data
         public static class RocketMQProperties {
+
             private String namesrvAddr;
             private String clusterName = "";
             private String accessKey = "";
@@ -80,6 +83,7 @@ public class AdminProperties {
 
         @Data
         public static class KafkaProperties {
+
             private String namesrvAddr;
             private int partitions = 1;
             private int replicationFactors = 1;

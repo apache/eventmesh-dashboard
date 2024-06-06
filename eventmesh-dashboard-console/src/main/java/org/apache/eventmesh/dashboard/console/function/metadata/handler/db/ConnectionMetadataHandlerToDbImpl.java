@@ -19,13 +19,14 @@ package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConnectionMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 import org.apache.eventmesh.dashboard.console.entity.client.ClientEntity;
 import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
-import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.client.ClientDataService;
 import org.apache.eventmesh.dashboard.console.service.connection.ConnectionDataService;
 import org.apache.eventmesh.dashboard.console.service.connector.ConnectorDataService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.util.List;
 import java.util.Objects;
@@ -150,5 +151,15 @@ public class ConnectionMetadataHandlerToDbImpl implements MetadataHandler<Connec
     @Override
     public void deleteMetadata(ConnectionMetadata meta) {
 
+    }
+
+    @Override
+    public List<ConnectionMetadata> getData() {
+        return null;
+    }
+
+    @Override
+    public List<ConnectionMetadata> getData(GlobalRequest globalRequest) {
+        return null;
     }
 }

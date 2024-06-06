@@ -20,7 +20,6 @@ package org.apache.eventmesh.dashboard.console.spring.support;
 import org.apache.eventmesh.dashboard.console.config.FunctionManagerConfigs;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.function.health.HealthService;
-import org.apache.eventmesh.dashboard.console.function.metadata.MetadataManager;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -42,10 +41,6 @@ public class FunctionManager {
     @Getter
     private HealthService healthService;
 
-    @Setter
-    @Getter
-    private MetadataManager metadataManager;
-
     public void initFunctionManager() {
         //Health Check
         healthService = new HealthService();
@@ -54,10 +49,6 @@ public class FunctionManager {
             configs.getHealthCheck().getUpdateConfig().getPeriod(), properties.getDataServiceContainer());
         healthService.startScheduledExecution(configs.getHealthCheck().getDoCheck().getInitialDelay(),
             configs.getHealthCheck().getDoCheck().getPeriod());
-
-        metadataManager = new MetadataManager();
-        metadataManager.setUpSyncMetadataManager(properties.getSyncDataServiceWrapper(), properties.getMetadataHandlerWrapper());
-        metadataManager.init(configs.getSync().getInitialDelay(), configs.getSync().getPeriod());
     }
 
 }

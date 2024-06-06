@@ -31,8 +31,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class, in conjunction with {@linkplain Status Status} and {@link BaseException},
- * collectively implements customized error reporting.
+ * This class, in conjunction with {@linkplain Status Status} and {@link BaseException}, collectively implements customized error reporting.
  */
 
 @Slf4j

@@ -27,15 +27,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RuntimeCache {
 
     private static final RuntimeCache INSTANCE = new RuntimeCache();
-
-    public static final RuntimeCache getInstance() {
-        return INSTANCE;
-    }
-
     // ip:port -> runtime
     private Map<String, RuntimeEntity> runtimeMap = new ConcurrentHashMap<>();
 
     private RuntimeCache() {
+    }
+
+    public static final RuntimeCache getInstance() {
+        return INSTANCE;
     }
 
     public void addRuntime(RuntimeEntity runtimeEntity) {

@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.dashboard.console;
 
-import static org.mockito.ArgumentMatchers.any;
-
 import org.apache.eventmesh.dashboard.console.service.registry.RegistryDataService;
 
 import java.util.Objects;
@@ -60,7 +58,7 @@ class EventMeshDashboardApplicationTest {
         //To make a test, add cluster with registry address ip:port in web endpoint
 
         if (Objects.equals(System.getenv("APPLICATION_TEST"), "on")) {
-            EventMeshDashboardApplication.main(new String[]{});
+            EventMeshDashboardApplication.main(new String[] {});
             Thread.sleep(1000 * 60 * 10);
         }
     }

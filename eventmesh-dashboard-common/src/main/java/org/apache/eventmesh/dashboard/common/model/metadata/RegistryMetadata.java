@@ -17,10 +17,10 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import lombok.EqualsAndHashCode;
 import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 

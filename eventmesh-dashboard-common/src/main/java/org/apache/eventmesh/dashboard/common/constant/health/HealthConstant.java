@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.common.constant.health;
 
 public class HealthConstant {
+
     public static final String NEW_LINE_ENDING = "\n";
 
     public static final String RUNTIME_CHECK_TOPIC = "eventmesh-dashboard-healthcheck-topic";

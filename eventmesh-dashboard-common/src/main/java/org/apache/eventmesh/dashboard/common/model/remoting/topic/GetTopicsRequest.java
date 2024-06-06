@@ -17,10 +17,11 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 
 @Data
 @NoArgsConstructor

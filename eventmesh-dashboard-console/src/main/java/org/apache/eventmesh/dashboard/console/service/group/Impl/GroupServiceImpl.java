@@ -24,7 +24,7 @@ import org.apache.eventmesh.dashboard.console.mapper.group.OprGroupMapper;
 import org.apache.eventmesh.dashboard.console.service.group.GroupService;
 import org.apache.eventmesh.dashboard.console.service.groupmember.GroupMemberService;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +34,10 @@ import org.springframework.stereotype.Service;
 public class GroupServiceImpl implements GroupService {
 
     @Autowired
-    OprGroupMapper oprGroupMapper;
+    private OprGroupMapper oprGroupMapper;
 
     @Autowired
-    GroupMemberService groupMemberService;
+    private GroupMemberService groupMemberService;
 
     @Override
     public List<GroupEntity> selectAll() {
@@ -88,7 +88,7 @@ public class GroupServiceImpl implements GroupService {
         groupEntity1.setMembers(groupMemberEntity.getId() + "" + "," + groupEntity1.getMembers());
         //Concatenate the members of the group
         groupEntity1.setMemberCount(groupEntity1.getMemberCount() + 1);
-        groupEntity1.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        groupEntity1.setUpdateTime(LocalDateTime.now());
         oprGroupMapper.updateGroup(groupEntity1);
         return 1;
         //Modify the group member information
@@ -104,7 +104,7 @@ public class GroupServiceImpl implements GroupService {
         //^Obtain the group to which the member belongs
         groupEntity1.setMembers(groupEntity1.getMembers().replaceAll(groupMemberEntity.getId() + "" + ",", ""));
         groupEntity1.setMemberCount(groupEntity1.getMemberCount() - 1);
-        groupEntity1.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        groupEntity1.setUpdateTime(LocalDateTime.now());
         oprGroupMapper.updateGroup(groupEntity1);
         return 1;
     }

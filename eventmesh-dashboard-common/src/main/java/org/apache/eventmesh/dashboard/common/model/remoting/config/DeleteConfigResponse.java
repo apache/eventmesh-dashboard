@@ -18,4 +18,5 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.config;
 
 public class DeleteConfigResponse {
+
 }

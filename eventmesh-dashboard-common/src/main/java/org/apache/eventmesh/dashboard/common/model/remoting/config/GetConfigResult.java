@@ -28,5 +28,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 public class GetConfigResult {
+
     CompletableFuture<GetConfigResponse> getConfigResponseFuture;
 }

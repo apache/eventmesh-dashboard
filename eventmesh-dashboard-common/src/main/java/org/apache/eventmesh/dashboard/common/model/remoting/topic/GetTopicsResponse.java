@@ -18,7 +18,6 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
 
-
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 
 import java.util.List;
@@ -31,5 +30,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetTopicsResponse {
+
     List<TopicMetadata> topicMetadataList;
 }

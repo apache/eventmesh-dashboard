@@ -17,20 +17,14 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
 @EqualsAndHashCode(callSuper = true, exclude = "status")
 public class ClusterEntity extends BaseEntity {
 
@@ -60,22 +54,4 @@ public class ClusterEntity extends BaseEntity {
 
     private Integer status;
 
-
-    public ClusterEntity(ClusterMetadata source) {
-        if (source.getClusterName() != null && !source.getClusterName().isEmpty()) {
-            setAuthType(source.getAuthType());
-            setBootstrapServers(source.getBootstrapServers());
-            setClientProperties(source.getClientProperties());
-            setRegistryAddress(source.getRegistryAddress());
-            setVersion(source.getEventmeshVersion());
-            setJmxProperties(source.getJmxProperties());
-            setRegProperties(source.getRegProperties());
-            setDescription(source.getDescription());
-            setAuthType(source.getAuthType());
-            setRunState(source.getRunState());
-            setName(source.getClusterName());
-        } else {
-            throw new RuntimeException("cluster name is empty");
-        }
-    }
 }

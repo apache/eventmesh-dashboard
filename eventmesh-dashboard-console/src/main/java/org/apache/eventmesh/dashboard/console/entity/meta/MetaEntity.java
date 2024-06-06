@@ -64,10 +64,6 @@ public class MetaEntity extends BaseEntity {
     @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")
     private Integer status;
 
-    public void setStatusEnum(RecordStatus statusEnum) {
-        this.status = statusEnum.getNumber();
-    }
-
     public MetaEntity(RegistryMetadata source) {
         setHost(source.getHost());
         setPort(source.getPort());
@@ -79,5 +75,9 @@ public class MetaEntity extends BaseEntity {
         setStatus(RecordStatus.ACTIVE.getNumber());
         setType(source.getType());
         setUsername(source.getUsername());
+    }
+
+    public void setStatusEnum(RecordStatus statusEnum) {
+        this.status = statusEnum.getNumber();
     }
 }

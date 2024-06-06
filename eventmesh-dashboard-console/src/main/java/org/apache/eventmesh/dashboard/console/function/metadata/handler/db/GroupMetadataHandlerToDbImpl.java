@@ -18,12 +18,11 @@
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 import org.apache.eventmesh.dashboard.console.service.group.GroupService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,19 +35,29 @@ public class GroupMetadataHandlerToDbImpl implements MetadataHandler<GroupMetada
 
     @Override
     public void addMetadata(GroupMetadata meta) {
-        meta.setMemberCount(0);
+       /* meta.setMemberCount(0);
         GroupEntity groupEntity = new GroupEntity(meta);
-        groupService.addGroup(groupEntity);
+        groupService.addGroup(groupEntity);*/
     }
 
     @Override
     public void addMetadata(List<GroupMetadata> metadata) {
-        List<GroupEntity> entityList = metadata.stream().map(GroupEntity::new).collect(Collectors.toList());
-        groupService.batchInsert(entityList);
+        /*List<GroupEntity> entityList = metadata.stream().map(GroupEntity::new).collect(Collectors.toList());
+        groupService.batchInsert(entityList);*/
     }
 
     @Override
     public void deleteMetadata(GroupMetadata meta) {
 
+    }
+
+    @Override
+    public List<GroupMetadata> getData() {
+        return null;
+    }
+
+    @Override
+    public List<GroupMetadata> getData(GlobalRequest globalRequest) {
+        return null;
     }
 }

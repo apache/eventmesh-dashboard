@@ -17,15 +17,16 @@
 
 package org.apache.eventmesh.dashboard.console.entity.base;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * Base Entity provide some basic fields that every Eventmesh Dashboard Entity would have

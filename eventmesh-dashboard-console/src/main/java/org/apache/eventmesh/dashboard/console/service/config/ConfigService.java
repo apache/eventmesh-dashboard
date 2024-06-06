@@ -54,5 +54,4 @@ public interface ConfigService {
     Map<String, String> selectDefaultConfig(String version, Long instanceId, Integer instanceType);
 
 
-
 }

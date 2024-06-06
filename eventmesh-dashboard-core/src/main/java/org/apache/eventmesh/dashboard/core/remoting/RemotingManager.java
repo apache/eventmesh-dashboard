@@ -1,7 +1,22 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.eventmesh.dashboard.core.remoting;
 
-import lombok.Data;
-import lombok.Getter;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.RemotingType;
@@ -40,9 +55,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import lombok.Data;
+import lombok.Getter;
+
 
 /**
- * @author hahaha
+ *
  */
 public class RemotingManager {
 
@@ -63,23 +81,23 @@ public class RemotingManager {
      */
     private final Map<Long, ColonyDO> colonyDOMap = new HashMap<>();
 
-    private AtomicBoolean loading = new AtomicBoolean(true);
+    private final AtomicBoolean loading = new AtomicBoolean(true);
 
 
     {
         for (RemotingType remotingType : RemotingType.values()) {
             remotingServiceClasses.put(remotingType, new ArrayList<>());
         }
-        this.registerService(RemotingType.ROCKETMQ, RocketMQAclRemotingService.class, RocketMQConfigRemotingService.class, RocketMQClientRemotingService.class
-                , RocketMQGroupRemotingService.class, RocketMQOffsetRemotingService.class, RocketMQSubscriptionRemotingService.class
-                , RocketMQTopicRemotingService.class, RocketMQUserRemotingService.class);
+        this.registerService(RemotingType.ROCKETMQ, RocketMQAclRemotingService.class, RocketMQConfigRemotingService.class,
+            RocketMQClientRemotingService.class, RocketMQGroupRemotingService.class, RocketMQOffsetRemotingService.class,
+            RocketMQSubscriptionRemotingService.class, RocketMQTopicRemotingService.class, RocketMQUserRemotingService.class);
 
-        this.registerService(RemotingType.EVENT_MESH_RUNTIME, RocketMQAclRemotingService.class, RocketMQConfigRemotingService.class, RocketMQClientRemotingService.class
-                , RocketMQGroupRemotingService.class, RocketMQOffsetRemotingService.class, RocketMQSubscriptionRemotingService.class
-                , RocketMQTopicRemotingService.class, RocketMQUserRemotingService.class);
+        this.registerService(RemotingType.EVENT_MESH_RUNTIME, RocketMQAclRemotingService.class, RocketMQConfigRemotingService.class,
+            RocketMQClientRemotingService.class, RocketMQGroupRemotingService.class, RocketMQOffsetRemotingService.class,
+            RocketMQSubscriptionRemotingService.class, RocketMQTopicRemotingService.class, RocketMQUserRemotingService.class);
 
         RemotingServiceHandler remotingServiceHandler = new RemotingServiceHandler();
-        Class<?>[] clazzList = new Class[]{RemotingIntegrationService.class};
+        Class<?>[] clazzList = new Class[] {RemotingIntegrationService.class};
         proxyObject = Proxy.newProxyInstance(this.getClass().getClassLoader(), clazzList, remotingServiceHandler);
     }
 
@@ -90,7 +108,7 @@ public class RemotingManager {
 
 
     public void registerColony(ColonyDO colonyDO) throws Exception {
-        if (loading.get() == true) {
+        if (loading.get()) {
             return;
         }
 
@@ -132,7 +150,8 @@ public class RemotingManager {
     }
 
     public RemotingWrapper getMainRemotingWrapper(ColonyDO colonyDO) {
-        Long clusterId = colonyDO.getClusterDO().getClusterInfo().getClusterType().isMainCluster() ? colonyDO.getClusterId() : colonyDO.getSuperiorId();
+        Long clusterId =
+            colonyDO.getClusterDO().getClusterInfo().getClusterType().isMainCluster() ? colonyDO.getClusterId() : colonyDO.getSuperiorId();
         if (Objects.isNull(clusterId)) {
             return null;
         }
@@ -140,7 +159,8 @@ public class RemotingManager {
     }
 
     public ColonyDO getMainColonyDO(ColonyDO colonyDO) {
-        Long clusterId = colonyDO.getClusterDO().getClusterInfo().getClusterType().isMainCluster() ? colonyDO.getClusterId() : colonyDO.getSuperiorId();
+        Long clusterId =
+            colonyDO.getClusterDO().getClusterInfo().getClusterType().isMainCluster() ? colonyDO.getClusterId() : colonyDO.getSuperiorId();
         return colonyDOMap.get(clusterId);
     }
 
@@ -249,21 +269,22 @@ public class RemotingManager {
     public List<RemotingWrapper> getRocketMQClusterDO(ClusterTrusteeshipType... clusterTrusteeshipType) {
         return this.filterer(ClusterType.STORAGE_ROCKETMQ, clusterTrusteeshipType);
     }
+
     public List<RemotingWrapper> getStorageCluster(ClusterTrusteeshipType... clusterTrusteeshipType) {
         List<RemotingWrapper> list = new ArrayList<>();
-        for(ClusterType clusterType : ClusterType.STORAGE_TYPES){
+        for (ClusterType clusterType : ClusterType.STORAGE_TYPES) {
             list.addAll(this.filterer(clusterType, clusterTrusteeshipType));
         }
         return list;
     }
 
 
-    public boolean isClusterTrusteeshipType(Long clusterId, ClusterTrusteeshipType clusterTrusteeshipType){
-        ColonyDO colonyDO = this.colonyDOMap.get(clusterId  );
-        if(Objects.isNull(colonyDO)){
+    public boolean isClusterTrusteeshipType(Long clusterId, ClusterTrusteeshipType clusterTrusteeshipType) {
+        ColonyDO colonyDO = this.colonyDOMap.get(clusterId);
+        if (Objects.isNull(colonyDO)) {
             return false;
         }
-        return Objects.equals(colonyDO.getClusterDO().getClusterInfo().getTrusteeshipType() , clusterTrusteeshipType);
+        return Objects.equals(colonyDO.getClusterDO().getClusterInfo().getTrusteeshipType(), clusterTrusteeshipType);
     }
 
 
@@ -293,18 +314,18 @@ public class RemotingManager {
         if (superclass instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) superclass;
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-            executeClass = (Class<GlobalRequest>)actualTypeArguments[0];
-            globalRequestClass = (Class<GlobalRequest>)actualTypeArguments[1];
+            executeClass = (Class<GlobalRequest>) actualTypeArguments[0];
+            globalRequestClass = (Class<GlobalRequest>) actualTypeArguments[1];
         }
-        RemotingRequestWrapper<Object,Object>  remotingRequestWrapper1 = (RemotingRequestWrapper<Object,Object>)remotingRequestWrapper;
+        RemotingRequestWrapper<Object, Object> remotingRequestWrapper1 = (RemotingRequestWrapper<Object, Object>) remotingRequestWrapper;
         for (RemotingWrapper remotingWrapper : remotingWrapperList) {
             try {
                 GlobalRequest globalRequest = globalRequestClass.newInstance();
                 globalRequest.setClusterId(remotingWrapper.getColonyDO().getClusterId());
-                GlobalResult<Object> globalResult = remotingRequestWrapper1.request(globalRequest,executeClass);
-                if(globalResult.getData() instanceof  List){
-                    resultData.addAll((List<Object>)globalResult.getData());
-                }else{
+                GlobalResult<Object> globalResult = remotingRequestWrapper1.request(globalRequest, executeClass);
+                if (globalResult.getData() instanceof List) {
+                    resultData.addAll((List<Object>) globalResult.getData());
+                } else {
                     resultData.add(globalResult.getData());
                 }
             } catch (Exception e) {
@@ -316,13 +337,18 @@ public class RemotingManager {
 
     }
 
-    public interface RemotingRequestWrapper<T,RE> {
+    /**
+     * @param <T>
+     * @param <RE>
+     */
+    public interface RemotingRequestWrapper<T, RE> {
 
-        GlobalResult request(T t,RE key);
+        GlobalResult request(T t, RE key);
     }
 
     @Data
     public static class RemotingWrapper {
+
         private ColonyDO colonyDO;
 
         private Map<Class<?>, Object> object = new HashMap<>();
@@ -342,7 +368,7 @@ public class RemotingManager {
             Class<?> declaringClass = method.getDeclaringClass();
             Object object = remotingWrapper.getObject().get(declaringClass);
             if (Objects.isNull(object)) {
-
+                return null;
             }
 
             Method currentMethod = object.getClass().getMethod(method.getName(), method.getParameterTypes());

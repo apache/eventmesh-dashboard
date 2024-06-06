@@ -18,40 +18,26 @@
 package org.apache.eventmesh.dashboard.service.remoting;
 
 import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigResponse;
-import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.DeleteConfigRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.config.DeleteConfigResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.UpdateConfigRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.config.UpdateConfigResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopicRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopicResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.DeleteTopicRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.DeleteTopicResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
 
 /**
- * A remoting service for config operations. Getting configs from different sources
- * 1. runtime
- * 2. RocketMQ
- * 3. connector to db
+ * A remoting service for config operations. Getting configs from different sources 1. runtime 2. RocketMQ 3. connector to db
  */
 public interface ConfigRemotingService {
 
 
-
     BaseGlobalResult addConfig(AddConfigRequest addConfigRequest);
 
-    default BaseGlobalResult updateConfig(UpdateConfigRequest updateConfigRequest){
+    default BaseGlobalResult updateConfig(UpdateConfigRequest updateConfigRequest) {
         return addConfig(updateConfigRequest);
     }
 
-    default BaseGlobalResult deleteConfig(DeleteConfigRequest deleteConfigRequest){
+    default BaseGlobalResult deleteConfig(DeleteConfigRequest deleteConfigRequest) {
         return addConfig(deleteConfigRequest);
     }
 

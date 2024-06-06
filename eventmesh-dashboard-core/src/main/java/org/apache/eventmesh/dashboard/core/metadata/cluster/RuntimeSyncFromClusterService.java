@@ -17,20 +17,21 @@
 
 package org.apache.eventmesh.dashboard.core.metadata.cluster;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeRequest;
 import org.apache.eventmesh.dashboard.service.remoting.RuntimeRemotingService;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Service
-public class RuntimeSyncFromClusterService extends AbstractMetadataHandler<RuntimeMetadata, RuntimeRemotingService, GetRuntimeRequest>{
-
+public class RuntimeSyncFromClusterService extends AbstractMetadataHandler<RuntimeMetadata, RuntimeRemotingService, GetRuntimeRequest> {
 
 
     @Override
@@ -45,13 +46,13 @@ public class RuntimeSyncFromClusterService extends AbstractMetadataHandler<Runti
 
     @Override
     public List<RuntimeMetadata> getData(GlobalRequest globalRequest) {
-        GetRuntimeRequest getRuntimeRequest =  new GetRuntimeRequest();
+        GetRuntimeRequest getRuntimeRequest = new GetRuntimeRequest();
         getRuntimeRequest.setClusterId(globalRequest.getClusterId());
-        return (List<RuntimeMetadata>)this.request(this.request,getRuntimeRequest).getData();
+        return (List<RuntimeMetadata>) this.request(this.request, getRuntimeRequest).getData();
     }
 
     @Override
-    public GlobalResult request( RuntimeRemotingService runtimeRemotingService,GetRuntimeRequest key) {
+    public GlobalResult request(RuntimeRemotingService runtimeRemotingService, GetRuntimeRequest key) {
         return runtimeRemotingService.getRuntimeMetadata(key);
     }
 }

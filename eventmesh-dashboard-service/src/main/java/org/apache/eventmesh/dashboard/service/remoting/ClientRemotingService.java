@@ -23,10 +23,10 @@ import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
 import java.util.List;
 
 /**
- * A remoting service for client operations.
-    Not implemented in eventmesh by now
+ * A remoting service for client operations. Not implemented in eventmesh by now
  */
 public interface ClientRemotingService {
+
     // get consumer only for now
     List<ClientMetadata> getClientList();
 }

@@ -24,6 +24,7 @@ import org.apache.eventmesh.dashboard.console.service.log.LogService;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -99,7 +100,7 @@ public class OprLog implements Ordered, ApplicationContextAware {
         logEntity.setOperationType(declaredAnnotation.OprType());
         logEntity.setTargetType(declaredAnnotation.OprTarget());
         logEntity.setState(1);
-        logEntity.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        logEntity.setCreateTime(LocalDateTime.now());
         return logEntity;
     }
 

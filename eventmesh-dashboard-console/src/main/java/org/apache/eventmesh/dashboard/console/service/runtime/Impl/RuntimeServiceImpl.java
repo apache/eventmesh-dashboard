@@ -68,7 +68,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public List<RuntimeEntity> selectNewlyIncreased(RuntimeEntity runtimeEntity){
+    public List<RuntimeEntity> selectNewlyIncreased(RuntimeEntity runtimeEntity) {
         return null;
     }
 

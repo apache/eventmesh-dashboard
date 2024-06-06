@@ -47,37 +47,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SDKManager {
 
-    private static volatile SDKManager INSTANCE = null;
-
-    public static synchronized SDKManager getInstance() {
-        if (INSTANCE == null) {
-            synchronized (SDKManager.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new SDKManager();
-                }
-            }
-        }
-        return INSTANCE;
-    }
-
     /**
      * inner key is the unique key of a client, such as (ip + port) they are defined in CreateClientConfig
      * <p>
-     * key: SDKTypeEnum
-     * value: A map collection is used with key being (ip+port) and value being client.
+     * key: SDKTypeEnum value: A map collection is used with key being (ip+port) and value being client.
+     *
      * @see CreateSDKConfig#getUniqueKey()
      */
     private static final Map<SDKTypeEnum, Map<String, Object>> clientMap = new ConcurrentHashMap<>();
-
     /**
      * Initialise the SDKOperation object instance according to SDKTypeEnum.
      * <p>
-     * key: SDKTypeEnum
-     * value: SDKOperation
+     * key: SDKTypeEnum value: SDKOperation
+     *
      * @see SDKTypeEnum
      * @see SDKOperation
      */
     private static final Map<SDKTypeEnum, SDKOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
+    private static volatile SDKManager INSTANCE = null;
 
     // register all client create operation
     static {
@@ -91,7 +78,7 @@ public class SDKManager {
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, new RocketMQRemotingSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_PRODUCER, new RocketMQProduceSDKOperation());
         clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_CONSUMER, new RocketMQPushConsumerSDKOperation());
-        clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_ADMIN , new RocketMQAdminOperation());
+        clientCreateOperationMap.put(SDKTypeEnum.STORAGE_ROCKETMQ_ADMIN, new RocketMQAdminOperation());
 
         // nacos
         clientCreateOperationMap.put(SDKTypeEnum.META_NACOS, new NacosSDKOperation());
@@ -119,6 +106,17 @@ public class SDKManager {
     }
 
     private SDKManager() {
+    }
+
+    public static synchronized SDKManager getInstance() {
+        if (INSTANCE == null) {
+            synchronized (SDKManager.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new SDKManager();
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     /**

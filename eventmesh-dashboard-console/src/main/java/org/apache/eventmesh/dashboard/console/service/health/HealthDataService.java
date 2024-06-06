@@ -21,6 +21,7 @@ import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEnt
 import org.apache.eventmesh.dashboard.console.modle.vo.health.InstanceLiveProportionVo;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public interface HealthDataService {
 
     InstanceLiveProportionVo getInstanceLiveProportion(Long clusterId, Integer instanceType);
 
-    List<HealthCheckResultEntity> getInstanceLiveStatusHistory(Integer type, Long clusterId, Timestamp startTime);
+    List<HealthCheckResultEntity> getInstanceLiveStatusHistory(Integer type, Long clusterId, LocalDateTime startTime);
 
     HealthCheckResultEntity insertHealthCheckResult(HealthCheckResultEntity healthCheckResultEntity);
 

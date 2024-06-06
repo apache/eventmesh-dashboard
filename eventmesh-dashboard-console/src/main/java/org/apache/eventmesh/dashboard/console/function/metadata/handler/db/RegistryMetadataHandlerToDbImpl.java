@@ -18,9 +18,10 @@
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.RegistryMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 import org.apache.eventmesh.dashboard.console.entity.meta.MetaEntity;
-import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.registry.RegistryDataService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,5 +54,15 @@ public class RegistryMetadataHandlerToDbImpl implements MetadataHandler<Registry
     @Override
     public void deleteMetadata(RegistryMetadata meta) {
         registryDataService.deactivate(new MetaEntity(meta));
+    }
+
+    @Override
+    public List<RegistryMetadata> getData() {
+        return null;
+    }
+
+    @Override
+    public List<RegistryMetadata> getData(GlobalRequest globalRequest) {
+        return null;
     }
 }

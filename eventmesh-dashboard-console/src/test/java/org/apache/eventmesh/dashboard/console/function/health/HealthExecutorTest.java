@@ -30,8 +30,6 @@ import org.apache.eventmesh.dashboard.console.function.health.callback.HealthChe
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
-import org.apache.eventmesh.dashboard.console.spring.support.FunctionManager;
-import org.apache.eventmesh.dashboard.console.spring.support.FunctionManagerLoader;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -45,7 +43,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -58,20 +55,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Timeout(value = 5)
 class HealthExecutorTest {
 
-    private HealthExecutor healthExecutor = new HealthExecutor();
-    private CheckResultCache memoryCache = CheckResultCache.getINSTANCE();
-
     @Autowired
     HealthDataService healthDataService;
-
     @Mock
     AbstractHealthCheckService successHealthCheckService;
-
     @Mock
     AbstractHealthCheckService failHealthCheckService;
-
     @Mock
     AbstractHealthCheckService timeoutHealthCheckService;
+    private HealthExecutor healthExecutor = new HealthExecutor();
+    private CheckResultCache memoryCache = CheckResultCache.getINSTANCE();
 
     @BeforeEach
     public void initMock() {

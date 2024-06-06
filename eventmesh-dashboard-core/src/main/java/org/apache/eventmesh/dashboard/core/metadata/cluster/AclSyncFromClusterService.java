@@ -17,18 +17,20 @@
 
 package org.apache.eventmesh.dashboard.core.metadata.cluster;
 
-import lombok.Setter;
 import org.apache.eventmesh.dashboard.common.model.metadata.AclMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.GetAclsRequest;
 import org.apache.eventmesh.dashboard.service.remoting.AclRemotingService;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+import lombok.Setter;
+
 @Service
-public class AclSyncFromClusterService extends AbstractMetadataHandler<AclMetadata,AclRemotingService,GetAclsRequest> {
+public class AclSyncFromClusterService extends AbstractMetadataHandler<AclMetadata, AclRemotingService, GetAclsRequest> {
 
     @Setter
     private AclRemotingService aclRemotingService;
@@ -44,12 +46,11 @@ public class AclSyncFromClusterService extends AbstractMetadataHandler<AclMetada
     }
 
 
-
     @Override
     public List<AclMetadata> getData(GlobalRequest globalRequest) {
         GetAclsRequest getAclsRequest = new GetAclsRequest();
         getAclsRequest.setClusterId(globalRequest.getClusterId());
-        return (List<AclMetadata>)this.request(this.request,getAclsRequest).getData();
+        return (List<AclMetadata>) this.request(this.request, getAclsRequest).getData();
     }
 
 

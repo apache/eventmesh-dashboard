@@ -70,8 +70,7 @@ public class Result<T> {
     }
 
     /**
-     * The request is valid and the result is returned in {@link ResponseEntity}.
-     * Logic issues should use 422 Unprocessable Entity instead of 200 OK.
+     * The request is valid and the result is returned in {@link ResponseEntity}. Logic issues should use 422 Unprocessable Entity instead of 200 OK.
      */
     public static <T> ResponseEntity<Result<T>> ok() {
         return ResponseEntity.ok(new Result<>(new StatusMessage(Status.SUCCESS)));
@@ -126,8 +125,7 @@ public class Result<T> {
         }
 
         /**
-         * Only recommended for returning successful results,
-         * the stack trace cannot be displayed when returning unsuccessful results.
+         * Only recommended for returning successful results, the stack trace cannot be displayed when returning unsuccessful results.
          */
         public StatusMessage(Status status) {
             this.status = status.name();

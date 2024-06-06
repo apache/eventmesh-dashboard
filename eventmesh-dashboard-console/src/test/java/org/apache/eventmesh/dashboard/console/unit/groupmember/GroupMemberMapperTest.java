@@ -41,7 +41,13 @@ public class GroupMemberMapperTest {
     public List<GroupMemberEntity> insertGroupData(String topicName, String groupName) {
         List<GroupMemberEntity> groupMemberEntities = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            GroupMemberEntity groupMemberEntity = new GroupMemberEntity(null, (long) i, topicName, groupName, "admin", "active", null, null, 0);
+            GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
+            groupMemberEntity.setClusterId((long)i);
+            groupMemberEntity.setTopicName(topicName);
+            groupMemberEntity.setGroupName(groupName);
+            groupMemberEntity.setEventMeshUser("admin");
+            groupMemberEntity.setState("active");
+            groupMemberEntity.setStatus(0);
             groupMemberMapper.addGroupMember(groupMemberEntity);
             groupMemberEntities.add(groupMemberEntity);
         }

@@ -26,11 +26,11 @@ import org.apache.eventmesh.dashboard.core.function.SDK.SDKManager;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqConfig;
 
-import org.apache.rocketmq.common.protocol.RequestCode;
 import org.apache.rocketmq.remoting.InvokeCallback;
 import org.apache.rocketmq.remoting.RemotingClient;
 import org.apache.rocketmq.remoting.netty.ResponseFuture;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
+import org.apache.rocketmq.remoting.protocol.RequestCode;
 
 import java.util.Objects;
 

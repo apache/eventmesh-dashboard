@@ -21,7 +21,7 @@ import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEnt
 import org.apache.eventmesh.dashboard.console.modle.vo.health.InstanceLiveProportionVo;
 import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +36,7 @@ public class HealthController {
 
     @GetMapping("/cluster/health/getHistoryLiveStatus")
     public List<HealthCheckResultEntity> getHistoryLiveStatusById(Integer type, Long instanceId, String startTime) {
-        Timestamp timestamp = Timestamp.valueOf(startTime);
-        return healthDataService.getInstanceLiveStatusHistory(type, instanceId, timestamp);
+        return healthDataService.getInstanceLiveStatusHistory(type, instanceId, LocalDateTime.parse(startTime));
     }
 
     @GetMapping("/cluster/health/getInstanceLiveProportion")

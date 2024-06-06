@@ -54,7 +54,7 @@ public class RuntimeSDKOperation extends AbstractSDKOperation<RuntimeSDKWrapper>
         final String protocolName = ((CreateRuntimeConfig) clientConfig).getProtocolName();
         final String clientType = ((CreateRuntimeConfig) clientConfig).getClientType();
 
-        SimpleEntry<String, CloudEventTCPClient> cloudSimpleEntry =  null;
+        SimpleEntry<String, CloudEventTCPClient> cloudSimpleEntry = null;
         SimpleEntry<String, EventMeshMessageTCPClient> eventMeshMessageSimpleEntry = null;
         SimpleEntry<String, OpenMessageTCPClient> openMessageSimpleEntry = null;
 

@@ -32,7 +32,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 
-
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:connection-test.sql")

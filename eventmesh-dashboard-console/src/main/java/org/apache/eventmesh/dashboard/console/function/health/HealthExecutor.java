@@ -36,17 +36,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HealthExecutor {
 
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
     @Setter
     private HealthDataService dataService;
-
     /**
      * memory cache is used to store real-time health check result.
      */
     @Getter
     @Setter
     private CheckResultCache memoryCache;
-
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     /**
      * execute function is where health check services work.
@@ -93,8 +91,8 @@ public class HealthExecutor {
     }
 
     /**
-     * this function should be called before any actual execute behaviour.<p> It will check the execution result of the last check cycle in the
-     * memory cache, set tasks that haven't finished status to time out and update the database.
+     * this function should be called before any actual execute behaviour.<p> It will check the execution result of the last check cycle in the memory
+     * cache, set tasks that haven't finished status to time out and update the database.
      */
     public void startExecute() {
         ArrayList<HealthCheckResultEntity> resultList = new ArrayList<>();

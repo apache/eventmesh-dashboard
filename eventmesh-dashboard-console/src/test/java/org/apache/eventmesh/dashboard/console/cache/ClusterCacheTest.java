@@ -38,7 +38,6 @@ public class ClusterCacheTest {
         clusterEntity.setAuthType(0);
         clusterEntity.setRunState(0);
         clusterEntity.setStatus(0);
-        clusterEntity.setStoreType(0);
         clusterEntity.setId(0L);
         clusterEntity.setClusterId(0L);
 

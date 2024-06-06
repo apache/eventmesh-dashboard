@@ -17,24 +17,15 @@
 
 package org.apache.eventmesh.dashboard.console.entity.topic;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
-
-import java.sql.Timestamp;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = "status")
-@SuperBuilder
 public class TopicEntity extends BaseEntity {
 
     private Long id;
@@ -56,22 +47,8 @@ public class TopicEntity extends BaseEntity {
 
     private String description;
 
-    private Timestamp createTime;
-
-    private Timestamp updateTime;
-
     private Integer status;
 
     private Integer createProgress;
-
-    public TopicEntity(TopicMetadata source) {
-        setClusterId(source.getClusterId());
-        setTopicName(source.getTopicName());
-        setStorageId(source.getStorageId());
-        setRetentionMs(source.getRetentionMs());
-        setType(source.getType());
-        setDescription(source.getDescription());
-        setStatus(1);
-        setCreateProgress(1);
-    }
+    
 }

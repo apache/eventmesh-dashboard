@@ -54,8 +54,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HealthService {
 
-    private HealthExecutor healthExecutor;
-
     /**
      * class cache used to build healthCheckService instance.<p> key: HealthCheckObjectConfig.SimpleClassName value: HealthCheckService
      *
@@ -69,10 +67,6 @@ public class HealthService {
         setClassCache(Rocketmq4NameServerCheck.class);
     }
 
-    private static void setClassCache(Class<?> clazz) {
-        HEALTH_CHECK_CLASS_CACHE.put(clazz.getSimpleName(), clazz);
-    }
-
     /**
      * This map is used to store HealthExecutor.<p> Outside key is Type(runtime, storage etc.), inside key is the id of type instance(runtimeId,
      * storageId etc.).
@@ -80,8 +74,12 @@ public class HealthService {
      * @see AbstractHealthCheckService
      */
     private final Map<String, Map<Long, AbstractHealthCheckService>> checkServiceMap = new ConcurrentHashMap<>();
-
+    private HealthExecutor healthExecutor;
     private ScheduledThreadPoolExecutor scheduledExecutor;
+
+    private static void setClassCache(Class<?> clazz) {
+        HEALTH_CHECK_CLASS_CACHE.put(clazz.getSimpleName(), clazz);
+    }
 
     public Map<String, HashMap<Long, CheckResult>> getCheckResultCacheMap() {
         return healthExecutor.getMemoryCache().getCacheMap();

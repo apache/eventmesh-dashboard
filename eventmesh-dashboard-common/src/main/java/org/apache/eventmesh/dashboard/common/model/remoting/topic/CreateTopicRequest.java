@@ -18,13 +18,15 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
 
+import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+
 import com.alibaba.fastjson2.JSONObject;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 
 @Data
 @NoArgsConstructor
