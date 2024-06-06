@@ -19,55 +19,50 @@
 
 import React from 'react'
 import { useRoutes, Navigate } from 'react-router-dom'
-import RootLayout from './RootLayout'
 import Home from './home/Home'
-import Topic from './topic/Topic'
-import Runtime from './runtime/Runtime'
-import Connection from './connection/Connection'
-import Message from './message/Message'
-import Security from './security/Security'
+import ClusterOverView from './cluster/overview/Overview'
+import ClusterTopic from './cluster/topic/Topic'
+import ClusterRuntime from './cluster/runtime/Runtime'
+import ClusterConnection from './cluster/connection/Connection'
+import ClusterMessage from './cluster/message/Message'
+import ClusterSecurity from './cluster/security/Security'
 import Users from './users/Users'
 import Logs from './logs/Logs'
 import Settings from './settings/Settings'
-
-// 登录，修改修改密码
-// 首页
-// 个人路由
-// 注册中心路由
-// 集群路由
-// 管理路由
-
-// 集群
-// 注册中心
-//   1. 注册信息( 增删改查 )
-//   2. 集群列表
-//   3. 空间名
-// k8s  运动
-// 连接器集群  -> k8s
-// 设置
+import Clusters from './cluster/Clusters'
 
 const AppRoutes = () => {
   return useRoutes([
     {
-      path: '/cluster/{clusterid}',
-      element: <RootLayout />,
+      path: '*',
+      element: <Navigate to="home" replace />
+    },
+    { path: 'home', element: <Home /> },
+    {
+      path: 'clusters',
+      element: <Clusters />,
       children: [
+        { path: 'clusters', element: <Clusters /> },
         {
-          path: '*',
-          element: <Navigate to="/home" replace />
-        },
-        { path: '', element: <Navigate to="/home" /> },
-        { path: 'home', element: <Home /> },
-        { path: 'runtime', element: <Runtime /> },
-        { path: 'topic', element: <Topic /> },
-        { path: 'connection', element: <Connection /> },
-        { path: 'message', element: <Message /> },
-        { path: 'security', element: <Security /> },
-        { path: 'settings', element: <Settings /> },
-        { path: 'users', element: <Users /> },
-        { path: 'logs', element: <Logs /> }
+          path: ':clusterId',
+          children: [
+            {
+              path: '*',
+              element: <Navigate to="home" replace />
+            },
+            { path: 'overview', element: <ClusterOverView /> },
+            { path: 'runtime', element: <ClusterRuntime /> },
+            { path: 'topic', element: <ClusterTopic /> },
+            { path: 'connection', element: <ClusterConnection /> },
+            { path: 'message', element: <ClusterMessage /> },
+            { path: 'security', element: <ClusterSecurity /> }
+          ]
+        }
       ]
-    }
+    },
+    { path: 'settings', element: <Settings /> },
+    { path: 'users', element: <Users /> },
+    { path: 'logs', element: <Logs /> }
   ])
 }
 
