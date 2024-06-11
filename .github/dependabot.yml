@@ -27,7 +27,7 @@ updates:
         update-types: [ "version-update:semver-major" ]
   - package-ecosystem: "npm"
     directory: "./eventmesh-dashboard-view"
-    # Disable front-end PRs temporarily since 'npm run build' fails
+    # No need to automatically upgrade front-end dependencies
     open-pull-requests-limit: 0
     schedule:
       interval: "monthly"
