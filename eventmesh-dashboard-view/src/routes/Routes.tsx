@@ -27,7 +27,7 @@ import ClusterConnection from './cluster/connection/Connection'
 import ClusterMessage from './cluster/message/Message'
 import ClusterSecurity from './cluster/security/Security'
 import Users from './users/Users'
-import Logs from './logs/Logs'
+import Logs from './elogs/Logs'
 import Settings from './settings/Settings'
 import Clusters from './cluster/Clusters'
 
