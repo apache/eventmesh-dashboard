@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.service.store.Impl;
 
-import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
+import org.apache.eventmesh.dashboard.console.entity.StoreEntity;
 import org.apache.eventmesh.dashboard.console.mapper.storage.StoreMapper;
 import org.apache.eventmesh.dashboard.console.service.store.StoreService;
 

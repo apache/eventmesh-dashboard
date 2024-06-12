@@ -23,9 +23,8 @@ import org.apache.eventmesh.dashboard.common.model.SubscriptionInfo;
 import java.util.List;
 
 /**
- * "Subscription" refers to the traditional MQ producer-consumer topic subscription relationship,
- * emphasizing the subscription relationship between EventMesh clients (including SDK and connectors) and topics,
- * reported by the EventMesh runtime.
+ * "Subscription" refers to the traditional MQ producer-consumer topic subscription relationship, emphasizing the subscription relationship between
+ * EventMesh clients (including SDK and connectors) and topics, reported by the EventMesh runtime.
  */
 
 public interface SubscriptionCore {

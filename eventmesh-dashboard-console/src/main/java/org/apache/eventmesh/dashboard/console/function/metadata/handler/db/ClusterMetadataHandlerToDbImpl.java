@@ -18,12 +18,11 @@
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
-import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,18 +35,28 @@ public class ClusterMetadataHandlerToDbImpl implements MetadataHandler<ClusterMe
 
     @Override
     public void addMetadata(ClusterMetadata meta) {
-        clusterService.addCluster(new ClusterEntity(meta));
+        //clusterService.addCluster(new ClusterEntity(meta));
     }
 
     @Override
     public void addMetadata(List<ClusterMetadata> metadataList) {
-        List<ClusterEntity> entityList = metadataList.stream()
+      /*  List<ClusterEntity> entityList = metadataList.stream()
             .map(ClusterEntity::new)
             .collect(Collectors.toList());
-        clusterService.batchInsert(entityList);
+        clusterService.batchInsert(entityList);*/
     }
 
     @Override
     public void deleteMetadata(ClusterMetadata meta) {
+    }
+
+    @Override
+    public List<ClusterMetadata> getData() {
+        return null;
+    }
+
+    @Override
+    public List<ClusterMetadata> getData(GlobalRequest globalRequest) {
+        return null;
     }
 }

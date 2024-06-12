@@ -18,12 +18,11 @@
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
-import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
-import org.apache.eventmesh.dashboard.console.service.config.ConfigService;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,20 +39,30 @@ public class ConfigMetadataHandlerToDbImpl implements MetadataHandler<ConfigMeta
 
     @Override
     public void addMetadata(ConfigMetadata meta) {
-        configService.addConfig(new ConfigEntity(meta));
+        //configService.addConfig(new ConfigEntity(meta));
     }
 
     @Override
     public void addMetadata(List<ConfigMetadata> meta) {
-        List<ConfigEntity> entityList = meta.stream()
+       /* List<ConfigEntity> entityList = meta.stream()
             .map(ConfigEntity::new)
-            .collect(Collectors.toList());
-        configService.batchInsert(entityList);
+            .collect(Collectors.toList());*/
+        //configService.batchInsert(entityList);
     }
 
     @Override
     public void deleteMetadata(ConfigMetadata meta) {
-        configService.deleteConfig(new ConfigEntity(meta));
+        //configService.deleteConfig(new ConfigEntity(meta));
+    }
+
+    @Override
+    public List<ConfigMetadata> getData() {
+        return null;
+    }
+
+    @Override
+    public List<ConfigMetadata> getData(GlobalRequest globalRequest) {
+        return null;
     }
 }
 

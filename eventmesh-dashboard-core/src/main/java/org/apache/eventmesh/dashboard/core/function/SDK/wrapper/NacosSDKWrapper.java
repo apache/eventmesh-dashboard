@@ -28,11 +28,11 @@ import lombok.Data;
 @AllArgsConstructor
 public class NacosSDKWrapper {
 
+    private ConfigService configService;
+    private NamingService namingService;
+
     public void shutdown() throws NacosException {
         configService.shutDown();
         namingService.shutDown();
     }
-
-    private ConfigService configService;
-    private NamingService namingService;
 }

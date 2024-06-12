@@ -24,11 +24,13 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is used to mark the type of health check service implement.
+ *
  * @see org.apache.eventmesh.dashboard.common.enums.health.HealthCheckType
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HealthCheckType {
+
     /**
      * type of resource. runtime, topic etc.
      */

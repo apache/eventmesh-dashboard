@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.console.service.connection.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
 
 import java.util.List;
 
@@ -30,7 +30,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 
 
 @ExtendWith(SpringExtension.class)

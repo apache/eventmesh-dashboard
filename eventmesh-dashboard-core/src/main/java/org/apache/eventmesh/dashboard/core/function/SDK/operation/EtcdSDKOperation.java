@@ -33,6 +33,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EtcdSDKOperation extends AbstractSDKOperation<KV> {
 
+    private static String[] getSplitEndpoints(CreateEtcdConfig etcdConfig) {
+        return etcdConfig.getEtcdServerAddress().split(";");
+    }
+
     @Override
     public SimpleEntry<String, KV> createClient(CreateSDKConfig clientConfig) {
         final CreateEtcdConfig etcdConfig = (CreateEtcdConfig) clientConfig;
@@ -47,10 +51,6 @@ public class EtcdSDKOperation extends AbstractSDKOperation<KV> {
             log.error("create etcd client failed", e);
         }
         return new SimpleEntry<>(clientConfig.getUniqueKey(), kvClient);
-    }
-
-    private static String[] getSplitEndpoints(CreateEtcdConfig etcdConfig) {
-        return etcdConfig.getEtcdServerAddress().split(";");
     }
 
     @Override

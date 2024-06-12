@@ -18,8 +18,10 @@
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class GroupMetadata extends MetadataConfig {
 
     private String name;

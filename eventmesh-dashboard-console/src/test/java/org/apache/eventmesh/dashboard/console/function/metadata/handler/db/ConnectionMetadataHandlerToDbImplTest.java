@@ -21,13 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ConnectionMetadata;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
-import org.apache.eventmesh.dashboard.console.entity.client.ClientEntity;
-import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
-import org.apache.eventmesh.dashboard.console.service.client.ClientDataService;
-import org.apache.eventmesh.dashboard.console.service.connection.ConnectionDataService;
+import org.apache.eventmesh.dashboard.console.service.cluster.ClientDataService;
+import org.apache.eventmesh.dashboard.console.service.cluster.ConnectionDataService;
 import org.apache.eventmesh.dashboard.console.service.connector.ConnectorDataService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.util.List;
 

@@ -18,29 +18,20 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
 
+import org.apache.eventmesh.dashboard.common.enums.ResetOffsetMode;
+
 import lombok.Data;
 
 @Data
 public class ResetOffsetRequest {
 
-    Long timestamp;
+    private Long timestamp;
 
-    Long offset;
-
+    private Long offset;
+    private ResetOffsetMode resetOffsetMode;
     private String topic;
-
     private String bootstrapServers;
-
     private Integer partitionId;
-
-    ResetOffsetMode resetOffsetMode;
-
     private String groupName;
 
-    public enum ResetOffsetMode {
-        EARLIEST,
-        LATEST,
-        TIMESTAMP,
-        OFFSET
-    }
 }

@@ -17,29 +17,31 @@
 
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
-import org.apache.eventmesh.dashboard.console.cache.ClusterCache;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.entity.topic.TopicEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterMapper;
-import org.apache.eventmesh.dashboard.console.mapper.connection.ConnectionMapper;
-import org.apache.eventmesh.dashboard.console.mapper.group.OprGroupMapper;
-import org.apache.eventmesh.dashboard.console.mapper.runtime.RuntimeMapper;
-import org.apache.eventmesh.dashboard.console.mapper.topic.TopicMapper;
+import org.apache.eventmesh.dashboard.console.mapper.cluster.ConnectionMapper;
+import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
+import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMapper;
+import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.modle.function.OverviewDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
-import org.apache.eventmesh.dashboard.console.modle.vo.cluster.ResourceNumVO;
+import org.apache.eventmesh.dashboard.console.service.OverviewService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
-public class ClusterServiceImpl implements ClusterService {
+public class ClusterServiceImpl implements ClusterService, OverviewService {
 
     @Autowired
     private ConnectionMapper connectionMapper;
@@ -58,7 +60,13 @@ public class ClusterServiceImpl implements ClusterService {
 
 
     @Override
-    public GetClusterBaseMessageVO getClusterBaseMessage(Long clusterId) {
+    public void createCluster(ClusterEntity clusterEntity) {
+
+    }
+
+    @Override
+    public GetClusterBaseMessageVO getClusterBaseMessage(ClusterIdDTO clusterIdDTO) {
+        Long clusterId = clusterIdDTO.getClusterId();
         GetClusterBaseMessageVO getClusterBaseMessageVO = new GetClusterBaseMessageVO();
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setClusterId(clusterId);
@@ -76,22 +84,14 @@ public class ClusterServiceImpl implements ClusterService {
     }
 
     @Override
-    public ResourceNumVO getResourceNumByCluster(Long clusterId) {
-        ConnectionEntity connectionEntity = new ConnectionEntity();
-        connectionEntity.setClusterId(clusterId);
-        Integer connectionNumByCluster = connectionMapper.selectConnectionNumByCluster(connectionEntity);
-        TopicEntity topicEntity = new TopicEntity();
-        topicEntity.setClusterId(clusterId);
-        Integer topicNumByCluster = topicMapper.selectTopicNumByCluster(topicEntity);
-        ResourceNumVO resourceNumVO = new ResourceNumVO(topicNumByCluster, connectionNumByCluster);
-        return resourceNumVO;
+    public Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO) {
+        return null;
     }
 
 
     @Override
-    public void batchInsert(List<ClusterEntity> clusterEntities) {
-        clusterMapper.batchInsert(clusterEntities);
-        updateClusterCache();
+    public Integer batchInsert(List<ClusterEntity> clusterEntities) {
+        return clusterMapper.batchInsert(clusterEntities);
     }
 
     @Override
@@ -100,9 +100,13 @@ public class ClusterServiceImpl implements ClusterService {
     }
 
     @Override
+    public List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity) {
+        return clusterMapper.selectAllCluster();
+    }
+
+    @Override
     public void addCluster(ClusterEntity cluster) {
-        clusterMapper.addCluster(cluster);
-        updateClusterCache();
+        clusterMapper.insertCluster(cluster);
     }
 
     @Override
@@ -115,19 +119,19 @@ public class ClusterServiceImpl implements ClusterService {
         return clusterMapper.selectClusterById(cluster);
     }
 
+
     @Override
-    public void updateClusterById(ClusterEntity cluster) {
-        clusterMapper.updateClusterById(cluster);
-        updateClusterCache();
+    public Integer updateClusterById(ClusterEntity cluster) {
+        return clusterMapper.updateClusterById(cluster);
     }
 
     @Override
-    public void deactivate(ClusterEntity cluster) {
-        clusterMapper.deactivate(cluster);
+    public Integer deactivate(ClusterEntity cluster) {
+        return clusterMapper.deactivate(cluster);
     }
 
-    private void updateClusterCache() {
-        List<ClusterEntity> clusters = selectAll();
-        ClusterCache.getINSTANCE().syncClusters(clusters);
+    @Override
+    public Object overview(OverviewDTO overviewDTO) {
+        return null;
     }
 }

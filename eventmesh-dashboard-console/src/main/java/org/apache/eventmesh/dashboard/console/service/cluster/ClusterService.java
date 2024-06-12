@@ -18,23 +18,30 @@
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
-import org.apache.eventmesh.dashboard.console.modle.vo.cluster.ResourceNumVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * cluster data service
  */
 public interface ClusterService {
 
-    GetClusterBaseMessageVO getClusterBaseMessage(Long clusterId);
 
-    ResourceNumVO getResourceNumByCluster(Long clusterId);
+    void createCluster(ClusterEntity clusterEntity);
 
-    void batchInsert(List<ClusterEntity> clusterEntities);
+    GetClusterBaseMessageVO getClusterBaseMessage(ClusterIdDTO clusterIdDTO);
+
+
+    Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO);
+
+    Integer batchInsert(List<ClusterEntity> clusterEntities);
 
     List<ClusterEntity> selectAll();
+
+    List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity);
 
     void addCluster(ClusterEntity cluster);
 
@@ -42,7 +49,7 @@ public interface ClusterService {
 
     ClusterEntity selectClusterById(ClusterEntity cluster);
 
-    void updateClusterById(ClusterEntity cluster);
+    Integer updateClusterById(ClusterEntity cluster);
 
-    void deactivate(ClusterEntity cluster);
+    Integer deactivate(ClusterEntity cluster);
 }

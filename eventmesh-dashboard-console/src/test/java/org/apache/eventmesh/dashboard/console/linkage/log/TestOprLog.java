@@ -18,11 +18,11 @@
 package org.apache.eventmesh.dashboard.console.linkage.log;
 
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
-import org.apache.eventmesh.dashboard.console.entity.group.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
 import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
-import org.apache.eventmesh.dashboard.console.service.group.GroupService;
-import org.apache.eventmesh.dashboard.console.service.log.LogService;
+import org.apache.eventmesh.dashboard.console.service.message.GroupService;
+import org.apache.eventmesh.dashboard.console.service.function.LogService;
 
 import java.util.List;
 
@@ -45,9 +45,18 @@ public class TestOprLog {
 
     @Test
     public void testGroupServiceOprLog() {
-        GroupEntity groupEntity = new GroupEntity(null, 1L, "logTest", 0, null, 1, "OK", null, null, 0);
+        GroupEntity groupEntity = new GroupEntity();
+        groupEntity.setClusterId(1L);
+        groupEntity.setName("logTest");
+        groupEntity.setStatus(1);
+        groupEntity.setType(0);
+        groupEntity.setState("OS");
         groupService.addGroup(groupEntity);
-        LogEntity logEntity = new LogEntity(null, 1L, "add", "Group", 2, groupEntity.toString(), null, null, null, null);
+        LogEntity logEntity = new LogEntity();
+        logEntity.setClusterId(1L);
+        logEntity.setOperationType("add");
+        logEntity.setOperationUser("Group");
+        logEntity.setContent(groupEntity.toString());
         logEntity.setResult(groupEntity.toString());
         logEntity.setId(groupEntity.getId());
         List<LogEntity> logListByCluster = logService.getLogListByCluster(new GetLogListDTO());

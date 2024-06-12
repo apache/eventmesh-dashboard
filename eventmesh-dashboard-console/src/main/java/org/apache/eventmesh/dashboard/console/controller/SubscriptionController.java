@@ -32,13 +32,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class SubscriptionController {
 
+    // the subscription dataId naming pattern of EventMesh clients: ip-protocol
+    private static final String CLIENT_DATA_ID_PATTERN = "*.*.*.*-*";
     /**
      * TODO expose implement by FunctionManager
      */
     SubscriptionCore subscriptionCore;
-
-    // the subscription dataId naming pattern of EventMesh clients: ip-protocol
-    private static final String CLIENT_DATA_ID_PATTERN = "*.*.*.*-*";
 
     /**
      * Retrieve the config content of a specified config.
@@ -55,10 +54,10 @@ public class SubscriptionController {
     /**
      * Retrieve a list of configs.
      *
-     * @param page page number
-     * @param size page size
+     * @param page   page number
+     * @param size   page size
      * @param dataId nacos config data id (Fuzzy Matching)
-     * @param group config group (Fuzzy Matching)
+     * @param group  config group (Fuzzy Matching)
      * @return config properties and base64 encoded config content
      */
     @GetMapping("/subscriptions")

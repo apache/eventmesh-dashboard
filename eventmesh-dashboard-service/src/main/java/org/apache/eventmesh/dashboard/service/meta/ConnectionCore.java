@@ -18,9 +18,8 @@
 package org.apache.eventmesh.dashboard.service.meta;
 
 /**
- * "Connection" refers to the subscription relationship between connectors.
- * It focuses on the configuration deployed on the source and sink connectors themselves,
- * reported by the connector.
+ * "Connection" refers to the subscription relationship between connectors. It focuses on the configuration deployed on the source and sink connectors
+ * themselves, reported by the connector.
  */
 
 public interface ConnectionCore {

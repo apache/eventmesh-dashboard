@@ -86,3 +86,12 @@ docker build -t yourname/eventmesh-dashboard -f docker/Dockerfile .
 ```
 docker run -d --name eventmesh-dashboard -p 8080:8080 yourname/eventmesh-dashboard
 ```
+
+### 开发准备
+1. 配置格式化 
+   1. 后端格式文档地址：https://eventmesh.apache.org/zh/community/contribute/contribute/
+   2. 前端使用 eslint
+2. 配置协议头工具 license-eye。
+   1. 检查命令：license-eye header check
+   2. 使用命令：license-eye header fix
+   3. 下载地址： https://skywalking.apache.org/downloads/

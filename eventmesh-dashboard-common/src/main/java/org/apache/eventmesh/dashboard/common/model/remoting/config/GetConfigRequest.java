@@ -17,7 +17,6 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.config;
 
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,9 +28,9 @@ import lombok.NoArgsConstructor;
 
 public class GetConfigRequest {
 
-    private List<String> registryAddressList;
+    private ConfigType configType;
 
-    private List<String> runtimeAddressList;
+    private String node;
 
-    private List<String> nameServerAddressList;
+    private String configObjectName;
 }

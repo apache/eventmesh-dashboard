@@ -25,5 +25,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteTopicResponse {
+
     private String result;
 }

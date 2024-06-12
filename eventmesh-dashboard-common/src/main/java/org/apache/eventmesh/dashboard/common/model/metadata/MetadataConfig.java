@@ -38,6 +38,9 @@ public abstract class MetadataConfig {
     //cluster id in database
     private Long clusterId;
 
+
+    private Long id;
+
     /**
      * @return A string that is unique to the source, usually a url
      */

@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.dashboard.core.meta.runtime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeRequest;
 
 import org.junit.jupiter.api.Test;
@@ -39,7 +37,8 @@ class NacosRuntimeCoreTest {
             getRuntimeRequest.setRegistryAddress("127.0.0.1:8848");
             nacosRuntimeCore.getRuntime(getRuntimeRequest).getFuture().thenAccept(
                 getRuntimeResponse -> {
-                    log.info("testGetRuntime success, the first cluster name is {}",getRuntimeResponse.getRuntimeMetadataList().get(0).getClusterName());
+                    log.info("testGetRuntime success, the first cluster name is {}",
+                        getRuntimeResponse.getRuntimeMetadataList().get(0).getClusterName());
                 }
             );
         } catch (Exception e) {

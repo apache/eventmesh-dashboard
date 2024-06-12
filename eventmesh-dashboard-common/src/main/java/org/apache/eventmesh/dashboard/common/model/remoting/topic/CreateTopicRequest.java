@@ -19,15 +19,23 @@ package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
 
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+
+import com.alibaba.fastjson2.JSONObject;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateTopicRequest {
+@EqualsAndHashCode(callSuper = true)
+public class CreateTopicRequest extends GlobalRequest {
 
-    TopicMetadata topicMetadata;
+    private TopicMetadata topicMetadata;
+
+
+    private JSONObject topicConfig;
 }

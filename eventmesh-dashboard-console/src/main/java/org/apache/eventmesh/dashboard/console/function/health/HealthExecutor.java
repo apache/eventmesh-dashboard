@@ -19,11 +19,11 @@ package org.apache.eventmesh.dashboard.console.function.health;
 
 import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckStatus;
 import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckType;
-import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
+import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache.CheckResult;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
-import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
+import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -36,17 +36,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HealthExecutor {
 
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
     @Setter
     private HealthDataService dataService;
-
     /**
      * memory cache is used to store real-time health check result.
      */
     @Getter
     @Setter
     private CheckResultCache memoryCache;
-
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     /**
      * execute function is where health check services work.
@@ -93,8 +91,8 @@ public class HealthExecutor {
     }
 
     /**
-     * this function should be called before any actual execute behaviour.<p> It will check the execution result of the last check cycle in the
-     * memory cache, set tasks that haven't finished status to time out and update the database.
+     * this function should be called before any actual execute behaviour.<p> It will check the execution result of the last check cycle in the memory
+     * cache, set tasks that haven't finished status to time out and update the database.
      */
     public void startExecute() {
         ArrayList<HealthCheckResultEntity> resultList = new ArrayList<>();

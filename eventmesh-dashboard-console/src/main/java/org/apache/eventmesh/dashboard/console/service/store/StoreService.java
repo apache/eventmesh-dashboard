@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.service.store;
 
-import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
+import org.apache.eventmesh.dashboard.console.entity.StoreEntity;
 
 import java.util.List;
 

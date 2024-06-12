@@ -18,11 +18,11 @@
 package org.apache.eventmesh.dashboard.console.integration.health;
 
 import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckType;
-import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
+import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.function.health.HealthService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
-import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
+import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
 
 import java.util.List;
 
@@ -41,12 +41,10 @@ import org.springframework.test.context.jdbc.Sql;
 @Timeout(value = 10)
 public class HealthServiceIntegrateTest {
 
+    private final CheckResultCache checkResultCache = CheckResultCache.getINSTANCE();
     HealthService healthService = new HealthService();
-
     @Autowired
     private HealthDataService healthDataService;
-
-    private final CheckResultCache checkResultCache = CheckResultCache.getINSTANCE();
 
     @BeforeEach
     void init() {
@@ -56,12 +54,12 @@ public class HealthServiceIntegrateTest {
     @Test
     void testStorageRedis() throws InterruptedException {
         HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
-                .clusterId(1L)
-                .instanceId(1L)
-                .healthCheckResourceType("storage")
-                .healthCheckResourceSubType("redis")
-                .connectUrl("redis://localhost:6379")
-                .build();
+            .clusterId(1L)
+            .instanceId(1L)
+            .healthCheckResourceType("storage")
+            .healthCheckResourceSubType("redis")
+            .connectUrl("redis://localhost:6379")
+            .build();
         healthService.insertCheckService(config);
         healthService.executeAll();
         Thread.sleep(1000);

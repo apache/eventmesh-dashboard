@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetTopicsRequest {
+public class GetTopicsRequest extends GlobalRequest {
 
     private String runtimeHost;
 

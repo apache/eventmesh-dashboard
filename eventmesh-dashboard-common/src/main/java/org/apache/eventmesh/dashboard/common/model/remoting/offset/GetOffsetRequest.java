@@ -26,4 +26,5 @@ public class GetOffsetRequest {
     private String bootstrapServers;
 
     private String groupName;
+
 }

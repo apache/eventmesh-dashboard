@@ -17,14 +17,22 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.StoreType;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ClusterMetadata extends MetadataConfig {
 
     private String clusterName;
+
+    private ClusterTrusteeshipType trusteeshipType;
+
+    private ClusterType clusterType;
 
     private String registryAddress;
 

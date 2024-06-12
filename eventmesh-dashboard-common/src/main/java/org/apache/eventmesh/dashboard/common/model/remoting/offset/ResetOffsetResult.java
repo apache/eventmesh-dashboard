@@ -23,6 +23,7 @@ import lombok.Data;
 
 @Data
 public class ResetOffsetResult {
+
     private Boolean success;
 
     private CompletableFuture<ResetOffsetResponse> future;

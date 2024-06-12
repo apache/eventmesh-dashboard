@@ -19,9 +19,7 @@ package org.apache.eventmesh.dashboard.console.function.metadata.handler;
 
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.db.ClusterMetadataHandlerToDbImpl;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.db.ConfigMetadataHandlerToDbImpl;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.db.ConnectionMetadataHandlerToDbImpl;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.db.GroupMetadataHandlerToDbImpl;
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.db.RegistryMetadataHandlerToDbImpl;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.db.RuntimeMetadataHandlerToDbImpl;
 import org.apache.eventmesh.dashboard.console.function.metadata.handler.db.TopicMetadataHandlerToDbImpl;
 import org.apache.eventmesh.dashboard.console.spring.support.FunctionManagerLoader;
@@ -42,16 +40,17 @@ public class MetadataHandlerWrapper {
 
     @Autowired
     private ClusterMetadataHandlerToDbImpl clusterMetadataHandlerToDb;
+
     @Autowired
     private ConfigMetadataHandlerToDbImpl configMetadataHandlerToDb;
-    @Autowired
-    private ConnectionMetadataHandlerToDbImpl connectionMetadataHandlerToDb;
+
     @Autowired
     private GroupMetadataHandlerToDbImpl groupMetadataHandlerToDb;
-    @Autowired
-    private RegistryMetadataHandlerToDbImpl registryMetadataHandlerToDb;
+
+
     @Autowired
     private RuntimeMetadataHandlerToDbImpl runtimeMetadataHandlerToDb;
+
     @Autowired
     private TopicMetadataHandlerToDbImpl topicMetadataHandlerToDb;
 }

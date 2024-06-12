@@ -18,11 +18,13 @@
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Config metadata is a piece of config with key and value
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ConfigMetadata extends MetadataConfig {
 
     /**

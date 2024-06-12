@@ -58,13 +58,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NacosSubscriptionCore implements SubscriptionCore {
 
-    AdminProperties adminProperties;
-
-    Properties nacosProps = new Properties();
-
-    RestTemplate restTemplate = new RestTemplate();
-
     private static String HTTP_PREFIX = ConfigConst.HTTP_PREFIX;
+    AdminProperties adminProperties;
+    Properties nacosProps = new Properties();
+    RestTemplate restTemplate = new RestTemplate();
 
     public NacosSubscriptionCore(AdminProperties adminProperties) {
         this.adminProperties = adminProperties;

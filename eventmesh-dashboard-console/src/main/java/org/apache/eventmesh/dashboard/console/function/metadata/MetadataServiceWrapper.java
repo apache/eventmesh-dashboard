@@ -17,8 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.function.metadata;
 
-import org.apache.eventmesh.dashboard.console.function.metadata.handler.MetadataHandler;
-import org.apache.eventmesh.dashboard.console.function.metadata.syncservice.SyncDataService;
+import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,15 +42,12 @@ public class MetadataServiceWrapper {
 
         /**
          * true -> incremental updates false -> full volume updates
+         *
          * @See MetadataManager
          */
         @Default
         private Boolean cache = true;
 
-        /**
-         * syncService is the source of metadata
-         */
-        private SyncDataService<?> syncService;
 
         /**
          * handler is the target of metadata, it will process the metadata from syncService

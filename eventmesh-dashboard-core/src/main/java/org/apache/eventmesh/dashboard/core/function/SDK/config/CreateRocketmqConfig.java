@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
 import org.apache.rocketmq.client.consumer.listener.MessageListener;
-import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
+import org.apache.rocketmq.remoting.protocol.heartbeat.MessageModel;
 
 import lombok.Data;
 
@@ -27,10 +27,12 @@ public class CreateRocketmqConfig implements CreateSDKConfig {
 
     // common
     private String nameServerUrl;
+
     private String brokerUrl;
 
     //consumer
     private String consumerGroup;
+
     private MessageModel messageModel = MessageModel.CLUSTERING;
 
     //producer
@@ -38,9 +40,13 @@ public class CreateRocketmqConfig implements CreateSDKConfig {
 
     //topic
     private String topic;
+
     private String subExpression = "*";
 
     private MessageListener messageListener;
+
+
+    private String clusterName;
 
 
     @Override

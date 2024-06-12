@@ -28,13 +28,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.common.TopicConfig;
 import org.apache.rocketmq.common.TopicFilterType;
 import org.apache.rocketmq.common.constant.PermName;
-import org.apache.rocketmq.common.protocol.RequestCode;
-import org.apache.rocketmq.common.protocol.body.TopicConfigSerializeWrapper;
-import org.apache.rocketmq.common.protocol.header.CreateTopicRequestHeader;
-import org.apache.rocketmq.common.protocol.header.DeleteTopicRequestHeader;
 import org.apache.rocketmq.remoting.CommandCustomHeader;
 import org.apache.rocketmq.remoting.RemotingClient;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
+import org.apache.rocketmq.remoting.protocol.RequestCode;
+import org.apache.rocketmq.remoting.protocol.body.TopicConfigSerializeWrapper;
+import org.apache.rocketmq.remoting.protocol.header.CreateTopicRequestHeader;
+import org.apache.rocketmq.remoting.protocol.header.DeleteTopicRequestHeader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,16 +51,15 @@ public class RocketmqTopicCore implements TopicCore {
 
     private final RocketmqProperties rocketmqProperties;
 
+    public RocketmqTopicCore(RocketmqProperties rocketmqProperties) {
+        this.rocketmqProperties = rocketmqProperties;
+    }
+
     private RemotingClient createRemotingClient(String brokerUrl) {
         CreateSDKConfig createSDKConfig = () -> brokerUrl;
 
         SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, createSDKConfig);
         return (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, brokerUrl);
-    }
-
-
-    public RocketmqTopicCore(RocketmqProperties rocketmqProperties) {
-        this.rocketmqProperties = rocketmqProperties;
     }
 
     @Override

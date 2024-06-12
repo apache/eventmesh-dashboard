@@ -46,6 +46,8 @@ public class RuntimeMetadata extends MetadataConfig {
 
     private String clusterName;
 
+    private Integer status;
+
     @Override
     public String getUnique() {
         return host + ":" + port;
