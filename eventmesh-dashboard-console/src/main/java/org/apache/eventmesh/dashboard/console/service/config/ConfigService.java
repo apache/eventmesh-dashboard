@@ -51,7 +51,7 @@ public interface ConfigService {
 
     List<ConfigEntity> selectByInstanceIdAndType(Long instanceId, Integer type);
 
-    Map<String, String> selectDefaultConfig(String version, Long instanceId, Integer instanceType);
+    Map<String, ConfigEntity> selectDefaultConfig(String version, Integer instanceType);
 
 
 

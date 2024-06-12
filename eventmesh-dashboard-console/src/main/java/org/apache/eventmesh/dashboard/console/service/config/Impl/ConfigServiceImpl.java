@@ -45,7 +45,7 @@ public class ConfigServiceImpl implements ConfigService {
     @Autowired
     ConfigMapper configMapper;
 
-    private Map<DefaultConfigKey, String> defaultConfigCache = new HashMap<>();
+    private Map<DefaultConfigKey, ConfigEntity> defaultConfigCache = new HashMap<>();
 
 
     @EmLog(OprTarget = "Runtime", OprType = "UpdateConfigs")
@@ -209,17 +209,17 @@ public class ConfigServiceImpl implements ConfigService {
         List<ConfigEntity> configEntityList = configMapper.selectAllDefaultConfig();
         configEntityList.forEach(n -> {
             DefaultConfigKey defaultConfigKey = new DefaultConfigKey(n.getBusinessType(), n.getConfigName());
-            defaultConfigCache.putIfAbsent(defaultConfigKey, n.getConfigValue());
+            defaultConfigCache.putIfAbsent(defaultConfigKey, n);
 
         });
     }
 
     @Override
-    public Map<String, String> selectDefaultConfig(String businessType, Long instanceId, Integer instanceType) {
+    public Map<String, ConfigEntity> selectDefaultConfig(String businessType, Integer instanceType) {
         if (defaultConfigCache.size() == 0) {
             this.addDefaultConfigToCache();
         }
-        ConcurrentHashMap<String, String> stringStringConcurrentHashMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, ConfigEntity> stringStringConcurrentHashMap = new ConcurrentHashMap<>();
         defaultConfigCache.forEach((k, v) -> {
             if (k.getBusinessType().equals(businessType)) {
                 stringStringConcurrentHashMap.put(k.getConfigName(), v);

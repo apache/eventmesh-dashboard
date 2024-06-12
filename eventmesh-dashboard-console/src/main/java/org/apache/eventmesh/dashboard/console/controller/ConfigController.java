@@ -55,13 +55,16 @@ public class ConfigController {
     public List<DetailConfigsVO> getInstanceDetailConfigs(@Validated @RequestBody GetConfigsListDTO getConfigsListDTO) {
         List<ConfigEntity> configEntityList = configService.selectToFront(getConfigsListDTO.getInstanceId(),
             getConfigsListDTO.getInstanceType(), getConfigsListDTO);
-        Map<String, String> stringStringConcurrentHashMap = configService.selectDefaultConfig(getConfigsListDTO.getBusinessType(),
-            getConfigsListDTO.getInstanceId(), getConfigsListDTO.getInstanceType());
+        Map<String, ConfigEntity> stringStringConcurrentHashMap = configService.selectDefaultConfig(getConfigsListDTO.getBusinessType(),
+            getConfigsListDTO.getInstanceType());
         ArrayList<DetailConfigsVO> showDetailConfigsVOS = new ArrayList<>();
         configEntityList.forEach(n -> {
             DetailConfigsVO showDetailConfigsVO = new DetailConfigsVO();
-            showDetailConfigsVO.setDefaultValue(stringStringConcurrentHashMap.get(n.getConfigName()));
-            showDetailConfigsVO.setIsModify(n.getIsModify());
+            ConfigEntity defaultConfig = stringStringConcurrentHashMap.get(n.getConfigName());
+            if (defaultConfig != null) {
+                showDetailConfigsVO.setDefaultValue(defaultConfig.getConfigValue());
+                showDetailConfigsVO.setIsModify(defaultConfig.getIsModify());
+            }
             showDetailConfigsVO.setConfigName(n.getConfigName());
             showDetailConfigsVO.setConfigValue(n.getConfigValue());
             showDetailConfigsVO.setAlreadyUpdate(n.getAlreadyUpdate());

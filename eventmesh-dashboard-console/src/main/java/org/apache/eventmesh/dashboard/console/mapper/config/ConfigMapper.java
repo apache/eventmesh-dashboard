@@ -66,14 +66,16 @@ public interface ConfigMapper {
 
     @Insert({
         "<script>",
-        "   INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version,",
-        "   eventmesh_version,end_version, diff_type, description, edit, is_default, is_modify) VALUES ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "   (#{c.clusterId}, #{c.businessType}, #{c.instanceType}, #{c.instanceId},#{c.configName},",
-        "   #{c.configValue}, #{c.startVersion}, #{c.eventmeshVersion},#{c.endVersion},#{c.diffType},#{c.description},",
-        "   #{c.edit},#{c.isDefault},#{c.isModify})",
-        "   </foreach>",
-        "</script>"})
+        "INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version,",
+        "eventmesh_version, end_version, diff_type, description, edit, is_default, is_modify) VALUES ",
+        "<foreach collection='list' item='c' index='index' separator=','>",
+        "(#{c.clusterId}, #{c.businessType}, #{c.instanceType}, #{c.instanceId}, #{c.configName},",
+        "#{c.configValue}, #{c.startVersion}, #{c.eventmeshVersion}, #{c.endVersion}, #{c.diffType}, #{c.description},",
+        "#{c.edit}, #{c.isDefault}, #{c.isModify})",
+        "</foreach>",
+        "ON DUPLICATE KEY UPDATE config_value = VALUES(config_value)",
+        "</script>"
+    })
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void batchInsert(List<ConfigEntity> configEntityList);
 
