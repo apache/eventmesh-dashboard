@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.storage;
 
-import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
+import org.apache.eventmesh.dashboard.console.entity.StoreEntity;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;

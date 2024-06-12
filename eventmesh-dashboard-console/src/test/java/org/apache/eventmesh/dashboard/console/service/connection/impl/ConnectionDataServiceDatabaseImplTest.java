@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.console.service.connection.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.eventmesh.dashboard.console.entity.connection.ConnectionEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
 
 import java.util.List;
 

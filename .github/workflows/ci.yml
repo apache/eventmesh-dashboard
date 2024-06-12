@@ -111,5 +111,5 @@ jobs:
       - name: Build Dashboard
         run: ./mvnw -B package -DskipTests --file pom.xml
 
-        #      - name: Run Unit Tests
-        #run: ./mvnw -B test --file pom.xml
+      - name: Run Unit Tests
+        run: ./mvnw -B test --file pom.xml

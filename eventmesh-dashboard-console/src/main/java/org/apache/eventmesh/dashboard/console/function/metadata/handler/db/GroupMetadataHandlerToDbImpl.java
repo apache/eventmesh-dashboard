@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
-import org.apache.eventmesh.dashboard.console.service.group.GroupService;
+import org.apache.eventmesh.dashboard.console.service.message.GroupService;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.util.List;

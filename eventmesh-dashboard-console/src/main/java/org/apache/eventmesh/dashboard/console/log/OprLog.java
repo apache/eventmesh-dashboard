@@ -18,8 +18,8 @@
 package org.apache.eventmesh.dashboard.console.log;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
-import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
-import org.apache.eventmesh.dashboard.console.service.log.LogService;
+import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
+import org.apache.eventmesh.dashboard.console.service.function.LogService;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

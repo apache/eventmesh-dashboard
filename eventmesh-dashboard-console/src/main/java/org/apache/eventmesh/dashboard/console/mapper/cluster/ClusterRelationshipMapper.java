@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 
 import org.apache.ibatis.annotations.Insert;
@@ -33,16 +34,32 @@ import java.util.List;
 public interface ClusterRelationshipMapper {
 
 
-    @Insert({" insert into cluster_relationship (cluster_type,cluster_id,relationship_type,relationship_id)values( #{clusterType},#{clusterId},",
-        "#{relationshipType},#{relationshipId})"})
+    @Insert({
+        " insert into cluster_relationship (cluster_type,cluster_id,relationship_type,relationship_id)values( #{clusterType},#{clusterId},",
+        "#{relationshipType},#{relationshipId})"
+    })
     Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
 
     @Update("update cluster_relationship set status = 3 where id = #{id} ")
     Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);
 
+
+    @Select({
+        "<script>",
+        " select * from cluster as c inner join cluster_relationship as cr on c.id = c where cr.cluster_id ",
+        "<if text=' clusterId != null'>",
+        "c.id = c.relationship_id where cr.cluster_id = #{clusterId}",
+        "</if>",
+        "<if text=' relationshipId != null'>",
+        "c.id = c.cluster_id where cr.relationship_id = #{relationshipId}",
+        "</if>",
+        "</script>",
+    })
+    List<ClusterAndRelationshipEntity> queryClusterAndRelationshipEntityListByClusterId(ClusterRelationshipEntity clusterRelationshipEntity);
+
     @Select(" select * from cluster_relationship where status = 3")
     List<ClusterRelationshipEntity> selectAll();
 
-    @Select(" select * from cluster_relationship where update_date = #{updateData} and status in( 2 ,3)")
+    @Select(" select * from cluster_relationship where update_time = #{updateTime} and status in( 2 ,3)")
     List<ClusterRelationshipEntity> selectNewlyIncreased();
 }

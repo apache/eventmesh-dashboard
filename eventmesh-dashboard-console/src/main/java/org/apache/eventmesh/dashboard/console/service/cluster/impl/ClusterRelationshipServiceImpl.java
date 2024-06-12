@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
@@ -40,6 +41,11 @@ public class ClusterRelationshipServiceImpl implements ClusterRelationshipServic
     @Override
     public Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity) {
         return clusterRelationshipMapper.relieveRelationship(clusterRelationshipEntity);
+    }
+
+    @Override
+    public List<ClusterAndRelationshipEntity> queryClusterAndRelationshipEntityListByClusterId(ClusterRelationshipEntity clusterRelationshipEntity) {
+        return this.clusterRelationshipMapper.queryClusterAndRelationshipEntityListByClusterId(clusterRelationshipEntity);
     }
 
     @Override

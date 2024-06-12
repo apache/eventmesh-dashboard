@@ -19,8 +19,8 @@ package org.apache.eventmesh.dashboard.console.function.health;
 
 import org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant;
 import org.apache.eventmesh.dashboard.common.enums.StoreType;
-import org.apache.eventmesh.dashboard.console.entity.health.HealthCheckResultEntity;
-import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
+import org.apache.eventmesh.dashboard.console.entity.StoreEntity;
+import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache.CheckResult;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
@@ -29,7 +29,7 @@ import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage
 import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4.Rocketmq4BrokerCheck;
 import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4.Rocketmq4NameServerCheck;
 import org.apache.eventmesh.dashboard.console.service.DataServiceWrapper;
-import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
+import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;

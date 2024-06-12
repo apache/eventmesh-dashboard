@@ -21,9 +21,9 @@ import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.cache.ClusterCacheBase;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.entity.runtime.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
-import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
+import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.util.List;

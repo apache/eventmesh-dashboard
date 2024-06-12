@@ -19,9 +19,9 @@ package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
-import org.apache.eventmesh.dashboard.console.entity.storage.StoreEntity;
+import org.apache.eventmesh.dashboard.console.entity.StoreEntity;
+import org.apache.eventmesh.dashboard.console.service.message.TopicService;
 import org.apache.eventmesh.dashboard.console.service.store.StoreService;
-import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.net.URI;

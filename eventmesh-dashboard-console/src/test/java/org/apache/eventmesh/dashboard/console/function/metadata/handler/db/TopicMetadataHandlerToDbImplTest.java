@@ -23,7 +23,8 @@ import org.apache.eventmesh.dashboard.common.enums.StoreType;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.cache.ClusterCacheBase;
-import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
+import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
+import org.apache.eventmesh.dashboard.console.service.message.TopicService;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import org.junit.jupiter.api.Test;
@@ -61,9 +62,10 @@ class TopicMetadataHandlerToDbImplTest extends ClusterCacheBase {
         topicMetadata.setDescription("function/metadata/handler/db/TopicMetadataHandlerToDbImplTest.java");
         topicMetadata.setRetentionMs(-1L);
         topicMetadataHandlerToDb.addMetadata(topicMetadata);
-
+        TopicEntity topicEntity = new TopicEntity();
+        topicEntity.setId(135L);
         assertEquals("function/metadata/handler/db/TopicMetadataHandlerToDbImplTest.java",
-            topicService.selectTopiByCluster(135L).get(0).getDescription());
+            topicService.selectTopiByCluster(topicEntity).get(0).getDescription());
     }
 
 }

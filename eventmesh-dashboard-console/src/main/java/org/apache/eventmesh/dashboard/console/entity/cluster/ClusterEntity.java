@@ -19,7 +19,8 @@ package org.apache.eventmesh.dashboard.console.entity.cluster;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,17 +35,9 @@ public class ClusterEntity extends BaseEntity {
 
     private ClusterType clusterType;
 
-    private String registryAddress;
-
-    private String bootstrapServers;
-
     private String version;
 
-    private String clientProperties;
-
     private String jmxProperties;
-
-    private String regProperties;
 
     private String description;
 

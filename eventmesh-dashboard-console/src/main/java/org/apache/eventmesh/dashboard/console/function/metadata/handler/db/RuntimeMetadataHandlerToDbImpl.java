@@ -21,10 +21,9 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
-import org.apache.eventmesh.dashboard.console.cache.ClusterCache;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
-import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
+import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
 import java.util.List;
@@ -47,7 +46,7 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
 
     @Override
     public void addMetadata(RuntimeMetadata meta) {
-        ClusterEntity cluster = ClusterCache.getINSTANCE().getClusterByRegistryAddress(meta.getRegistryAddress());
+        ClusterEntity cluster = null;
         if (Objects.isNull(cluster)) {
             log.info("new cluster detected syncing runtime, adding cluster to db, cluster:{}", meta.getClusterName());
             ClusterEntity clusterEntity = new ClusterEntity();
@@ -55,12 +54,8 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
             clusterEntity.setClusterType(ClusterType.EVENTMESH_CLUSTER);
             clusterEntity.setTrusteeshipType(ClusterTrusteeshipType.TRUSTEESHIP);
             clusterEntity.setName(meta.getClusterName());
-            clusterEntity.setRegistryAddress(meta.getRegistryAddress());
-            clusterEntity.setBootstrapServers("");
             clusterEntity.setVersion("");
-            clusterEntity.setClientProperties("");
             clusterEntity.setJmxProperties("");
-            clusterEntity.setRegProperties("");
             clusterEntity.setDescription("");
             clusterEntity.setAuthType(0);
             clusterEntity.setRunState(0);
@@ -70,7 +65,7 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
             clusterService.addCluster(cluster);
         }
         if (Objects.isNull(meta.getClusterId())) {
-            meta.setClusterId(ClusterCache.getINSTANCE().getClusterByName(meta.getClusterName()).getId());
+            //meta.setClusterId(ClusterCache.getINSTANCE().getClusterByName(meta.getClusterName()).getId());
         }
         //runtimeService.addRuntime(new RuntimeEntity(meta));
         //RuntimeCache.getInstance().addRuntime(new RuntimeEntity(meta));

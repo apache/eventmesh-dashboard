@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.console.entity.cluster;
 
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
 
 import lombok.Data;
 

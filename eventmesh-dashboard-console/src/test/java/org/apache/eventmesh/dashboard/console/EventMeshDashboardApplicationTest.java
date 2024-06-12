@@ -17,13 +17,10 @@
 
 package org.apache.eventmesh.dashboard.console;
 
-import org.apache.eventmesh.dashboard.console.service.registry.RegistryDataService;
-
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -50,8 +47,6 @@ import lombok.extern.slf4j.Slf4j;
 })
 class EventMeshDashboardApplicationTest {
 
-    @Autowired
-    private RegistryDataService registryDataService;
 
     @Test
     public void IntegrationTest() throws InterruptedException {

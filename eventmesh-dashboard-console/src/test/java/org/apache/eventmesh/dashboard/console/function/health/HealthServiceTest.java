@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.health;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
-import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
+import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

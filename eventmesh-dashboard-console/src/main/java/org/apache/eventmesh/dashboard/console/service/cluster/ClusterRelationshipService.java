@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 
 import java.util.List;
@@ -31,8 +32,11 @@ public interface ClusterRelationshipService {
 
     Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);
 
+    List<ClusterAndRelationshipEntity> queryClusterAndRelationshipEntityListByClusterId(ClusterRelationshipEntity clusterRelationshipEntity);
+
     List<ClusterRelationshipEntity> selectAll();
 
     List<ClusterRelationshipEntity> selectNewlyIncreased(ClusterRelationshipEntity clusterRelationshipEntity);
+
 
 }
