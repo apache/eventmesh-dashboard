@@ -179,7 +179,7 @@ public class RemotingManager {
 
 
     /**
-     * 解除玩关系，才能删除
+     * 解除完关系，才能删除
      *
      * @param clusterEntityList
      */
