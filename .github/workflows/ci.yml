@@ -21,13 +21,15 @@ name: "Continuous Integration"
 
 on:
   push:
-    branches: [ '**' ]
+    branches:
+      - '**'
+      - '!dependabot/**'
   pull_request:
     branches: [ '**' ]
 
 jobs:
-  build:
-    name: Build
+  build-be:
+    name: Build Backend
     strategy:
       fail-fast: false
       matrix:
@@ -113,3 +115,32 @@ jobs:
 
       - name: Run Unit Tests
         run: ./mvnw -B test --file pom.xml
+
+  build-fe:
+    name: Build Frontend
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: ./eventmesh-dashboard-view
+
+      - name: Build
+        run: npm run build
+        working-directory: ./eventmesh-dashboard-view
+
+#      - name: Run tests
+#        run: npm test
+#        working-directory: ./eventmesh-dashboard-view
