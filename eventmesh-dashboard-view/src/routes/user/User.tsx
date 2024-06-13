@@ -19,13 +19,18 @@
 
 import React, { forwardRef } from 'react'
 import { Box, BoxProps } from '@mui/material'
-import RootLayout from '../../components/page/RootLayout'
+import Page from '../../components/page/Layout'
+import Construction from '../../components/Construction'
 
-interface ClustersProps extends BoxProps {}
+interface UsersProps extends BoxProps {}
 
-const Clusters = forwardRef<typeof Box, ClustersProps>(({ ...props }, ref) => {
-  return <RootLayout>Clusters</RootLayout>
+const User = forwardRef<typeof Box, UsersProps>(({ ...props }, ref) => {
+  return (
+    <Page>
+      <Construction />
+    </Page>
+  )
 })
 
-Clusters.displayName = 'Clusters'
-export default Clusters
+User.displayName = 'User'
+export default User

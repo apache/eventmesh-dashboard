@@ -28,8 +28,8 @@ import {
 } from '@mui/material'
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid'
 import { grey } from '@mui/material/colors'
-import { fetchTopics } from '../../../../service/topics'
-import { useAppSelector } from '../../../../store'
+import { fetchTopics } from '../../../../../service/topics'
+import { useAppSelector } from '../../../../../store'
 import {
   Topic,
   TopicCreationStatusEnum,
@@ -37,7 +37,7 @@ import {
 } from '../topic.types'
 import { TopicCreationStatusText, TopicHealthStatusText } from '../topic.const'
 import { useParams } from 'react-router-dom'
-import { AppSectionBoxShadow } from '../../../../app.const'
+import { AppSectionBoxShadow } from '../../../../../app.const'
 
 export type TopicListParams = {
   page: number

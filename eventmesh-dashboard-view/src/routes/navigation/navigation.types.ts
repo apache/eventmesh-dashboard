@@ -19,22 +19,21 @@
 
 export enum NavMenuIdEnum {
   Home = 'HOME',
-  Clusters = 'CLUSTERS',
-  Settings = 'SETTINGS',
-  Users = 'USERS',
-  Logs = 'LOGS',
+  Eventmesh = 'EVENTMESH',
+  EventmeshClusters = 'EVENTMESH_CLUSTER',
+  EventmeshMeta = 'EVENTMESH_META',
+  EventmeshRuntime = 'EVENTMESH_RUNTIME',
 
-  ClusterOverview = 'CLUSTER_OVERVIEW',
-  ClusterRuntime = 'CLUSTER_RUNTIME',
-  ClusterTopic = 'CLUSTER_TOPIC',
-  ClusterConnection = 'CLUSTER_CONNECTION',
-  ClusterMessage = 'CLUSTER_MESSAGE',
-  ClusterSecurity = 'CLUSTER_SECURITY'
+  Connection = 'CONNECTION',
+  K8S = 'K8S',
+  ROCKET_MQ = 'ROCKET_MQ',
+  Settings = 'SETTINGS',
+  User = 'USER',
 }
 
 export type NavMenuType = {
   id: NavMenuIdEnum
-  icon: React.ReactNode
+  icon?: React.ReactNode
   text: string
   route: string
   count?: number

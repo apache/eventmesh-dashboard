@@ -31,7 +31,6 @@ import { grey } from '@mui/material/colors'
 import NavigationItem from './NavigationItem'
 import { NavMenuIdEnum, NavMenuType } from './navigation.types'
 import { useNavigate } from 'react-router-dom'
-import { fetchResourceStats } from '../../service/topics'
 import NavigationSubMenu from './NavigationSubMenu'
 import { useAppDispatch, useAppSelector } from '../../store'
 import { globalSlice } from '../../store/reducers/public/public.slice'
@@ -46,73 +45,70 @@ const getNavigationMenus = (): NavMenuType[] => {
       count: 0
     },
     {
-      id: NavMenuIdEnum.Clusters,
-      icon: <Icons.Connection />,
-      text: 'Clusters',
-      route: '/clusters',
+      id: NavMenuIdEnum.Eventmesh,
+      icon: <Icons.Eventmesh />,
+      text: 'Eventmesh',
+      route: '/eventmesh',
       count: 0,
       subMenus: [
         {
-          id: NavMenuIdEnum.ClusterOverview,
-          icon: <Icons.Home style={{ color: 'inherit' }} />,
-          text: 'Overview',
-          route: 'overview',
+          id: NavMenuIdEnum.EventmeshClusters,
+          icon: <Icons.Cluster style={{ fontSize: 'inherit' }} />,
+          text: 'Cluster',
+          route: '/eventmesh/cluster',
           count: 0
         },
         {
-          id: NavMenuIdEnum.ClusterRuntime,
-          icon: <Icons.Runtime style={{ color: 'inherit' }} />,
+          id: NavMenuIdEnum.EventmeshMeta,
+          icon: <Icons.Meta style={{ fontSize: 'inherit' }} />,
+          text: 'Meta',
+          route: '/eventmesh/meta',
+          count: 0
+        },
+        {
+          id: NavMenuIdEnum.EventmeshRuntime,
+          icon: <Icons.Runtime style={{ fontSize: 'inherit' }} />,
           text: 'Runtime',
-          route: 'runtime',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.ClusterTopic,
-          icon: <Icons.Topic />,
-          text: 'Topic',
-          route: 'topic',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.ClusterConnection,
-          icon: <Icons.Connection />,
-          text: 'Connection',
-          route: 'connection',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.ClusterMessage,
-          icon: <Icons.Message />,
-          text: 'Message',
-          route: 'message',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.ClusterSecurity,
-          icon: <Icons.Security />,
-          text: 'Security',
-          route: 'security',
+          route: '/eventmesh/runtime',
           count: 0
         }
       ]
     },
+
+    {
+      id: NavMenuIdEnum.Connection,
+      icon: <Icons.Connection />,
+      text: 'Connection',
+      route: '/connection',
+      count: 0
+    },
+    {
+      id: NavMenuIdEnum.ROCKET_MQ,
+      icon: <Icons.RocketMq />,
+      route: '/rocket-mq',
+      text: 'Rocket MQ',
+      count: 0
+    },
+    {
+      id: NavMenuIdEnum.K8S,
+      icon: <Icons.K8s />,
+      route: '/k8s',
+      text: 'K8s',
+      count: 0
+    },
+
+    {
+      id: NavMenuIdEnum.User,
+      icon: <Icons.Users />,
+      route: '/users',
+      text: 'Users'
+    },
+
     {
       id: NavMenuIdEnum.Settings,
       icon: <Icons.Settings />,
       route: '/settings',
       text: 'Settings'
-    },
-    {
-      id: NavMenuIdEnum.Users,
-      icon: <Icons.Users style={{ color: 'inherit' }} />,
-      route: '/users',
-      text: 'Users'
-    },
-    {
-      id: NavMenuIdEnum.Logs,
-      icon: <Icons.Logs />,
-      route: '/logs',
-      text: 'Logs'
     }
   ]
 }

@@ -18,28 +18,21 @@
  */
 
 import React, { forwardRef } from 'react'
-import { Box, Stack, StackProps } from '@mui/material'
+import { Stack, StackProps } from '@mui/material'
+import Construction from '../../components/Construction'
+import RootLayout from '../../components/page/RootLayout'
 
-import { grey } from '@mui/material/colors'
-import Navigation from '../../routes/navigation/Navigation'
+interface K8sProps extends StackProps {}
 
-interface RootLayoutProps extends StackProps {}
-
-const RootLayout = forwardRef<typeof Box, RootLayoutProps>(
+const K8s = forwardRef<typeof Stack, K8sProps>(
   ({ children, ...props }, ref) => {
     return (
-      <Stack
-        direction="row"
-        sx={{
-          position: 'relative',
-          height: '100vh',
-          bgcolor: grey[100]
-        }}>
-        <Navigation />
-        <Box sx={{ flexGrow: 1, pl: 4, overflow: 'hidden' }}>{children}</Box>
-      </Stack>
+      <RootLayout>
+        <Construction title="K8s" />
+      </RootLayout>
     )
   }
 )
-RootLayout.displayName = 'RootLayout'
-export default RootLayout
+
+K8s.displayName = 'K8s'
+export default K8s

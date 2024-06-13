@@ -22,10 +22,12 @@ import { Box, BoxProps, Typography } from '@mui/material'
 import { Icons } from '../assets/icons'
 import { grey } from '@mui/material/colors'
 
-interface ConstructionProps extends BoxProps {}
+interface ConstructionProps extends BoxProps {
+  title?: string
+}
 
 const Construction = forwardRef<typeof Box, ConstructionProps>(
-  ({ ...props }, ref) => {
+  ({ title, ...props }, ref) => {
     return (
       <Box
         ref={ref}
@@ -39,7 +41,9 @@ const Construction = forwardRef<typeof Box, ConstructionProps>(
           color: grey[500]
         }}>
         <Icons.Foundation fontSize="large" />
-        <Typography paragraph>Under constraction</Typography>
+        <Typography paragraph>
+          {title ? `${title} is coming` : 'Coming'} soon
+        </Typography>
       </Box>
     )
   }

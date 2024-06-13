@@ -27,15 +27,20 @@ import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined'
 import { ReactComponent as EventMeshLogoIcon } from './eventmesh-logo.svg'
 import { ReactComponent as EventMeshTopicIcon } from './eventmesh-topic.svg'
 import { ReactComponent as HomeIcon } from './home.svg'
+import { ReactComponent as MetaIcon } from './meta.svg'
 import { ReactComponent as RuntimeIcon } from './runtime.svg'
 import { ReactComponent as TopicIcon } from './topic.svg'
 import { ReactComponent as ConnectionIcon } from './connection.svg'
 import { ReactComponent as MessageIcon } from './message.svg'
 import { ReactComponent as SecurityIcon } from './security.svg'
+import { ReactComponent as ClusterIcon } from './clusters.svg'
 
 import { ReactComponent as SettingsIcon } from './settings.svg'
 import { ReactComponent as UsersIcon } from './users.svg'
 import { ReactComponent as LogsIcon } from './logs.svg'
+import { ReactComponent as EventmeshIcon } from './evetmesh-icon.svg'
+import { ReactComponent as RocketMqIcon } from './rocketmq.svg'
+import { ReactComponent as K8sIcon } from './k8s.svg'
 
 export const Icons = {
   HomeOutlined: HomeOutlinedIcon,
@@ -47,11 +52,16 @@ export const Icons = {
 
   EventMeshLogo: EventMeshLogoIcon,
   EventMeshTopic: EventMeshTopicIcon,
+  Eventmesh: EventmeshIcon,
+  Cluster: ClusterIcon,
+  Meta: MetaIcon,
 
   Home: HomeIcon,
   Runtime: RuntimeIcon,
   Topic: TopicIcon,
   Connection: ConnectionIcon,
+  RocketMq: RocketMqIcon,
+  K8s: K8sIcon,
   Message: MessageIcon,
   Security: SecurityIcon,
 

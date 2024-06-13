@@ -19,18 +19,20 @@
 
 import React, { forwardRef } from 'react'
 import { Box, BoxProps } from '@mui/material'
-import Page from '../../../components/page/Layout'
-import Construction from '../../../components/Construction'
+import Page from '../../../../components/page/Layout'
+import Construction from '../../../../components/Construction'
 
-interface SecurityProps extends BoxProps {}
+interface ConnectionProps extends BoxProps {}
 
-const Security = forwardRef<typeof Box, SecurityProps>(({ ...props }, ref) => {
-  return (
-    <Page ref={ref}>
-      <Construction />
-    </Page>
-  )
-})
+const Connection = forwardRef<typeof Box, ConnectionProps>(
+  ({ ...props }, ref) => {
+    return (
+      <Page>
+        <Construction />
+      </Page>
+    )
+  }
+)
 
-Security.displayName = 'Security'
-export default Security
+Connection.displayName = 'Connection'
+export default Connection

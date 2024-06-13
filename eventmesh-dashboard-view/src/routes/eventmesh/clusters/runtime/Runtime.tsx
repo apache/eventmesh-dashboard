@@ -18,23 +18,19 @@
  */
 
 import React, { forwardRef } from 'react'
-import { Box, BoxProps, Stack } from '@mui/material'
-import Page from '../../../components/page/Layout'
-import Stats from './stats/Stats'
-import TopicList from './topic-list/TopicList'
+import { Box, BoxProps } from '@mui/material'
+import Page from '../../../../components/page/Layout'
+import Construction from '../../../../components/Construction'
 
-interface TopicProps extends BoxProps {}
+interface RuntimeProps extends BoxProps {}
 
-const Topic = forwardRef<typeof Box, TopicProps>(({ ...props }, ref) => {
+const Runtime = forwardRef<typeof Box, RuntimeProps>(({ ...props }, ref) => {
   return (
     <Page>
-      <Stack sx={{ width: 1, height: 1, p: 2 }} spacing={2}>
-        <Stats />
-        <TopicList />
-      </Stack>
+      <Construction />
     </Page>
   )
 })
 
-Topic.displayName = 'Topic'
-export default Topic
+Runtime.displayName = 'Runtime'
+export default Runtime
