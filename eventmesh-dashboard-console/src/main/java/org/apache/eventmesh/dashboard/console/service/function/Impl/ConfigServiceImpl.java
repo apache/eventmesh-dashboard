@@ -208,7 +208,9 @@ public class ConfigServiceImpl implements ConfigService {
     public void insertDefaultConfigToCache() {
         List<ConfigEntity> configEntityList = configMapper.selectAllDefaultConfig();
         configEntityList.forEach(n -> {
-            DefaultConfigKey defaultConfigKey = new DefaultConfigKey(n.getBusinessType(), n.getConfigName());
+            DefaultConfigKey defaultConfigKey = new DefaultConfigKey();
+            defaultConfigKey.setConfigName(n.getConfigName());
+            defaultConfigKey.setBusinessType(n.getBusinessType());
             defaultConfigCache.putIfAbsent(defaultConfigKey, n.getConfigValue());
 
         });

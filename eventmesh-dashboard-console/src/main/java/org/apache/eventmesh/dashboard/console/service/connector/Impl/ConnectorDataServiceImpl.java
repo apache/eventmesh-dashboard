@@ -33,8 +33,8 @@ public class ConnectorDataServiceImpl implements ConnectorDataService {
     private ConnectorMapper connectorMapper;
 
     @Override
-    public Long createConnector(ConnectorEntity connectorEntity) {
-        return connectorMapper.insert(connectorEntity);
+    public void createConnector(ConnectorEntity connectorEntity) {
+        connectorMapper.insert(connectorEntity);
     }
 
     @Override

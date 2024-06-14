@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface ConnectorDataService {
 
-    Long createConnector(ConnectorEntity connectorEntity);
+    void createConnector(ConnectorEntity connectorEntity);
 
     List<ConnectorEntity> selectAll();
 
