@@ -32,7 +32,7 @@ public interface ClusterService {
 
     void createCluster(ClusterEntity clusterEntity);
 
-    GetClusterBaseMessageVO getClusterBaseMessage(ClusterIdDTO clusterIdDTO);
+    GetClusterBaseMessageVO selectClusterBaseMessage(ClusterIdDTO clusterIdDTO);
 
 
     Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO);
@@ -43,7 +43,7 @@ public interface ClusterService {
 
     List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity);
 
-    void addCluster(ClusterEntity cluster);
+    void insertCluster(ClusterEntity cluster);
 
     List<ClusterEntity> selectAllCluster();
 

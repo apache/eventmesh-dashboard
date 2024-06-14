@@ -33,23 +33,24 @@ public class ClientDataServiceImpl implements ClientDataService {
     private ClientMapper clientMapper;
 
     @Override
-    public void deActive(ClientEntity clientEntity) {
-        clientMapper.deactivate(clientEntity);
+    public Integer deActive(ClientEntity clientEntity) {
+        return clientMapper.deactivate(clientEntity);
     }
 
     @Override
-    public void deActiveByHostPort(ClientEntity clientEntity) {
-        clientMapper.deActiveByHostPort(clientEntity);
+    public Integer deActiveByHostPort(ClientEntity clientEntity) {
+        return clientMapper.deActiveByHostPort(clientEntity);
+    }
+
+    @SuppressWarnings("checkstyle:Indentation")
+    @Override
+    public void insertClient(ClientEntity clientEntity) {
+         clientMapper.insert(clientEntity);
     }
 
     @Override
-    public Long addClient(ClientEntity clientEntity) {
-        return clientMapper.insert(clientEntity);
-    }
-
-    @Override
-    public void batchInsert(List<ClientEntity> clientEntityList) {
-        clientMapper.batchInsert(clientEntityList);
+    public Integer batchInsert(List<ClientEntity> clientEntityList) {
+        return clientMapper.batchInsert(clientEntityList);
     }
 
     @Override

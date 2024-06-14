@@ -26,21 +26,23 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/cluster/health")
 public class HealthController {
 
     @Autowired
     HealthDataService healthDataService;
 
-    @GetMapping("/cluster/health/getHistoryLiveStatus")
+    @GetMapping("/getHistoryLiveStatus")
     public List<HealthCheckResultEntity> getHistoryLiveStatusById(Integer type, Long instanceId, String startTime) {
-        return healthDataService.getInstanceLiveStatusHistory(type, instanceId, LocalDateTime.parse(startTime));
+        return healthDataService.selectInstanceLiveStatusHistory(type, instanceId, LocalDateTime.parse(startTime));
     }
 
-    @GetMapping("/cluster/health/getInstanceLiveProportion")
+    @GetMapping("/getInstanceLiveProportion")
     public InstanceLiveProportionVo getInstanceLiveProportion(Integer instanceType, Long theClusterId) {
-        return healthDataService.getInstanceLiveProportion(theClusterId, instanceType);
+        return healthDataService.selectInstanceLiveProportion(theClusterId, instanceType);
     }
 }

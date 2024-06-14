@@ -22,18 +22,12 @@ import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "resultDesc")
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Schema(name = "HealthCheckResultEntity", description = "Health check result entity")
 public class HealthCheckResultEntity extends BaseEntity {
 

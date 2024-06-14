@@ -26,9 +26,12 @@ import org.apache.eventmesh.dashboard.console.modle.vo.connection.ConnectionList
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 /**
  * Service providing ConnectionEntity data.
  */
+@Service
 public interface ConnectionDataService {
 
     ConnectorEntity getConnectorById(Long connectorId);

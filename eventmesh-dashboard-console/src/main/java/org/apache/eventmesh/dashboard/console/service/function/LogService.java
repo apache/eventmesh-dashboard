@@ -31,9 +31,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface LogService {
 
-    List<LogEntity> getLogListByCluster(GetLogListDTO getLogListDTO);
+    List<LogEntity> selectLogListByCluster(GetLogListDTO getLogListDTO);
 
-    Long addLog(LogEntity logEntity);
+    void insertLog(LogEntity logEntity);
 
     Integer updateLog(LogEntity logEntity);
 

@@ -30,11 +30,11 @@ public interface GroupService {
 
     List<GroupEntity> selectAll();
 
-    void batchInsert(List<GroupEntity> groupEntities);
+    Integer batchInsert(List<GroupEntity> groupEntities);
 
-    List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
+    List<GroupEntity> selectGroupByClusterId(GroupEntity groupEntity);
 
-    void addGroup(GroupEntity groupEntity);
+    void insertGroup(GroupEntity groupEntity);
 
     void updateGroup(GroupEntity groupEntity);
 

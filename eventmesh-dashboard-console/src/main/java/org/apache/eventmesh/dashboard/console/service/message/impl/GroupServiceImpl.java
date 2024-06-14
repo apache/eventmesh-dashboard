@@ -45,21 +45,21 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void batchInsert(List<GroupEntity> groupEntities) {
-        oprGroupMapper.batchInsert(groupEntities);
+    public Integer batchInsert(List<GroupEntity> groupEntities) {
+        return oprGroupMapper.batchInsert(groupEntities);
     }
 
     @EmLog(OprType = "search", OprTarget = "Group")
     @Override
-    public List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity) {
+    public List<GroupEntity> selectGroupByClusterId(GroupEntity groupEntity) {
         return oprGroupMapper.selectGroup(groupEntity);
 
     }
 
     @EmLog(OprType = "add", OprTarget = "Group")
     @Override
-    public void addGroup(GroupEntity groupEntity) {
-        oprGroupMapper.addGroup(groupEntity);
+    public void insertGroup(GroupEntity groupEntity) {
+        oprGroupMapper.insertGroup(groupEntity);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity) {
-        groupMemberService.addGroupMember(groupMemberEntity);
+        groupMemberService.insertGroupMember(groupMemberEntity);
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(groupMemberEntity.getGroupName());
         groupEntity.setClusterId(groupMemberEntity.getClusterId());

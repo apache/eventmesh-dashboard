@@ -37,11 +37,11 @@ public interface ConfigService {
 
     List<ConfigEntity> selectAll();
 
-    void batchInsert(List<ConfigEntity> configEntityList);
+    Integer batchInsert(List<ConfigEntity> configEntityList);
 
     String mapToYaml(Map<String, String> stringMap);
 
-    Integer addConfig(ConfigEntity configEntity);
+    void insertConfig(ConfigEntity configEntity);
 
     Integer deleteConfig(ConfigEntity configEntity);
 

@@ -29,15 +29,15 @@ public interface GroupMemberService {
 
     List<GroupMemberEntity> selectAll();
 
-    void batchInsert(List<GroupMemberEntity> groupMemberEntities);
+    Integer batchInsert(List<GroupMemberEntity> groupMemberEntities);
 
-    List<GroupMemberEntity> getGroupMemberByClusterId(GroupMemberEntity groupMemberEntity);
+    List<GroupMemberEntity> selectGroupMemberByClusterId(GroupMemberEntity groupMemberEntity);
 
-    void addGroupMember(GroupMemberEntity groupMemberEntity);
+    void insertGroupMember(GroupMemberEntity groupMemberEntity);
 
-    void updateGroupMember(GroupMemberEntity groupMemberEntity);
+    Integer updateGroupMember(GroupMemberEntity groupMemberEntity);
 
-    GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
+    Integer deleteGroupMember(GroupMemberEntity groupMemberEntity);
 
     GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 

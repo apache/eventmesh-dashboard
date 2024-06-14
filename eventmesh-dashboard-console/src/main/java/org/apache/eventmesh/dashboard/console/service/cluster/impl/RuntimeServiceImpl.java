@@ -45,8 +45,8 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public List<RuntimeEntity> getRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity) {
-        List<RuntimeEntity> runtimeByClusterId = runtimeMapper.getRuntimesToFrontByCluster(runtimeEntity);
+    public List<RuntimeEntity> selectRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity) {
+        List<RuntimeEntity> runtimeByClusterId = runtimeMapper.selectRuntimesToFrontByCluster(runtimeEntity);
         runtimeByClusterId.forEach(n -> {
             n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", n.getId()));
         });
@@ -55,8 +55,8 @@ public class RuntimeServiceImpl implements RuntimeService {
 
 
     @Override
-    public void batchInsert(List<RuntimeEntity> runtimeEntities) {
-        runtimeMapper.batchInsert(runtimeEntities);
+    public Integer batchInsert(List<RuntimeEntity> runtimeEntities) {
+        return runtimeMapper.batchInsert(runtimeEntities);
     }
 
     @Override
@@ -71,21 +71,21 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     @Override
     public void insertRuntime(RuntimeEntity runtimeEntity) {
-        runtimeMapper.addRuntime(runtimeEntity);
+        runtimeMapper.insertRuntime(runtimeEntity);
     }
 
     @Override
-    public void updateRuntimeByCluster(RuntimeEntity runtimeEntity) {
-        runtimeMapper.updateRuntimeByCluster(runtimeEntity);
+    public Integer updateRuntimeByCluster(RuntimeEntity runtimeEntity) {
+        return runtimeMapper.updateRuntimeByCluster(runtimeEntity);
     }
 
     @Override
-    public void deleteRuntimeByCluster(RuntimeEntity runtimeEntity) {
-        runtimeMapper.deleteRuntimeByCluster(runtimeEntity);
+    public Integer deleteRuntimeByCluster(RuntimeEntity runtimeEntity) {
+        return runtimeMapper.deleteRuntimeByCluster(runtimeEntity);
     }
 
     @Override
-    public void deactivate(RuntimeEntity runtimeEntity) {
-        runtimeMapper.deactivate(runtimeEntity);
+    public Integer deactivate(RuntimeEntity runtimeEntity) {
+        return runtimeMapper.deactivate(runtimeEntity);
     }
 }

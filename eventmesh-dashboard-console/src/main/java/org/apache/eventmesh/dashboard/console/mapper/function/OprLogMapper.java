@@ -49,15 +49,7 @@ public interface OprLogMapper {
         "       AND is_delete=0",
         "   </where>",
         "</script>"})
-    List<LogEntity> getLogList(LogEntity logEntity);
-
-    @Insert("INSERT INTO operation_log ( cluster_id, operation_type,target_type, content,operation_user,result)"
-        + "VALUE (#{clusterId},#{operationType},#{targetType},#{content},#{operationUser},#{result})")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    Long addLog(LogEntity logEntity);
-
-    @Update("UPDATE operation_log SET state=#{state} ,result=#{result} WHERE id=#{id}")
-    Integer updateLog(LogEntity logEntity);
+    List<LogEntity> selectLogList(LogEntity logEntity);
 
     @Select({
         "<script>",
@@ -81,5 +73,14 @@ public interface OprLogMapper {
         "</where>",
         "</script>"
     })
-    List<LogEntity> getLogListToFront(LogEntity logEntity);
+    List<LogEntity> selectLogListToFront(LogEntity logEntity);
+
+    @Update("UPDATE operation_log SET state=#{state} ,result=#{result} WHERE id=#{id}")
+    Integer updateLog(LogEntity logEntity);
+
+    @Insert("INSERT INTO operation_log ( cluster_id, operation_type,target_type, content,operation_user,result)"
+        + "VALUE (#{clusterId},#{operationType},#{targetType},#{content},#{operationUser},#{result})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void insertLog(LogEntity logEntity);
+
 }

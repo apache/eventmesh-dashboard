@@ -44,7 +44,7 @@ public class RuntimeController {
     @PostMapping("/queryRuntimeListByClusterId")
     public List<RuntimeEntity> queryRuntimeListByClusterId(@Validated @RequestBody ClusterIdDTO clusterIdDTO) {
         List<RuntimeEntity> runtimeEntityList =
-            runtimeService.getRuntimeToFrontByClusterId(RuntimeControllerMapper.INSTANCE.queryRuntimeListByClusterId(clusterIdDTO));
+            runtimeService.selectRuntimeToFrontByClusterId(RuntimeControllerMapper.INSTANCE.queryRuntimeListByClusterId(clusterIdDTO));
         runtimeEntityList.forEach(n -> {
             n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", n.getId()));
         });

@@ -33,17 +33,6 @@ import java.util.List;
 @Mapper
 public interface ClusterRelationshipMapper {
 
-
-    @Insert({
-        " insert into cluster_relationship (cluster_type,cluster_id,relationship_type,relationship_id)values( #{clusterType},#{clusterId},",
-        "#{relationshipType},#{relationshipId})"
-    })
-    Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
-
-    @Update("update cluster_relationship set status = 3 where id = #{id} ")
-    Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);
-
-
     @Select({
         "<script>",
         " select * from cluster as c inner join cluster_relationship as cr on c.id = c where cr.cluster_id ",
@@ -62,4 +51,16 @@ public interface ClusterRelationshipMapper {
 
     @Select(" select * from cluster_relationship where update_time = #{updateTime} and status in( 2 ,3)")
     List<ClusterRelationshipEntity> selectNewlyIncreased();
+
+    @Update("update cluster_relationship set status = 3 where id = #{id} ")
+    Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);
+
+    @Insert({
+        " insert into cluster_relationship (cluster_type,cluster_id,relationship_type,relationship_id)values( #{clusterType},#{clusterId},",
+        "#{relationshipType},#{relationshipId})"
+    })
+    void insertClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
+
+
 }
+

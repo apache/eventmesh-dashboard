@@ -34,20 +34,20 @@ public class LogServiceImpl implements LogService {
     OprLogMapper oprLogMapper;
 
     @Override
-    public List<LogEntity> getLogListByCluster(GetLogListDTO getLogListDTO) {
+    public List<LogEntity> selectLogListByCluster(GetLogListDTO getLogListDTO) {
         LogEntity logEntity = new LogEntity();
         logEntity.setClusterId(getLogListDTO.getClusterId());
         logEntity.setTargetType(getLogListDTO.getTargetType());
         logEntity.setOperationType(getLogListDTO.getOperationType());
         logEntity.setState(getLogListDTO.getState());
         logEntity.setOperationUser(getLogListDTO.getOperationUser());
-        return oprLogMapper.getLogListToFront(logEntity);
+        return oprLogMapper.selectLogListToFront(logEntity);
     }
 
     @Override
-    public Long addLog(LogEntity logEntity) {
+    public void insertLog(LogEntity logEntity) {
 
-        return oprLogMapper.addLog(logEntity);
+        oprLogMapper.insertLog(logEntity);
     }
 
     @Override

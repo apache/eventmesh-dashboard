@@ -65,7 +65,7 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
-    public GetClusterBaseMessageVO getClusterBaseMessage(ClusterIdDTO clusterIdDTO) {
+    public GetClusterBaseMessageVO selectClusterBaseMessage(ClusterIdDTO clusterIdDTO) {
         Long clusterId = clusterIdDTO.getClusterId();
         GetClusterBaseMessageVO getClusterBaseMessageVO = new GetClusterBaseMessageVO();
         TopicEntity topicEntity = new TopicEntity();
@@ -73,13 +73,13 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
         getClusterBaseMessageVO.setTopicNum(topicMapper.selectTopicNumByCluster(topicEntity));
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setClusterId(clusterId);
-        getClusterBaseMessageVO.setConsumerGroupNum(oprGroupMapper.getConsumerNumByCluster(groupEntity));
+        getClusterBaseMessageVO.setConsumerGroupNum(oprGroupMapper.selectConsumerNumByCluster(groupEntity));
         ConnectionEntity connectionEntity = new ConnectionEntity();
         connectionEntity.setClusterId(clusterId);
         getClusterBaseMessageVO.setConnectionNum(connectionMapper.selectConnectionNumByCluster(connectionEntity));
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setClusterId(clusterId);
-        getClusterBaseMessageVO.setRuntimeNum(runtimeMapper.getRuntimeNumByCluster(runtimeEntity));
+        getClusterBaseMessageVO.setRuntimeNum(runtimeMapper.selectRuntimeNumByCluster(runtimeEntity));
         return getClusterBaseMessageVO;
     }
 
@@ -105,7 +105,7 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
-    public void addCluster(ClusterEntity cluster) {
+    public void insertCluster(ClusterEntity cluster) {
         clusterMapper.insertCluster(cluster);
     }
 

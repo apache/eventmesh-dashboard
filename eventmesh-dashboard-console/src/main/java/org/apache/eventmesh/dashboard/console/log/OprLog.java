@@ -66,7 +66,7 @@ public class OprLog implements Ordered, ApplicationContextAware {
             return joinPoint.proceed();
         }
         LogEntity logEntity = this.productLoEntity(declaredAnnotation, joinPoint);
-        logService.addLog(logEntity);
+        logService.insertLog(logEntity);
         logEntity.setEndTime(new Timestamp(System.currentTimeMillis()));
         Object proceed = null;
         try {

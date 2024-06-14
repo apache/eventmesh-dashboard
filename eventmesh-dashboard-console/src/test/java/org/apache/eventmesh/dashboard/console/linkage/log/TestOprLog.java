@@ -51,7 +51,7 @@ public class TestOprLog {
         groupEntity.setStatus(1);
         groupEntity.setType(0);
         groupEntity.setState("OS");
-        groupService.addGroup(groupEntity);
+        groupService.insertGroup(groupEntity);
         LogEntity logEntity = new LogEntity();
         logEntity.setClusterId(1L);
         logEntity.setOperationType("add");
@@ -59,7 +59,7 @@ public class TestOprLog {
         logEntity.setContent(groupEntity.toString());
         logEntity.setResult(groupEntity.toString());
         logEntity.setId(groupEntity.getId());
-        List<LogEntity> logListByCluster = logService.getLogListByCluster(new GetLogListDTO());
+        List<LogEntity> logListByCluster = logService.selectLogListByCluster(new GetLogListDTO());
         logListByCluster.get(0).setId(null);
         logListByCluster.get(0).setCreateTime(null);
         logListByCluster.get(0).setEndTime(null);

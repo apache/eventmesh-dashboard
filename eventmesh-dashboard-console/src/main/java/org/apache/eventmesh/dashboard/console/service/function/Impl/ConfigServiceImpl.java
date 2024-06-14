@@ -131,8 +131,8 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public void batchInsert(List<ConfigEntity> configEntityList) {
-        configMapper.batchInsert(configEntityList);
+    public Integer batchInsert(List<ConfigEntity> configEntityList) {
+        return configMapper.batchInsert(configEntityList);
     }
 
     @Override
@@ -164,8 +164,8 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public Integer addConfig(ConfigEntity configEntity) {
-        return configMapper.addConfig(configEntity);
+    public void insertConfig(ConfigEntity configEntity) {
+        configMapper.insertConfig(configEntity);
     }
 
     @Override
@@ -181,7 +181,7 @@ public class ConfigServiceImpl implements ConfigService {
         return configMapper.selectByInstanceId(config);
     }
 
-    public ConfigEntity setSearchCriteria(GetConfigsListDTO getConfigsListDTO, ConfigEntity configEntity) {
+    public ConfigEntity buildSearchCriteria(GetConfigsListDTO getConfigsListDTO, ConfigEntity configEntity) {
         if (getConfigsListDTO != null) {
             if (getConfigsListDTO.getConfigName() != null) {
                 configEntity.setConfigName(getConfigsListDTO.getConfigName());
@@ -201,11 +201,11 @@ public class ConfigServiceImpl implements ConfigService {
         ConfigEntity config = new ConfigEntity();
         config.setInstanceId(instanceId);
         config.setInstanceType(type);
-        config = this.setSearchCriteria(getConfigsListDTO, config);
-        return configMapper.getConfigsToFrontWithDynamic(config);
+        config = this.buildSearchCriteria(getConfigsListDTO, config);
+        return configMapper.selectConfigsToFrontWithDynamic(config);
     }
 
-    public void addDefaultConfigToCache() {
+    public void insertDefaultConfigToCache() {
         List<ConfigEntity> configEntityList = configMapper.selectAllDefaultConfig();
         configEntityList.forEach(n -> {
             DefaultConfigKey defaultConfigKey = new DefaultConfigKey(n.getBusinessType(), n.getConfigName());
@@ -217,7 +217,7 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public Map<String, String> selectDefaultConfig(String businessType, Long instanceId, Integer instanceType) {
         if (defaultConfigCache.size() == 0) {
-            this.addDefaultConfigToCache();
+            this.insertDefaultConfigToCache();
         }
         ConcurrentHashMap<String, String> stringStringConcurrentHashMap = new ConcurrentHashMap<>();
         defaultConfigCache.forEach((k, v) -> {

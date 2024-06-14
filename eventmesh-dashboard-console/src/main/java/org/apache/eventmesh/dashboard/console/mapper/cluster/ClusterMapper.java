@@ -32,7 +32,9 @@ import java.util.Map;
 
 /**
  * cluster table operation
+ *
  */
+
 @Mapper
 public interface ClusterMapper {
 
@@ -45,6 +47,22 @@ public interface ClusterMapper {
     @Select("SELECT * FROM cluster where update_time >  #{updateTime}")
     List<ClusterEntity> selectClusterByUpdate(@Param("updateTime") long updateTime);
 
+    @Select({
+        "<script>",
+        "",
+        "",
+        "</script>"
+    })
+    Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO);
+
+    @Update({"update cluster set name=#{name},jmx_properties=#{jmxProperties},description=#{description},auth_type=#{authType},run_state=#{runState}",
+        " where id=#{id}"
+    })
+    Integer updateClusterById(ClusterEntity cluster);
+
+    @Update("UPDATE cluster SET status=0 WHERE id=#{id}")
+    Integer deactivate(ClusterEntity clusterEntity);
+
     @Insert({
         "<script>",
         "   insert into cluster (name,trusteeship_type, cluster_type, version, jmx_properties, description, auth_type) values ",
@@ -55,31 +73,11 @@ public interface ClusterMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer batchInsert(List<ClusterEntity> clusterEntities);
 
-
-    @Select({
-        "<script>",
-        "",
-        "",
-        "</script>"
-    })
-    Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO);
-
-
     @Insert({
         "insert into cluster(name,trusteeship_type,cluster_type,version,jmx_properties,description,auth_type)values",
         "(#{name},#{c.trusteeshipType},#{c.clusterType},#{c.version},#{jmxProperties},#{regProperties},#{description},#{authType})"
     })
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    Integer insertCluster(ClusterEntity cluster);
-
-    @Update({"update cluster set name=#{name},jmx_properties=#{jmxProperties},description=#{description},auth_type=#{authType},run_state=#{runState}",
-        " where id=#{id}"
-    })
-    Integer updateClusterById(ClusterEntity cluster);
-
-    @Update("UPDATE cluster SET status=0 WHERE id=#{id}")
-    Integer deactivate(ClusterEntity clusterEntity);
-
-
+    void insertCluster(ClusterEntity cluster);
 
 }

@@ -32,9 +32,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/cluster/connection")
 public class ConnectionController {
 
     @Autowired
@@ -46,24 +48,24 @@ public class ConnectionController {
      * @param type
      * @return
      */
-    @GetMapping("/cluster/connection/getConnectorBusinessType")
+    @GetMapping("/getConnectorBusinessType")
     public List<String> getConnectorBusinessType(String type) {
         return connectionDataService.getConnectorBusinessType(type);
     }
 
-    @GetMapping("/cluster/connection/getConnectorConfigs")
+    @GetMapping("/getConnectorConfigs")
     public List<ConfigEntity> getConnectorConfigsByClassAndVersion(String version, String classType) {
         return connectionDataService.getConnectorConfigsByClassAndVersion(classType, version);
     }
 
 
-    @GetMapping("/cluster/connection/showCreateConnectionMessage")
+    @GetMapping("/showCreateConnectionMessage")
     public AddConnectionDTO showCreateConnectionMessage() {
         return new AddConnectionDTO();
     }
 
 
-    @PostMapping("/cluster/connection/createConnection")
+    @PostMapping("/createConnection")
     public String createConnection(@Validated @RequestBody CreateConnectionDTO createConnectionDTO) {
         try {
             connectionDataService.createConnection(createConnectionDTO);
@@ -75,12 +77,12 @@ public class ConnectionController {
     }
 
 
-    @PostMapping("/cluster/connection/getConnectionList")
+    @PostMapping("/getConnectionList")
     public List<ConnectionListVO> getConnectionList(@Validated @RequestBody GetConnectionListDTO getConnectionListDTO) {
         return connectionDataService.getConnectionToFrontByCluster(getConnectionListDTO.getClusterId(), getConnectionListDTO);
     }
 
-    @GetMapping("/cluster/connection/getConnectorDetail")
+    @GetMapping("/getConnectorDetail")
     public ConnectorEntity getConnectorDetail(Long connectorId) {
         return connectionDataService.getConnectorById(connectorId);
     }

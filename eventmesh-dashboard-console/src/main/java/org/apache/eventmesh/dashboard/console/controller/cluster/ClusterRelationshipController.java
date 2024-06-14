@@ -40,7 +40,7 @@ public class ClusterRelationshipController {
 
     @PostMapping("addClusterRelationshipEntry")
     public void addClusterRelationshipEntry(@RequestBody ClusterRelationshipEntity clusterRelationshipEntity) {
-        this.clusterRelationshipService.addClusterRelationshipEntry(clusterRelationshipEntity);
+        this.clusterRelationshipService.insertClusterRelationshipEntry(clusterRelationshipEntity);
 
     }
 

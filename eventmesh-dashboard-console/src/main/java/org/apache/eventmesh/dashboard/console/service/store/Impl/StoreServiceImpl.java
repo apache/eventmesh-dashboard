@@ -33,7 +33,7 @@ public class StoreServiceImpl implements StoreService {
     private StoreMapper storeMapper;
 
     @Override
-    public StoreEntity getStoreToFrontListByCluster(Long clusterId) {
+    public StoreEntity selectStoreToFrontListByCluster(Long clusterId) {
         StoreEntity storeEntity = new StoreEntity();
         storeEntity.setClusterId(clusterId);
         return storeMapper.selectStoreByCluster(storeEntity);
@@ -61,18 +61,18 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public void batchInsert(List<StoreEntity> storeEntities) {
-        storeMapper.batchInsert(storeEntities);
+    public Integer batchInsert(List<StoreEntity> storeEntities) {
+        return storeMapper.batchInsert(storeEntities);
     }
 
     @Override
-    public void addStore(StoreEntity storeEntity) {
-        storeMapper.addStore(storeEntity);
+    public void insertStore(StoreEntity storeEntity) {
+        storeMapper.insertStore(storeEntity);
     }
 
     @Override
-    public void deleteStoreByUnique(StoreEntity storeEntity) {
-        storeMapper.deleteStoreByUnique(storeEntity);
+    public Integer deleteStoreByUnique(StoreEntity storeEntity) {
+        return storeMapper.deleteStoreByUnique(storeEntity);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public void updateStoreByUnique(StoreEntity storeEntity) {
-        storeMapper.updateStoreByUnique(storeEntity);
+    public Integer updateStoreByUnique(StoreEntity storeEntity) {
+        return storeMapper.updateStoreByUnique(storeEntity);
     }
 }

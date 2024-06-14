@@ -35,26 +35,10 @@ import java.util.List;
 public interface RuntimeMapper {
 
     @Select("SELECT COUNT(*) FROM runtime WHERE cluster_id=#{clusterId} AND status=1")
-    Integer getRuntimeNumByCluster(RuntimeEntity runtimeEntity);
+    Integer selectRuntimeNumByCluster(RuntimeEntity runtimeEntity);
 
     @Select("SELECT * FROM runtime WHERE status=1")
     List<RuntimeEntity> selectAll();
-
-    @Insert({
-        "<script>",
-        "   INSERT INTO runtime (cluster_id, host, storage_cluster_id, port, jmx_port, start_timestamp, rack, status, endpoint_map) VALUES",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "   (#{c.clusterId},#{c.host},#{c.storageClusterId},#{c.port},#{c.jmxPort},NOW(),#{c.rack},#{c.status},#{c.endpointMap})",
-        "   </foreach>",
-        "</script>"})
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<RuntimeEntity> runtimeEntities);
-
-    @Insert("INSERT INTO runtime (cluster_id, host, storage_cluster_id, port, jmx_port, start_timestamp, rack, status, "
-        + "endpoint_map) VALUES(#{clusterId},#{host},#{storageClusterId},#{port},#{jmxPort},NOW(),#{rack},#{status},#{endpointMap})"
-        + " ON DUPLICATE KEY UPDATE status=1,start_timestamp = now()")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addRuntime(RuntimeEntity runtimeEntity);
 
     @Select("select * from runtime where cluster_id=#{clusterid} and status=1")
     List<RuntimeEntity> selectRuntimeByCluster(RuntimeEntity runtimeEntity);
@@ -73,18 +57,34 @@ public interface RuntimeMapper {
         "</if>",
         "</where>",
         "</script>"})
-    List<RuntimeEntity> getRuntimesToFrontByCluster(@Param("runtimeEntity") RuntimeEntity runtimeEntity);
+    List<RuntimeEntity> selectRuntimesToFrontByCluster(@Param("runtimeEntity") RuntimeEntity runtimeEntity);
 
     @Select("SELECT * FROM runtime WHERE host = #{host} and port = #{port} and status = 1")
     List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity);
 
     @Update("UPDATE runtime SET port=#{port} ,jmx_port=#{jmxPort} ,status=#{status} WHERE cluster_id=#{clusterId} AND status=1")
-    void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
+    Integer updateRuntimeByCluster(RuntimeEntity runtimeEntity);
 
     @Update("UPDATE runtime SET status=0 WHERE cluster_id=#{clusterId}")
-    void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
+    Integer deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
 
     @Update("UPDATE runtime SET status = 0 WHERE id = #{id}")
-    void deactivate(RuntimeEntity runtimeEntity);
+    Integer deactivate(RuntimeEntity runtimeEntity);
+
+    @Insert({
+        "<script>",
+        "   INSERT INTO runtime (cluster_id, host, storage_cluster_id, port, jmx_port, start_timestamp, rack, status, endpoint_map) VALUES",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "   (#{c.clusterId},#{c.host},#{c.storageClusterId},#{c.port},#{c.jmxPort},NOW(),#{c.rack},#{c.status},#{c.endpointMap})",
+        "   </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    Integer batchInsert(List<RuntimeEntity> runtimeEntities);
+
+    @Insert("INSERT INTO runtime (cluster_id, host, storage_cluster_id, port, jmx_port, start_timestamp, rack, status, "
+        + "endpoint_map) VALUES(#{clusterId},#{host},#{storageClusterId},#{port},#{jmxPort},NOW(),#{rack},#{status},#{endpointMap})"
+        + " ON DUPLICATE KEY UPDATE status=1,start_timestamp = now()")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void insertRuntime(RuntimeEntity runtimeEntity);
 
 }

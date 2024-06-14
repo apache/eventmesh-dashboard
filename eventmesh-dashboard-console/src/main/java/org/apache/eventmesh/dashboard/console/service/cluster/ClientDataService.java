@@ -26,13 +26,13 @@ import java.util.List;
  */
 public interface ClientDataService {
 
-    void deActive(ClientEntity clientEntity);
+    Integer deActive(ClientEntity clientEntity);
 
-    void deActiveByHostPort(ClientEntity clientEntity);
+    Integer deActiveByHostPort(ClientEntity clientEntity);
 
-    Long addClient(ClientEntity clientEntity);
+    void insertClient(ClientEntity clientEntity);
 
-    void batchInsert(List<ClientEntity> clientEntityList);
+    Integer batchInsert(List<ClientEntity> clientEntityList);
 
     List<ClientEntity> selectByHostPort(ClientEntity clientEntity);
 

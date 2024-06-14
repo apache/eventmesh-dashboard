@@ -47,7 +47,7 @@ public class GroupController {
 
     @PostMapping("queryGroupListByClusterId")
     public List<GroupEntity> queryGroupListByClusterId(@RequestBody @Validated ClusterIdDTO clusterIdDTO) {
-        return groupService.getGroupByClusterId(GroupControllerMapper.INSTANCE.queryGroupListByClusterId(clusterIdDTO));
+        return groupService.selectGroupByClusterId(GroupControllerMapper.INSTANCE.queryGroupListByClusterId(clusterIdDTO));
     }
 
     @PostMapping("deleteGroupById")

@@ -27,7 +27,7 @@ import java.util.List;
  */
 public interface TopicService {
 
-    List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId);
+    List<TopicDetailGroupVO> selectTopicDetailGroups(Long topicId);
 
     void createTopic(TopicEntity topicEntity);
 
@@ -35,9 +35,9 @@ public interface TopicService {
 
     List<TopicEntity> selectAll();
 
-    void addTopic(TopicEntity topicEntity);
+    void insertTopic(TopicEntity topicEntity);
 
-    void updateTopic(TopicEntity topicEntity);
+    Integer updateTopic(TopicEntity topicEntity);
 
     void deleteTopicById(TopicEntity topicEntity);
 
@@ -47,5 +47,5 @@ public interface TopicService {
 
     List<TopicEntity> selectTopiByCluster(TopicEntity topicEntity);
 
-    List<TopicEntity> getTopicListToFront(TopicEntity topicEntity);
+    List<TopicEntity> selectTopicListToFront(TopicEntity topicEntity);
 }
