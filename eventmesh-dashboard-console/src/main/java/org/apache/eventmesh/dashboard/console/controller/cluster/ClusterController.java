@@ -43,12 +43,9 @@ public class ClusterController {
     @Autowired
     ClusterService clusterService;
 
-
-
-
     @GetMapping("queryHomeClusterData")
     public GetClusterBaseMessageVO queryHomeClusterData(@RequestBody @Validated ClusterIdDTO clusterIdDTO) {
-        return clusterService.selectClusterBaseMessage(clusterIdDTO);
+        return clusterService.selectClusterBaseMessage(clusterIdDTO.getClusterId());
     }
 
 

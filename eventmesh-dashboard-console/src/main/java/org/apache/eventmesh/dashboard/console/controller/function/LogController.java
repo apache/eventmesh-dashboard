@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.controller.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
+import org.apache.eventmesh.dashboard.console.mapstruct.log.LogControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
 import org.apache.eventmesh.dashboard.console.service.function.LogService;
 
@@ -39,7 +40,7 @@ public class LogController {
 
     @PostMapping("/getList")
     public List<LogEntity> getLogLIstToFront(@Validated @RequestBody GetLogListDTO getLogListDTO) {
-        return logService.selectLogListByCluster(getLogListDTO);
+        return logService.selectLogListByCluster(LogControllerMapper.INSTANCE.queryEntityByLog(getLogListDTO));
     }
 
 }

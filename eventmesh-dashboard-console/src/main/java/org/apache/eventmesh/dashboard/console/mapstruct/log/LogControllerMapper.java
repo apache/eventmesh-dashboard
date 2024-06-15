@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.dto.config;
+package org.apache.eventmesh.dashboard.console.mapstruct.log;
+
+import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class UpdateConfigsLog {
+/**
+ *
+ */
+@Mapper
+public interface LogControllerMapper {
 
-    private Long instanceId;
+    LogControllerMapper INSTANCE = Mappers.getMapper(LogControllerMapper.class);
 
-    private Long clusterId;
 
-    private String name;
-
-    private String configProperties;
+    LogEntity queryEntityByLog(GetLogListDTO getLogListDTO);
 
 }

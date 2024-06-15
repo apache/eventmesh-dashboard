@@ -18,7 +18,6 @@
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
 
 import java.util.List;
@@ -32,10 +31,10 @@ public interface ClusterService {
 
     void createCluster(ClusterEntity clusterEntity);
 
-    GetClusterBaseMessageVO selectClusterBaseMessage(ClusterIdDTO clusterIdDTO);
+    GetClusterBaseMessageVO selectClusterBaseMessage(Long clusterId);
 
 
-    Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO);
+    Map<String, Integer> queryHomeClusterData(Long clusterId);
 
     Integer batchInsert(List<ClusterEntity> clusterEntities);
 

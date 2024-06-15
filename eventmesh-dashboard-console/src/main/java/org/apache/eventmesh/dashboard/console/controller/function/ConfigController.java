@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.controller.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.mapstruct.config.ConfigControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.DetailConfigsVO;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigDTO;
@@ -45,7 +46,7 @@ public class ConfigController {
     public String updateConfigsByTypeAndId(@Validated @RequestBody UpdateConfigDTO updateConfigDTO) {
         try {
             configService.updateConfigsByInstanceId(updateConfigDTO.getUsername(), updateConfigDTO.getClusterId(), updateConfigDTO.getInstanceType(),
-                updateConfigDTO.getInstanceId(), updateConfigDTO.getChangeConfigDTOS());
+                updateConfigDTO.getInstanceId(), updateConfigDTO.getChangeConfigEntities());
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -55,10 +56,8 @@ public class ConfigController {
 
     @PostMapping("/getInstanceDetailConfigs")
     public List<DetailConfigsVO> getInstanceDetailConfigs(@Validated @RequestBody GetConfigsListDTO getConfigsListDTO) {
-        List<ConfigEntity> configEntityList = configService.selectToFront(getConfigsListDTO.getInstanceId(),
-            getConfigsListDTO.getInstanceType(), getConfigsListDTO);
-        Map<String, String> stringStringConcurrentHashMap = configService.selectDefaultConfig(getConfigsListDTO.getBusinessType(),
-            getConfigsListDTO.getInstanceId(), getConfigsListDTO.getInstanceType());
+        List<ConfigEntity> configEntityList = configService.selectToFront(ConfigControllerMapper.INSTANCE.queryEntityByConfig(getConfigsListDTO));
+        Map<String, String> stringStringConcurrentHashMap = configService.selectDefaultConfig(getConfigsListDTO.getBusinessType());
         ArrayList<DetailConfigsVO> showDetailConfigsVOS = new ArrayList<>();
         configEntityList.forEach(n -> {
             DetailConfigsVO showDetailConfigsVO = new DetailConfigsVO();

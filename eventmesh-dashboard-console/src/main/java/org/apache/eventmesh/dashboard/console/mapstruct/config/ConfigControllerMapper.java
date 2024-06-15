@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.vo.topic;
+package org.apache.eventmesh.dashboard.console.mapstruct.config;
 
-import java.util.List;
 
-import lombok.Data;
+import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
 
-@Data
-public class TopicDetailGroupVO {
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-    private String groupName;
+/**
+ *
+ */
 
-    private List<String> topics;
+@Mapper
+public interface ConfigControllerMapper {
 
-    private String state;
+    ConfigControllerMapper INSTANCE = Mappers.getMapper(ConfigControllerMapper.class);
 
-    private Integer memberNum;
+    public ConfigEntity queryEntityByConfig(GetConfigsListDTO getConfigsListDTO);
 }

@@ -27,8 +27,7 @@ import org.apache.eventmesh.dashboard.console.mapper.cluster.ConnectionMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
-import org.apache.eventmesh.dashboard.console.modle.function.OverviewDTO;
+import org.apache.eventmesh.dashboard.console.modle.function.OverviewType;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
 import org.apache.eventmesh.dashboard.console.service.OverviewService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
@@ -65,8 +64,7 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
-    public GetClusterBaseMessageVO selectClusterBaseMessage(ClusterIdDTO clusterIdDTO) {
-        Long clusterId = clusterIdDTO.getClusterId();
+    public GetClusterBaseMessageVO selectClusterBaseMessage(Long clusterId) {
         GetClusterBaseMessageVO getClusterBaseMessageVO = new GetClusterBaseMessageVO();
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setClusterId(clusterId);
@@ -84,7 +82,7 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
-    public Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO) {
+    public Map<String, Integer> queryHomeClusterData(Long clusterId) {
         return null;
     }
 
@@ -131,7 +129,7 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
-    public Object overview(OverviewDTO overviewDTO) {
+    public Object overview(OverviewType overviewtype) {
         return null;
     }
 }

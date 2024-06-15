@@ -69,7 +69,6 @@ public class ConnectionController {
     public String createConnection(@Validated @RequestBody CreateConnectionDTO createConnectionDTO) {
         try {
             connectionDataService.createConnection(createConnectionDTO);
-
         } catch (Exception e) {
             return e.getMessage();
         }

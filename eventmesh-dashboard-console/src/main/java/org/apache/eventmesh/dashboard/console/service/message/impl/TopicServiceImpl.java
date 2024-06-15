@@ -30,7 +30,6 @@ import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
 import org.apache.eventmesh.dashboard.console.mapper.storage.StoreMapper;
-import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
 import org.apache.eventmesh.dashboard.console.service.message.TopicService;
 
@@ -144,12 +143,6 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public List<TopicEntity> selectTopiByCluster(TopicEntity topicEntity) {
         return topicMapper.selectTopicByCluster(topicEntity);
-    }
-
-
-    public TopicEntity buildSearchCriteria(GetTopicListDTO getTopicListDTO, TopicEntity topicEntity) {
-        topicEntity.setTopicName(getTopicListDTO.getTopicName());
-        return topicEntity;
     }
 
     @Override

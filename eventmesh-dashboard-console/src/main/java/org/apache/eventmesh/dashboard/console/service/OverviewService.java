@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.service;
 
-import org.apache.eventmesh.dashboard.console.modle.function.OverviewDTO;
+import org.apache.eventmesh.dashboard.console.modle.function.OverviewType;
 
 /**
  *
@@ -25,5 +25,5 @@ import org.apache.eventmesh.dashboard.console.modle.function.OverviewDTO;
 public interface OverviewService {
 
 
-    Object overview(OverviewDTO overviewDTO);
+    Object overview(OverviewType overviewType);
 }
