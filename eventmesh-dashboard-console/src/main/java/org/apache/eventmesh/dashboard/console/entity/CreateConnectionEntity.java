@@ -15,36 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.dto.connection;
+package org.apache.eventmesh.dashboard.console.entity;
+
+import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectionEntity;
+import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectorConfigEntity;
 
 import lombok.Data;
 
 @Data
-public class AddConnectionDTO {
+public class CreateConnectionEntity {
 
-    private String sinkName;
+    private Long clusterId;
 
-    private String sourceName;
+    private AddConnectionEntity addConnectionEntity;
 
-    private String sinkClass;
-
-    private String sourceClass;
-
-    private String topicName;
-
-    private String sinkHost;
-
-    private String sourceHost;
-
-    private Integer sinkPort;
-
-    private Integer sourcePort;
-
-    private String sinkDescription;
-
-    private String sourceDescription;
-
-    private String connectionDescription;
-
-    private Long groupId;
+    private AddConnectorConfigEntity addConnectorConfigEntity;
 }

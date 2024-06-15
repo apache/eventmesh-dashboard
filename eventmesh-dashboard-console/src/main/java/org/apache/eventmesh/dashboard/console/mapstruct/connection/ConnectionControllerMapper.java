@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.mapstruct.config;
+package org.apache.eventmesh.dashboard.console.mapstruct.connection;
 
+import org.apache.eventmesh.dashboard.console.entity.CreateConnectionEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.connection.CreateConnectionDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.connection.GetConnectionListDTO;
 
-import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
-
-import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 /**
  *
  */
+public interface ConnectionControllerMapper {
 
-@Mapper
-public interface ConfigControllerMapper {
+    ConnectionControllerMapper INSTANCE = Mappers.getMapper(ConnectionControllerMapper.class);
 
-    ConfigControllerMapper INSTANCE = Mappers.getMapper(ConfigControllerMapper.class);
+    ConnectionEntity queryEntityByConnection(GetConnectionListDTO getConnectionListDTO);
 
-    public ConfigEntity queryEntityByConfig(GetConfigsListDTO getConfigsListDTO);
+    CreateConnectionEntity queryCreateEntityByConnection(CreateConnectionDTO createConnectionDTO);
 }

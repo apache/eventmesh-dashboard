@@ -74,7 +74,10 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
                 abnormalNum++;
             }
         }
-        return new InstanceLiveProportionVo(abnormalNum, topicNum);
+        InstanceLiveProportionVo instanceLiveProportionVo = new InstanceLiveProportionVo();
+        instanceLiveProportionVo.setAbnormalNum(abnormalNum);
+        instanceLiveProportionVo.setAllNum(topicNum);
+        return instanceLiveProportionVo;
     }
 
 
@@ -89,7 +92,10 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
                 abnormalNum++;
             }
         }
-        return new InstanceLiveProportionVo(abnormalNum, topicNum);
+        InstanceLiveProportionVo instanceLiveProportionVo = new InstanceLiveProportionVo();
+        instanceLiveProportionVo.setAbnormalNum(abnormalNum);
+        instanceLiveProportionVo.setAllNum(topicNum);
+        return instanceLiveProportionVo;
     }
 
 

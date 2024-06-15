@@ -15,23 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.mapstruct.config;
+package org.apache.eventmesh.dashboard.console.entity.connection;
 
+import lombok.Data;
 
-import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
+@Data
+public class AddConnectionEntity {
 
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+    private String sinkName;
 
-/**
- *
- */
+    private String sourceName;
 
-@Mapper
-public interface ConfigControllerMapper {
+    private String sinkClass;
 
-    ConfigControllerMapper INSTANCE = Mappers.getMapper(ConfigControllerMapper.class);
+    private String sourceClass;
 
-    public ConfigEntity queryEntityByConfig(GetConfigsListDTO getConfigsListDTO);
+    private String topicName;
+
+    private String sinkHost;
+
+    private String sourceHost;
+
+    private Integer sinkPort;
+
+    private Integer sourcePort;
+
+    private String sinkDescription;
+
+    private String sourceDescription;
+
+    private String connectionDescription;
+
+    private Long groupId;
 }

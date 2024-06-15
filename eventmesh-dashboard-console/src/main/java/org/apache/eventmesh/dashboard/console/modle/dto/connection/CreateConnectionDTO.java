@@ -17,6 +17,9 @@
 
 package org.apache.eventmesh.dashboard.console.modle.dto.connection;
 
+import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectionEntity;
+import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectorConfigEntity;
+
 import lombok.Data;
 
 @Data
@@ -24,7 +27,7 @@ public class CreateConnectionDTO {
 
     private Long clusterId;
 
-    private AddConnectionDTO addConnectionDTO;
+    private AddConnectionEntity addConnectionEntity;
 
-    private AddConnectorConfigDTO addConnectorConfigDTO;
+    private AddConnectorConfigEntity addConnectorConfigEntity;
 }

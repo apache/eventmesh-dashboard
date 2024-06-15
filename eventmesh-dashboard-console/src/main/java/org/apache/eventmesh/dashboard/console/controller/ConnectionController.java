@@ -17,9 +17,11 @@
 
 package org.apache.eventmesh.dashboard.console.controller;
 
+
+import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.dto.connection.AddConnectionDTO;
+import org.apache.eventmesh.dashboard.console.mapstruct.connection.ConnectionControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.connection.CreateConnectionDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.connection.GetConnectionListDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.connection.ConnectionListVO;
@@ -60,15 +62,15 @@ public class ConnectionController {
 
 
     @GetMapping("/showCreateConnectionMessage")
-    public AddConnectionDTO showCreateConnectionMessage() {
-        return new AddConnectionDTO();
+    public AddConnectionEntity showCreateConnectionMessage() {
+        return new AddConnectionEntity();
     }
 
 
     @PostMapping("/createConnection")
     public String createConnection(@Validated @RequestBody CreateConnectionDTO createConnectionDTO) {
         try {
-            connectionDataService.createConnection(createConnectionDTO);
+            connectionDataService.createConnection(ConnectionControllerMapper.INSTANCE.queryCreateEntityByConnection(createConnectionDTO));
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -78,7 +80,7 @@ public class ConnectionController {
 
     @PostMapping("/getConnectionList")
     public List<ConnectionListVO> getConnectionList(@Validated @RequestBody GetConnectionListDTO getConnectionListDTO) {
-        return connectionDataService.getConnectionToFrontByCluster(getConnectionListDTO.getClusterId(), getConnectionListDTO);
+        return connectionDataService.getConnectionToFrontByCluster(ConnectionControllerMapper.INSTANCE.queryEntityByConnection(getConnectionListDTO));
     }
 
     @GetMapping("/getConnectorDetail")

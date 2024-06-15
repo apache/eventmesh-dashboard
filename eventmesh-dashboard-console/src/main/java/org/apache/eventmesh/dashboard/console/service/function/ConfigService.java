@@ -32,7 +32,8 @@ public interface ConfigService {
 
     List<ConfigEntity> selectToFront(ConfigEntity configEntity);
 
-    void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId, List<ChangeConfigEntity> changeConfigEntityList);
+    void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId,
+        List<ChangeConfigEntity> changeConfigEntityList);
 
     List<ConfigEntity> selectAll();
 
