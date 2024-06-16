@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.dto.config;
+package org.apache.eventmesh.dashboard.console.mapstruct.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class ChangeConfigDTO {
+import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
 
-    private String configName;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-    private String configValue;
+/**
+ *
+ */
 
-    private Integer alreadyUpdate;
+@Mapper
+public interface ConfigControllerMapper {
+
+    ConfigControllerMapper INSTANCE = Mappers.getMapper(ConfigControllerMapper.class);
+
+    public ConfigEntity queryEntityByConfig(GetConfigsListDTO getConfigsListDTO);
 }

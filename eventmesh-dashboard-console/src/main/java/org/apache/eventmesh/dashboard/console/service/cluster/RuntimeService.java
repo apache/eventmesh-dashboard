@@ -29,9 +29,9 @@ public interface RuntimeService {
 
     RuntimeEntity queryRuntimeEntityById(RuntimeEntity runtimeEntity);
 
-    List<RuntimeEntity> getRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity);
+    List<RuntimeEntity> selectRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity);
 
-    void batchInsert(List<RuntimeEntity> runtimeEntities);
+    Integer batchInsert(List<RuntimeEntity> runtimeEntities);
 
     List<RuntimeEntity> selectAll();
 
@@ -39,9 +39,9 @@ public interface RuntimeService {
 
     void insertRuntime(RuntimeEntity runtimeEntity);
 
-    void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
+    Integer updateRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
+    Integer deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    void deactivate(RuntimeEntity runtimeEntity);
+    Integer deactivate(RuntimeEntity runtimeEntity);
 }

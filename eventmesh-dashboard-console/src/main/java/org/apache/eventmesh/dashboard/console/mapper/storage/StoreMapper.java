@@ -42,6 +42,18 @@ public interface StoreMapper {
     @Select("SELECT * FROM store WHERE host=#{host} AND port=#{port} AND status=1 LIMIT 1")
     StoreEntity selectByHostPort(StoreEntity storeEntity);
 
+    @Select("SELECT * FROM store WHERE cluster_id=#{clusterId} AND status=1")
+    StoreEntity selectStoreByCluster(StoreEntity storeEntity);
+
+    @Update("UPDATE store SET status=0 WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
+    Integer deleteStoreByUnique(StoreEntity storeEntity);
+
+    @Update("UPDATE store SET status=#{status} WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
+    Integer updateStoreByUnique(StoreEntity storeEntity);
+
+    @Update("UPDATE store SET topic_list=#{topicList} WHERE cluster_id=#{clusterId}")
+    Integer updateTopicListByCluster(StoreEntity storeEntity);
+
     @Insert({
         "<script>",
         "INSERT INTO store (cluster_id, store_id, store_type, host, runtime_id, topic_list, diff_type, port, jmx_port,start_timestamp, rack,",
@@ -52,24 +64,13 @@ public interface StoreMapper {
         "   </foreach>",
         "</script>"})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<StoreEntity> storeEntities);
+    Integer batchInsert(List<StoreEntity> storeEntities);
 
     @Insert("INSERT INTO store (cluster_id, store_id, store_type, host, runtime_id, topic_list, diff_type"
         + ", port, jmx_port, start_timestamp, rack, status, endpoint_map ) VALUES ("
         + "#{clusterId},#{storeId},#{storeType},#{host},#{runtimeId},#{topicList},#{diffType},#{port},#{jmxPort}"
         + ",#{startTimestamp},#{rack},#{status},#{endpointMap})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addStore(StoreEntity storeEntity);
+    void insertStore(StoreEntity storeEntity);
 
-    @Update("UPDATE store SET status=0 WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
-    void deleteStoreByUnique(StoreEntity storeEntity);
-
-    @Select("SELECT * FROM store WHERE cluster_id=#{clusterId} AND status=1")
-    StoreEntity selectStoreByCluster(StoreEntity storeEntity);
-
-    @Update("UPDATE store SET status=#{status} WHERE cluster_id=#{clusterId} AND store_id=#{storeId}")
-    void updateStoreByUnique(StoreEntity storeEntity);
-
-    @Update("UPDATE store SET topic_list=#{topicList} WHERE cluster_id=#{clusterId}")
-    void updateTopicListByCluster(StoreEntity storeEntity);
 }

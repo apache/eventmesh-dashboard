@@ -29,24 +29,24 @@ import java.util.List;
  */
 public interface HealthDataService {
 
-    InstanceLiveProportionVo getInstanceLiveProportion(Long clusterId, Integer instanceType);
+    InstanceLiveProportionVo selectInstanceLiveProportion(Long clusterId, Integer instanceType);
 
-    List<HealthCheckResultEntity> getInstanceLiveStatusHistory(Integer type, Long clusterId, LocalDateTime startTime);
+    List<HealthCheckResultEntity> selectInstanceLiveStatusHistory(Integer type, Long clusterId, LocalDateTime startTime);
 
     HealthCheckResultEntity insertHealthCheckResult(HealthCheckResultEntity healthCheckResultEntity);
 
-    void batchInsertHealthCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
+    Integer batchInsertHealthCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     /**
      * New check results have state 4: SDK client not created or connected
      */
-    void batchInsertNewCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
+    Integer batchInsertNewCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     List<HealthCheckResultEntity> selectAll();
 
     List<HealthCheckResultEntity> queryHealthCheckResultByClusterIdAndTypeAndTypeId(HealthCheckResultEntity entity);
 
-    void batchUpdateCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
+    Integer batchUpdateCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     void batchUpdateCheckResultByClusterIdAndTypeAndTypeId(List<HealthCheckResultEntity> healthCheckResultEntityList);
 

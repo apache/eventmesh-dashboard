@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.vo.topic;
+package org.apache.eventmesh.dashboard.console.mapstruct.connection;
 
-import java.util.List;
+import org.apache.eventmesh.dashboard.console.entity.CreateConnectionEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.connection.CreateConnectionDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.connection.GetConnectionListDTO;
 
-import lombok.Data;
+import org.mapstruct.factory.Mappers;
 
-@Data
-public class TopicDetailGroupVO {
+/**
+ *
+ */
+public interface ConnectionControllerMapper {
 
-    private String groupName;
+    ConnectionControllerMapper INSTANCE = Mappers.getMapper(ConnectionControllerMapper.class);
 
-    private List<String> topics;
+    ConnectionEntity queryEntityByConnection(GetConnectionListDTO getConnectionListDTO);
 
-    private String state;
-
-    private Integer memberNum;
+    CreateConnectionEntity queryCreateEntityByConnection(CreateConnectionDTO createConnectionDTO);
 }

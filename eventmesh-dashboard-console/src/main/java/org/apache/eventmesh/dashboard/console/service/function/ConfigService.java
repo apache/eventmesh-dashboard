@@ -19,8 +19,7 @@ package org.apache.eventmesh.dashboard.console.service.function;
 
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.ChangeConfigDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
+import org.apache.eventmesh.dashboard.console.modle.config.ChangeConfigEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -31,17 +30,18 @@ import java.util.Map;
  */
 public interface ConfigService {
 
-    List<ConfigEntity> selectToFront(Long instanceId, Integer type, GetConfigsListDTO getConfigsListDTO);
+    List<ConfigEntity> selectToFront(ConfigEntity configEntity);
 
-    void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId, List<ChangeConfigDTO> changeConfigDTOList);
+    void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId,
+        List<ChangeConfigEntity> changeConfigEntityList);
 
     List<ConfigEntity> selectAll();
 
-    void batchInsert(List<ConfigEntity> configEntityList);
+    Integer batchInsert(List<ConfigEntity> configEntityList);
 
     String mapToYaml(Map<String, String> stringMap);
 
-    Integer addConfig(ConfigEntity configEntity);
+    void insertConfig(ConfigEntity configEntity);
 
     Integer deleteConfig(ConfigEntity configEntity);
 
@@ -51,7 +51,7 @@ public interface ConfigService {
 
     List<ConfigEntity> selectByInstanceIdAndType(Long instanceId, Integer type);
 
-    Map<String, String> selectDefaultConfig(String version, Long instanceId, Integer instanceType);
+    Map<String, String> selectDefaultConfig(String businessType);
 
 
 }

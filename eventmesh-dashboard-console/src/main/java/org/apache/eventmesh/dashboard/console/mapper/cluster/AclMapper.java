@@ -33,6 +33,18 @@ import java.util.List;
 @Mapper
 public interface AclMapper {
 
+    @Select("SELECT * FROM acl WHERE id=#{id}")
+    AclEntity selectById(AclEntity aclEntity);
+
+    @Select("SELECT * FROM acl")
+    List<AclEntity> selectAll();
+
+    @Update("UPDATE acl SET resource_type=#{resourceType} WHERE id=#{id}")
+    void updateResourceTypeById(AclEntity aclEntity);
+
+    @Update("UPDATE acl SET status=0 WHERE id=#{id}")
+    void deleteById(AclEntity aclEntity);
+
     @Insert({
         "<script>",
         "   INSERT INTO acl (cluster_Id, pattern, operation, permission_Type, host, resource_Type, resource_Name, pattern_Type) VALUES ",
@@ -43,22 +55,12 @@ public interface AclMapper {
         "   </foreach>",
         "</script>"})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<AclEntity> aclEntities);
+    Integer batchInsert(List<AclEntity> aclEntities);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO acl (cluster_id, pattern, operation, permission_type, host, resource_type, resource_name, pattern_type)"
         + "VALUE (#{clusterId}, #{pattern}, #{operation}, #{permissionType}, #{host}, #{resourceType}, #{resourceName}, #{patternType})")
     void insert(AclEntity aclEntity);
 
-    @Update("UPDATE acl SET status=0 WHERE id=#{id}")
-    void deleteById(AclEntity aclEntity);
 
-    @Update("UPDATE acl SET resource_type=#{resourceType} WHERE id=#{id}")
-    void updateResourceTypeById(AclEntity aclEntity);
-
-    @Select("SELECT * FROM acl")
-    List<AclEntity> selectAll();
-
-    @Select("SELECT * FROM acl WHERE id=#{id}")
-    AclEntity selectById(AclEntity aclEntity);
 }

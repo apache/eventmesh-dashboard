@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.dto.config;
+package org.apache.eventmesh.dashboard.console.entity.connection;
 
+import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 
-import lombok.AllArgsConstructor;
+import java.util.List;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-public class UpdateConfigsLog {
+public class AddConnectorConfigEntity {
 
-    private Long instanceId;
+    private List<ConfigEntity> sinkConnectorConfigs;
 
-    private Long clusterId;
-
-    private String name;
-
-    private String configProperties;
+    private List<ConfigEntity> sourceConnectorConfigs;
 
 }

@@ -19,12 +19,8 @@ package org.apache.eventmesh.dashboard.console.modle.cluster.runtime;
 
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
 public class QueryRuntimeListByClusterIdDTO extends ClusterIdDTO {
 

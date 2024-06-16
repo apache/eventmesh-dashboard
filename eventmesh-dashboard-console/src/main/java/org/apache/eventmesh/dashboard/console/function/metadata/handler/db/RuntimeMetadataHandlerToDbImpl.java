@@ -59,10 +59,10 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
             clusterEntity.setDescription("");
             clusterEntity.setAuthType(0);
             clusterEntity.setRunState(0);
-            clusterService.addCluster(clusterEntity);
+            clusterService.insertCluster(clusterEntity);
         } else {
             cluster.setName(meta.getClusterName());
-            clusterService.addCluster(cluster);
+            clusterService.insertCluster(cluster);
         }
         if (Objects.isNull(meta.getClusterId())) {
             //meta.setClusterId(ClusterCache.getINSTANCE().getClusterByName(meta.getClusterName()).getId());

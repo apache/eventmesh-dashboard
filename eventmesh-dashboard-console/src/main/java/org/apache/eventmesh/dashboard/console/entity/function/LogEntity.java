@@ -22,14 +22,10 @@ import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
 
 import java.sql.Timestamp;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = {"endTime", "operationUser", "result"})
 public class LogEntity extends BaseEntity {
 

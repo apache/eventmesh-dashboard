@@ -38,20 +38,11 @@ public interface OprGroupMapper {
 
 
     @Select("SELECT COUNT(*) FROM `group` WHERE cluster_id=#{clusterId} AND type=0")
-    Integer getConsumerNumByCluster(GroupEntity groupEntity);
+    Integer selectConsumerNumByCluster(GroupEntity groupEntity);
 
 
     @Select("SELECT * FROM `group` WHERE status=1")
     List<GroupEntity> selectAll();
-
-    @Update("UPDATE `group` SET member_count=#{memberCount},"
-        + "members=#{members},type=#{type},state=#{state} WHERE id=#{id}")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    Integer updateGroup(GroupEntity groupEntity);
-
-    @Update("UPDATE `group` SET  status=1 WHERE id=#{id}")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    Integer deleteGroup(GroupEntity groupEntity);
 
     @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND status=1")
     GroupEntity selectGroupByUnique(GroupEntity groupEntity);
@@ -74,6 +65,15 @@ public interface OprGroupMapper {
         "</script>"})
     List<GroupEntity> selectGroup(GroupEntity groupEntity);
 
+    @Update("UPDATE `group` SET member_count=#{memberCount},"
+        + "members=#{members},type=#{type},state=#{state} WHERE id=#{id}")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    Integer updateGroup(GroupEntity groupEntity);
+
+    @Update("UPDATE `group` SET  status=1 WHERE id=#{id}")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    Integer deleteGroup(GroupEntity groupEntity);
+
 
     @Insert({
         "<script>",
@@ -83,11 +83,11 @@ public interface OprGroupMapper {
         "   </foreach>",
         "</script>"})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<GroupEntity> groupEntities);
+    Integer batchInsert(List<GroupEntity> groupEntities);
 
     @Insert("INSERT INTO `group` (cluster_id, name, member_count, members, type, state)"
         + "VALUE (#{clusterId},#{name},#{memberCount},#{members},#{type},#{state}) "
         + "ON DUPLICATE KEY UPDATE status=1")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addGroup(GroupEntity groupEntity);
+    void insertGroup(GroupEntity groupEntity);
 }

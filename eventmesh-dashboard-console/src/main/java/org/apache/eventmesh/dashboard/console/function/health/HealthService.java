@@ -273,13 +273,13 @@ public class HealthService {
                     .host(store.getHost())
                     .port(store.getPort())
                     .build());
-                checkResultEntities.add(HealthCheckResultEntity.builder()
-                    .clusterId(store.getClusterId())
-                    .type(4)
-                    .typeId(store.getId())
-                    .state(4)
-                    .resultDesc("initializing check client")
-                    .build());
+                HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity();
+                healthCheckResultEntity.setClusterId(store.getClusterId());
+                healthCheckResultEntity.setType(4);
+                healthCheckResultEntity.setTypeId(store.getId());
+                healthCheckResultEntity.setState(4);
+                healthCheckResultEntity.setResultDesc("initializing check client");
+                checkResultEntities.add(healthCheckResultEntity);
             }
 
             dataServiceWrapper.getHealthDataService().batchInsertNewCheckResult(checkResultEntities);

@@ -17,18 +17,17 @@
 
 package org.apache.eventmesh.dashboard.console.modle.dto.connection;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectionEntity;
+import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectorConfigEntity;
 
-@NoArgsConstructor
-@AllArgsConstructor
+import lombok.Data;
+
 @Data
 public class CreateConnectionDTO {
 
     private Long clusterId;
 
-    private AddConnectionDTO addConnectionDTO;
+    private AddConnectionEntity addConnectionEntity;
 
-    private AddConnectorConfigDTO addConnectorConfigDTO;
+    private AddConnectorConfigEntity addConnectorConfigEntity;
 }

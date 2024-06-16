@@ -46,7 +46,7 @@ public class TopicController {
 
     @PostMapping("/queryTopicListByClusterId")
     public List<TopicEntity> queryTopicListByClusterId(@Validated @RequestBody GetTopicListDTO getTopicListDTO) {
-        return topicService.getTopicListToFront(TopicControllerMapper.INSTANCE.queryTopicListByClusterId(getTopicListDTO));
+        return topicService.selectTopicListToFront(TopicControllerMapper.INSTANCE.queryTopicListByClusterId(getTopicListDTO));
     }
 
     @PostMapping("queryTopicListById ")
@@ -72,7 +72,7 @@ public class TopicController {
      */
     @GetMapping("/cluster/topic/getTopicDetailGroups")
     public List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId) {
-        return topicService.getTopicDetailGroups(topicId);
+        return topicService.selectTopicDetailGroups(topicId);
     }
 
 }

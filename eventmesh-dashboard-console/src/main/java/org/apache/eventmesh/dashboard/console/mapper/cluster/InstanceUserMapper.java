@@ -33,17 +33,6 @@ import java.util.List;
 @Mapper
 public interface InstanceUserMapper {
 
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    @Insert("INSERT INTO instance_user (id, instance_type, password, cluster_id, name, token, status) "
-        + "VALUES (#{id}, #{instanceType}, #{password}, #{clusterId}, #{name}, #{token},1)")
-    void insert(InstanceUserEntity instanceuserEntity);
-
-    @Update("UPDATE instance_user SET status=0 WHERE id=#{clusterId}")
-    void deleteInstanceUserById(InstanceUserEntity instanceuserEntity);
-
-    @Update("UPDATE instance_user SET password=#{password} WHERE id=#{id}")
-    void updatePasswordById(InstanceUserEntity instanceuserentity);
-
     @Select("select * from instance_user where status=1")
     List<InstanceUserEntity> selectAll();
 
@@ -52,5 +41,16 @@ public interface InstanceUserMapper {
 
     @Select("SELECT * FROM instance_user WHERE name=#{name} AND status=1")
     List<InstanceUserEntity> selectByName(InstanceUserEntity instanceuserEntity);
+
+    @Update("UPDATE instance_user SET status=0 WHERE id=#{clusterId}")
+    Integer deleteInstanceUserById(InstanceUserEntity instanceuserEntity);
+
+    @Update("UPDATE instance_user SET password=#{password} WHERE id=#{id}")
+    Integer updatePasswordById(InstanceUserEntity instanceuserentity);
+
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    @Insert("INSERT INTO instance_user (id, instance_type, password, cluster_id, name, token, status) "
+        + "VALUES (#{id}, #{instanceType}, #{password}, #{clusterId}, #{name}, #{token},1)")
+    void insert(InstanceUserEntity instanceuserEntity);
 
 }

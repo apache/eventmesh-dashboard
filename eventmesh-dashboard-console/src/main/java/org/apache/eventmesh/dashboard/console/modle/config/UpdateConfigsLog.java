@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.vo.topic;
+package org.apache.eventmesh.dashboard.console.modle.config;
 
-import java.util.List;
 
 import lombok.Data;
 
 @Data
-public class TopicDetailGroupVO {
+public class UpdateConfigsLog {
 
-    private String groupName;
+    private Long instanceId;
 
-    private List<String> topics;
+    private Long clusterId;
 
-    private String state;
+    private String name;
 
-    private Integer memberNum;
+    private String configProperties;
+
 }

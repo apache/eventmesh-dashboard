@@ -35,6 +35,21 @@ import java.util.List;
 public interface ClientMapper {
 
 
+    @Select("SELECT * FROM `client` WHERE `host` = #{host} AND `port` = #{port} AND status = 1")
+    List<ClientEntity> selectByHostPort(ClientEntity clientEntity);
+
+    @Select("SELECT * FROM `client` WHERE `id` = #{id}")
+    ClientEntity selectById(ClientEntity clientEntity);
+
+    @Select("SELECT * FROM `client` WHERE `cluster_id` = #{clusterId}")
+    List<ClientEntity> selectByClusterId(ClientEntity clientEntity);
+
+    @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE id = #{id}")
+    Integer deactivate(ClientEntity clientEntity);
+
+    @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE `host` = #{host} AND `port` = #{port}")
+    Integer deActiveByHostPort(ClientEntity clientEntity);
+
     @Select({
         "<script>",
         " INSERT INTO  client (cluster_id, name, platform, language, pid, host, port, protocol, status,",
@@ -45,16 +60,7 @@ public interface ClientMapper {
         " </foreach>",
         "</script>"})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<ClientEntity> clientEntityList);
-
-    @Select("SELECT * FROM `client` WHERE `host` = #{host} AND `port` = #{port} AND status = 1")
-    List<ClientEntity> selectByHostPort(ClientEntity clientEntity);
-
-    @Select("SELECT * FROM `client` WHERE `id` = #{id}")
-    ClientEntity selectById(ClientEntity clientEntity);
-
-    @Select("SELECT * FROM `client` WHERE `cluster_id` = #{clusterId}")
-    List<ClientEntity> selectByClusterId(ClientEntity clientEntity);
+    Integer batchInsert(List<ClientEntity> clientEntityList);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert(
@@ -65,12 +71,7 @@ public interface ClientMapper {
             + "#{language}, #{pid}, #{host}, #{port}, #{protocol},"
             + "#{status}, #{configIds}, #{description})"
             + "ON DUPLICATE KEY UPDATE `status` = 1, `pid` = #{pid}, `config_ids` = #{configIds}, `host` = #{host}, `port` = #{port}")
-    Long insert(ClientEntity clientEntity);
+    void insert(ClientEntity clientEntity);
 
-    @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE id = #{id}")
-    void deactivate(ClientEntity clientEntity);
-
-    @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE `host` = #{host} AND `port` = #{port}")
-    void deActiveByHostPort(ClientEntity clientEntity);
 
 }

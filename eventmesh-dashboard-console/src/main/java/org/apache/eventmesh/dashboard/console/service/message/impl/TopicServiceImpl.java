@@ -30,7 +30,6 @@ import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
 import org.apache.eventmesh.dashboard.console.mapper.storage.StoreMapper;
-import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
 import org.apache.eventmesh.dashboard.console.service.message.TopicService;
 
@@ -66,7 +65,7 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Override
-    public List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId) {
+    public List<TopicDetailGroupVO> selectTopicDetailGroups(Long topicId) {
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setId(topicId);
         topicEntity = this.selectTopicById(topicEntity);
@@ -97,7 +96,7 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public void createTopic(TopicEntity topicEntity) {
         topicEntity.setCreateProgress(1);
-        topicMapper.addTopic(topicEntity);
+        topicMapper.insertTopic(topicEntity);
     }
 
     @Override
@@ -112,17 +111,17 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Override
-    public void addTopic(TopicEntity topicEntity) {
+    public void insertTopic(TopicEntity topicEntity) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setTopicName(topicEntity.getTopicName());
         groupMemberEntity.setState("active");
         oprGroupMemberMapper.updateMemberByTopic(groupMemberEntity);
-        topicMapper.addTopic(topicEntity);
+        topicMapper.insertTopic(topicEntity);
     }
 
     @Override
-    public void updateTopic(TopicEntity topicEntity) {
-        topicMapper.updateTopic(topicEntity);
+    public Integer updateTopic(TopicEntity topicEntity) {
+        return topicMapper.updateTopic(topicEntity);
     }
 
     @Override
@@ -146,14 +145,8 @@ public class TopicServiceImpl implements TopicService {
         return topicMapper.selectTopicByCluster(topicEntity);
     }
 
-
-    public TopicEntity setSearchCriteria(GetTopicListDTO getTopicListDTO, TopicEntity topicEntity) {
-        topicEntity.setTopicName(getTopicListDTO.getTopicName());
-        return topicEntity;
-    }
-
     @Override
-    public List<TopicEntity> getTopicListToFront(TopicEntity topicEntity) {
+    public List<TopicEntity> selectTopicListToFront(TopicEntity topicEntity) {
         List<TopicEntity> topicEntityList = topicMapper.queryTopicsToFrontByClusterId(topicEntity);
         topicEntityList.forEach(n -> {
             n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("topic", n.getId()));

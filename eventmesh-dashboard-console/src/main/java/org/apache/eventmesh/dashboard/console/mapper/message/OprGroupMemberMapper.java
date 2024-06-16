@@ -44,33 +44,6 @@ public interface OprGroupMemberMapper {
     @Select("SELECT * FROM group_member WHERE status=1")
     List<GroupMemberEntity> selectAll();
 
-    @Insert({
-        "<script>",
-        "   INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user, state) VALUES ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "(#{c.clusterId},#{c.topicName},#{c.groupName},#{c.eventMeshUser},#{c.state})",
-        "   </foreach>",
-        "</script>"})
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<GroupMemberEntity> groupMemberEntities);
-
-    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND status=1")
-    List<GroupMemberEntity> getGroupByClusterId(GroupMemberEntity groupMemberEntity);
-
-    @Insert("INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user,state)"
-        + " VALUE (#{clusterId},#{topicName},#{groupName},#{eventMeshUser},#{state})"
-        + "ON DUPLICATE KEY UPDATE status=0")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addGroupMember(GroupMemberEntity groupMemberEntity);
-
-    @Update("UPDATE group_member SET state=#{state} WHERE id=#{id}")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void updateGroupMember(GroupMemberEntity groupMemberEntity);
-
-    @Update("UPDATE group_member SET status=0 WHERE id=#{id} ")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
-
     @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND group_name=#{groupName} AND topic_name=#{topicName} AND status=1")
     GroupMemberEntity selectGroupMemberByUnique(GroupMemberEntity groupMemberEntity);
 
@@ -95,6 +68,35 @@ public interface OprGroupMemberMapper {
         "</script>"})
     List<GroupMemberEntity> selectMember(GroupMemberEntity groupMemberEntity);
 
+    @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND status=1")
+    List<GroupMemberEntity> selectGroupByClusterId(GroupMemberEntity groupMemberEntity);
+
+    @Update("UPDATE group_member SET state=#{state} WHERE id=#{id}")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    Integer updateGroupMember(GroupMemberEntity groupMemberEntity);
+
+    @Update("UPDATE group_member SET status=0 WHERE id=#{id} ")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    Integer deleteGroupMember(GroupMemberEntity groupMemberEntity);
+
     @Update("UPDATE group_member SET state=#{state} WHERE topic_name=#{topicName}")
-    void updateMemberByTopic(GroupMemberEntity groupMemberEntity);
+    Integer updateMemberByTopic(GroupMemberEntity groupMemberEntity);
+
+    @Insert({
+        "<script>",
+        "   INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user, state) VALUES ",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "(#{c.clusterId},#{c.topicName},#{c.groupName},#{c.eventMeshUser},#{c.state})",
+        "   </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    Integer batchInsert(List<GroupMemberEntity> groupMemberEntities);
+
+    @Insert("INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user,state)"
+        + " VALUE (#{clusterId},#{topicName},#{groupName},#{eventMeshUser},#{state})"
+        + "ON DUPLICATE KEY UPDATE status=0")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void insertGroupMember(GroupMemberEntity groupMemberEntity);
+
+
 }

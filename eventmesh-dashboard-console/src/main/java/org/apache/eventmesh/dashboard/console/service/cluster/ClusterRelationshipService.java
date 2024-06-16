@@ -28,7 +28,7 @@ import java.util.List;
 public interface ClusterRelationshipService {
 
 
-    Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
+    void insertClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
 
     Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);
 

@@ -15,40 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.dto.connection;
+package org.apache.eventmesh.dashboard.console.mapstruct.log;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class AddConnectionDTO {
 
-    private String sinkName;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-    private String sourceName;
+/**
+ *
+ */
+@Mapper
+public interface LogControllerMapper {
 
-    private String sinkClass;
+    LogControllerMapper INSTANCE = Mappers.getMapper(LogControllerMapper.class);
 
-    private String sourceClass;
 
-    private String topicName;
+    LogEntity queryEntityByLog(GetLogListDTO getLogListDTO);
 
-    private String sinkHost;
-
-    private String sourceHost;
-
-    private Integer sinkPort;
-
-    private Integer sourcePort;
-
-    private String sinkDescription;
-
-    private String sourceDescription;
-
-    private String connectionDescription;
-
-    private Long groupId;
 }

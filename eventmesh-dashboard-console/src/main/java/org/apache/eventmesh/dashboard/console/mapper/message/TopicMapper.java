@@ -51,10 +51,8 @@ public interface TopicMapper {
         "</script>"})
     List<TopicEntity> queryTopicsToFrontByClusterId(@Param("topicEntity") TopicEntity topicEntity);
 
-
     @Select("SELECT * FROM topic WHERE cluster_id=#{clusterId} and status = 1")
     List<TopicEntity> selectTopicByCluster(TopicEntity topicEntity);
-
 
     @Select("SELECT * FROM topic WHERE status=1")
     List<TopicEntity> selectAll();
@@ -62,12 +60,11 @@ public interface TopicMapper {
     @Select("SELECT * FROM topic WHERE id=#{id}")
     TopicEntity selectTopicById(TopicEntity topicEntity);
 
-
     @Update("UPDATE topic SET type=#{type},description=#{description} WHERE id=#{id}")
-    void updateTopic(TopicEntity topicEntity);
+    Integer updateTopic(TopicEntity topicEntity);
 
     @Update("UPDATE topic SET create_progress=#{createProgress} WHERE id=#{id}")
-    void updateTopicCreateProgress(TopicEntity topicEntity);
+    Integer updateTopicCreateProgress(TopicEntity topicEntity);
 
     @Update("UPDATE `topic` SET status=0 WHERE id=#{id}")
     Integer deleteTopic(TopicEntity topicEntity);
@@ -86,6 +83,6 @@ public interface TopicMapper {
         + "VALUE (#{clusterId},#{topicName},#{storageId},#{retentionMs},#{type},#{description},#{createProgress})"
         + "ON DUPLICATE KEY UPDATE status = 1")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addTopic(TopicEntity topicEntity);
+    void insertTopic(TopicEntity topicEntity);
 
 }

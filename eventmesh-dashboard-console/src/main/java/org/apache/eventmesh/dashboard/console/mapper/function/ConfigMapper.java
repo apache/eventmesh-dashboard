@@ -49,7 +49,7 @@ public interface ConfigMapper {
         "</if>",
         "</where>",
         "</script>"})
-    List<ConfigEntity> getConfigsToFrontWithDynamic(ConfigEntity configEntity);
+    List<ConfigEntity> selectConfigsToFrontWithDynamic(ConfigEntity configEntity);
 
     @Select("SELECT * FROM config WHERE business_type=#{businessType} AND is_default=1")
     List<ConfigEntity> selectConnectorConfigsByBusinessType(ConfigEntity configEntity);
@@ -57,41 +57,11 @@ public interface ConfigMapper {
     @Select("SELECT DISTINCT business_type FROM config WHERE instance_type=2 AND is_default=1 AND business_type LIKE CONCAT('%',#{businessType},'%')")
     List<String> selectConnectorBusinessType(ConfigEntity configEntity);
 
-
     @Select("SELECT * FROM config WHERE status=1 AND is_default=0")
     List<ConfigEntity> selectAll();
 
     @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId}")
     List<ConfigEntity> selectConfigsByInstance(ConfigEntity configEntity);
-
-    @Insert({
-        "<script>",
-        "   INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version,",
-        "   eventmesh_version,end_version, diff_type, description, edit, is_default, is_modify) VALUES ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "   (#{c.clusterId}, #{c.businessType}, #{c.instanceType}, #{c.instanceId},#{c.configName},",
-        "   #{c.configValue}, #{c.startVersion}, #{c.eventmeshVersion},#{c.endVersion},#{c.diffType},#{c.description},",
-        "   #{c.edit},#{c.isDefault},#{c.isModify})",
-        "   </foreach>",
-        "</script>"})
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<ConfigEntity> configEntityList);
-
-    @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, "
-        + "status, is_default,  diff_type, description, edit, is_modify,start_version,"
-        + "eventmesh_version,end_version) VALUE "
-        + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
-        + "#{configValue},#{status},#{isDefault},#{diffType},#{description},#{edit},#{isModify},"
-        + "#{startVersion},#{eventmeshVersion},#{endVersion})")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    Integer addConfig(ConfigEntity configEntity);
-
-    @Update("UPDATE config SET status=0 WHERE id=#{id}")
-    Integer deleteConfig(ConfigEntity configEntity);
-
-    @Update("UPDATE config SET config_value=#{configValue} ,already_update=#{alreadyUpdate} WHERE instance_type=#{instanceType} AND"
-        + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
-    void updateConfig(ConfigEntity configEntity);
 
     @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId} AND is_default=0")
     List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
@@ -105,4 +75,34 @@ public interface ConfigMapper {
     @Select("SELECT * FROM config WHERE cluster_id=#{clusterId} AND instance_type=#{instanceType} "
         + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
     ConfigEntity selectByUnique(ConfigEntity configEntity);
+
+    @Update("UPDATE config SET status=0 WHERE id=#{id}")
+    Integer deleteConfig(ConfigEntity configEntity);
+
+    @Update("UPDATE config SET config_value=#{configValue} ,already_update=#{alreadyUpdate} WHERE instance_type=#{instanceType} AND"
+        + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
+    Integer updateConfig(ConfigEntity configEntity);
+
+    @Insert({
+        "<script>",
+        "   INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version,",
+        "   eventmesh_version,end_version, diff_type, description, edit, is_default, is_modify) VALUES ",
+        "   <foreach collection='list' item='c' index='index' separator=','>",
+        "   (#{c.clusterId}, #{c.businessType}, #{c.instanceType}, #{c.instanceId},#{c.configName},",
+        "   #{c.configValue}, #{c.startVersion}, #{c.eventmeshVersion},#{c.endVersion},#{c.diffType},#{c.description},",
+        "   #{c.edit},#{c.isDefault},#{c.isModify})",
+        "   </foreach>",
+        "</script>"})
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    Integer batchInsert(List<ConfigEntity> configEntityList);
+
+    @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, "
+        + "status, is_default,  diff_type, description, edit, is_modify,start_version,"
+        + "eventmesh_version,end_version) VALUE "
+        + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
+        + "#{configValue},#{status},#{isDefault},#{diffType},#{description},#{edit},#{isModify},"
+        + "#{startVersion},#{eventmeshVersion},#{endVersion})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void insertConfig(ConfigEntity configEntity);
+
 }

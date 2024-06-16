@@ -40,29 +40,29 @@ public class GroupMemberServiceImp implements GroupMemberService {
     }
 
     @Override
-    public void batchInsert(List<GroupMemberEntity> groupMemberEntities) {
-        oprGroupMemberMapper.batchInsert(groupMemberEntities);
+    public Integer batchInsert(List<GroupMemberEntity> groupMemberEntities) {
+        return oprGroupMemberMapper.batchInsert(groupMemberEntities);
     }
 
     @Override
     @EmLog(OprType = "View", OprTarget = "GroupMember")
-    public List<GroupMemberEntity> getGroupMemberByClusterId(GroupMemberEntity groupMemberEntity) {
-        return oprGroupMemberMapper.getGroupByClusterId(groupMemberEntity);
+    public List<GroupMemberEntity> selectGroupMemberByClusterId(GroupMemberEntity groupMemberEntity) {
+        return oprGroupMemberMapper.selectGroupByClusterId(groupMemberEntity);
     }
 
     @Override
     @EmLog(OprType = "add", OprTarget = "GroupMember")
-    public void addGroupMember(GroupMemberEntity groupMemberEntity) {
-        oprGroupMemberMapper.addGroupMember(groupMemberEntity);
+    public void insertGroupMember(GroupMemberEntity groupMemberEntity) {
+        oprGroupMemberMapper.insertGroupMember(groupMemberEntity);
     }
 
     @Override
-    public void updateGroupMember(GroupMemberEntity groupMemberEntity) {
-        oprGroupMemberMapper.updateGroupMember(groupMemberEntity);
+    public Integer updateGroupMember(GroupMemberEntity groupMemberEntity) {
+        return oprGroupMemberMapper.updateGroupMember(groupMemberEntity);
     }
 
     @Override
-    public GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity) {
+    public Integer deleteGroupMember(GroupMemberEntity groupMemberEntity) {
         return oprGroupMemberMapper.deleteGroupMember(groupMemberEntity);
     }
 

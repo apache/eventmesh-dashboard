@@ -15,20 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.vo.topic;
-
-import java.util.List;
+package org.apache.eventmesh.dashboard.console.entity.connection;
 
 import lombok.Data;
 
 @Data
-public class TopicDetailGroupVO {
+public class AddConnectionEntity {
 
-    private String groupName;
+    private String sinkName;
 
-    private List<String> topics;
+    private String sourceName;
 
-    private String state;
+    private String sinkClass;
 
-    private Integer memberNum;
+    private String sourceClass;
+
+    private String topicName;
+
+    private String sinkHost;
+
+    private String sourceHost;
+
+    private Integer sinkPort;
+
+    private Integer sourcePort;
+
+    private String sinkDescription;
+
+    private String sourceDescription;
+
+    private String connectionDescription;
+
+    private Long groupId;
 }

@@ -17,20 +17,18 @@
 
 package org.apache.eventmesh.dashboard.console.modle.dto.config;
 
+import org.apache.eventmesh.dashboard.console.modle.config.ChangeConfigEntity;
+
 import java.util.List;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
 public class UpdateConfigDTO {
 
     private Long clusterId;
 
-    private List<ChangeConfigDTO> changeConfigDTOS;
+    private List<ChangeConfigEntity> changeConfigEntities;
 
     private String username;
 

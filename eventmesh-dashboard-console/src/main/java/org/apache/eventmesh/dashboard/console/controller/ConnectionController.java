@@ -17,9 +17,11 @@
 
 package org.apache.eventmesh.dashboard.console.controller;
 
+
+import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.dto.connection.AddConnectionDTO;
+import org.apache.eventmesh.dashboard.console.mapstruct.connection.ConnectionControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.connection.CreateConnectionDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.connection.GetConnectionListDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.connection.ConnectionListVO;
@@ -32,9 +34,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/cluster/connection")
 public class ConnectionController {
 
     @Autowired
@@ -46,28 +50,27 @@ public class ConnectionController {
      * @param type
      * @return
      */
-    @GetMapping("/cluster/connection/getConnectorBusinessType")
+    @GetMapping("/getConnectorBusinessType")
     public List<String> getConnectorBusinessType(String type) {
         return connectionDataService.getConnectorBusinessType(type);
     }
 
-    @GetMapping("/cluster/connection/getConnectorConfigs")
+    @GetMapping("/getConnectorConfigs")
     public List<ConfigEntity> getConnectorConfigsByClassAndVersion(String version, String classType) {
         return connectionDataService.getConnectorConfigsByClassAndVersion(classType, version);
     }
 
 
-    @GetMapping("/cluster/connection/showCreateConnectionMessage")
-    public AddConnectionDTO showCreateConnectionMessage() {
-        return new AddConnectionDTO();
+    @GetMapping("/showCreateConnectionMessage")
+    public AddConnectionEntity showCreateConnectionMessage() {
+        return new AddConnectionEntity();
     }
 
 
-    @PostMapping("/cluster/connection/createConnection")
+    @PostMapping("/createConnection")
     public String createConnection(@Validated @RequestBody CreateConnectionDTO createConnectionDTO) {
         try {
-            connectionDataService.createConnection(createConnectionDTO);
-
+            connectionDataService.createConnection(ConnectionControllerMapper.INSTANCE.queryCreateEntityByConnection(createConnectionDTO));
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -75,12 +78,12 @@ public class ConnectionController {
     }
 
 
-    @PostMapping("/cluster/connection/getConnectionList")
+    @PostMapping("/getConnectionList")
     public List<ConnectionListVO> getConnectionList(@Validated @RequestBody GetConnectionListDTO getConnectionListDTO) {
-        return connectionDataService.getConnectionToFrontByCluster(getConnectionListDTO.getClusterId(), getConnectionListDTO);
+        return connectionDataService.getConnectionToFrontByCluster(ConnectionControllerMapper.INSTANCE.queryEntityByConnection(getConnectionListDTO));
     }
 
-    @GetMapping("/cluster/connection/getConnectorDetail")
+    @GetMapping("/getConnectorDetail")
     public ConnectorEntity getConnectorDetail(Long connectorId) {
         return connectionDataService.getConnectorById(connectorId);
     }
