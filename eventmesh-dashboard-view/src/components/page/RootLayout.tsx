@@ -36,7 +36,7 @@ const RootLayout = forwardRef<typeof Box, RootLayoutProps>(
           bgcolor: grey[100]
         }}>
         <Navigation />
-        <Box sx={{ flexGrow: 1, pl: 4, overflow: 'hidden' }}>{children}</Box>
+        <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>{children}</Box>
       </Stack>
     )
   }

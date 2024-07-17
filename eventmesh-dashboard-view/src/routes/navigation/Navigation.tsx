@@ -48,31 +48,8 @@ const getNavigationMenus = (): NavMenuType[] => {
       id: NavMenuIdEnum.Eventmesh,
       icon: <Icons.Eventmesh />,
       text: 'Eventmesh',
-      route: '/eventmesh',
+      route: '/eventmesh-cluster/list',
       count: 0,
-      subMenus: [
-        {
-          id: NavMenuIdEnum.EventmeshClusters,
-          icon: <Icons.Cluster style={{ fontSize: 'inherit' }} />,
-          text: 'Cluster',
-          route: '/eventmesh/cluster',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.EventmeshMeta,
-          icon: <Icons.Meta style={{ fontSize: 'inherit' }} />,
-          text: 'Meta',
-          route: '/eventmesh/meta',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.EventmeshRuntime,
-          icon: <Icons.Runtime style={{ fontSize: 'inherit' }} />,
-          text: 'Runtime',
-          route: '/eventmesh/runtime',
-          count: 0
-        }
-      ]
     },
 
     {
@@ -125,8 +102,6 @@ const Navigation = forwardRef<typeof Stack, NavigationProps>(
     const [navigationMenus, setNavigationMenus] = useState<NavMenuType[]>(
       getNavigationMenus()
     )
-
-    console.log(pinSubmenuIds)
 
     const setActiveMenuId = (menuId: NavMenuIdEnum) => {
       dispatch(globalSlice.actions.setNavigationActiveMenuId(menuId))

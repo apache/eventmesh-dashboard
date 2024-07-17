@@ -29,7 +29,6 @@ import {
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid'
 import { grey } from '@mui/material/colors'
 import { fetchTopics } from '../../../../../service/topics'
-import { useAppSelector } from '../../../../../store'
 import {
   Topic,
   TopicCreationStatusEnum,
@@ -105,7 +104,7 @@ const TopicList = forwardRef<typeof Stack, TopicListProps>(
           <TextField size="small" placeholder="Topic 名称" variant="outlined" />
 
           <Button
-            variant="outlined"
+            variant="contained"
             size="small"
             sx={{ textTransform: 'none' }}>
             新增Topic

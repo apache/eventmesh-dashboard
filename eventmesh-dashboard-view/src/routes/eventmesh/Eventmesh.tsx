@@ -19,23 +19,34 @@
 
 import React, { forwardRef } from 'react'
 import { Box, Stack, StackProps } from '@mui/material'
-import Navigation from '../../routes/navigation/Navigation'
-import { grey } from '@mui/material/colors'
 
 interface EventMeshProps extends StackProps {}
-import { Outlet } from 'react-router-dom'
 import RootLayout from '../../components/page/RootLayout'
-import Construction from '../../components/Construction'
+import Page from '../../components/page/Layout'
+import { Outlet, matchPath, useLocation } from 'react-router-dom'
+import ClusterMenu from './cluster/cluster-menu/ClusterMenu'
 
-const EventMesh = forwardRef<typeof Stack, EventMeshProps>(
+const Eventmesh = forwardRef<typeof Stack, EventMeshProps>(
   ({ children, ...props }, ref) => {
+    const { pathname } = useLocation()
+
+    const isEventmeshClusterPath =
+      !!matchPath('/eventmesh-cluster/*', pathname) &&
+      !['/eventmesh-cluster/list', '/eventmesh-cluster/list/'].includes(
+        pathname
+      )
+
     return (
       <RootLayout>
-       <Construction title="Eventmesh" />
+        <Page
+          sx={{ height: 1, p: 2, display: 'flex', flexDirection: 'column' }}>
+          {isEventmeshClusterPath && <ClusterMenu />}
+          <Outlet />
+        </Page>
       </RootLayout>
     )
   }
 )
 
-EventMesh.displayName = 'EventMesh'
-export default EventMesh
+Eventmesh.displayName = 'Eventmesh'
+export default Eventmesh

@@ -23,6 +23,8 @@ import FoundationIcon from '@mui/icons-material/Foundation'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import PushPinIcon from '@mui/icons-material/PushPin'
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined'
+import ListIcon from '@mui/icons-material/List';
+import StackedBarChartIcon from '@mui/icons-material/StackedBarChart';
 
 import { ReactComponent as EventMeshLogoIcon } from './eventmesh-logo.svg'
 import { ReactComponent as EventMeshTopicIcon } from './eventmesh-topic.svg'
@@ -49,6 +51,8 @@ export const Icons = {
   Refresh: RefreshIcon,
   PushPin: PushPinIcon,
   PushPinOutlined: PushPinOutlinedIcon,
+  List: ListIcon,
+  StackedBarChart: StackedBarChartIcon,
 
   EventMeshLogo: EventMeshLogoIcon,
   EventMeshTopic: EventMeshTopicIcon,

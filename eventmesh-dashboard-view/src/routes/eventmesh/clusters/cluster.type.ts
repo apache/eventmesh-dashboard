@@ -17,24 +17,12 @@
  * under the License.
  */
 
-import React from 'react'
-import { Box, Stack } from '@mui/material'
 
-import { Outlet } from 'react-router-dom'
-import { grey } from '@mui/material/colors'
-import Navigation from './navigation/Navigation'
-
-const RootLayout = () => {
-  return (
-    <Stack
-      direction="row"
-      sx={{ position: 'relative', height: '100vh', bgcolor: grey[100] }}>
-      <Navigation />
-      <Box sx={{ flexGrow: 1, pl: 4, overflow: 'hidden' }}>
-        <Outlet />
-      </Box>
-    </Stack>
-  )
+export type Cluster = {
+    id: number
+    name: string
+    status: string
+    healthStatus: string
+    numOfRuntime: string
+    storage: string
 }
-
-export default RootLayout

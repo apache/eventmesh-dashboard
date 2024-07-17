@@ -18,14 +18,22 @@
  */
 
 import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
-import RootLayout from '../../../components/page/RootLayout'
+import { Box, Stack, StackProps } from '@mui/material'
 
-interface ClustersProps extends BoxProps {}
+interface ClustersProps extends StackProps {}
+import ClusterList from './ClusterList'
+import ClusterStat from './ClusterStat'
 
-const Clusters = forwardRef<typeof Box, ClustersProps>(({ ...props }, ref) => {
-  return <RootLayout>Clusters</RootLayout>
-})
+const Clusters = forwardRef<typeof Stack, ClustersProps>(
+  ({ children, ...props }, ref) => {
+    return (
+      <Stack sx={{ height: 1 }} spacing={2}>
+        <ClusterStat />
+        <ClusterList />
+      </Stack>
+    )
+  }
+)
 
 Clusters.displayName = 'Clusters'
 export default Clusters

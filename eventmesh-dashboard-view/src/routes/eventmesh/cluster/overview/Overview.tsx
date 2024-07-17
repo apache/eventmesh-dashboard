@@ -26,9 +26,9 @@ interface HomeProps extends BoxProps {}
 
 const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
   return (
-    <RootLayout>
-      <Construction />
-    </RootLayout>
+    <Box sx={{ flexGrow: 1, height: 1 }}>
+      <Construction title="Cluster Overview" />
+    </Box>
   )
 })
 
