@@ -17,26 +17,28 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
+import React, { forwardRef, useState } from 'react'
+import { Box, BoxProps, Button, Paper, Stack, TextField } from '@mui/material'
+import Page from '../../../components/page/Layout'
+import { grey } from '@mui/material/colors'
 
-interface PageProps extends BoxProps {}
+import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid'
+import RounderPaper from '../../../components/RounderPaper'
 
-const Page = forwardRef<typeof Box, PageProps>(
-  ({ sx, children, ...props }, ref) => {
+interface ClusterStatProps extends BoxProps {}
+
+const ClusterStat = forwardRef<typeof Box, ClusterStatProps>(
+  ({ ...props }, ref) => {
+
     return (
-      <Box
-        ref={ref}
-        sx={{
-          width: 1,
-          height: 1,
-          ...sx
-        }}>
-        {children}
-      </Box>
+      <RounderPaper sx={{ height: 120 }}>
+        <Stack sx={{ height: 1 }} justifyContent="center">
+          已启用且健康的集群数量/集群总量
+        </Stack>
+      </RounderPaper>
     )
   }
 )
 
-Page.displayName = 'Page'
-export default Page
+ClusterStat.displayName = 'ClusterStat'
+export default ClusterStat

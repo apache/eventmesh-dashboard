@@ -31,7 +31,6 @@ import { grey } from '@mui/material/colors'
 import NavigationItem from './NavigationItem'
 import { NavMenuIdEnum, NavMenuType } from './navigation.types'
 import { useNavigate } from 'react-router-dom'
-import { fetchResourceStats } from '../../service/topics'
 import NavigationSubMenu from './NavigationSubMenu'
 import { useAppDispatch, useAppSelector } from '../../store'
 import { globalSlice } from '../../store/reducers/public/public.slice'
@@ -46,73 +45,47 @@ const getNavigationMenus = (): NavMenuType[] => {
       count: 0
     },
     {
-      id: NavMenuIdEnum.Clusters,
-      icon: <Icons.Connection />,
-      text: 'Clusters',
-      route: '/clusters',
+      id: NavMenuIdEnum.Eventmesh,
+      icon: <Icons.Eventmesh />,
+      text: 'Eventmesh',
+      route: '/eventmesh-cluster/list',
       count: 0,
-      subMenus: [
-        {
-          id: NavMenuIdEnum.ClusterOverview,
-          icon: <Icons.Home style={{ color: 'inherit' }} />,
-          text: 'Overview',
-          route: 'overview',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.ClusterRuntime,
-          icon: <Icons.Runtime style={{ color: 'inherit' }} />,
-          text: 'Runtime',
-          route: 'runtime',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.ClusterTopic,
-          icon: <Icons.Topic />,
-          text: 'Topic',
-          route: 'topic',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.ClusterConnection,
-          icon: <Icons.Connection />,
-          text: 'Connection',
-          route: 'connection',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.ClusterMessage,
-          icon: <Icons.Message />,
-          text: 'Message',
-          route: 'message',
-          count: 0
-        },
-        {
-          id: NavMenuIdEnum.ClusterSecurity,
-          icon: <Icons.Security />,
-          text: 'Security',
-          route: 'security',
-          count: 0
-        }
-      ]
     },
+
+    {
+      id: NavMenuIdEnum.Connection,
+      icon: <Icons.Connection />,
+      text: 'Connection',
+      route: '/connection',
+      count: 0
+    },
+    {
+      id: NavMenuIdEnum.ROCKET_MQ,
+      icon: <Icons.RocketMq />,
+      route: '/rocket-mq',
+      text: 'Rocket MQ',
+      count: 0
+    },
+    {
+      id: NavMenuIdEnum.K8S,
+      icon: <Icons.K8s />,
+      route: '/k8s',
+      text: 'K8s',
+      count: 0
+    },
+
+    {
+      id: NavMenuIdEnum.User,
+      icon: <Icons.Users />,
+      route: '/users',
+      text: 'Users'
+    },
+
     {
       id: NavMenuIdEnum.Settings,
       icon: <Icons.Settings />,
       route: '/settings',
       text: 'Settings'
-    },
-    {
-      id: NavMenuIdEnum.Users,
-      icon: <Icons.Users style={{ color: 'inherit' }} />,
-      route: '/users',
-      text: 'Users'
-    },
-    {
-      id: NavMenuIdEnum.Logs,
-      icon: <Icons.Logs />,
-      route: '/logs',
-      text: 'Logs'
     }
   ]
 }
@@ -129,8 +102,6 @@ const Navigation = forwardRef<typeof Stack, NavigationProps>(
     const [navigationMenus, setNavigationMenus] = useState<NavMenuType[]>(
       getNavigationMenus()
     )
-
-    console.log(pinSubmenuIds)
 
     const setActiveMenuId = (menuId: NavMenuIdEnum) => {
       dispatch(globalSlice.actions.setNavigationActiveMenuId(menuId))

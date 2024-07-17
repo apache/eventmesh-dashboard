@@ -18,25 +18,22 @@
  */
 
 import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
+import { Box, StackProps } from '@mui/material'
 
-interface PageProps extends BoxProps {}
+import Construction from '../../components/Construction'
+import RootLayout from '../../components/page/RootLayout'
 
-const Page = forwardRef<typeof Box, PageProps>(
-  ({ sx, children, ...props }, ref) => {
+interface RocketMqProps extends StackProps {}
+
+const RocketMq = forwardRef<typeof Box, RocketMqProps>(
+  ({ children, ...props }, ref) => {
     return (
-      <Box
-        ref={ref}
-        sx={{
-          width: 1,
-          height: 1,
-          ...sx
-        }}>
-        {children}
-      </Box>
+      <RootLayout>
+        <Construction title="RocketMQ" />
+      </RootLayout>
     )
   }
 )
 
-Page.displayName = 'Page'
-export default Page
+RocketMq.displayName = 'RocketMq'
+export default RocketMq

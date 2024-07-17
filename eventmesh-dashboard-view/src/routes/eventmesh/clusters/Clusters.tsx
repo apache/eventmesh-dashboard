@@ -18,25 +18,22 @@
  */
 
 import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
+import { Box, Stack, StackProps } from '@mui/material'
 
-interface PageProps extends BoxProps {}
+interface ClustersProps extends StackProps {}
+import ClusterList from './ClusterList'
+import ClusterStat from './ClusterStat'
 
-const Page = forwardRef<typeof Box, PageProps>(
-  ({ sx, children, ...props }, ref) => {
+const Clusters = forwardRef<typeof Stack, ClustersProps>(
+  ({ children, ...props }, ref) => {
     return (
-      <Box
-        ref={ref}
-        sx={{
-          width: 1,
-          height: 1,
-          ...sx
-        }}>
-        {children}
-      </Box>
+      <Stack sx={{ height: 1 }} spacing={2}>
+        <ClusterStat />
+        <ClusterList />
+      </Stack>
     )
   }
 )
 
-Page.displayName = 'Page'
-export default Page
+Clusters.displayName = 'Clusters'
+export default Clusters

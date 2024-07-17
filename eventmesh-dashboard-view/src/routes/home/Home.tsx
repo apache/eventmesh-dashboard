@@ -27,7 +27,7 @@ interface HomeProps extends BoxProps {}
 const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
   return (
     <RootLayout>
-      <Construction />
+      <Construction title='home' />
     </RootLayout>
   )
 })

@@ -19,24 +19,18 @@
 
 import React, { forwardRef } from 'react'
 import { Box, BoxProps } from '@mui/material'
+import Construction from '../../../../components/Construction'
+import RootLayout from '../../../../components/page/RootLayout'
 
-interface PageProps extends BoxProps {}
+interface HomeProps extends BoxProps {}
 
-const Page = forwardRef<typeof Box, PageProps>(
-  ({ sx, children, ...props }, ref) => {
-    return (
-      <Box
-        ref={ref}
-        sx={{
-          width: 1,
-          height: 1,
-          ...sx
-        }}>
-        {children}
-      </Box>
-    )
-  }
-)
+const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
+  return (
+    <Box sx={{ flexGrow: 1, height: 1 }}>
+      <Construction title="Cluster Overview" />
+    </Box>
+  )
+})
 
-Page.displayName = 'Page'
-export default Page
+Home.displayName = 'Home'
+export default Home

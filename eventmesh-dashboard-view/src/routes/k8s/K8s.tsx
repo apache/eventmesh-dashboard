@@ -18,25 +18,21 @@
  */
 
 import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
+import { Stack, StackProps } from '@mui/material'
+import Construction from '../../components/Construction'
+import RootLayout from '../../components/page/RootLayout'
 
-interface PageProps extends BoxProps {}
+interface K8sProps extends StackProps {}
 
-const Page = forwardRef<typeof Box, PageProps>(
-  ({ sx, children, ...props }, ref) => {
+const K8s = forwardRef<typeof Stack, K8sProps>(
+  ({ children, ...props }, ref) => {
     return (
-      <Box
-        ref={ref}
-        sx={{
-          width: 1,
-          height: 1,
-          ...sx
-        }}>
-        {children}
-      </Box>
+      <RootLayout>
+        <Construction title="K8s" />
+      </RootLayout>
     )
   }
 )
 
-Page.displayName = 'Page'
-export default Page
+K8s.displayName = 'K8s'
+export default K8s

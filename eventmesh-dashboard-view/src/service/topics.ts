@@ -18,12 +18,12 @@
  */
 
 import { ResourceStats } from '../routes/navigation/navigation.types'
-import { TopicStats } from '../routes/cluster/topic/stats/topic-stats.types'
+import { TopicStats } from '../routes/eventmesh/cluster/topic/stats/topic-stats.types'
 import {
   TopicListDatas,
   TopicListParams
-} from '../routes/cluster/topic/topic-list/TopicList'
-import { Topic } from '../routes/cluster/topic/topic.types'
+} from '../routes/eventmesh/cluster/topic/topic-list/TopicList'
+import { Topic } from '../routes/eventmesh/cluster/topic/topic.types'
 import { InstanceTypeEnum } from '../types/types'
 import { FetchRespone, ListApiRespone } from './request.types'
 

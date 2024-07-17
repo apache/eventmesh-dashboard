@@ -18,18 +18,10 @@
  */
 
 import React, { forwardRef } from 'react'
-import {
-  Button,
-  ButtonProps,
-  Stack,
-  Typography,
-  Chip,
-  IconButton
-} from '@mui/material'
+import { Button, ButtonProps, Stack, Typography, Chip } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { grey } from '@mui/material/colors'
 import { Icons } from '../../assets/icons'
-import { NavMenuType } from './navigation.types'
 
 const NavButton = styled(Button)({
   boxShadow: 'none',

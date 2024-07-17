@@ -19,24 +19,18 @@
 
 import React, { forwardRef } from 'react'
 import { Box, BoxProps } from '@mui/material'
+import Page from '../../../../components/page/Layout'
+import Construction from '../../../../components/Construction'
 
-interface PageProps extends BoxProps {}
+interface RuntimeProps extends BoxProps {}
 
-const Page = forwardRef<typeof Box, PageProps>(
-  ({ sx, children, ...props }, ref) => {
-    return (
-      <Box
-        ref={ref}
-        sx={{
-          width: 1,
-          height: 1,
-          ...sx
-        }}>
-        {children}
-      </Box>
-    )
-  }
-)
+const Runtime = forwardRef<typeof Box, RuntimeProps>(({ ...props }, ref) => {
+  return (
+    <Page>
+      <Construction />
+    </Page>
+  )
+})
 
-Page.displayName = 'Page'
-export default Page
+Runtime.displayName = 'Runtime'
+export default Runtime

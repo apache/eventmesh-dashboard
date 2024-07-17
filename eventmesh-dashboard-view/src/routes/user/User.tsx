@@ -19,24 +19,18 @@
 
 import React, { forwardRef } from 'react'
 import { Box, BoxProps } from '@mui/material'
+import Page from '../../components/page/Layout'
+import Construction from '../../components/Construction'
 
-interface PageProps extends BoxProps {}
+interface UsersProps extends BoxProps {}
 
-const Page = forwardRef<typeof Box, PageProps>(
-  ({ sx, children, ...props }, ref) => {
-    return (
-      <Box
-        ref={ref}
-        sx={{
-          width: 1,
-          height: 1,
-          ...sx
-        }}>
-        {children}
-      </Box>
-    )
-  }
-)
+const User = forwardRef<typeof Box, UsersProps>(({ ...props }, ref) => {
+  return (
+    <Page>
+      <Construction />
+    </Page>
+  )
+})
 
-Page.displayName = 'Page'
-export default Page
+User.displayName = 'User'
+export default User
