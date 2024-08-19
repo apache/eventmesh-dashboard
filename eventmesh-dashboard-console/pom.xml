@@ -90,7 +90,7 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>1.5.2.Final</version>
+            <version>1.6.0</version>
         </dependency>
 
         <!-- GitHub laohu springmvc(contain spring boot starter)-->
