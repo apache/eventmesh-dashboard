@@ -30,6 +30,8 @@ const Construction = forwardRef<typeof Box, ConstructionProps>(
       <Box
         ref={ref}
         sx={{
+          width: 1,
+          height: 1,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',

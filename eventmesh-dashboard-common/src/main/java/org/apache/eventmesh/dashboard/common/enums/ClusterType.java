@@ -69,14 +69,32 @@ public enum ClusterType {
 
 
     public static final List<ClusterType> STORAGE_TYPES = getStorage();
+    /**
+     * 集群在 eventmesh 集群内的 节点（集群）类型。meta集群，存储集群，runtime集群
+     */
     @Getter
     private ClusterType eventmeshNodeType;
+    /**
+     * 具体类型集群
+     */
     @Getter
     private ClusterType assemblyName;
+
+    /**
+     * 这个节点在 具体集群内是什么节点
+     */
     @Getter
     private ClusterType assemblyNodeType;
+
+    /**
+     * 厂商是什么类型。比如注册中心。注册中心有 etc，nacos
+     */
     @Getter
     private ClusterType assemblyBusiness;
+
+    /**
+     * 远程协议类型
+     */
     @Getter
     private RemotingType remotingType;
     @Getter

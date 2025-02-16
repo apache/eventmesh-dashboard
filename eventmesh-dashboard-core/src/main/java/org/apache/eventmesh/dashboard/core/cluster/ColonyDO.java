@@ -25,6 +25,14 @@ import lombok.Data;
 
 /**
  * eventmesh ClusterDO meta    ClusterDO runtime ClusterDO storage ClusterDO meta（注册中心，zk，） ClusterDO runtime（broker）   ClusterDO
+ * 一个集群 eventmesh 集群有
+ * 1.有多个 runtime 集群
+ * 2.有多个 存储 集群
+ * 3.有多个 meta 集群
+ *
+ * 一个 RocketMQ 集群
+ * 1. 有多个 存储群集（这里是 runtime 集群，是内部实例，不是外部实例）
+ * 2. 有一个注册中心集群（这里是 meta ）
  */
 @Data
 public class ColonyDO {

@@ -35,6 +35,13 @@ public class RuntimeEntity extends BaseEntity {
 
     private String host;
 
+    /**
+     *  添加的时候只需要 host 与 post
+     *  eventmesh runtime 是 admin port。通过 runtime admin 获得所有的配置。
+     *  meta 需要 host 与 post
+     *  store
+     *      host 与 post jmxPort
+     */
     private Integer port;
 
     private Integer jmxPort;

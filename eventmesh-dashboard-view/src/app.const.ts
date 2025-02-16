@@ -17,20 +17,12 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
-import Page from '../../components/Page'
-import Construction from '../../components/Construction'
-
-interface SecurityProps extends BoxProps {}
-
-const Security = forwardRef<typeof Box, SecurityProps>(({ ...props }, ref) => {
-  return (
-    <Page ref={ref}>
-      <Construction />
-    </Page>
-  )
-})
-
-Security.displayName = 'Security'
-export default Security
+export const AppSectionBoxShadow = '2px 2px 40px 2px rgba(0,0,0,.05)'
+export const AppBackgroundColor = '#f9fafb'
+export const AppThemeConfig = {
+  palette: {
+    primary: {
+      main: '#188aeb'
+    }
+  }
+}

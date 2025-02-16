@@ -19,12 +19,25 @@ package org.apache.eventmesh.dashboard.common.enums;
 
 public enum ClusterTrusteeshipType {
 
-    FIRE_AND_FORGET_TRUSTEESHIP,
+    // 全托管
+    FIRE_AND_FORGET_TRUSTEESHIP("全托管"),
 
-    TRUSTEESHIP,
+    // 托管
+    TRUSTEESHIP("托管"),
 
-    REVERSE,
+    // 以集群为主
+    REVERSE("以集群为主"),
 
-    NO_TRUSTEESHIP;
+    // 不托管
+    NO_TRUSTEESHIP("不托管");
 
+    private String type;
+
+    ClusterTrusteeshipType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return this.type;
+    }
 }

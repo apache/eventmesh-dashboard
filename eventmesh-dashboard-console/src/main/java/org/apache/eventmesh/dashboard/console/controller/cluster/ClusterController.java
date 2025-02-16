@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.controller.cluster;
 
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
-import org.apache.eventmesh.dashboard.console.modle.cluster.CreateClusterDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.CreateClusterBySimpleDataDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 
@@ -32,10 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 1. 用户首页列表
- * 2. 集群首页概要
- */
+
 @RestController
 @RequestMapping("cluster")
 public class ClusterController {
@@ -45,62 +42,20 @@ public class ClusterController {
 
 
 
-
     @GetMapping("queryHomeClusterData")
     public GetClusterBaseMessageVO queryHomeClusterData(@RequestBody @Validated ClusterIdDTO clusterIdDTO) {
         return clusterService.getClusterBaseMessage(clusterIdDTO);
     }
 
 
-    @PostMapping("createCluster")
-    public void createCluster(@RequestBody CreateClusterDTO createClusterDTO) {
-        this.clusterService.createCluster(ClusterControllerMapper.INSTANCE.createCluster(createClusterDTO));
-    }
 
     /**
-     * 那些集群可以暂停。被依赖的集群不允许暂停。暂停的含义是什么 暂停是否释放资源
-     *
-     * @return
+     * 这里只传递
+     * @param createClusterBySimpleDataDTO
      */
-    public Integer pauseCluster() {
-        // 查询集群
-
-        // 判断集群类型
-
-        // 查询依赖
-        return null;
+    @PostMapping("createClusterByConfig")
+    public void createClusterByConfig(@RequestBody CreateClusterBySimpleDataDTO createClusterBySimpleDataDTO) {
+        this.clusterService.createCluster(ClusterControllerMapper.INSTANCE.createCluster(createClusterBySimpleDataDTO));
     }
-
-    /**
-     * 重新开始集群
-     *
-     * @return
-     */
-    public Integer resumeCluster() {
-        // 查询集群
-
-        // 判断集群类型
-
-        // 查询依赖
-        return null;
-    }
-
-    /**
-     * 注销集群
-     *
-     * @return
-     */
-    public Integer cancelCluster() {
-        // 查询集群
-
-        // 判断集群类型
-
-        // 查询依赖
-
-        // 如果是全程托管，释放k8s 集群
-        return null;
-    }
-
-
 
 }

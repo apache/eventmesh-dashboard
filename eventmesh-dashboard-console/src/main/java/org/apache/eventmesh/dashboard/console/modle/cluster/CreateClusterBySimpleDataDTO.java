@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class CreateClusterDTO {
+public class CreateClusterBySimpleDataDTO {
 
     @NotNull
     private String name;

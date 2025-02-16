@@ -17,14 +17,16 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useEffect, useState } from 'react'
 import { Paper, PaperProps, Stack, Typography, Button } from '@mui/material'
 import { grey } from '@mui/material/colors'
 
-interface TopicCountProps extends PaperProps {}
+interface TopicCountProps extends PaperProps {
+  value?: number
+}
 
 const TopicCount = forwardRef<typeof Paper, TopicCountProps>(
-  ({ ...props }, ref) => {
+  ({ value = 0, ...props }, ref) => {
     return (
       <Paper
         sx={{
@@ -58,7 +60,7 @@ const TopicCount = forwardRef<typeof Paper, TopicCountProps>(
           variant="h6"
           color="primary"
           sx={{ m: 0, fontWeight: 'bold', color: '#43497a' }}>
-          5
+          {value }
         </Typography>
       </Paper>
     )

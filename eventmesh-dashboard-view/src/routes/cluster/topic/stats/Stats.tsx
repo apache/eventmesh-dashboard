@@ -17,17 +17,22 @@
  * under the License.
  */
 
-import React, { forwardRef, useState } from 'react'
-import { Stack, StackProps, Select, MenuItem, Grid, Box } from '@mui/material'
+import React, { forwardRef, useState, useEffect } from 'react'
+import { Stack, StackProps, Select, MenuItem, Grid } from '@mui/material'
 import TopicCount from './TopicCount'
 import AbnormalTopicCount from './AbnormalTopicCount'
-import { Icons } from '../../../assets/icons'
+import { Icons } from '../../../../assets/icons'
 import StatsChart from './StatsChart'
 import { grey } from '@mui/material/colors'
+
+import { useAppSelector } from '../../../../store'
+import { fetchTopicStats } from '../../../../service/topics'
+import { TopicStats } from './topic-stats.types'
 
 enum TimeOptionEnum {
   LatestHour = 'LATEST_HOUR'
 }
+
 type StatsParams = {
   time?: TimeOptionEnum
   runtimeId?: string
@@ -42,14 +47,33 @@ const Stats = forwardRef<typeof Stack, StatsProps>(({ ...props }, ref) => {
     runtimeId: ''
   })
 
+  const [topicStats, setTopicStats] = useState<TopicStats | null>(null)
+  const seletedClusterId = useAppSelector(
+    (state) => state.public.seletedClusterId
+  )
+
+  const getTopicStats = async () => {
+    if (!seletedClusterId) {
+      return
+    }
+    const resp = await fetchTopicStats(seletedClusterId)
+    if (resp.data) {
+      setTopicStats(resp?.data)
+    }
+  }
+
+  useEffect(() => {
+    getTopicStats()
+  }, [seletedClusterId])
+
   return (
     <Stack spacing={2}>
       <Grid container columnGap={2} wrap="nowrap">
         <Grid item sm={4}>
-          <TopicCount />
+          <TopicCount value={topicStats?.allNum} />
         </Grid>
         <Grid item sm={4}>
-          <AbnormalTopicCount />
+          <AbnormalTopicCount value={topicStats?.abnormalNum} />
         </Grid>
         <Grid item sm={4}></Grid>
       </Grid>
