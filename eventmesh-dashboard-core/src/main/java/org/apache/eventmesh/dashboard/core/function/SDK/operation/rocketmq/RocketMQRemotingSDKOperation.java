@@ -18,27 +18,31 @@
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq;
 
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRemotingConfig;
 
 import org.apache.rocketmq.remoting.RemotingClient;
 import org.apache.rocketmq.remoting.netty.NettyClientConfig;
 import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
 
-import java.util.AbstractMap.SimpleEntry;
+public class RocketMQRemotingSDKOperation extends AbstractSDKOperation<RemotingClient, CreateRemotingConfig> {
 
-public class RocketMQRemotingSDKOperation extends AbstractSDKOperation<RemotingClient> {
-
+    /**
+     * 是否需要封装下 RemotingClient 没有 addr
+     *
+     * @param clientConfig
+     * @return
+     */
     @Override
-    public SimpleEntry<String, RemotingClient> createClient(CreateSDKConfig clientConfig) {
+    public RemotingClient createClient(CreateRemotingConfig clientConfig) {
         NettyClientConfig config = new NettyClientConfig();
         config.setUseTLS(false);
         RemotingClient remotingClient = new NettyRemotingClient(config);
         remotingClient.start();
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), remotingClient);
+        return remotingClient;
     }
 
     @Override
-    public void close(Object client) {
-        ((RemotingClient) client).shutdown();
+    public void close(RemotingClient client) {
+        client.shutdown();
     }
 }

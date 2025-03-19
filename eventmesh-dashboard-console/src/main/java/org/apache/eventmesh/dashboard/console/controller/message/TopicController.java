@@ -61,6 +61,7 @@ public class TopicController {
 
     @PostMapping("createTopic")
     public void createTopic(@Validated @RequestBody CreateTopicDTO createTopicDTO) {
+
         topicService.createTopic(TopicControllerMapper.INSTANCE.createTopic(createTopicDTO));
     }
 

@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.check;
 
+import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import lombok.Getter;
@@ -29,9 +30,23 @@ public abstract class AbstractHealthCheckService implements HealthCheckService {
 
     private final HealthCheckObjectConfig config;
 
+    private volatile boolean endCheck = true;
+
     public AbstractHealthCheckService(HealthCheckObjectConfig healthCheckObjectConfig) {
         this.config = healthCheckObjectConfig;
-        this.init();
     }
 
+    public void check(HealthCheckCallback callback) throws Exception {
+        this.endCheck = false;
+    }
+
+    protected abstract void doCheck(HealthCheckCallback callback) throws Exception;
+
+    public void setEndCheck() {
+        this.endCheck = true;
+    }
+
+    protected boolean isEndCheck() {
+        return this.endCheck;
+    }
 }

@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
@@ -97,7 +97,7 @@ public class RuntimeMetadataHandlerToDbImpl implements MetadataHandler<RuntimeMe
     }
 
     @Override
-    public List<RuntimeMetadata> getData(GlobalRequest globalRequest) {
+    public List<RuntimeMetadata> getData(Global2Request global2Request) {
         return null;
     }
 }

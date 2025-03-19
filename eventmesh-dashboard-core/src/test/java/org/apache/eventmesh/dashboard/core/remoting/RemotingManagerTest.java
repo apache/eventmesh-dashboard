@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.core.remoting;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterRelationshipMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopicRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopic2Request;
 import org.apache.eventmesh.dashboard.service.remoting.RemotingIntegrationService;
 
 import java.util.ArrayList;
@@ -31,14 +31,14 @@ import org.junit.Test;
 
 public class RemotingManagerTest {
 
-    private RemotingManager remotingManager = new RemotingManager();
+    private RemotingManage remotingManage = new RemotingManage();
 
 
     @Test
     public void init_test() {
-        RemotingIntegrationService proxyObject = (RemotingIntegrationService) remotingManager.getProxyObject();
+        RemotingIntegrationService proxyObject = (RemotingIntegrationService) remotingManage.getProxyObject();
 
-        CreateTopicRequest createTopicRequest = new CreateTopicRequest();
+        CreateTopic2Request createTopicRequest = new CreateTopic2Request();
         createTopicRequest.setClusterId(1L);
 
         proxyObject.createTopic(createTopicRequest);
@@ -132,12 +132,12 @@ public class RemotingManagerTest {
         this.relationship(clusterRelationshipMetadataList, rocketBroker1, rocketMQNameserver1);
 
         try {
-            remotingManager.cacheCluster(clusterMetadataList);
-            remotingManager.cacheClusterRelationship(clusterRelationshipMetadataList);
-            remotingManager.loadingCompleted();
+            remotingManage.cacheCluster(clusterMetadataList);
+            remotingManage.cacheClusterRelationship(clusterRelationshipMetadataList);
+            remotingManage.loadingCompleted();
 
-            RemotingIntegrationService proxyObject = (RemotingIntegrationService) remotingManager.getProxyObject();
-            CreateTopicRequest createTopicRequest = new CreateTopicRequest();
+            RemotingIntegrationService proxyObject = (RemotingIntegrationService) remotingManage.getProxyObject();
+            CreateTopic2Request createTopicRequest = new CreateTopic2Request();
             createTopicRequest.setClusterId(9L);
             proxyObject.createTopic(createTopicRequest);
 

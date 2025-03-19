@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.core.meta.runtime;
 
-import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntime2Request;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -33,7 +33,7 @@ class NacosRuntimeCoreTest {
     @Test
     public void testGetRuntime() throws InterruptedException {
         try {
-            GetRuntimeRequest getRuntimeRequest = new GetRuntimeRequest();
+            GetRuntime2Request getRuntimeRequest = new GetRuntime2Request();
             getRuntimeRequest.setRegistryAddress("127.0.0.1:8848");
             nacosRuntimeCore.getRuntime(getRuntimeRequest).getFuture().thenAccept(
                 getRuntimeResponse -> {

@@ -14,6 +14,45 @@
  * see the license for the specific language governing permissions and
  * limitations under the license.
  */
+
+
+drop table if exists `case`;
+
+create table `case`
+(
+    id              bigint unsigned primary key auto_increment comment 'id',
+    organization_id bigint unsigned not null comment '组织id',
+    name            varchar(128)    not null comment '案例名',
+    case_type       varchar(16)     not null comment '案例类型',
+    object_type     varchar(16)     not null comment '对象类型',
+    object_id       varchar(32)     not null comment '',
+    state           int             not null default 1 comment '',
+    create_time     timestamp       not null default current_timestamp comment '接入时间',
+    update_time     timestamp       not null default current_timestamp on update current_timestamp comment '修改时间',
+    is_delete       int             not null default 0 comment '数据逻辑标记',
+    key object_type_id (object_type, object_id)
+) comment ='';
+
+drop table if exists `resources_config`;
+
+create table `resources_config`
+(
+    id              bigint unsigned primary key auto_increment comment 'id',
+    organization_id bigint unsigned not null comment '组织id',
+    name            varchar(128)    not null comment '案例名',
+    object_type     varchar(16)     not null comment '对象类型',
+    object_id       varchar(32)     not null comment '',
+    cpu_num         int             not null comment '',
+    men_num         int             not null comment '',
+    disk_num        int             not null comment '',
+    gpu_num         int             not null comment '',
+    state           int             not null default 1 comment '',
+    create_time     timestamp       not null default current_timestamp comment '接入时间',
+    update_time     timestamp       not null default current_timestamp on update current_timestamp comment '修改时间',
+    is_delete       int             not null default 0 comment '数据逻辑标记',
+    key object_type_id (object_type, object_id)
+) comment ='资源配置表';
+
 drop table if exists `cluster`;
 create table cluster
 (
@@ -115,19 +154,24 @@ create table group_member
 drop table if exists runtime;
 create table runtime
 (
-    id              bigint primary key auto_increment comment 'id',
-    cluster_id      bigint        not null comment '物理集群id',
-    `name`          varchar(128)  not null comment 'runtime名称',
-    host            varchar(128)  not null comment 'runtime主机名',
-    port            varchar(128)  not null comment 'runtime端口',
-    jmx_port        int           not null default -1 comment 'jmx端口',
-    start_timestamp timestamp     not null default current_timestamp comment '启动时间',
-    rack            varchar(128)  not null default '' comment 'rack信息',
-    status          int           not null default 1 comment '状态: 1启用，0未启用',
-    create_time     timestamp     not null default current_timestamp comment '创建时间',
-    update_time     timestamp     not null default current_timestamp on update current_timestamp comment '修改时间',
-    endpoint_map    varchar(1024) not null default '' comment '监听信息',
-    is_delete       int           not null default 0 comment '0',
+    id                  bigint primary key auto_increment comment 'id',
+    cluster_id          bigint        not null comment '物理集群id',
+    `name`              varchar(128)  not null comment 'runtime名称',
+    host                varchar(128)  not null comment 'runtime主机名',
+    port                varchar(128)  not null comment 'runtime端口',
+    first_to_whom       varchar(32)   not null comment '数据第一次如何同步方式',
+    runtime_type        varchar(32)   not null comment '类型与集群类型直接关系。',
+    trusteeship_type    varchar(32)   not null comment '托管类型',
+    jmx_port            int           not null default -1 comment 'jmx端口',
+    start_timestamp     timestamp     not null default current_timestamp comment '启动时间',
+    go_online_timestamp timestamp     not null default current_timestamp comment '上线时间',
+    offline_timestamp   timestamp     not null default current_timestamp comment '下线时间',
+    rack                varchar(128)  not null default '' comment 'rack信息',
+    status              int           not null default 1 comment '状态: 1启用，0未启用',
+    create_time         timestamp     not null default current_timestamp comment '创建时间',
+    update_time         timestamp     not null default current_timestamp on update current_timestamp comment '修改时间',
+    endpoint_map        varchar(1024) not null default '' comment '监听信息',
+    is_delete           int           not null default 0 comment '0',
     unique key uniq_cluster_phy_id__host_port (cluster_id, host)
 ) comment 'runtime信息表';
 

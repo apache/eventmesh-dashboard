@@ -22,7 +22,7 @@ import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigRequ
 import org.apache.eventmesh.dashboard.common.model.remoting.config.DeleteConfigRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.UpdateConfigRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
 
 /**
@@ -43,5 +43,5 @@ public interface ConfigRemotingService {
 
     GetTopicsResult getConfig(GetConfigRequest getConfigRequest);
 
-    GetTopicsResult getAllTopics(GetTopicsRequest getTopicsRequest);
+    GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest);
 }

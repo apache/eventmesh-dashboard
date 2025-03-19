@@ -21,7 +21,7 @@ import org.apache.eventmesh.dashboard.common.model.remoting.acl.CreateAclRequest
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.CreateAclResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.DeleteAclRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.DeleteAclResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.acl.GetAclsRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.acl.GetAcls2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.GetAclsResult;
 
 /**
@@ -33,5 +33,5 @@ public interface AclRemotingService {
 
     DeleteAclResult deleteAcl(DeleteAclRequest deleteAclRequest);
 
-    GetAclsResult getAllAcls(GetAclsRequest getAclsRequest);
+    GetAclsResult getAllAcls(GetAcls2Request getAclsRequest);
 }

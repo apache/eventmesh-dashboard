@@ -45,6 +45,11 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
+    public List<RuntimeEntity> getRuntimeByClusterRelationship(RuntimeEntity runtimeEntity) {
+        return this.runtimeMapper.getRuntimeByClusterRelationship(runtimeEntity);
+    }
+
+    @Override
     public List<RuntimeEntity> getRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity) {
         List<RuntimeEntity> runtimeByClusterId = runtimeMapper.getRuntimesToFrontByCluster(runtimeEntity);
         runtimeByClusterId.forEach(n -> {
@@ -62,6 +67,11 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public List<RuntimeEntity> selectAll() {
         return runtimeMapper.selectAll();
+    }
+
+    @Override
+    public List<RuntimeEntity> selectByUpdateTime(RuntimeEntity runtimeEntity) {
+        return runtimeMapper.selectByUpdateTime(runtimeEntity);
     }
 
     @Override

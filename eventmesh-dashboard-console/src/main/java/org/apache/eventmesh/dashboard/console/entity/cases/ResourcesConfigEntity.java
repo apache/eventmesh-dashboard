@@ -1,0 +1,18 @@
+package org.apache.eventmesh.dashboard.console.entity.cases;
+
+
+import lombok.Data;
+
+@Data
+public class ResourcesConfigEntity extends CaseEntity {
+
+    private Integer cpuNum;
+
+    private Integer memNum;
+
+    private Integer diskNum;
+
+    private Integer gpuNum;
+
+
+}

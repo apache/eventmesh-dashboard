@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.service.message.impl;
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
-import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMapper;
+import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
 import org.apache.eventmesh.dashboard.console.service.message.GroupMemberService;
 import org.apache.eventmesh.dashboard.console.service.message.GroupService;
 
@@ -34,47 +34,47 @@ import org.springframework.stereotype.Service;
 public class GroupServiceImpl implements GroupService {
 
     @Autowired
-    private OprGroupMapper oprGroupMapper;
+    private GroupMapper groupMapper;
 
     @Autowired
     private GroupMemberService groupMemberService;
 
     @Override
     public List<GroupEntity> selectAll() {
-        return oprGroupMapper.selectAll();
+        return groupMapper.selectAll();
     }
 
     @Override
     public void batchInsert(List<GroupEntity> groupEntities) {
-        oprGroupMapper.batchInsert(groupEntities);
+        groupMapper.batchInsert(groupEntities);
     }
 
     @EmLog(OprType = "search", OprTarget = "Group")
     @Override
     public List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity) {
-        return oprGroupMapper.selectGroup(groupEntity);
+        return groupMapper.selectGroup(groupEntity);
 
     }
 
     @EmLog(OprType = "add", OprTarget = "Group")
     @Override
     public void addGroup(GroupEntity groupEntity) {
-        oprGroupMapper.addGroup(groupEntity);
+        groupMapper.addGroup(groupEntity);
     }
 
     @Override
     public void updateGroup(GroupEntity groupEntity) {
-        oprGroupMapper.updateGroup(groupEntity);
+        groupMapper.updateGroup(groupEntity);
     }
 
     @Override
     public Integer deleteGroup(GroupEntity groupEntity) {
-        return oprGroupMapper.deleteGroup(groupEntity);
+        return groupMapper.deleteGroup(groupEntity);
     }
 
     @Override
     public GroupEntity selectGroup(GroupEntity groupEntity) {
-        return oprGroupMapper.selectGroupById(groupEntity);
+        return groupMapper.selectGroupById(groupEntity);
     }
 
     @Override
@@ -83,13 +83,13 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(groupMemberEntity.getGroupName());
         groupEntity.setClusterId(groupMemberEntity.getClusterId());
-        GroupEntity groupEntity1 = oprGroupMapper.selectGroupByUnique(groupEntity);
+        GroupEntity groupEntity1 = groupMapper.selectGroupByUnique(groupEntity);
         //^Obtain the group to which the member belongs
         groupEntity1.setMembers(groupMemberEntity.getId() + "" + "," + groupEntity1.getMembers());
         //Concatenate the members of the group
         groupEntity1.setMemberCount(groupEntity1.getMemberCount() + 1);
         groupEntity1.setUpdateTime(LocalDateTime.now());
-        oprGroupMapper.updateGroup(groupEntity1);
+        groupMapper.updateGroup(groupEntity1);
         return 1;
         //Modify the group member information
     }
@@ -100,12 +100,12 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setName(groupMemberEntity.getGroupName());
         groupEntity.setClusterId(groupMemberEntity.getClusterId());
-        GroupEntity groupEntity1 = oprGroupMapper.selectGroupByUnique(groupEntity);
+        GroupEntity groupEntity1 = groupMapper.selectGroupByUnique(groupEntity);
         //^Obtain the group to which the member belongs
         groupEntity1.setMembers(groupEntity1.getMembers().replaceAll(groupMemberEntity.getId() + "" + ",", ""));
         groupEntity1.setMemberCount(groupEntity1.getMemberCount() - 1);
         groupEntity1.setUpdateTime(LocalDateTime.now());
-        oprGroupMapper.updateGroup(groupEntity1);
+        groupMapper.updateGroup(groupEntity1);
         return 1;
     }
 

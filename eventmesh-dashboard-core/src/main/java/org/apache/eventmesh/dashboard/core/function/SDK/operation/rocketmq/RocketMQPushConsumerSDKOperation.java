@@ -18,38 +18,26 @@
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq;
 
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqConsumerSDKConfig;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
-import org.apache.rocketmq.client.exception.MQClientException;
-
-import java.util.AbstractMap.SimpleEntry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RocketMQPushConsumerSDKOperation extends AbstractSDKOperation<DefaultMQPushConsumer> {
+public class RocketMQPushConsumerSDKOperation extends AbstractSDKOperation<DefaultMQPushConsumer, CreateRocketmqConsumerSDKConfig> {
 
     @Override
-    public SimpleEntry<String, DefaultMQPushConsumer> createClient(CreateSDKConfig clientConfig) {
-        DefaultMQPushConsumer consumer = null;
-        try {
-            CreateRocketmqConfig config = (CreateRocketmqConfig) clientConfig;
-            consumer = new DefaultMQPushConsumer(config.getConsumerGroup());
-            consumer.setMessageModel(config.getMessageModel());
-            consumer.setNamesrvAddr(config.getNameServerUrl());
-            consumer.subscribe(config.getTopic(), config.getSubExpression());
-            //consumer.registerMessageListener(config.getMessageListener());
-            consumer.start();
-        } catch (MQClientException e) {
-            log.error("create rocketmq push consumer failed", e);
-        }
-        return new SimpleEntry(((CreateRocketmqConfig) clientConfig).getNameServerUrl(), consumer);
+    public DefaultMQPushConsumer createClient(CreateRocketmqConsumerSDKConfig clientConfig) throws  Exception {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(clientConfig.getConsumerGroup());
+        consumer.setMessageModel(clientConfig.getMessageModel());
+        consumer.setNamesrvAddr(clientConfig.doUniqueKey());
+        consumer.subscribe(clientConfig.getTopic(), clientConfig.getSubExpression());
+        return consumer;
     }
 
     @Override
-    public void close(Object client) {
-        ((DefaultMQPushConsumer) client).shutdown();
+    public void close(DefaultMQPushConsumer client) {
+        client.shutdown();
     }
 }

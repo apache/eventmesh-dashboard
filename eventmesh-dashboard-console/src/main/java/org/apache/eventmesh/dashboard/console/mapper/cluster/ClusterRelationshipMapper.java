@@ -40,6 +40,8 @@ public interface ClusterRelationshipMapper {
     })
     Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
 
+    Integer addClusterRelationshipEntry(List<ClusterRelationshipEntity> clusterRelationshipEntity);
+
     @Update("update cluster_relationship set status = 3 where id = #{id} ")
     Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);
 

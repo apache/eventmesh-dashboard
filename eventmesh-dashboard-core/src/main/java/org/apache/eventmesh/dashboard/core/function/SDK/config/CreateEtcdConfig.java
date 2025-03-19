@@ -17,24 +17,11 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class CreateEtcdConfig implements CreateSDKConfig {
+public class CreateEtcdConfig extends AbstractMultiCreateSDKConfig {
 
-    private String etcdServerAddress;
-
-    @Builder.Default()
     private int connectTime = 10;
 
-    @Override
-    public String getUniqueKey() {
-        return etcdServerAddress;
-    }
 }

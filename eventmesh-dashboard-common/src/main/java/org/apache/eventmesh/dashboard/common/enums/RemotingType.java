@@ -17,6 +17,9 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public enum RemotingType {
 
     NOT,
@@ -32,5 +35,27 @@ public enum RemotingType {
     EVENT_MESH_ETCD,
 
     ROCKETMQ,
-    ROCKETMQ_NAMESERVER;
+
+    ROCKETMQ_NAMESERVER,
+
+    KAFKA,
+
+
+    ZK,
+
+    ;
+
+    private Set<ClusterType> supportClusterType = new HashSet<>();
+
+    RemotingType() {
+    }
+
+    RemotingType(ClusterType... clusterType) {
+        for (ClusterType c : clusterType) {
+            this.supportClusterType.add(c);
+        }
+
+    }
+
+
 }

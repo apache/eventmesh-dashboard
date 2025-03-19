@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
@@ -61,7 +61,7 @@ public class ConfigMetadataHandlerToDbImpl implements MetadataHandler<ConfigMeta
     }
 
     @Override
-    public List<ConfigMetadata> getData(GlobalRequest globalRequest) {
+    public List<ConfigMetadata> getData(Global2Request global2Request) {
         return null;
     }
 }

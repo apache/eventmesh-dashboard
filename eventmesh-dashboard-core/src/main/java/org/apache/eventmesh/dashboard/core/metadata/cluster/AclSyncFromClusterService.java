@@ -18,9 +18,9 @@
 package org.apache.eventmesh.dashboard.core.metadata.cluster;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.AclMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.acl.GetAclsRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.acl.GetAcls2Request;
 import org.apache.eventmesh.dashboard.service.remoting.AclRemotingService;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 import lombok.Setter;
 
 @Service
-public class AclSyncFromClusterService extends AbstractMetadataHandler<AclMetadata, AclRemotingService, GetAclsRequest> {
+public class AclSyncFromClusterService extends AbstractMetadataHandler<AclMetadata, AclRemotingService, GetAcls2Request> {
 
     @Setter
     private AclRemotingService aclRemotingService;
@@ -47,15 +47,15 @@ public class AclSyncFromClusterService extends AbstractMetadataHandler<AclMetada
 
 
     @Override
-    public List<AclMetadata> getData(GlobalRequest globalRequest) {
-        GetAclsRequest getAclsRequest = new GetAclsRequest();
-        getAclsRequest.setClusterId(globalRequest.getClusterId());
+    public List<AclMetadata> getData(Global2Request global2Request) {
+        GetAcls2Request getAclsRequest = new GetAcls2Request();
+        getAclsRequest.setClusterId(global2Request.getClusterId());
         return (List<AclMetadata>) this.request(this.request, getAclsRequest).getData();
     }
 
 
     @Override
-    public GlobalResult request(AclRemotingService key, GetAclsRequest getAclsRequest) {
+    public GlobalResult request(AclRemotingService key, GetAcls2Request getAclsRequest) {
         return key.getAllAcls(getAclsRequest);
     }
 }

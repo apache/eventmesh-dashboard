@@ -53,26 +53,26 @@ class FunctionManagerTest {
     @Autowired
     private SyncDataServiceWrapper syncDataServiceWrapper;
 
-    private FunctionManager functionManager;
+    private FunctionManage functionManage;
 
     private HealthService healthService;
 
     @BeforeEach
     void setUpData() {
-        functionManager = new FunctionManager();
+        functionManage = new FunctionManage();
         FunctionManagerProperties properties = new FunctionManagerProperties();
         properties.setDataServiceContainer(dataServiceWrapper);
         properties.setSyncDataServiceWrapper(syncDataServiceWrapper);
 
-        functionManager.setProperties(properties);
+        functionManage.setProperties(properties);
         healthService = new HealthService();
         healthService.createExecutor(properties.getDataServiceContainer().getHealthDataService(), CheckResultCache.getINSTANCE());
-        functionManager.setHealthService(healthService);
+        functionManage.setHealthService(healthService);
     }
 
     @Test
     void testHealthCheck() {
-        functionManager.getHealthService().updateHealthCheckConfigs(dataServiceWrapper);
+        functionManage.getHealthService().updateHealthCheckConfigs(dataServiceWrapper);
         healthService.executeAll();
         healthService.executeAll();
         Assertions.assertNotEquals(4, dataServiceWrapper.getHealthDataService().selectAll().size());

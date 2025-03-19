@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 
 import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckStatus;
-import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckType;
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckTypeEnum;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
@@ -131,7 +131,7 @@ class HealthExecutorTest {
         healthExecutor.endExecute();
         HealthCheckResultEntity query = new HealthCheckResultEntity();
         query.setClusterId(1L);
-        query.setType(HealthCheckType.STORAGE.getNumber());
+        query.setType(HealthCheckTypeEnum.STORAGE.getNumber());
         query.setTypeId(2L);
         assertNotNull(healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getState());
     }
@@ -146,7 +146,7 @@ class HealthExecutorTest {
         healthExecutor.startExecute();
         HealthCheckResultEntity query = new HealthCheckResultEntity();
         query.setClusterId(1L);
-        query.setType(HealthCheckType.STORAGE.getNumber());
+        query.setType(HealthCheckTypeEnum.STORAGE.getNumber());
         query.setTypeId(1L);
         assertEquals(1, healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getState());
     }
@@ -159,7 +159,7 @@ class HealthExecutorTest {
 
         HealthCheckResultEntity query = new HealthCheckResultEntity();
         query.setClusterId(1L);
-        query.setType(HealthCheckType.STORAGE.getNumber());
+        query.setType(HealthCheckTypeEnum.STORAGE.getNumber());
         query.setTypeId(1L);
         assertEquals(HealthCheckStatus.TIMEOUT.getNumber(),
             healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).get(0).getState());
@@ -178,7 +178,7 @@ class HealthExecutorTest {
         healthExecutor.endExecute();
         HealthCheckResultEntity query = new HealthCheckResultEntity();
         query.setClusterId(1L);
-        query.setType(HealthCheckType.STORAGE.getNumber());
+        query.setType(HealthCheckTypeEnum.STORAGE.getNumber());
         query.setTypeId(1L);
         assertEquals(2, healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(query).size());
     }

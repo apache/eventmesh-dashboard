@@ -17,11 +17,11 @@
 
 package org.apache.eventmesh.dashboard.service.remoting;
 
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopicRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopic2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopicResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.DeleteTopicRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.DeleteTopicResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
 
 /**
@@ -29,10 +29,10 @@ import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResul
  */
 public interface TopicRemotingService {
 
-    CreateTopicResult createTopic(CreateTopicRequest createTopicRequest);
+    CreateTopicResult createTopic(CreateTopic2Request createTopicRequest);
 
     DeleteTopicResult deleteTopic(DeleteTopicRequest deleteTopicRequest);
 
-    GetTopicsResult getAllTopics(GetTopicsRequest getTopicsRequest);
+    GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest);
 
 }

@@ -18,18 +18,13 @@
 package org.apache.eventmesh.dashboard.core.cluster;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Data;
 
 @Data
-public class ClusterDO {
+public class ClusterDO extends ClusterBaseDO<ClusterMetadata, RuntimeMetadata, Object, ConfigMetadata> {
 
-    private ClusterMetadata clusterInfo;
-
-    private Map<Long, RuntimeMetadata> runtimeMap = new ConcurrentHashMap<>();
 
 }

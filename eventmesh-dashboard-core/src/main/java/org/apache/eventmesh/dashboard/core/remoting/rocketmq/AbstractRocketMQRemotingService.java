@@ -54,6 +54,10 @@ public abstract class AbstractRocketMQRemotingService extends AbstractRemotingSe
         this.defaultMQAdminExt = clientSimple.getValue();
     }
 
+    protected SDKTypeEnum getSDKType() {
+        return SDKTypeEnum.STORAGE_ROCKETMQ_ADMIN;
+    }
+
     protected <T> T cluster(GlobalResult t, Function function) {
         try {
 

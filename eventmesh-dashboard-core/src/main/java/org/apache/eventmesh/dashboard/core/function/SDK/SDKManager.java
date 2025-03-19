@@ -19,9 +19,9 @@ package org.apache.eventmesh.dashboard.core.function.SDK;
 
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.EtcdSDKOperation;
-import org.apache.eventmesh.dashboard.core.function.SDK.operation.NacosConfigSDKOperation;
-import org.apache.eventmesh.dashboard.core.function.SDK.operation.NacosNamingSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.NacosSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.operation.NacosSDKOperation.NacosConfigSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.operation.NacosSDKOperation.NacosNamingSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.RedisSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq.RocketMQAdminOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq.RocketMQProduceSDKOperation;
@@ -63,7 +63,7 @@ public class SDKManager {
      * @see SDKTypeEnum
      * @see SDKOperation
      */
-    private static final Map<SDKTypeEnum, SDKOperation<?>> clientCreateOperationMap = new ConcurrentHashMap<>();
+    private static final Map<SDKTypeEnum, SDKOperation<Object, CreateSDKConfig>> clientCreateOperationMap = new ConcurrentHashMap<>();
     private static volatile SDKManager INSTANCE = null;
 
     // register all client create operation
@@ -122,21 +122,21 @@ public class SDKManager {
     /**
      * Create SDK client through (SDKTypeEnum) clientTypeEnum, (CreateSDKConfig) config.
      */
-    public <T> SimpleEntry<String, T> createClient(SDKTypeEnum clientTypeEnum, CreateSDKConfig config) {
+    public <T> T createClient(SDKTypeEnum clientTypeEnum, CreateSDKConfig config) {
 
-        final String uniqueKey = config.getUniqueKey();
-
-        Map<String, Object> clients = clientMap.get(clientTypeEnum);
-
-        Object client = clients.get(uniqueKey);
-        SimpleEntry<String, ?> result = new SimpleEntry<>(uniqueKey, client);
-        if (Objects.isNull(client)) {
-            SDKOperation<?> clientCreateOperation = clientCreateOperationMap.get(clientTypeEnum);
-            result = clientCreateOperation.createClient(config);
-            clients.put(result.getKey(), result.getValue());
-        }
         try {
-            return (SimpleEntry<String, T>) result;
+            final String uniqueKey = config.getUniqueKey();
+
+            Map<String, Object> clients = clientMap.get(clientTypeEnum);
+
+            Object client = clients.get(uniqueKey);
+            Object result = new SimpleEntry<>(uniqueKey, client);
+            if (Objects.isNull(client)) {
+                SDKOperation<Object, CreateSDKConfig> clientCreateOperation = clientCreateOperationMap.get(clientTypeEnum);
+                result = clientCreateOperation.createClient(config);
+                clients.put(uniqueKey, result);
+            }
+            return (T) result;
         } catch (Exception e) {
             throw new RuntimeException("create client error", e);
         }

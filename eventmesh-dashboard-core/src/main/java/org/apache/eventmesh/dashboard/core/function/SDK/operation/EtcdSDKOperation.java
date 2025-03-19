@@ -19,42 +19,28 @@ package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateEtcdConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 
 import java.time.Duration;
-import java.util.AbstractMap.SimpleEntry;
 
 import io.etcd.jetcd.Client;
-import io.etcd.jetcd.KV;
-import io.etcd.jetcd.common.exception.EtcdException;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class EtcdSDKOperation extends AbstractSDKOperation<KV> {
+public class EtcdSDKOperation extends AbstractSDKOperation<Client, CreateEtcdConfig> {
 
-    private static String[] getSplitEndpoints(CreateEtcdConfig etcdConfig) {
-        return etcdConfig.getEtcdServerAddress().split(";");
+    @Override
+    public Client createClient(CreateEtcdConfig clientConfig) throws Exception {
+        Client client = Client.builder()
+            .endpoints(clientConfig.getNetAddresses())
+            .connectTimeout(Duration.ofSeconds(clientConfig.getConnectTime()))
+            .build();
+        return client;
+
     }
 
     @Override
-    public SimpleEntry<String, KV> createClient(CreateSDKConfig clientConfig) {
-        final CreateEtcdConfig etcdConfig = (CreateEtcdConfig) clientConfig;
-        KV kvClient = null;
-        try {
-            final Client client = Client.builder()
-                .endpoints(getSplitEndpoints(etcdConfig))
-                .connectTimeout(Duration.ofSeconds(etcdConfig.getConnectTime()))
-                .build();
-            kvClient = client.getKVClient();
-        } catch (EtcdException e) {
-            log.error("create etcd client failed", e);
-        }
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), kvClient);
-    }
-
-    @Override
-    public void close(Object client) {
-        castClient(client).close();
+    public void close(Client client) throws Exception {
+        client.close();
     }
 }

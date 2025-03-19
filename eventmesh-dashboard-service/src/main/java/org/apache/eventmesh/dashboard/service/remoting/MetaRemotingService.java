@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.service.remoting;
 
-import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntime2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeResult;
 
 /**
@@ -25,5 +25,5 @@ import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeRe
  */
 public interface MetaRemotingService {
 
-    GetRuntimeResult getRuntime(GetRuntimeRequest getRuntimeRequest);
+    GetRuntimeResult getRuntime(GetRuntime2Request getRuntimeRequest);
 }

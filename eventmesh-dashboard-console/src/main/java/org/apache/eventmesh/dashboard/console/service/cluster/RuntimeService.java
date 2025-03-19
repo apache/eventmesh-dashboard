@@ -31,9 +31,13 @@ public interface RuntimeService {
 
     List<RuntimeEntity> getRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity);
 
+    List<RuntimeEntity> getRuntimeByClusterRelationship(RuntimeEntity runtimeEntity);
+
     void batchInsert(List<RuntimeEntity> runtimeEntities);
 
     List<RuntimeEntity> selectAll();
+
+    List<RuntimeEntity> selectByUpdateTime(RuntimeEntity runtimeEntity);
 
     List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity);
 

@@ -39,6 +39,11 @@ public class ClusterRelationshipServiceImpl implements ClusterRelationshipServic
     }
 
     @Override
+    public Integer addClusterRelationshipEntry(List<ClusterRelationshipEntity> clusterRelationshipList){
+        return this.clusterRelationshipMapper.addClusterRelationshipEntry(clusterRelationshipList);
+    }
+
+    @Override
     public Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity) {
         return clusterRelationshipMapper.relieveRelationship(clusterRelationshipEntity);
     }

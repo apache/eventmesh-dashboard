@@ -23,12 +23,25 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum HealthCheckStatus {
+
+    SUCCESS(1, "success"),
+
     FAILED(0, "failed"),
+
     PASSED(1, "passed"),
+
     CHECKING(2, "checking"),
+
     TIMEOUT(3, "timeout"),
-    NOT_CONNECTED(4, "not connected");
+
+    NOT_CONNECTED(4, "not connected"),
+
+    USER_AUTHENTICATION_FAIL(5, "user authentication fail"),
+
+    REQUEST_AUTHENTICATION_FAIL(6, "request authentication fail"),
+    ;
 
     private final Integer number;
+
     private final String name;
 }

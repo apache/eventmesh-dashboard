@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.function.health;
 
 import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckStatus;
-import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckType;
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckTypeEnum;
 import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache.CheckResult;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
@@ -26,6 +26,7 @@ import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHeal
 import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -46,12 +47,20 @@ public class HealthExecutor {
     @Setter
     private CheckResultCache memoryCache;
 
+
+    @Getter
+    private CountDownLatch countDownLatch;
+
+
+    public void createCountDownLatch(int count) {
+        this.countDownLatch = new CountDownLatch(count);
+    }
+
     /**
      * execute function is where health check services work.
      *
-     * @param service The health check service to be executed.
+     * @param service        The health check service to be executed.
      */
-
     public void execute(AbstractHealthCheckService service) {
         final long startTime = System.currentTimeMillis();
         //TODO: execute is called by a ScheduledThreadPoolExecutor,
@@ -60,9 +69,10 @@ public class HealthExecutor {
             memoryCache.update(service.getConfig().getHealthCheckResourceType(), service.getConfig().getInstanceId(), HealthCheckStatus.CHECKING, "",
                 null, service.getConfig());
             //The callback interface is used to pass the processing methods for checking success and failure.
-            executorService.submit(() -> service.doCheck(new HealthCheckCallback() {
+            executorService.submit(() -> service.check(new HealthCheckCallback() {
                 @Override
                 public void onSuccess() {
+                    countDownLatch.countDown();
                     //when the health check is successful, the result is updated to the memory cache.
                     Long latency = System.currentTimeMillis() - startTime;
                     HealthCheckStatus status =
@@ -74,6 +84,7 @@ public class HealthExecutor {
 
                 @Override
                 public void onFail(Exception e) {
+                    countDownLatch.countDown();
                     //when the health check fails, the result is updated to the memory cache, passing in the exception message.
                     log.error("Health check failed for reason: {}. Service config is {}", e, service.getConfig());
                     memoryCache.update(service.getConfig().getHealthCheckResourceType(), service.getConfig().getInstanceId(),
@@ -133,7 +144,7 @@ public class HealthExecutor {
         HealthCheckResultEntity newEntity = new HealthCheckResultEntity();
 
         newEntity.setClusterId(result.getConfig().getClusterId());
-        newEntity.setType(HealthCheckType.toNumber(result.getConfig().getHealthCheckResourceType()));
+        newEntity.setType(HealthCheckTypeEnum.toNumber(result.getConfig().getHealthCheckResourceType()));
         newEntity.setTypeId(result.getConfig().getInstanceId());
         newEntity.setResultDesc(result.getResultDesc());
         newEntity.setState(result.getStatus().getNumber());

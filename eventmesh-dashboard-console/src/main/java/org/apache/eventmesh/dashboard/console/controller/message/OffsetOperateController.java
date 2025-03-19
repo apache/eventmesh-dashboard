@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.controller.message;
 
 
+import org.apache.eventmesh.dashboard.console.domain.OperationRangeDomain;
 import org.apache.eventmesh.dashboard.console.modle.message.offset.QueryOffsetByMessageMetadataDTO;
 import org.apache.eventmesh.dashboard.console.modle.message.offset.ResetOffsetDTO;
 import org.apache.eventmesh.dashboard.service.remoting.OffsetRemotingService;
@@ -41,6 +42,10 @@ public class OffsetOperateController {
     private OffsetRemotingService offsetRemotingService;
 
 
+    @Autowired
+    private OperationRangeDomain operationRangeDomain;
+
+
     public ResultObject<String> queryOffsetByMessageMetadataDTO(
         @RequestBody @Validated QueryOffsetByMessageMetadataDTO queryOffsetByMessageMetadataDTO) {
 
@@ -49,6 +54,17 @@ public class OffsetOperateController {
 
 
     public ResultObject<String> resetOffset(@RequestBody @Validated ResetOffsetDTO resetOffsetDTO) {
+        // 得到 订阅信息
+        // 获得 runtime
+
+        switch (resetOffsetDTO.getResetOffsetMode()) {
+            case CONSUME_FROM_LAST_OFFSET:
+            case CONSUME_FROM_FIRST_OFFSET:
+            case CONSUME_FROM_TIMESTAMP:
+            case CONSUME_FROM_DESIGNATED_OFFSET:
+            default:
+                break;
+        }
 
         return null;
     }

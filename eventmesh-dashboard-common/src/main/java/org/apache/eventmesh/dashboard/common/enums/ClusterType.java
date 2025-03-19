@@ -25,19 +25,52 @@ import lombok.Getter;
 
 public enum ClusterType {
 
+    DEFINITION(0),
+
     DEFAULT(1),
 
+
     EVENTMESH(20),
-
-    STORAGE(21),
-
-    DEFAULT_TYPE_NAME(1),
 
     CLUSTER(1),
 
     META(2),
 
     RUNTIME(3),
+
+    BROKER(4),
+
+    COPY_BROKER(5),
+
+    ZK_BROKER(6),
+
+    RFT_BROKER(6),
+
+    STORAGE(21),
+
+    RUNTIME_CLUSTER(21),
+
+    META_CLUSTER(22),
+
+    STORAGE_CLUSTER(22),
+
+    DEFAULT_TYPE_NAME(1),
+
+
+    CLUSTER_TYPE_META(1),
+
+    CLUSTER_TYPE_RUNTIME(1),
+
+    CLUSTER_TYPE_STORAGE(1),
+
+
+    NODE_BY_COPY_IN_TYPE(2),
+
+    NODE_BY_COPY_IN_TYPE_NOT_HAVE(2),
+
+    NODE_BY_COPY_IN_TYPE_MAIN(2),
+
+    NODE_BY_COPY_IN_TYPE_SLAVE(3),
 
 
     RUNTIME_EVENT_RUNTIME(ClusterType.META.code + 1),
@@ -48,10 +81,12 @@ public enum ClusterType {
 
     META_TYPE_NACOS(ClusterType.META.code + 2),
 
+    META_TYPE_ZK(ClusterType.META.code + 3),
+
     META_TYPE_ROCKETMQ_NAMESERVER(ClusterType.META.code + 31),
 
 
-    EVENTMESH_CLUSTER(EVENTMESH, EVENTMESH, CLUSTER, DEFAULT, RemotingType.EVENT_MESH_RUNTIME),
+    EVENTMESH_CLUSTER(EVENTMESH, EVENTMESH, CLUSTER, DEFINITION, RemotingType.EVENT_MESH_RUNTIME),
 
     EVENTMESH_RUNTIME(EVENTMESH, EVENTMESH, RUNTIME, DEFAULT, RemotingType.EVENT_MESH_RUNTIME),
 
@@ -61,11 +96,26 @@ public enum ClusterType {
 
     STORAGE_ROCKETMQ(ClusterType.STORAGE.code + 1),
 
-    STORAGE_ROCKETMQ_CLUSTER(STORAGE, STORAGE_ROCKETMQ, CLUSTER, DEFAULT, RemotingType.ROCKETMQ),
+    STORAGE_ROCKETMQ_CLUSTER(STORAGE, STORAGE_ROCKETMQ, CLUSTER, DEFINITION, RemotingType.ROCKETMQ),
 
     STORAGE_ROCKETMQ_NAMESERVER(STORAGE, STORAGE_ROCKETMQ, META, DEFAULT, RemotingType.ROCKETMQ_NAMESERVER),
 
-    STORAGE_ROCKETMQ_BROKER(STORAGE, STORAGE_ROCKETMQ, RUNTIME, DEFAULT, RemotingType.ROCKETMQ);
+    STORAGE_ROCKETMQ_BROKER(STORAGE, STORAGE_ROCKETMQ, RUNTIME, DEFINITION, RemotingType.ROCKETMQ),
+
+    STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE(STORAGE, STORAGE_ROCKETMQ_BROKER, RUNTIME, DEFAULT, RemotingType.ROCKETMQ),
+
+    STORAGE_ROCKETMQ_BROKER_RAFT(STORAGE, STORAGE_ROCKETMQ_BROKER, RUNTIME, DEFAULT, RemotingType.ROCKETMQ),
+
+
+    STORAGE_KAFKA(ClusterType.STORAGE.code + 1),
+
+    STORAGE_KAFKA_CLUSTER(STORAGE, STORAGE_KAFKA, CLUSTER, DEFAULT, RemotingType.KAFKA),
+
+    STORAGE_KAFKA_ZK(STORAGE, STORAGE_KAFKA, META, META_TYPE_ZK, RemotingType.ZK),
+
+    STORAGE_KAFKA_RAFT(STORAGE, STORAGE_KAFKA, META, STORAGE_KAFKA, RemotingType.KAFKA),
+
+    STORAGE_KAFKA_BROKER(STORAGE, STORAGE_KAFKA, RUNTIME, DEFAULT, RemotingType.KAFKA);
 
 
     public static final List<ClusterType> STORAGE_TYPES = getStorage();
@@ -97,8 +147,10 @@ public enum ClusterType {
      */
     @Getter
     private RemotingType remotingType;
+
     @Getter
     private int code;
+
 
     ClusterType(int code) {
         this.code = code;
@@ -125,6 +177,27 @@ public enum ClusterType {
         return list;
     }
 
+    /**
+     * 半托管状态需要 如要从
+     *
+     * @return
+     */
+    public boolean isEventMethMeta() {
+        return this.eventmeshNodeType.equals(EVENTMESH) && this.assemblyNodeType.equals(META);
+    }
+
+    public boolean isMeta() {
+        return this.assemblyName.equals(META);
+    }
+
+    public boolean isRuntime() {
+        return this.assemblyName.equals(RUNTIME);
+    }
+
+    public boolean isStorage() {
+        return this.eventmeshNodeType.equals(STORAGE);
+    }
+
     public boolean isMainCluster() {
         return Objects.equals(this, ClusterType.EVENTMESH_CLUSTER) || Objects.equals(this.assemblyNodeType, ClusterType.CLUSTER);
     }
@@ -139,4 +212,23 @@ public enum ClusterType {
             assemblyNodeType, ClusterType.META)) : false;
     }
 
+    public boolean isHealthTopic() {
+        return Objects.equals(this, EVENTMESH_RUNTIME) || this.isStorageRuntime();
+    }
+
+    public boolean isStorageRuntime() {
+        return Objects.equals(this.eventmeshNodeType, STORAGE) && Objects.equals(this.assemblyNodeType, RUNTIME);
+    }
+
+    public boolean isMain() {
+        return Objects.equals(this, NODE_BY_COPY_IN_TYPE_MAIN);
+    }
+
+    public boolean isSlave() {
+        return Objects.equals(this, NODE_BY_COPY_IN_TYPE_SLAVE);
+    }
+
+    public boolean isDefinition() {
+        return Objects.equals(this.assemblyBusiness, DEFINITION);
+    }
 }

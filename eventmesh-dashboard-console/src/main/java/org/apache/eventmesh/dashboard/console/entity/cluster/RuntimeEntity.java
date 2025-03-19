@@ -17,6 +17,9 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
+import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
 
 import java.time.LocalDateTime;
@@ -46,12 +49,27 @@ public class RuntimeEntity extends BaseEntity {
 
     private Integer jmxPort;
 
+    private FirstToWhom firstToWhom;
+
+    private int firstSyncState;
+
+    private ClusterType runtimeType;
+
+    private ClusterType runtimeByClusterType;
+
+    private LocalDateTime goOnlineTimestamp;
+
+    private LocalDateTime offlineTimestamp;
+
+    private ClusterTrusteeshipType trusteeshipType;
+
     private LocalDateTime startTimestamp;
 
     private String rack;
 
-    private Integer status;
-
     private String endpointMap;
+
+
+
 
 }

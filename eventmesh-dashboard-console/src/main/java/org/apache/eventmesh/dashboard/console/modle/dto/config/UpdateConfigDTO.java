@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.modle.dto.config;
 
+import org.apache.eventmesh.dashboard.console.modle.dto.operation.OperationBaseDTO;
+
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -26,9 +28,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class UpdateConfigDTO {
-
-    private Long clusterId;
+public class UpdateConfigDTO extends OperationBaseDTO {
 
     private List<ChangeConfigDTO> changeConfigDTOS;
 

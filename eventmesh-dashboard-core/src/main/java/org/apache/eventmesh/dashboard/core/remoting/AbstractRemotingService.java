@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.core.remoting;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.core.cluster.ClusterDO;
 import org.apache.eventmesh.dashboard.core.cluster.ColonyDO;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ import lombok.Setter;
 public abstract class AbstractRemotingService {
 
     @Setter
-    protected ColonyDO colonyDO;
+    protected ColonyDO<ClusterDO> colonyDO;
 
     protected ClusterDO clusterDO;
 
@@ -46,11 +47,13 @@ public abstract class AbstractRemotingService {
         this.doInit();
     }
 
+    protected abstract SDKTypeEnum getSDKType();
+
     public abstract void createConfig();
 
     public List<String> getMeta() {
         List<String> list = new ArrayList<>();
-        for (ColonyDO c : colonyDO.getMetaColonyDOList().values()) {
+        for (ColonyDO<ClusterDO> c : colonyDO.getMetaColonyDOList().values()) {
             for (RuntimeMetadata runtimeMetadata : c.getClusterDO().getRuntimeMap().values()) {
                 list.add(runtimeMetadata.getHost() + ":" + runtimeMetadata.getPort());
             }
@@ -61,7 +64,7 @@ public abstract class AbstractRemotingService {
     public String getMetaString() {
         StringBuilder sb = new StringBuilder();
         List<String> list = new ArrayList<>();
-        for (ColonyDO c : colonyDO.getMetaColonyDOList().values()) {
+        for (ColonyDO<ClusterDO> c : colonyDO.getMetaColonyDOList().values()) {
             for (RuntimeMetadata runtimeMetadata : c.getClusterDO().getRuntimeMap().values()) {
                 sb.append(runtimeMetadata.getHost() + ":" + runtimeMetadata.getPort());
                 sb.append(";");

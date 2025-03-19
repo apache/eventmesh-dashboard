@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.console.entity.StoreEntity;
 import org.apache.eventmesh.dashboard.console.service.message.TopicService;
 import org.apache.eventmesh.dashboard.console.service.store.StoreService;
@@ -69,7 +69,7 @@ public class TopicMetadataHandlerToDbImpl implements MetadataHandler<TopicMetada
     }
 
     @Override
-    public List<TopicMetadata> getData(GlobalRequest globalRequest) {
+    public List<TopicMetadata> getData(Global2Request global2Request) {
         return null;
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.core.meta.runtime;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntime2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeResponse;
 import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeResult;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKManager;
@@ -41,7 +41,7 @@ import com.alibaba.nacos.client.naming.NacosNamingService;
 public class NacosRuntimeCore implements MetaRemotingService {
 
     @Override
-    public GetRuntimeResult getRuntime(GetRuntimeRequest getRuntimeRequest) {
+    public GetRuntimeResult getRuntime(GetRuntime2Request getRuntimeRequest) {
         CreateNacosConfig createNacosConfig = new CreateNacosConfig();
         createNacosConfig.setServerAddress(getRuntimeRequest.getRegistryAddress());
         NacosNamingService nacosNamingService = (NacosNamingService) SDKManager.getInstance()

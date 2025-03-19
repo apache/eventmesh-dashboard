@@ -19,22 +19,22 @@ package org.apache.eventmesh.dashboard.core.metadata.cluster;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
-import org.apache.eventmesh.dashboard.core.remoting.RemotingManager;
+import org.apache.eventmesh.dashboard.core.remoting.RemotingManage;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Setter;
 
-public abstract class AbstractMetadataHandler<T, S, RE> implements MetadataHandler<T>, RemotingManager.RemotingRequestWrapper<S, RE> {
+public abstract class AbstractMetadataHandler<T, S, RE> implements MetadataHandler<T>, RemotingManage.RemotingRequestWrapper<S, RE> {
 
 
     protected S request;
     @Setter
-    private RemotingManager remotingManager;
+    private RemotingManage remotingManage;
 
     public void init() {
-        this.request = (S) remotingManager.getProxyObject();
+        this.request = (S) remotingManage.getProxyObject();
     }
 
 
@@ -45,13 +45,13 @@ public abstract class AbstractMetadataHandler<T, S, RE> implements MetadataHandl
      */
     @Override
     public List<T> getData() {
-        List<RemotingManager.RemotingWrapper> remotingWrapperList = new ArrayList<>();
+        List<RemotingManage.RemotingWrapper> remotingWrapperList = new ArrayList<>();
         remotingWrapperList.addAll(
-            remotingManager.getEventMeshClusterDO(ClusterTrusteeshipType.TRUSTEESHIP, ClusterTrusteeshipType.FIRE_AND_FORGET_TRUSTEESHIP));
+            remotingManage.getEventMeshClusterDO(ClusterTrusteeshipType.TRUSTEESHIP, ClusterTrusteeshipType.SELF));
         remotingWrapperList.addAll(
-            remotingManager.getStorageCluster(ClusterTrusteeshipType.TRUSTEESHIP, ClusterTrusteeshipType.FIRE_AND_FORGET_TRUSTEESHIP));
-        return remotingManager.request(this,
-            remotingManager.getEventMeshClusterDO(ClusterTrusteeshipType.TRUSTEESHIP, ClusterTrusteeshipType.FIRE_AND_FORGET_TRUSTEESHIP));
+            remotingManage.getStorageCluster(ClusterTrusteeshipType.TRUSTEESHIP, ClusterTrusteeshipType.SELF));
+        return remotingManage.request(this,
+            remotingManage.getEventMeshClusterDO(ClusterTrusteeshipType.TRUSTEESHIP, ClusterTrusteeshipType.SELF));
     }
 
 }

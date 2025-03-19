@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.integration.health;
 
-import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckType;
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckTypeEnum;
 import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.function.health.HealthService;
@@ -67,7 +67,7 @@ public class HealthServiceIntegrateTest {
 
         HealthCheckResultEntity queryEntity = new HealthCheckResultEntity();
         queryEntity.setClusterId(1L);
-        queryEntity.setType(HealthCheckType.STORAGE.getNumber());
+        queryEntity.setType(HealthCheckTypeEnum.STORAGE.getNumber());
         queryEntity.setTypeId(1L);
         List<HealthCheckResultEntity> results = healthDataService.queryHealthCheckResultByClusterIdAndTypeAndTypeId(queryEntity);
         Assertions.assertEquals(2, results.size());

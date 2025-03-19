@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.console.service.message.GroupService;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
@@ -57,7 +57,7 @@ public class GroupMetadataHandlerToDbImpl implements MetadataHandler<GroupMetada
     }
 
     @Override
-    public List<GroupMetadata> getData(GlobalRequest globalRequest) {
+    public List<GroupMetadata> getData(Global2Request global2Request) {
         return null;
     }
 }

@@ -17,7 +17,10 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK;
 
-public abstract class AbstractSDKOperation<T> implements SDKOperation<T> {
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
+
+
+public abstract class AbstractSDKOperation<T, C extends CreateSDKConfig> implements SDKOperation<T, C> {
 
     protected T castClient(Object client) {
         try {

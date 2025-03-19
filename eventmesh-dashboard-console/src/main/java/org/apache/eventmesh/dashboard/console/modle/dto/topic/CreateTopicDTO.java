@@ -18,6 +18,8 @@
 package org.apache.eventmesh.dashboard.console.modle.dto.topic;
 
 
+import org.apache.eventmesh.dashboard.console.modle.dto.operation.OperationBaseDTO;
+
 import lombok.Data;
 
 /**
@@ -25,9 +27,7 @@ import lombok.Data;
  */
 
 @Data
-public class CreateTopicDTO {
-
-    private Long clusterId;
+public class CreateTopicDTO extends OperationBaseDTO {
 
     private String name;
 

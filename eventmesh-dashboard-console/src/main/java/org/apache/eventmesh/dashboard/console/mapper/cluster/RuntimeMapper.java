@@ -40,6 +40,9 @@ public interface RuntimeMapper {
     @Select("SELECT * FROM runtime WHERE status=1")
     List<RuntimeEntity> selectAll();
 
+    @Select("select * from runtime where update_time = #{updateTime} and status=1")
+    List<RuntimeEntity> selectByUpdateTime(RuntimeEntity runtimeEntity);
+
     @Insert({
         "<script>",
         "   INSERT INTO runtime (cluster_id, host, storage_cluster_id, port, jmx_port, start_timestamp, rack, status, endpoint_map) VALUES",
@@ -62,6 +65,11 @@ public interface RuntimeMapper {
 
     @Select("select * from runtime where id=#{id} and status=1")
     RuntimeEntity queryRuntimeEntityById(RuntimeEntity runtimeEntity);
+
+    @Select({
+        "select * from runtime where cluster_id in( select relationship_id from cluster_relationship where cluster_id  )"
+    })
+    List<RuntimeEntity> getRuntimeByClusterRelationship(RuntimeEntity runtimeEntity);
 
     @Select({
         "<script>",

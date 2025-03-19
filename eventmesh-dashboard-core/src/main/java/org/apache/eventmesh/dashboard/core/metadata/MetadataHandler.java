@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.dashboard.core.metadata;
 
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
-
 import java.util.List;
 
 /**
@@ -26,24 +24,8 @@ import java.util.List;
  *            {@code <T>} to the target type.<p> method in this interface should be implemented as async method, if the method is eventmesh manage
  *            operation.
  */
-public interface MetadataHandler<T> {
+public interface MetadataHandler<T> extends DataMetadataHandler<T> {
 
-
-    default void handleAll(List<T> addData, List<T> updateData, List<T> deleteData) {
-        if (addData != null) {
-            addData.forEach(this::addMetadata);
-        }
-        if (updateData != null) {
-            updateData.forEach(this::updateMetadata);
-        }
-        if (deleteData != null) {
-            deleteData.forEach(this::deleteMetadata);
-        }
-    }
-
-    default void handleAllObject(List<Object> addData, List<Object> updateData, List<Object> deleteData) {
-        handleAll((List<T>) addData, (List<T>) updateData, (List<T>) deleteData);
-    }
 
     //metaData: topic, center, etc. add meta is to create a topic.
     void addMetadata(T meta);
@@ -101,9 +83,5 @@ public interface MetadataHandler<T> {
     default void deleteMetadataObject(Object meta) {
         deleteMetadata((T) meta);
     }
-
-    List<T> getData();
-
-    List<T> getData(GlobalRequest globalRequest);
 
 }

@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.function.metadata.handler.db;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
@@ -56,7 +56,7 @@ public class ClusterMetadataHandlerToDbImpl implements MetadataHandler<ClusterMe
     }
 
     @Override
-    public List<ClusterMetadata> getData(GlobalRequest globalRequest) {
+    public List<ClusterMetadata> getData(Global2Request global2Request) {
         return null;
     }
 }

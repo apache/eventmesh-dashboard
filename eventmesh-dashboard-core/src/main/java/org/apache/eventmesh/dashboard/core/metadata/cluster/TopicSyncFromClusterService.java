@@ -18,9 +18,9 @@
 package org.apache.eventmesh.dashboard.core.metadata.cluster;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
 import org.apache.eventmesh.dashboard.service.remoting.TopicRemotingService;
 
 import java.util.List;
@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class TopicSyncFromClusterService extends AbstractMetadataHandler<TopicMetadata, TopicRemotingService, GetTopicsRequest> {
+public class TopicSyncFromClusterService extends AbstractMetadataHandler<TopicMetadata, TopicRemotingService, GetTopics2Request> {
 
     @Override
     public void addMetadata(TopicMetadata meta) {
@@ -45,13 +45,13 @@ public class TopicSyncFromClusterService extends AbstractMetadataHandler<TopicMe
 
 
     @Override
-    public List<TopicMetadata> getData(GlobalRequest globalRequest) {
+    public List<TopicMetadata> getData(Global2Request global2Request) {
         return null;
     }
 
 
     @Override
-    public GlobalResult request(TopicRemotingService topicRemotingService, GetTopicsRequest key) {
+    public GlobalResult request(TopicRemotingService topicRemotingService, GetTopics2Request key) {
         return null;
     }
 }

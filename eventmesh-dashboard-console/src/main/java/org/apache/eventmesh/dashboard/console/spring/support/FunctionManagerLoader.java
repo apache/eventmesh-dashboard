@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FunctionManagerLoader {
 
-    private FunctionManager functionManager;
+    private FunctionManage functionManage;
 
     private FunctionManagerProperties properties;
 
@@ -50,13 +50,13 @@ public class FunctionManagerLoader {
 
     @Bean
     public HealthService getHealthService() {
-        return functionManager.getHealthService();
+        return functionManage.getHealthService();
     }
 
 
     @PostConstruct
     void initManager() {
-        functionManager = new FunctionManager();
+        functionManage = new FunctionManage();
         properties = new FunctionManagerProperties();
         properties.setDataServiceContainer(
             dataServiceContainer);
@@ -64,9 +64,9 @@ public class FunctionManagerLoader {
             syncDataServiceWrapper);
         properties.setMetadataHandlerWrapper(metadataHandlerWrapper);
 
-        functionManager.setProperties(properties);
-        functionManager.setConfigs(functionManagerConfigs);
-        functionManager.initFunctionManager();
+        functionManage.setProperties(properties);
+        functionManage.setConfigs(functionManagerConfigs);
+        functionManage.initFunctionManager();
     }
 
 }

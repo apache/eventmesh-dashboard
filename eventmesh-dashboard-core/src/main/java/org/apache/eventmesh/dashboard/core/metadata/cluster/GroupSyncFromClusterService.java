@@ -18,10 +18,10 @@
 package org.apache.eventmesh.dashboard.core.metadata.cluster;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupsRequest;
-import org.apache.eventmesh.dashboard.core.remoting.RemotingManager;
+import org.apache.eventmesh.dashboard.core.remoting.RemotingManage;
 import org.apache.eventmesh.dashboard.service.remoting.GroupRemotingService;
 
 import java.util.List;
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 public class GroupSyncFromClusterService extends AbstractMetadataHandler<GroupMetadata, GroupRemotingService, GetGroupsRequest> {
 
     @Autowired
-    private RemotingManager remotingManager;
+    private RemotingManage remotingManage;
 
     @Override
     public void addMetadata(GroupMetadata meta) {
@@ -47,14 +47,14 @@ public class GroupSyncFromClusterService extends AbstractMetadataHandler<GroupMe
 
     @Override
     public List<GroupMetadata> getData() {
-        List<GroupMetadata> eventMeshGroupList = this.remotingManager.request(this, remotingManager.getEventMeshClusterDO());
+        List<GroupMetadata> eventMeshGroupList = this.remotingManage.request(this, remotingManage.getEventMeshClusterDO());
         //List<GroupMetadata> rocketMQMeshGroupList = this.remotingManager.request(this,remotingManager.getRocketMQClusterDO() );
         //eventMeshGroupList.addAll(rocketMQMeshGroupList);
         return eventMeshGroupList;
     }
 
     @Override
-    public List<GroupMetadata> getData(GlobalRequest globalRequest) {
+    public List<GroupMetadata> getData(Global2Request global2Request) {
         return null;
     }
 

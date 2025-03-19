@@ -39,6 +39,8 @@ public interface ConfigService {
 
     void batchInsert(List<ConfigEntity> configEntityList);
 
+    void copyConfig(Long sourceId, Long targetId);
+
     String mapToYaml(Map<String, String> stringMap);
 
     Integer addConfig(ConfigEntity configEntity);

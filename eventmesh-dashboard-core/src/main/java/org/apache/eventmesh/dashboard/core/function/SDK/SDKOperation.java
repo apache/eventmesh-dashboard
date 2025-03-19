@@ -19,18 +19,16 @@ package org.apache.eventmesh.dashboard.core.function.SDK;
 
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 
-import java.util.AbstractMap.SimpleEntry;
-
 /**
  * Operation to create and close a client, the operations will be store in the SDKManager
  *
  * @param <T> SDK client
  */
-public interface SDKOperation<T> {
+public interface SDKOperation<T, C extends CreateSDKConfig> {
 
-    SimpleEntry<String, T> createClient(CreateSDKConfig clientConfig);
+    T createClient(C clientConfig) throws Exception;
 
 
-    void close(Object client);
+    void close(T client) throws Exception;
 
 }

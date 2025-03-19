@@ -30,6 +30,8 @@ import java.util.Map;
 public interface ClusterService {
 
 
+    boolean nameExist(ClusterEntity clusterEntity);
+
     void createCluster(ClusterEntity clusterEntity);
 
     GetClusterBaseMessageVO getClusterBaseMessage(ClusterIdDTO clusterIdDTO);

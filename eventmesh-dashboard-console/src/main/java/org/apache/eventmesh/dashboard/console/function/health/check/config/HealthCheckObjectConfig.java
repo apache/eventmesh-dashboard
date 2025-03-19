@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.check.config;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+
 import java.util.Properties;
 
 import lombok.AllArgsConstructor;
@@ -43,6 +45,10 @@ public class HealthCheckObjectConfig {
     private Class<?> checkClass;
 
     private Properties eventmeshProperties;
+
+    private ClusterType clusterType;
+
+    private ClusterType nodeByCopyInType;
 
     private Long clusterId;
 

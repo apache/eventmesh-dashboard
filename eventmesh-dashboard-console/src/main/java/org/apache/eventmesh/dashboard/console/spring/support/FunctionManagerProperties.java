@@ -33,6 +33,8 @@ import lombok.experimental.SuperBuilder;
 public class FunctionManagerProperties {
 
     private DataServiceWrapper dataServiceContainer;
+
     private SyncDataServiceWrapper syncDataServiceWrapper;
+
     private MetadataHandlerWrapper metadataHandlerWrapper;
 }

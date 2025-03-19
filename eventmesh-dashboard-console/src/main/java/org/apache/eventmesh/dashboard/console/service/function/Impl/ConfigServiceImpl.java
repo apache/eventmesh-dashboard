@@ -136,6 +136,11 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
+    public void copyConfig(Long sourceId, Long targetId) {
+        configMapper.copyConfig(sourceId, targetId);
+    }
+
+    @Override
     public String mapToYaml(Map<String, String> stringMap) {
         Yaml yaml = new Yaml();
         return yaml.dumpAsMap(stringMap);

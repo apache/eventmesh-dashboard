@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.core.metadata.cluster;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigRequest;
 import org.apache.eventmesh.dashboard.service.remoting.ConfigRemotingService;
@@ -58,7 +58,7 @@ public class ConfigSyncFromClusterService extends AbstractMetadataHandler<Config
     }
 
     @Override
-    public List<ConfigMetadata> getData(GlobalRequest globalRequest) {
+    public List<ConfigMetadata> getData(Global2Request global2Request) {
         return null;
     }
 

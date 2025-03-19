@@ -25,7 +25,7 @@ import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ConnectionMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
-import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMapper;
+import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.function.OverviewDTO;
@@ -53,7 +53,7 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     private RuntimeMapper runtimeMapper;
 
     @Autowired
-    private OprGroupMapper oprGroupMapper;
+    private GroupMapper groupMapper;
 
     @Autowired
     private TopicMapper topicMapper;
@@ -65,6 +65,11 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
+    public boolean nameExist(ClusterEntity clusterEntity) {
+        return true;
+    }
+
+    @Override
     public GetClusterBaseMessageVO getClusterBaseMessage(ClusterIdDTO clusterIdDTO) {
         Long clusterId = clusterIdDTO.getClusterId();
         GetClusterBaseMessageVO getClusterBaseMessageVO = new GetClusterBaseMessageVO();
@@ -73,7 +78,7 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
         getClusterBaseMessageVO.setTopicNum(topicMapper.selectTopicNumByCluster(topicEntity));
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setClusterId(clusterId);
-        getClusterBaseMessageVO.setConsumerGroupNum(oprGroupMapper.getConsumerNumByCluster(groupEntity));
+        getClusterBaseMessageVO.setConsumerGroupNum(groupMapper.getConsumerNumByCluster(groupEntity));
         ConnectionEntity connectionEntity = new ConnectionEntity();
         connectionEntity.setClusterId(clusterId);
         getClusterBaseMessageVO.setConnectionNum(connectionMapper.selectConnectionNumByCluster(connectionEntity));

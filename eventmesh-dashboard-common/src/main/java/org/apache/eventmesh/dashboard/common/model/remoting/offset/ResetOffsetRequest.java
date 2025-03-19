@@ -19,11 +19,12 @@ package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
 
 import org.apache.eventmesh.dashboard.common.enums.ResetOffsetMode;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 
 import lombok.Data;
 
 @Data
-public class ResetOffsetRequest {
+public class ResetOffsetRequest extends Global2Request {
 
     private Long timestamp;
 

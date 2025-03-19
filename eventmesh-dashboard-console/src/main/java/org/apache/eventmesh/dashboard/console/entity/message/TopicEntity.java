@@ -30,7 +30,19 @@ public class TopicEntity extends BaseEntity {
 
     private Long id;
 
+    /**
+     * storage cluster id.
+     * <p>
+     * Is Event mesh cluster or storage cluster . Is not storage runtime cluster
+     */
     private Long clusterId;
+
+    /**
+     * 通过主题找到所属集群，通过 集群id 找到 上级（存储）集群id
+     * <p>
+     * Find the cluster you belong to through the theme, and find the upper level (storage) cluster ID through the cluster ID
+     */
+    private Long runtimeId;
 
     private String topicName;
 
@@ -50,5 +62,5 @@ public class TopicEntity extends BaseEntity {
     private Integer status;
 
     private Integer createProgress;
-    
+
 }

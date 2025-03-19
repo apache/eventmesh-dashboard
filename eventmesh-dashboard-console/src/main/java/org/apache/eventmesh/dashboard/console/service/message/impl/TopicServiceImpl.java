@@ -26,7 +26,7 @@ import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
-import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMapper;
+import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
 import org.apache.eventmesh.dashboard.console.mapper.storage.StoreMapper;
@@ -62,7 +62,7 @@ public class TopicServiceImpl implements TopicService {
     StoreMapper storeMapper;
 
     @Autowired
-    OprGroupMapper groupMapper;
+    GroupMapper groupMapper;
 
 
     @Override

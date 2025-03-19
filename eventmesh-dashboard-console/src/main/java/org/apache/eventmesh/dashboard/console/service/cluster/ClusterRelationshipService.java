@@ -30,6 +30,8 @@ public interface ClusterRelationshipService {
 
     Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
 
+    Integer addClusterRelationshipEntry(List<ClusterRelationshipEntity> clusterRelationshipList);
+
     Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);
 
     List<ClusterAndRelationshipEntity> queryClusterAndRelationshipEntityListByClusterId(ClusterRelationshipEntity clusterRelationshipEntity);

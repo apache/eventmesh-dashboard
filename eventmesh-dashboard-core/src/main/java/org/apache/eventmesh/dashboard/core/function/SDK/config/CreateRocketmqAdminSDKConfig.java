@@ -20,15 +20,6 @@ package org.apache.eventmesh.dashboard.core.function.SDK.config;
 import lombok.Data;
 
 @Data
-public class CreateRocketmqAdminSDKConfig implements CreateSDKConfig {
+public class CreateRocketmqAdminSDKConfig extends AbstractMultiCreateSDKConfig {
 
-    private String nameServerUrl;
-
-    private String clusterName;
-
-
-    @Override
-    public String getUniqueKey() {
-        return nameServerUrl;
-    }
 }

@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.core.metadata;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-import org.apache.eventmesh.dashboard.core.remoting.RemotingManager;
+import org.apache.eventmesh.dashboard.core.remoting.RemotingManage;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -39,13 +39,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class MetadataSyncManagerTest {
 
-    private MetadataSyncManager metadataSyncManager = new MetadataSyncManager();
+    private MetadataSyncManage metadataSyncManager = new MetadataSyncManage();
 
-    private Map<Class<?>, MetadataSyncManager.MetadataSyncWrapper> metadataSyncWrapperMap;
+    private Map<Class<?>, MetadataSyncManage.MetadataSyncWrapper> metadataSyncWrapperMap;
 
 
     @Mock
-    private RemotingManager remotingManager;
+    private RemotingManage remotingManage;
 
     @Mock
     private MetadataHandler dataBasesHandler;
@@ -58,15 +58,15 @@ public class MetadataSyncManagerTest {
 
     @Before
     public void init() throws IllegalAccessException {
-        MetadataSyncManager.MetadataSyncConfig metadataSyncConfig = new MetadataSyncManager.MetadataSyncConfig();
+        MetadataSyncManage.MetadataSyncConfig metadataSyncConfig = new MetadataSyncManage.MetadataSyncConfig();
         metadataSyncConfig.setDataBasesHandler(dataBasesHandler);
         metadataSyncConfig.setClusterService(clusterHandler);
         metadataSyncConfig.setMetadataClass(RuntimeMetadata.class);
-        metadataSyncManager.setRemotingManager(this.remotingManager);
+        metadataSyncManager.setRemotingManage(this.remotingManage);
         metadataSyncManager.register(metadataSyncConfig);
 
-        Field metadataSyncWrapperMapField = FieldUtils.getField(MetadataSyncManager.class, "metadataSyncWrapperMap", true);
-        metadataSyncWrapperMap = (Map<Class<?>, MetadataSyncManager.MetadataSyncWrapper>) metadataSyncWrapperMapField.get(metadataSyncManager);
+        Field metadataSyncWrapperMapField = FieldUtils.getField(MetadataSyncManage.class, "metadataSyncWrapperMap", true);
+        metadataSyncWrapperMap = (Map<Class<?>, MetadataSyncManage.MetadataSyncWrapper>) metadataSyncWrapperMapField.get(metadataSyncManager);
 
     }
 
@@ -91,13 +91,13 @@ public class MetadataSyncManagerTest {
         this.mock_data(5, 5, 3);
         this.mock_data(6, 3, 5);
         this.mock_data(7, 5, 5);
-        MetadataSyncManager.MetadataSyncWrapper metadataSyncWrapper = this.metadataSyncWrapperMap.get(RuntimeMetadata.class);
+        MetadataSyncManage.MetadataSyncWrapper metadataSyncWrapper = this.metadataSyncWrapperMap.get(RuntimeMetadata.class);
         Mockito.when(this.dataBasesHandler.getData()).thenReturn(this.databasesList);
         Mockito.when(this.clusterHandler.getData()).thenReturn(this.clusterList);
-        Mockito.when(this.remotingManager.isClusterTrusteeshipType(Mockito.anyLong(), Mockito.any())).thenAnswer((invocation) -> {
+        Mockito.when(this.remotingManage.isClusterTrusteeshipType(Mockito.anyLong(), Mockito.any())).thenAnswer((invocation) -> {
             Long clusterId = (Long) invocation.getArgument(0);
             ClusterTrusteeshipType clusterTrusteeshipType = (ClusterTrusteeshipType) invocation.getArgument(1);
-            if (Objects.equals(clusterTrusteeshipType, ClusterTrusteeshipType.FIRE_AND_FORGET_TRUSTEESHIP) && clusterId < 4) {
+            if (Objects.equals(clusterTrusteeshipType, ClusterTrusteeshipType.SELF) && clusterId < 4) {
                 return true;
             }
             if (Objects.equals(clusterTrusteeshipType, ClusterTrusteeshipType.TRUSTEESHIP) && clusterId > 4) {
