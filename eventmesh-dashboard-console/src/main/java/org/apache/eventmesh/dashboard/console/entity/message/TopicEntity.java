@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.entity.message;
 
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -26,40 +26,42 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "status")
-public class TopicEntity extends BaseEntity {
+public class TopicEntity extends BaseRuntimeIdEntity {
 
-    private Long id;
 
-    /**
-     * storage cluster id.
-     * <p>
-     * Is Event mesh cluster or storage cluster . Is not storage runtime cluster
-     */
-    private Long clusterId;
-
-    /**
-     * 通过主题找到所属集群，通过 集群id 找到 上级（存储）集群id
-     * <p>
-     * Find the cluster you belong to through the theme, and find the upper level (storage) cluster ID through the cluster ID
-     */
-    private Long runtimeId;
+    private String topicType;
 
     private String topicName;
 
-    private Long storageId;
+
+    /**
+     *
+     */
+    private Long numQueue;
+
+    /**
+     * 副本个数
+     */
+    private Short replicationFactor;
+
+    /**
+     * topic 拦截器类型
+     */
+    private String topicFilterType;
+
+    /**
+     * 不确定参数
+     */
+    private String attributes;
+
+    private String order;
 
     @Schema(description = "time to live in milliseconds, -2 unknown, -1 no limit;", example = "1000")
     private Long retentionMs;
 
-    /**
-     * topic type, 0: normal, 1: EventMesh internal;
-     */
-    @Schema(description = "topic type, 0: normal, 1: EventMesh internal;", example = "0")
-    private Integer type;
 
     private String description;
 
-    private Integer status;
 
     private Integer createProgress;
 

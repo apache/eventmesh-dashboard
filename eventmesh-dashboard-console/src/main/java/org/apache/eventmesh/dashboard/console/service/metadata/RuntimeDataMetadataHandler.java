@@ -21,6 +21,11 @@ public class RuntimeDataMetadataHandler implements DataMetadataHandler<RuntimeEn
 
     }
 
+    /**
+     * 不存在查询
+     *
+     * @return
+     */
     @Override
     public List<RuntimeEntity> getData() {
         return Collections.emptyList();

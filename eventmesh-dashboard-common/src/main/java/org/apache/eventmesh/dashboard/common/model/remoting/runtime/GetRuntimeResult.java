@@ -22,8 +22,10 @@ import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import java.util.concurrent.CompletableFuture;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class GetRuntimeResult extends GlobalResult<GetRuntimeResponse> {
 
     private CompletableFuture<GetRuntimeResponse> future;

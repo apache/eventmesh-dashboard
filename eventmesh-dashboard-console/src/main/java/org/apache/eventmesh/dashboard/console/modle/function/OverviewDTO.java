@@ -22,8 +22,10 @@ import org.apache.eventmesh.dashboard.console.modle.IdDTO;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class OverviewDTO extends IdDTO {
 
     @NotNull

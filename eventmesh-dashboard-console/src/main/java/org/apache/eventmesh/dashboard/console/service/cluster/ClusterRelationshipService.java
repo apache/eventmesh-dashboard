@@ -41,4 +41,7 @@ public interface ClusterRelationshipService {
     List<ClusterRelationshipEntity> selectNewlyIncreased(ClusterRelationshipEntity clusterRelationshipEntity);
 
 
+    List<ClusterRelationshipEntity> selectByUpdateTime(ClusterRelationshipEntity clusterRelationshipEntity);
+
+
 }

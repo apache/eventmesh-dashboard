@@ -139,4 +139,9 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     public Object overview(OverviewDTO overviewDTO) {
         return null;
     }
+
+    @Override
+    public List<ClusterEntity> selectByUpdateTime(ClusterEntity clusterEntity) {
+        return null;
+    }
 }

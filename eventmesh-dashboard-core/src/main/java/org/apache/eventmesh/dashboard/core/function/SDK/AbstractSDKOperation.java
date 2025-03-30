@@ -20,13 +20,12 @@ package org.apache.eventmesh.dashboard.core.function.SDK;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 
 
-public abstract class AbstractSDKOperation<T, C extends CreateSDKConfig> implements SDKOperation<T, C> {
+public abstract class AbstractSDKOperation<T, C extends CreateSDKConfig> extends AbstractClientInfo<T> implements SDKOperation<T, C> {
 
-    protected T castClient(Object client) {
-        try {
-            return (T) client;
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Client is not of the expected type", e);
-        }
+
+    public SDKTypeEnum getSDKTypeEnum() {
+        return SDKTypeEnum.PING;
     }
+
+
 }

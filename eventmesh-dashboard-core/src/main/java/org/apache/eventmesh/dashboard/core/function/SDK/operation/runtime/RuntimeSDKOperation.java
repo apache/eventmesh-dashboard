@@ -27,15 +27,12 @@ import org.apache.eventmesh.client.tcp.impl.openmessage.OpenMessageTCPClient;
 import org.apache.eventmesh.common.Constants;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRuntimeConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.wrapper.RuntimeSDKWrapper;
-
-import java.util.AbstractMap.SimpleEntry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RuntimeSDKOperation extends AbstractSDKOperation<RuntimeSDKWrapper> {
+public class RuntimeSDKOperation extends AbstractSDKOperation<RuntimeSDKWrapper, CreateRuntimeConfig> {
 
     private final RuntimeTcpCloudEventSDKOperation tcpCloudEventSDKOperation = new RuntimeTcpCloudEventSDKOperation();
     private final RuntimeTcpEventMeshSDKOperation tcpEventMeshSDKOperation = new RuntimeTcpEventMeshSDKOperation();
@@ -48,33 +45,32 @@ public class RuntimeSDKOperation extends AbstractSDKOperation<RuntimeSDKWrapper>
     private final RuntimeGrpcConsumerSDKOperation grpcConsumerSDKOperation = new RuntimeGrpcConsumerSDKOperation();
 
     @Override
-    public SimpleEntry<String, RuntimeSDKWrapper> createClient(CreateSDKConfig clientConfig) {
-        CreateRuntimeConfig runtimeConfig = (CreateRuntimeConfig) clientConfig;
-        final String protocol = ((CreateRuntimeConfig) clientConfig).getProtocol();
-        final String protocolName = ((CreateRuntimeConfig) clientConfig).getProtocolName();
-        final String clientType = ((CreateRuntimeConfig) clientConfig).getClientType();
+    public RuntimeSDKWrapper createClient(CreateRuntimeConfig runtimeConfig) throws Exception {
+        final String protocol = runtimeConfig.getProtocol();
+        final String protocolName = runtimeConfig.getProtocolName();
+        final String clientType = runtimeConfig.getClientType();
 
-        SimpleEntry<String, CloudEventTCPClient> cloudSimpleEntry = null;
-        SimpleEntry<String, EventMeshMessageTCPClient> eventMeshMessageSimpleEntry = null;
-        SimpleEntry<String, OpenMessageTCPClient> openMessageSimpleEntry = null;
+        CloudEventTCPClient cloudSimple = null;
+        EventMeshMessageTCPClient eventMeshMessageSimple = null;
+        OpenMessageTCPClient openMessageSimple = null;
 
-        SimpleEntry<String, EventMeshHttpProducer> httpProducerSimpleEntry = null;
-        SimpleEntry<String, EventMeshHttpConsumer> httpConsumerSimpleEntry = null;
+        EventMeshHttpProducer httpProducerSimple = null;
+        EventMeshHttpConsumer httpConsumerSimple = null;
 
-        SimpleEntry<String, EventMeshGrpcProducer> grpcProducerSimpleEntry = null;
-        SimpleEntry<String, EventMeshGrpcConsumer> grpcConsumerSimpleEntry = null;
+        EventMeshGrpcProducer grpcProducerSimple = null;
+        EventMeshGrpcConsumer grpcConsumerSimple = null;
 
         switch (protocol) {
             case Constants.TCP:
                 switch (protocolName) {
                     case Constants.CLOUD_EVENTS_PROTOCOL_NAME:
-                        cloudSimpleEntry = tcpCloudEventSDKOperation.createClient(runtimeConfig);
+                        cloudSimple = tcpCloudEventSDKOperation.createClient(runtimeConfig);
                         break;
                     case Constants.EM_MESSAGE_PROTOCOL_NAME:
-                        eventMeshMessageSimpleEntry = tcpEventMeshSDKOperation.createClient(runtimeConfig);
+                        eventMeshMessageSimple = tcpEventMeshSDKOperation.createClient(runtimeConfig);
                         break;
                     case Constants.OPEN_MESSAGE_PROTOCOL_NAME:
-                        openMessageSimpleEntry = tcpOpenMessageSDKOperation.createClient(runtimeConfig);
+                        openMessageSimple = tcpOpenMessageSDKOperation.createClient(runtimeConfig);
                         break;
                     default:
                         break;
@@ -83,10 +79,10 @@ public class RuntimeSDKOperation extends AbstractSDKOperation<RuntimeSDKWrapper>
             case Constants.HTTP:
                 switch (clientType) {
                     case "producer":
-                        httpProducerSimpleEntry = httpProducerSDKOperation.createClient(runtimeConfig);
+                        httpProducerSimple = httpProducerSDKOperation.createClient(runtimeConfig);
                         break;
                     case "consumer":
-                        httpConsumerSimpleEntry = httpConsumerSDKOperation.createClient(runtimeConfig);
+                        httpConsumerSimple = httpConsumerSDKOperation.createClient(runtimeConfig);
                         break;
                     default:
                         break;
@@ -95,10 +91,10 @@ public class RuntimeSDKOperation extends AbstractSDKOperation<RuntimeSDKWrapper>
             case Constants.GRPC:
                 switch (clientType) {
                     case "producer":
-                        grpcProducerSimpleEntry = grpcProducerSDKOperation.createClient(runtimeConfig);
+                        grpcProducerSimple = grpcProducerSDKOperation.createClient(runtimeConfig);
                         break;
                     case "consumer":
-                        grpcConsumerSimpleEntry = grpcConsumerSDKOperation.createClient(runtimeConfig);
+                        grpcConsumerSimple = grpcConsumerSDKOperation.createClient(runtimeConfig);
                         break;
                     default:
                         break;
@@ -108,20 +104,13 @@ public class RuntimeSDKOperation extends AbstractSDKOperation<RuntimeSDKWrapper>
                 log.warn("clients that do not support the current protocol");
                 break;
         }
-        RuntimeSDKWrapper runtimeClient = new RuntimeSDKWrapper(
-            cloudSimpleEntry != null ? cloudSimpleEntry.getValue() : null,
-            eventMeshMessageSimpleEntry != null ? eventMeshMessageSimpleEntry.getValue() : null,
-            openMessageSimpleEntry != null ? openMessageSimpleEntry.getValue() : null,
-            httpProducerSimpleEntry != null ? httpProducerSimpleEntry.getValue() : null,
-            httpConsumerSimpleEntry != null ? httpConsumerSimpleEntry.getValue() : null,
-            grpcProducerSimpleEntry != null ? grpcProducerSimpleEntry.getValue() : null,
-            grpcConsumerSimpleEntry != null ? grpcConsumerSimpleEntry.getValue() : null
-        );
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), runtimeClient);
+        return new RuntimeSDKWrapper(cloudSimple, eventMeshMessageSimple, openMessageSimple, httpProducerSimple, httpConsumerSimple,
+            grpcProducerSimple, grpcConsumerSimple);
+
     }
 
     @Override
-    public void close(Object client) {
-        castClient(client).close();
+    public void close(RuntimeSDKWrapper client) throws Exception {
+        client.close();
     }
 }

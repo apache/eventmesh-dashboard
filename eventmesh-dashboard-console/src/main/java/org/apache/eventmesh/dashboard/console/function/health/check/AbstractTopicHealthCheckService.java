@@ -1,7 +1,5 @@
 package org.apache.eventmesh.dashboard.console.function.health.check;
 
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
-
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -22,11 +20,6 @@ public abstract class AbstractTopicHealthCheckService extends AbstractHealthChec
     private Integer queue = 0;
 
     private AtomicLong atomicLong = new AtomicLong();
-
-    public AbstractTopicHealthCheckService(
-        HealthCheckObjectConfig healthCheckObjectConfig) {
-        super(healthCheckObjectConfig);
-    }
 
     protected byte[] messageContext() {
         return ("{ 'uid': " + atomicLong.incrementAndGet() + "}").getBytes();

@@ -18,12 +18,14 @@
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * when insert data to db from meta service, connection metadata operation should be called after cluster and client in order to fetch information
  * from them.
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ConnectionMetadata extends MetadataConfig {
 
 

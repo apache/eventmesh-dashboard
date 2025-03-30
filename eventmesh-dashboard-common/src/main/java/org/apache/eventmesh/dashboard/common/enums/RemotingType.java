@@ -28,6 +28,8 @@ public enum RemotingType {
 
     STORAGE,
 
+    REDIS,
+
     EVENT_MESH_RUNTIME,
 
     EVENT_MESH_NACOS,

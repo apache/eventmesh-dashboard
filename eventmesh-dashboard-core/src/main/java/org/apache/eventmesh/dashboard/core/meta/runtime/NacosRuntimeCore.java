@@ -21,9 +21,6 @@ import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntime2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeResponse;
 import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeResult;
-import org.apache.eventmesh.dashboard.core.function.SDK.SDKManager;
-import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateNacosConfig;
 import org.apache.eventmesh.dashboard.service.remoting.MetaRemotingService;
 
 import java.util.ArrayList;
@@ -31,7 +28,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import com.alibaba.nacos.api.exception.NacosException;
@@ -42,10 +38,7 @@ public class NacosRuntimeCore implements MetaRemotingService {
 
     @Override
     public GetRuntimeResult getRuntime(GetRuntime2Request getRuntimeRequest) {
-        CreateNacosConfig createNacosConfig = new CreateNacosConfig();
-        createNacosConfig.setServerAddress(getRuntimeRequest.getRegistryAddress());
-        NacosNamingService nacosNamingService = (NacosNamingService) SDKManager.getInstance()
-            .createClient(SDKTypeEnum.META_NACOS_NAMING, createNacosConfig).getValue();
+        NacosNamingService nacosNamingService = null;
         GetRuntimeResult getRuntimeResult = new GetRuntimeResult();
 
         CompletableFuture<GetRuntimeResponse> future = CompletableFuture.supplyAsync(() -> {
@@ -59,18 +52,18 @@ public class NacosRuntimeCore implements MetaRemotingService {
                         nacosNamingService.getAllInstances("EVENTMESH-runtime-" + protocol, protocol + "-GROUP");
                     instances.forEach(instance -> {
                         if (!runtimeMetadataMap.containsKey(instance.getIp())) {
-                            RuntimeMetadata runtimeMetadata = RuntimeMetadata.builder()
-                                .host(instance.getIp())
-                                .port(instance.getPort())
-                                .rack(instance.getClusterName())
-                                .storageClusterId(0L)
-                                .clusterName(Objects.isNull(instance.getClusterName()) ? instance.getClusterName() : "NORMAL")
-                                .registryAddress(getRuntimeRequest.getRegistryAddress())
-                                .jmxPort(0)
-                                .endpointMap("")
-                                .build();
-                            runtimeMetadata.setRegistryAddress(getRuntimeRequest.getRegistryAddress());
-                            runtimeMetadataMap.put(instance.getIp(), runtimeMetadata);
+//                            RuntimeMetadata runtimeMetadata = RuntimeMetadata.builder()
+//                                .host(instance.getIp())
+//                                .port(instance.getPort())
+//                                .rack(instance.getClusterName())
+//                                .storageClusterId(0L)
+//                                .clusterName(Objects.isNull(instance.getClusterName()) ? instance.getClusterName() : "NORMAL")
+//                                .registryAddress(getRuntimeRequest.getRegistryAddress())
+//                                .jmxPort(0)
+//                                .endpointMap("")
+//                                .build();
+//                            runtimeMetadata.setRegistryAddress(getRuntimeRequest.getRegistryAddress());
+                            runtimeMetadataMap.put(instance.getIp(), null);
                         }
                     });
                 }

@@ -29,8 +29,7 @@ public enum MetadataType {
 
     USER(ConnectionMetadata.class),
 
-    ACL(AclMetadata.class)
-    ;
+    ACL(AclMetadata.class);
 
     private Class<?> metadataClass;
 

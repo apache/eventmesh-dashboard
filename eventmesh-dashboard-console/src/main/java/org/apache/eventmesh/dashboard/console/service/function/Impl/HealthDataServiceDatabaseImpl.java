@@ -153,7 +153,7 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
             healthCheckResultEntityList.forEach(updateEntity -> {
                 if (entity.getClusterId().equals(updateEntity.getClusterId()) && entity.getType().equals(updateEntity.getType())
                     && entity.getTypeId().equals(updateEntity.getTypeId())) {
-                    entity.setState(updateEntity.getState());
+                    entity.setStatus(updateEntity.getStatus());
                     entity.setResultDesc(updateEntity.getResultDesc());
                 }
             });

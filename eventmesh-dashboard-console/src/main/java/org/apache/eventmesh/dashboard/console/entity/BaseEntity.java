@@ -46,6 +46,9 @@ public class BaseEntity implements Serializable {
     @Schema(name = "id", description = "primary key")
     protected Long id;
 
+    /**
+     * 集群id，不是 eventmesh集群id。
+     */
     protected Long clusterId;
 
     protected ClusterType clusterType;

@@ -187,11 +187,11 @@ public enum ClusterType {
     }
 
     public boolean isMeta() {
-        return this.assemblyName.equals(META);
+        return this.assemblyNodeType.equals(META);
     }
 
     public boolean isRuntime() {
-        return this.assemblyName.equals(RUNTIME);
+        return this.assemblyNodeType.equals(RUNTIME);
     }
 
     public boolean isStorage() {

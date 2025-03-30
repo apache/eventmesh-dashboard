@@ -1,6 +1,7 @@
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4;
 
 import org.apache.eventmesh.dashboard.common.constant.health.HealthConstant;
+import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractTopicHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.ClusterHealthCheckService;
@@ -50,9 +51,8 @@ public class RocketMQClusterHealthCheckService implements ClusterHealthCheckServ
 
     private Map<Long, MainHealthCheckService> healthCheckCallbacks = new ConcurrentHashMap<>();
 
-    public AbstractTopicHealthCheckService register(HealthCheckObjectConfig healthCheckObjectConfig) {
-        MainHealthCheckService healthCheckService = new MainHealthCheckService(healthCheckObjectConfig);
-        healthCheckCallbacks.put(healthCheckObjectConfig.getInstanceId(), healthCheckService);
+    public AbstractTopicHealthCheckService register(BaseSyncBase baseSyncBase) {
+        MainHealthCheckService healthCheckService = new MainHealthCheckService();
         return healthCheckService;
     }
 
@@ -70,10 +70,6 @@ public class RocketMQClusterHealthCheckService implements ClusterHealthCheckServ
 
         private String brokerAdd = "";
 
-        public MainHealthCheckService(HealthCheckObjectConfig healthCheckObjectConfig) {
-            super(healthCheckObjectConfig);
-        }
-
 
         public void doCheck(HealthCheckCallback callback) throws Exception {
             if (!RocketMQClusterHealthCheckService.this.checkTopic) {
@@ -81,7 +77,7 @@ public class RocketMQClusterHealthCheckService implements ClusterHealthCheckServ
                 return;
             }
             try {
-                if (this.getConfig().getNodeByCopyInType().isSlave()) {
+                if (this.getBaseSyncBase().getReplicationType().isSlave()) {
                     this.sendMessage(callback);
                 } else {
                     this.consume(callback);
@@ -92,13 +88,13 @@ public class RocketMQClusterHealthCheckService implements ClusterHealthCheckServ
         }
 
         private void sendMessage(HealthCheckCallback callback) throws RemotingException, InterruptedException, MQClientException {
-            if (this.getConfig().getNodeByCopyInType().isSlave()) {
+            if (this.getBaseSyncBase().getReplicationType().isSlave()) {
                 return;
             }
             SendMessageRequestHeader requestHeader = new SendMessageRequestHeader();
             requestHeader.setProducerGroup(HealthConstant.ROCKETMQ_CHECK_PRODUCER_GROUP);
             requestHeader.setTopic(HealthConstant.ROCKETMQ_CHECK_TOPIC);
-            requestHeader.setDefaultTopic(HealthConstant.ROCKETMQ_CHECK_TOPIC));
+            requestHeader.setDefaultTopic(HealthConstant.ROCKETMQ_CHECK_TOPIC);
             requestHeader.setDefaultTopicQueueNums(1);
             requestHeader.setQueueId(1);
             //requestHeader.setSysFlag(1);
@@ -233,7 +229,7 @@ public class RocketMQClusterHealthCheckService implements ClusterHealthCheckServ
 
         @Override
         public void destroy() {
-            producer.shutdown();
+
         }
     }
 

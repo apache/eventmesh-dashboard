@@ -20,8 +20,10 @@ package org.apache.eventmesh.dashboard.core.function.SDK.config;
 import org.apache.rocketmq.remoting.protocol.heartbeat.MessageModel;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class CreateRocketmqConsumerSDKConfig extends AbstractMultiCreateSDKConfig {
 
     private String consumerGroup;

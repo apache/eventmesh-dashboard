@@ -19,22 +19,14 @@ package org.apache.eventmesh.dashboard.console.modle.dto.config;
 
 import org.apache.eventmesh.dashboard.console.modle.dto.operation.OperationBaseDTO;
 
-import java.util.List;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class UpdateConfigDTO extends OperationBaseDTO {
 
-    private List<ChangeConfigDTO> changeConfigDTOS;
 
-    private String username;
-
-    private Integer instanceType;
-
-    private Long instanceId;
+    private String configValue;
 }

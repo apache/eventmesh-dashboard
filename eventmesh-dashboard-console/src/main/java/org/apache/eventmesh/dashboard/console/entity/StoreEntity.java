@@ -22,7 +22,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "status")
+@EqualsAndHashCode(callSuper = false)
 public class StoreEntity extends BaseEntity {
 
     private Long clusterId;
@@ -43,8 +43,6 @@ public class StoreEntity extends BaseEntity {
     private Integer jmxPort;
 
     private String rack;
-
-    private Short status;
 
     private String endpointMap;
 

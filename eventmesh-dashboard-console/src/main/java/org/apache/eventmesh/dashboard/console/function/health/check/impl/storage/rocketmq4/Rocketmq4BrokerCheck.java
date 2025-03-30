@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.health.check.impl.storag
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.SDKManager;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKManage;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqConfig;
 
@@ -40,16 +40,13 @@ public class Rocketmq4BrokerCheck extends AbstractHealthCheckService {
     private CreateRocketmqConfig config;
 
 
-    public Rocketmq4BrokerCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
-        super(healthCheckObjectConfig);
-    }
 
     @Override
     public void doCheck(HealthCheckCallback callback) {
         try {
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_BROKER_RUNTIME_INFO, null);
-            RemotingClient client = (RemotingClient) SDKManager.getInstance().getClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, config.getUniqueKey());
-            client.invokeAsync(getConfig().getRocketmqConfig().getBrokerUrl(), request, getConfig().getRequestTimeoutMillis(),
+            DeRemotingClient client = (RemotingClient) SDKManage.getInstance().getClient(SDKTypeEnum.PING, config.getUniqueKey());
+
                 new InvokeCallback() {
                     @Override
                     public void operationComplete(ResponseFuture responseFuture) {
@@ -69,30 +66,12 @@ public class Rocketmq4BrokerCheck extends AbstractHealthCheckService {
 
     @Override
     public void init() {
-        setBrokerUrl();
 
-        config = new CreateRocketmqConfig();
-        config.setBrokerUrl(getConfig().getRocketmqConfig().getBrokerUrl());
-        SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, config);
     }
 
-    private void setBrokerUrl() {
-        if (Objects.nonNull(getConfig().getRocketmqConfig()) && Objects.nonNull(getConfig().getRocketmqConfig().getBrokerUrl())) {
-            return;
-        }
-        if (Objects.nonNull(getConfig().getConnectUrl()) && !getConfig().getConnectUrl().isEmpty()) {
-            getConfig().getRocketmqConfig().setBrokerUrl(getConfig().getConnectUrl());
-            return;
-        }
-        if (Objects.nonNull(getConfig().getHost()) && Objects.nonNull(getConfig().getPort())) {
-            getConfig().getRocketmqConfig().setBrokerUrl(getConfig().getHost() + ":" + getConfig().getPort());
-            return;
-        }
-        throw new RuntimeException("RocketmqNameServerCheck init failed, brokerUrl is empty");
-    }
 
     @Override
     public void destroy() {
-        SDKManager.getInstance().deleteClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, config.getUniqueKey());
+        //SDKManage.getInstance().deleteClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, config.getUniqueKey());
     }
 }

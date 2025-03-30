@@ -25,33 +25,24 @@ import org.apache.eventmesh.client.tcp.impl.openmessage.OpenMessageTCPClient;
 import org.apache.eventmesh.common.protocol.tcp.UserAgent;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRuntimeConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
-
-import java.util.AbstractMap;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RuntimeTcpOpenMessageSDKOperation extends AbstractSDKOperation<OpenMessageTCPClient> {
+public class RuntimeTcpOpenMessageSDKOperation extends AbstractSDKOperation<OpenMessageTCPClient, CreateRuntimeConfig> {
 
     @Override
-    public AbstractMap.SimpleEntry<String, OpenMessageTCPClient> createClient(CreateSDKConfig clientConfig) {
-        final CreateRuntimeConfig runtimeConfig = (CreateRuntimeConfig) clientConfig;
-        OpenMessageTCPClient openMessageTCPClient = null;
-        try {
-            UserAgent userAgent = buildUserAgent(runtimeConfig.getUserAgent());
-            final EventMeshTCPClientConfig eventMeshTCPClientConfig = buildEventMeshTCPClientConfig(
-                runtimeConfig.getRuntimeServerAddress(), userAgent);
-            openMessageTCPClient = new OpenMessageTCPClient(eventMeshTCPClientConfig);
-            openMessageTCPClient.init();
-        } catch (Exception e) {
-            log.error("create runtime eventmesh OpenMessage client failed", e);
-        }
-        return new AbstractMap.SimpleEntry<>(clientConfig.getUniqueKey(), openMessageTCPClient);
+    public OpenMessageTCPClient createClient(CreateRuntimeConfig clientConfig) throws Exception {
+        UserAgent userAgent = buildUserAgent(clientConfig.getUserAgent());
+        final EventMeshTCPClientConfig eventMeshTCPClientConfig = buildEventMeshTCPClientConfig(
+            clientConfig.getRuntimeServerAddress(), userAgent);
+        OpenMessageTCPClient openMessageTCPClient = new OpenMessageTCPClient(eventMeshTCPClientConfig);
+        openMessageTCPClient.init();
+        return openMessageTCPClient;
     }
 
     @Override
-    public void close(Object client) {
-        castClient(client).close();
+    public void close(OpenMessageTCPClient client) throws Exception {
+        client.close();
     }
 }

@@ -41,12 +41,7 @@ public class ConfigController {
 
     @PostMapping("/cluster/config/updateConfigs")
     public String updateConfigsByTypeAndId(@Validated @RequestBody UpdateConfigDTO updateConfigDTO) {
-        try {
-            configService.updateConfigsByInstanceId(updateConfigDTO.getUsername(), updateConfigDTO.getClusterId(), updateConfigDTO.getInstanceType(),
-                updateConfigDTO.getInstanceId(), updateConfigDTO.getChangeConfigDTOS());
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+        
         return "success";
     }
 

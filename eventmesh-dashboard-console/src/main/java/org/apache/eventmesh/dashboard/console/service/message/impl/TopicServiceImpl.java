@@ -22,7 +22,6 @@ import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
-import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
@@ -155,9 +154,6 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public List<TopicEntity> getTopicListToFront(TopicEntity topicEntity) {
         List<TopicEntity> topicEntityList = topicMapper.queryTopicsToFrontByClusterId(topicEntity);
-        topicEntityList.forEach(n -> {
-            n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("topic", n.getId()));
-        });
         return topicEntityList;
     }
 

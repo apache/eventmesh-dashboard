@@ -24,8 +24,10 @@ import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import java.time.LocalDateTime;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class CreateRuntimeDTO extends ClusterIdDTO {
 
     private String name;

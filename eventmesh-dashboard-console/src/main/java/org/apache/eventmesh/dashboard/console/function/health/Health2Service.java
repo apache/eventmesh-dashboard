@@ -1,26 +1,32 @@
 package org.apache.eventmesh.dashboard.console.function.health;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckStatus;
 import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckTypeEnum;
-import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
+import org.apache.eventmesh.dashboard.common.util.ClasspathScanner;
 import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
+import org.apache.eventmesh.dashboard.console.function.health.check.AbstractTopicHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.ClusterHealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.HealthCheckService;
 import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
-import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.RedisCheck;
-import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4.Rocketmq4BrokerCheck;
-import org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4.Rocketmq4NameServerCheck;
 import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKManage;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
+
+import org.apache.commons.lang3.ClassUtils;
 
 import java.lang.reflect.Constructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -34,118 +40,90 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Health2Service {
 
-    private static final Map<String, Class<?>> HEALTH_CHECK_CLASS_CACHE = new HashMap<>();
+    private static final Map<ClusterType, Class<?>> HEALTH_CHECK_CLASS_CACHE = new HashMap<>();
 
-    private static final Map<String, Class<?>> HEALTH_CLUSTER_CHECK_CLASS_CACHE = new HashMap<>();
+    private static final Map<ClusterType, Class<?>> HEALTH_CLUSTER_CHECK_CLASS_CACHE = new HashMap<>();
 
     static {
-        setClassCache(RedisCheck.class);
-        setClassCache(Rocketmq4BrokerCheck.class);
-        setClassCache(Rocketmq4NameServerCheck.class);
+        Set<Class<?>> interfaceSet = new HashSet<>();
+        interfaceSet.add(HealthCheckService.class);
+        ClasspathScanner classpathScanner = ClasspathScanner.builder().base(SDKManage.class).subPath("/operation").interfaceSet(interfaceSet).build();
+        try {
+            List<Class<?>> classList = classpathScanner.getClazz();
+            classList.forEach(Health2Service::setClassCache);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
+
+    private static void setClassCache(Class<?> clazz) {
+        clazz.getSuperclass();
+        if (Objects.equals(clazz.getSuperclass(), AbstractTopicHealthCheckService.class)) {
+
+        } else {
+
+        }
+        Map<ClusterType, Class<?>> map =
+            Objects.equals(clazz, AbstractHealthCheckService.class) ? HEALTH_CHECK_CLASS_CACHE : HEALTH_CLUSTER_CHECK_CLASS_CACHE;
+        //map.put(clazz.getSimpleName(), clazz);
+    }
+
 
     private final Map<String, HealthCheckWrapper> checkServiceMap = new ConcurrentHashMap<>();
 
     private final Map<Long, ClusterHealthCheckService> clusterHealthCheckServiceMap = new ConcurrentHashMap<>();
 
-    private static void setClassCache(Class<?> clazz) {
-        Map<String, Class<?>> map =
-            Objects.equals(clazz, AbstractHealthCheckService.class) ? HEALTH_CHECK_CLASS_CACHE : HEALTH_CLUSTER_CHECK_CLASS_CACHE;
-        map.put(clazz.getSimpleName(), clazz);
-    }
 
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(32, 32, 5, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
 
     @Setter
     private HealthDataService dataService;
 
-    public void register(List<RuntimeEntity> runtimeEntityList) {
-        runtimeEntityList.forEach(v -> {
-            this.register(v, this.toHealthCheckObjectConfig(v));
-        });
-    }
 
-    public void register(RuntimeEntity runtimeEntity) {
-        this.register(runtimeEntity, this.toHealthCheckObjectConfig(runtimeEntity));
-    }
-
-    public void register(RuntimeEntity runtimeEntity, HealthCheckObjectConfig config) {
+    public void register(BaseSyncBase baseSyncBase) {
         try {
-            AbstractHealthCheckService healthCheckService = (AbstractHealthCheckService) this.createCheckService(config);
-            HealthCheckWrapper healthCheckWrapper = this.createHealthCheckWrapper(runtimeEntity, config, healthCheckService, HealthCheckTypeEnum.PING);
-            this.checkServiceMap.put(healthCheckWrapper.getKey(), healthCheckWrapper);
-            if (config.getClusterType().isHealthTopic()) {
-                healthCheckService = (AbstractHealthCheckService) this.createCheckService(config);
-                healthCheckWrapper = this.createHealthCheckWrapper(runtimeEntity, config, healthCheckService, HealthCheckTypeEnum.TOPIC);
-                this.checkServiceMap.put(healthCheckWrapper.getKey(), healthCheckWrapper);
+            this.createHealthCheckWrapper(baseSyncBase, HealthCheckTypeEnum.PING);
+            if (baseSyncBase.getClusterType().isHealthTopic()) {
+                this.createHealthCheckWrapper(baseSyncBase, HealthCheckTypeEnum.PING);
             }
         } catch (Exception e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
         }
     }
 
-    private HealthCheckWrapper createHealthCheckWrapper(RuntimeEntity runtimeEntity, HealthCheckObjectConfig config,
-        AbstractHealthCheckService healthCheckService, HealthCheckTypeEnum healthCheckTypeEnum) {
-        HealthCheckWrapper healthCheckWrapper = new HealthCheckWrapper();
-        healthCheckWrapper.setHealthCheckTypeEnum(healthCheckTypeEnum);
-        healthCheckWrapper.setRuntimeEntity(runtimeEntity);
-        healthCheckWrapper.setHealthCheckObjectConfig(config);
-        healthCheckWrapper.setCheckService(healthCheckService);
-        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity();
 
-        healthCheckWrapper.setHealthCheckResultEntity(healthCheckResultEntity);
-        return healthCheckWrapper;
-    }
-
-    public void unRegister(RuntimeEntity runtimeEntity) {
-        ClusterHealthCheckService clusterHealthCheckService = this.clusterHealthCheckServiceMap.remove(runtimeEntity.getClusterId());
+    public void unRegister(BaseSyncBase baseSyncBase) {
+        ClusterHealthCheckService clusterHealthCheckService = this.clusterHealthCheckServiceMap.remove(baseSyncBase.getClusterId());
         if (Objects.nonNull(clusterHealthCheckService)) {
-            clusterHealthCheckService.unRegister(this.toHealthCheckObjectConfig(runtimeEntity));
+            clusterHealthCheckService.unRegister(this.toHealthCheckObjectConfig(baseSyncBase));
         }
-        this.checkServiceMap.remove(getKey(runtimeEntity, HealthCheckTypeEnum.PING));
-        this.checkServiceMap.remove(getKey(runtimeEntity, HealthCheckTypeEnum.TOPIC));
+        this.checkServiceMap.remove(getKey(baseSyncBase, HealthCheckTypeEnum.PING));
+        this.checkServiceMap.remove(getKey(baseSyncBase, HealthCheckTypeEnum.TOPIC));
     }
 
-    private HealthCheckObjectConfig toHealthCheckObjectConfig(RuntimeEntity runtimeEntity) {
+    public void unRegisterCluster(Long clusterId) {
+        this.clusterHealthCheckServiceMap.remove(clusterId);
+    }
+
+    private HealthCheckObjectConfig toHealthCheckObjectConfig(BaseSyncBase runtimeEntity) {
         HealthCheckObjectConfig healthCheckObjectConfig = new HealthCheckObjectConfig();
         return healthCheckObjectConfig;
     }
 
 
-    /**
-     * @param config
-     * @return
-     */
-    HealthCheckService createCheckService(HealthCheckObjectConfig config) {
-        HealthCheckService healthCheckService = null;
-        if (Objects.nonNull(config.getSimpleClassName())) {
-            Class<?> clazz = HEALTH_CHECK_CLASS_CACHE.get(config.getSimpleClassName());
-            healthCheckService = createCheckService(clazz, config);
-            // you can pass an object to create a HealthCheckService(not commonly used)
-        } else if (Objects.nonNull(config.getCheckClass())) {
-            healthCheckService = createCheckService(config.getCheckClass(), config);
-        }
-        // if all above creation method failed
-        if (Objects.isNull(healthCheckService)) {
-            throw new RuntimeException("No construct method of Health Check Service is found, config is {}" + config);
-        }
-        return healthCheckService;
+    AbstractHealthCheckService createHealthCheckWrapper(BaseSyncBase baseSyncBase, HealthCheckTypeEnum healthCheckTypeEnum) {
+        Map<ClusterType, Class<?>> map =
+            Objects.equals(healthCheckTypeEnum, HealthCheckTypeEnum.PING) ? HEALTH_CHECK_CLASS_CACHE : HEALTH_CLUSTER_CHECK_CLASS_CACHE;
+        Class<?> clazz = map.get(baseSyncBase.getClusterType());
+        AbstractHealthCheckService abstractHealthCheckService = SDKManage.getInstance().createAbstractClientInfo(clazz, baseSyncBase.getUnique());
+        SDKManage.getInstance().getClient(SDKTypeEnum.PING, null);
+        HealthCheckWrapper healthCheckWrapper =
+            this.createHealthCheckWrapper(baseSyncBase, abstractHealthCheckService, HealthCheckTypeEnum.PING);
+        this.checkServiceMap.put(healthCheckWrapper.getKey(), healthCheckWrapper);
+        return abstractHealthCheckService;
     }
 
-
-    /**
-     * @param clazz  CheckService
-     * @param config
-     * @return
-     */
-    private AbstractHealthCheckService createCheckService(Class<?> clazz, HealthCheckObjectConfig config) {
-        try {
-            Constructor<?> constructor = clazz.getConstructor(HealthCheckObjectConfig.class);
-            return (AbstractHealthCheckService) constructor.newInstance(config);
-        } catch (Exception e) {
-            throw new RuntimeException("createCheckService failed", e);
-        }
-    }
 
     public void executeAll() {
         List<HealthCheckResultEntity> healthCheckResultEntityList = new ArrayList<>();
@@ -174,7 +152,7 @@ public class Health2Service {
             countDownLatch.await(3000, TimeUnit.MILLISECONDS);
             log.info("downLatch count {}", countDownLatch.getCount());
         } catch (Exception e) {
-
+            log.error(e.getMessage(), e);
         } finally {
             try {
                 dataService.batchUpdateCheckResultByClusterIdAndTypeAndTypeId(healthCheckResultEntityList);
@@ -184,8 +162,21 @@ public class Health2Service {
         }
     }
 
-    public static String getKey(RuntimeEntity runtimeEntity, HealthCheckTypeEnum healthCheckTypeEnum) {
-        return healthCheckTypeEnum.toString() + "-" + runtimeEntity.getId();
+    private HealthCheckWrapper createHealthCheckWrapper(BaseSyncBase baseSyncBase,
+        AbstractHealthCheckService healthCheckService, HealthCheckTypeEnum healthCheckTypeEnum) {
+        HealthCheckWrapper healthCheckWrapper = new HealthCheckWrapper();
+        healthCheckWrapper.setHealthCheckTypeEnum(healthCheckTypeEnum);
+        healthCheckWrapper.setBaseSyncBase(baseSyncBase);
+        healthCheckWrapper.setCheckService(healthCheckService);
+
+        HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity();
+
+        healthCheckWrapper.setHealthCheckResultEntity(healthCheckResultEntity);
+        return healthCheckWrapper;
+    }
+
+    public String getKey(BaseSyncBase baseSyncBase, HealthCheckTypeEnum healthCheckTypeEnum) {
+        return healthCheckTypeEnum.toString() + "-" + baseSyncBase.getId();
     }
 
     class DefaultHealthCheckCallback implements HealthCheckCallback {
@@ -207,14 +198,14 @@ public class Health2Service {
             healthCheckResultEntity.setResult(HealthCheckStatus.FAILED);
             healthCheckResultEntity.setResultDesc(e.getMessage());
             healthCheckResultEntity.setFinishTime(LocalDateTime.now());
-            log.error("healthCheckCallback onFail Id:  "+, e);
+            log.error("healthCheckCallback onFail Id:  ", e);
         }
     }
 
     @Data
     static class HealthCheckWrapper {
 
-        private RuntimeEntity runtimeEntity;
+        private BaseSyncBase baseSyncBase;
 
         private Object user;
 
@@ -223,32 +214,32 @@ public class Health2Service {
 
         private HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity();
 
-        private HealthCheckObjectConfig healthCheckObjectConfig;
 
         private HealthCheckTypeEnum healthCheckTypeEnum;
 
 
         private HealthCheckResultEntity createHealthCheckResultEntity() {
-            healthCheckResultEntity = new HealthCheckResultEntity();
-            healthCheckResultEntity.setClusterId(this.runtimeEntity.getClusterId());
-            healthCheckResultEntity.setInterfaces(this.runtimeEntity.getId().toString());
+            HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity();
+            healthCheckResultEntity.setClusterId(this.baseSyncBase.getClusterId());
+            healthCheckResultEntity.setInterfaces(this.baseSyncBase.getId().toString());
             healthCheckResultEntity.setHealthCheckTypeEnum(this.healthCheckTypeEnum);
-            healthCheckResultEntity.setClusterType(this.runtimeEntity.getClusterType());
+            healthCheckResultEntity.setClusterType(this.baseSyncBase.getClusterType());
             healthCheckResultEntity.setBeginTime(LocalDateTime.now());
+            return healthCheckResultEntity;
         }
 
         public boolean equals(Object object) {
             if (object instanceof HealthCheckWrapper) {
                 HealthCheckWrapper wrapper = (HealthCheckWrapper) object;
-                return this.runtimeEntity.getId().equals(wrapper.getRuntimeEntity().getId()) && this.runtimeEntity.getClusterType()
-                    .equals(wrapper.getRuntimeEntity().getClusterType());
+                return this.baseSyncBase.getId().equals(wrapper.getBaseSyncBase().getId()) && this.baseSyncBase.getClusterType()
+                    .equals(wrapper.getBaseSyncBase().getClusterType());
             }
             return false;
         }
 
 
         public String getKey() {
-            return Health2Service.getKey(this.runtimeEntity, this.healthCheckTypeEnum);
+            return getKey(this.baseSyncBase, this.healthCheckTypeEnum);
         }
 
     }

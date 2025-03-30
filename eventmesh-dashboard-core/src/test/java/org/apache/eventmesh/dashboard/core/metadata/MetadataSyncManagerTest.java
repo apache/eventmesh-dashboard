@@ -61,9 +61,8 @@ public class MetadataSyncManagerTest {
         MetadataSyncManage.MetadataSyncConfig metadataSyncConfig = new MetadataSyncManage.MetadataSyncConfig();
         metadataSyncConfig.setDataBasesHandler(dataBasesHandler);
         metadataSyncConfig.setClusterService(clusterHandler);
-        metadataSyncConfig.setMetadataClass(RuntimeMetadata.class);
+        //metadataSyncConfig.setMetadataClass(RuntimeMetadata.class);
         metadataSyncManager.setRemotingManage(this.remotingManage);
-        metadataSyncManager.register(metadataSyncConfig);
 
         Field metadataSyncWrapperMapField = FieldUtils.getField(MetadataSyncManage.class, "metadataSyncWrapperMap", true);
         metadataSyncWrapperMap = (Map<Class<?>, MetadataSyncManage.MetadataSyncWrapper>) metadataSyncWrapperMapField.get(metadataSyncManager);

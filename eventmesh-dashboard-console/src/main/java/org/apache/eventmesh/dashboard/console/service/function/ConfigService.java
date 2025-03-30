@@ -41,9 +41,7 @@ public interface ConfigService {
 
     void copyConfig(Long sourceId, Long targetId);
 
-    String mapToYaml(Map<String, String> stringMap);
-
-    Integer addConfig(ConfigEntity configEntity);
+    void restoreConfig(Long sourceId, Long targetId);
 
     Integer deleteConfig(ConfigEntity configEntity);
 

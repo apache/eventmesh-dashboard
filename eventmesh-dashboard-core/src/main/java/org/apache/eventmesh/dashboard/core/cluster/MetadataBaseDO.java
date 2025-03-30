@@ -6,7 +6,7 @@ import lombok.Data;
 
 
 @Data
-public class MetadataBaseDO<C, R> extends ClusterBaseDO<C, R, Object, ConfigMetadata> {
+public class MetadataBaseDO<C, R extends RuntimeBaseDO> extends ClusterBaseDO<C, R, Object, ConfigMetadata> {
 
 
 }

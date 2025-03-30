@@ -41,7 +41,6 @@ public class NetConnectionEntity extends BaseEntity {
 
     private Integer runtimePort;
 
-    private int status;
 
     private String description;
 

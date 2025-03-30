@@ -22,8 +22,10 @@ import org.apache.eventmesh.dashboard.common.enums.ResetOffsetMode;
 import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ResetOffsetRequest extends Global2Request {
 
     private Long timestamp;

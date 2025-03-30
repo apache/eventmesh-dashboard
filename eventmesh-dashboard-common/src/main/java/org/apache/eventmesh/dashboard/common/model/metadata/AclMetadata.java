@@ -25,12 +25,18 @@ import lombok.EqualsAndHashCode;
 public class AclMetadata extends MetadataConfig {
 
     private Long clusterId;
+
     private String principal;
     private Integer operation;
+
     private String permissionType;
+
     private String host;
+
     private String resourceType;
+
     private String resourceName;
+
     private Integer patternType;
 
     @Override

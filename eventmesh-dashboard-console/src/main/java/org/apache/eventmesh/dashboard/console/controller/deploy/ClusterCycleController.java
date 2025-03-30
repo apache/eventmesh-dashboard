@@ -61,7 +61,7 @@ public class ClusterCycleController {
 
     @PostMapping("createClusterByConfigData")
     public void createClusterByConfigData(@RequestBody CreateClusterBySimpleDataDTO createClusterBySimpleDataDTO) {
-        createCycleService.createRuntimeByBySimpleData();
+        //createCycleService.createRuntimeByBySimpleData();
     }
 
 

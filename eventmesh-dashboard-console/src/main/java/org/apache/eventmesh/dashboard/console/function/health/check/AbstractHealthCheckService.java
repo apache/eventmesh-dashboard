@@ -18,7 +18,8 @@
 package org.apache.eventmesh.dashboard.console.function.health.check;
 
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.AbstractClientInfo;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 
 import lombok.Getter;
 
@@ -26,21 +27,28 @@ import lombok.Getter;
  * extends
  */
 @Getter
-public abstract class AbstractHealthCheckService implements HealthCheckService {
+public abstract class AbstractHealthCheckService<T> extends AbstractClientInfo<T> implements HealthCheckService {
 
-    private final HealthCheckObjectConfig config;
 
     private volatile boolean endCheck = true;
 
-    public AbstractHealthCheckService(HealthCheckObjectConfig healthCheckObjectConfig) {
-        this.config = healthCheckObjectConfig;
+
+    public SDKTypeEnum getSDKTypeEnum() {
+        return SDKTypeEnum.PING;
     }
 
     public void check(HealthCheckCallback callback) throws Exception {
         this.endCheck = false;
+        try {
+            this.doCheck(callback);
+        } catch (Exception e) {
+            this.endCheck = true;
+            callback.onFail(e);
+        }
+
     }
 
-    protected abstract void doCheck(HealthCheckCallback callback) throws Exception;
+    public abstract void doCheck(HealthCheckCallback callback) throws Exception;
 
     public void setEndCheck() {
         this.endCheck = true;
@@ -48,5 +56,14 @@ public abstract class AbstractHealthCheckService implements HealthCheckService {
 
     protected boolean isEndCheck() {
         return this.endCheck;
+    }
+
+    @Override
+    public void init() {
+    }
+
+    @Override
+    public void destroy() {
+
     }
 }

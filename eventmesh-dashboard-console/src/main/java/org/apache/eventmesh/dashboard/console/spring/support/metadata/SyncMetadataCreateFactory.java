@@ -1,8 +1,10 @@
 package org.apache.eventmesh.dashboard.console.spring.support.metadata;
 
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+import org.apache.eventmesh.dashboard.common.model.ConvertMetaData;
+import org.apache.eventmesh.dashboard.common.model.DatabaseAndMetadataMapper;
 import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
-import org.apache.eventmesh.dashboard.core.metadata.ConvertMetaData;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseClusterIdEntity;
 import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataHandler;
 
@@ -15,11 +17,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- *  MetadataHandler。 读写行为
- *  每个 runtime or cluster 。所有 MetadataType 的 MetadataHandler 已经关系
- *  从 runtime（Cluster） -> 读 -> createDataMetadataHandler 缓存 -> 定时写
- *  从 db 定时读  发动  -> SyncMetadataCreateFactory -> createDataMetadataHandler 获得 runtime 或则 cluster 维度数据，在写入 runtime
- *  1000个节点，进行一千次db操作， db直接费了。
+ * MetadataHandler。 读写行为 每个 runtime or cluster 。所有 MetadataType 的 MetadataHandler 已经关系 从 runtime（Cluster） -> 读 -> createDataMetadataHandler 缓存 -> 定时写
+ * 从 db 定时读  发动  -> SyncMetadataCreateFactory -> createDataMetadataHandler 获得 runtime 或则 cluster 维度数据，在写入 runtime 1000个节点，进行一千次db操作， db直接费了。
+ *
  * @param <T>
  */
 public class SyncMetadataCreateFactory<T> {
@@ -34,6 +34,11 @@ public class SyncMetadataCreateFactory<T> {
     @Setter
     @Getter
     private ConvertMetaData<BaseEntity, Object> convertMetaData;
+
+
+    @Setter
+    @Getter
+    private DatabaseAndMetadataMapper databaseAndMetadataMapper;
 
     private Map<Long, List<BaseEntity>> metadataMap = new ConcurrentHashMap<>();
 
@@ -58,7 +63,7 @@ public class SyncMetadataCreateFactory<T> {
         this.deleteData = new ArrayList<>();
     }
 
-    public MetadataHandler<BaseEntity> createDataMetadataHandler(BaseEntity runtimeEntity) {
+    public MetadataHandler<BaseEntity> createDataMetadataHandler(BaseClusterIdEntity runtimeEntity) {
         return new MetadataHandler<BaseEntity>() {
             @Override
             public void addMetadata(BaseEntity meta) {

@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -25,7 +27,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ConfigMetadata extends MetadataConfig {
+public class ConfigMetadata extends BaseRuntimeIdBase {
 
     /**
      * property key
@@ -38,8 +40,4 @@ public class ConfigMetadata extends MetadataConfig {
 
     private Long instanceId;
 
-    @Override
-    public String getUnique() {
-        return configKey;
-    }
 }

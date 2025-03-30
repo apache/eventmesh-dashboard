@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-
+// state of a health check, 0: failed, 1: passed, 2: doing check, 3: out of time, 4: not connected
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "resultDesc")
 @Schema(name = "HealthCheckResultEntity", description = "Health check result entity")
@@ -63,7 +63,5 @@ public class HealthCheckResultEntity extends BaseRuntimeIdEntity {
     @Schema(description = "Instance id(database schema) of the health check object")
     private Long typeId;
 
-    @Schema(description = "state of a health check, 0: failed, 1: passed, 2: doing check, 3: out of time, 4: not connected")
-    private Integer state;
 
 }

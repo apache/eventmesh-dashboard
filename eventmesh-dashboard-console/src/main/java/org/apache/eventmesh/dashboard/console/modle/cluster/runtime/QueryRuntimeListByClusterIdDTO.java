@@ -19,13 +19,12 @@ package org.apache.eventmesh.dashboard.console.modle.cluster.runtime;
 
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class QueryRuntimeListByClusterIdDTO extends ClusterIdDTO {
 
     private String host;

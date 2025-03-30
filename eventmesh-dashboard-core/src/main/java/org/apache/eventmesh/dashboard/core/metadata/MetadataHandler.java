@@ -36,10 +36,6 @@ public interface MetadataHandler<T> extends DataMetadataHandler<T> {
         }
     }
 
-    default void addMetadataObject(Object meta) {
-        addMetadata((T) meta);
-    }
-
     default void addMetadataObject(List<Object> meta) {
         if (meta != null) {
             meta.forEach(t -> addMetadata((T) t));
@@ -68,20 +64,12 @@ public interface MetadataHandler<T> extends DataMetadataHandler<T> {
         }
     }
 
-    default void updateMetadataObject(Object meta) {
-        this.addMetadata((T) meta);
-    }
-
     void deleteMetadata(T meta);
 
     default void deleteMetadata(List<T> meta) {
         if (meta != null) {
             meta.forEach(this::deleteMetadata);
         }
-    }
-
-    default void deleteMetadataObject(Object meta) {
-        deleteMetadata((T) meta);
     }
 
 }

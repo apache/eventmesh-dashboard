@@ -7,7 +7,12 @@ import java.util.List;
 
 import lombok.Getter;
 
+/**
+ *  集群的特性
+ */
 public enum ClusterSyncMetadataEnum {
+
+
 
     EVENTMESH_RUNTIME(
         ClusterSyncMetadata.builder().clusterFramework(ClusterFramework.INDEPENDENCE).metadataTypeList(ClusterSyncMetadata.STORAGE).build()),
@@ -34,6 +39,10 @@ public enum ClusterSyncMetadataEnum {
             .metadataTypeList(ListWrapper.build().add(ClusterSyncMetadata.STORAGE).add(ClusterSyncMetadata.AUTH).list)
             .replicationDimension(ReplicationDimension.TOPIC).build()),
     ;
+
+    public static ClusterSyncMetadata getClusterSyncMetadata(ClusterType clusterType) {
+        return  ClusterSyncMetadataEnum.valueOf(ClusterSyncMetadataEnum.class, clusterType.toString()).getClusterSyncMetadata();
+    }
 
     static class ListWrapper {
 

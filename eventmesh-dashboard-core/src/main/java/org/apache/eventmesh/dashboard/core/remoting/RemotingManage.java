@@ -116,8 +116,7 @@ public class RemotingManage {
             Map<Class<?>, Object> remotingServersMap = new HashMap<>();
             for (Class<?> clazz : remotingServersClassList) {
                 AbstractRemotingService abstractRemotingService = (AbstractRemotingService) clazz.newInstance();
-                abstractRemotingService.setColonyDO(colonyDO);
-                abstractRemotingService.init();
+
                 remotingServersMap.put(clazz.getInterfaces()[0], abstractRemotingService);
             }
             RemotingWrapper remotingWrapper = new RemotingWrapper();
@@ -141,8 +140,6 @@ public class RemotingManage {
         ColonyDO mainColonyDO = this.getMainColonyDO(colonyDO);
         for (Object object : remotingWrapper.getObject().values()) {
             AbstractRemotingService abstractRemotingService = (AbstractRemotingService) object;
-            abstractRemotingService.setColonyDO(mainColonyDO);
-            abstractRemotingService.update();
         }
     }
 
@@ -353,7 +350,7 @@ public class RemotingManage {
     }
 
     /**
-     *  直接获得不需要
+     * 直接获得不需要
      */
     public class RemotingServiceHandler implements InvocationHandler {
 

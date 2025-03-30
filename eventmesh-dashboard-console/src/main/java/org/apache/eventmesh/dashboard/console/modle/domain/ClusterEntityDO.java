@@ -18,14 +18,15 @@
 package org.apache.eventmesh.dashboard.console.modle.domain;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.apache.eventmesh.dashboard.core.cluster.ClusterBaseDO;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ClusterEntityDO extends ClusterBaseDO<ClusterEntity, RuntimeEntity, Object, ConfigEntity> {
+@EqualsAndHashCode(callSuper = false)
+public class ClusterEntityDO extends ClusterBaseDO<ClusterEntity, RuntimeEntityDO, Object, ConfigEntity> {
 
 
 }

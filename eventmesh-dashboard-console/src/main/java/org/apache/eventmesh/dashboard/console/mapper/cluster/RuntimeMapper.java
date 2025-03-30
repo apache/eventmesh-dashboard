@@ -95,4 +95,11 @@ public interface RuntimeMapper {
     @Update("UPDATE runtime SET status = 0 WHERE id = #{id}")
     void deactivate(RuntimeEntity runtimeEntity);
 
+
+    void syncInsert(List<RuntimeEntity> runtimeEntities);
+
+    void syncUpdate(List<RuntimeEntity> runtimeEntities);
+
+    void syncDelete(List<RuntimeEntity> runtimeEntities);
+
 }

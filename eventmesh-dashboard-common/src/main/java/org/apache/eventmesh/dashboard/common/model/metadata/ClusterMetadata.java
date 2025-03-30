@@ -19,14 +19,14 @@ package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.common.enums.StoreType;
+import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ClusterMetadata extends MetadataConfig {
+public class ClusterMetadata extends BaseSyncBase {
 
     private String clusterName;
 
@@ -50,17 +50,11 @@ public class ClusterMetadata extends MetadataConfig {
 
     private Integer runState;
 
-    private Integer status;
-
-    /**
-     * @see StoreType
-     */
-    private StoreType storeType;
 
     private String description;
 
-    @Override
     public String getUnique() {
-        return clusterName + "/" + registryAddress;
+        return this.getClusterId().toString();
     }
+
 }

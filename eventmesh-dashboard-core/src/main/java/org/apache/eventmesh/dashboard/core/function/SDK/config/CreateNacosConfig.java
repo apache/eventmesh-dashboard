@@ -18,8 +18,10 @@
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class CreateNacosConfig extends AbstractSimpleCreateSDKConfig {
 
     private String username = "nacos";

@@ -4,11 +4,13 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class OperateDTO extends IdDTO {
 
 

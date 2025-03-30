@@ -18,15 +18,14 @@
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import org.apache.eventmesh.dashboard.common.enums.StoreType;
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import lombok.EqualsAndHashCode;
 
 @Data
-@SuperBuilder
-@NoArgsConstructor
-public class TopicMetadata extends MetadataConfig {
+@EqualsAndHashCode(callSuper = false)
+public class TopicMetadata extends BaseRuntimeIdBase {
 
     private StoreType storeType;
 
@@ -49,8 +48,4 @@ public class TopicMetadata extends MetadataConfig {
 
     private String topicConfig;
 
-    @Override
-    public String getUnique() {
-        return topicName;
-    }
 }

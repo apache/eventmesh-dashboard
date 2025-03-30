@@ -41,7 +41,7 @@ public class CheckResultCache {
     private CheckResultCache() {
     }
 
-    public Integer getLastHealthyCheckResult(String type, Long typeId) {
+    public Long getLastHealthyCheckResult(String type, Long typeId) {
         if (!Objects.isNull(cacheMap.get(type)) && !Objects.isNull(cacheMap.get(type).get(typeId))) {
             return cacheMap.get(type).get(typeId).getStatus().getNumber();
         }

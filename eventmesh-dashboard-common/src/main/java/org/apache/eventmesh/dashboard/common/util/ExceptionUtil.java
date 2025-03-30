@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.common.util;
 
+
+@Deprecated
 public class ExceptionUtil {
 
     /**

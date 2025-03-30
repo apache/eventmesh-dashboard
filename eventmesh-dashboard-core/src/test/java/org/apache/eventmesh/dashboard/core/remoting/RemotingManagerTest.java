@@ -151,8 +151,8 @@ public class RemotingManagerTest {
 
     private void relationship(List<ClusterRelationshipMetadata> clusterRelationshipMetadataList, ClusterMetadata clusterMetadata,
         ClusterMetadata relationship) {
-        clusterMetadata.setStatus(0);
-        relationship.setStatus(0);
+        clusterMetadata.setStatus(0L);
+        relationship.setStatus(0L);
 
         ClusterRelationshipMetadata clusterRelationshipMetadata = new ClusterRelationshipMetadata();
         clusterRelationshipMetadata.setClusterType(clusterMetadata.getClusterType());

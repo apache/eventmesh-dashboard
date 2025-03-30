@@ -19,12 +19,13 @@ package org.apache.eventmesh.dashboard.core.cluster;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
-import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ClusterDO extends ClusterBaseDO<ClusterMetadata, RuntimeMetadata, Object, ConfigMetadata> {
+@EqualsAndHashCode(callSuper = false)
+public class ClusterDO extends ClusterBaseDO<ClusterMetadata, RuntimeDO, Object, ConfigMetadata> {
 
 
 }

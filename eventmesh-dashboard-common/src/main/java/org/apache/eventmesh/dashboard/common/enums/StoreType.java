@@ -27,6 +27,7 @@ import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.S
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@Deprecated
 @AllArgsConstructor
 public enum StoreType {
 

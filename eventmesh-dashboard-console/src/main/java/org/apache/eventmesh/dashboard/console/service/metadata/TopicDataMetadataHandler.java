@@ -2,9 +2,7 @@ package org.apache.eventmesh.dashboard.console.service.metadata;
 
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
-import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class TopicDataMetadataHandler implements DataMetadataHandler<TopicEntity> {
+public class TopicDataMetadataHandler extends AbstractDBDataMetadataHandler<TopicEntity> {
 
     @Autowired
     private TopicMapper topicMapper;
@@ -24,8 +22,10 @@ public class TopicDataMetadataHandler implements DataMetadataHandler<TopicEntity
 
     }
 
+
     @Override
-    public List<TopicEntity> getData() {
-        return Collections.emptyList();
+    List<TopicEntity> doGetData() {
+        TopicEntity topicEntity = this.getEntity();
+        return List.of();
     }
 }

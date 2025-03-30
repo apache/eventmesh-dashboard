@@ -19,18 +19,27 @@ package org.apache.eventmesh.dashboard.console.entity.cluster;
 
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseClusterIdEntity;
+
+import java.time.LocalDateTime;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ClusterRelationshipEntity extends BaseEntity {
+@EqualsAndHashCode(callSuper = false)
+public class ClusterRelationshipEntity extends BaseClusterIdEntity {
 
-    private ClusterType clusterType;
 
+    /**
+     *
+     */
     private Long relationshipId;
 
     private ClusterType relationshipType;
 
-    private Integer status;
+    private LocalDateTime relationshipTime;
+
+    private LocalDateTime unRelationshipTime;
+
 }

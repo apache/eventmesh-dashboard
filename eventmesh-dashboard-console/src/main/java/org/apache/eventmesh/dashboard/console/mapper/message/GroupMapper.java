@@ -90,4 +90,13 @@ public interface GroupMapper {
         + "ON DUPLICATE KEY UPDATE status=1")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroup(GroupEntity groupEntity);
+
+
+    void syncInsert(List<GroupEntity> entityList);
+
+    void syncUpdate(List<GroupEntity> entityList);
+
+    void syncDelete(List<GroupEntity> entityList);
+
+    List<GroupEntity> syncGet(GroupEntity topicEntity);
 }

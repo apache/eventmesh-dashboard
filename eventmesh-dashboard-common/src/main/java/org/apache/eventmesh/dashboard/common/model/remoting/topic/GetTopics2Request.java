@@ -19,13 +19,11 @@ package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
 import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class GetTopics2Request extends Global2Request {
 
     private String runtimeHost;

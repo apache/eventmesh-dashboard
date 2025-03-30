@@ -35,6 +35,7 @@ public abstract class MetadataConfig {
 
     //eventmesh registry url
     private String registryAddress;
+
     //cluster id in database
     private Long clusterId;
 

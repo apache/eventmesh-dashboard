@@ -6,8 +6,16 @@ import java.util.List;
 
 public class BaseDataDO<RE, CM> {
 
+    /**
+     *  RE 资源信息
+     */
     private Object resource;
 
+    /**
+     * CM 配置参数
+     */
     private List<ConfigMetadata> configMetadata;
+
+
 
 }

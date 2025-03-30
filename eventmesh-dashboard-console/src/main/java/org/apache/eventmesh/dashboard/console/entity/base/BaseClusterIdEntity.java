@@ -2,7 +2,7 @@ package org.apache.eventmesh.dashboard.console.entity.base;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 
-public class BaseClusterIdEntity extends BaseOrganizationEntity {
+public abstract class BaseClusterIdEntity extends BaseOrganizationEntity {
 
     private Long clusterId;
 

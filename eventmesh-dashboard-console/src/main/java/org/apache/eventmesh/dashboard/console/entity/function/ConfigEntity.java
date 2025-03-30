@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.entity.function;
 
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
 
 import lombok.Data;
@@ -26,18 +27,19 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ConfigEntity extends BaseEntity {
 
-    private Long id;
-
-    private Long clusterId;
 
     private String businessType;
+
+    private Long retrospectId;
 
     /**
      * config type 0:runtime,1:storage,2:connector,3:topic
      */
-    private Integer instanceType;
+    private MetadataType instanceType;
 
     private Long instanceId;
+
+    private String configType;
 
     private String configName;
 

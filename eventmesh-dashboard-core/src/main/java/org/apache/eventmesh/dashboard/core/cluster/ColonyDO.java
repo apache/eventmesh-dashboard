@@ -17,9 +17,15 @@
 
 package org.apache.eventmesh.dashboard.core.cluster;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.model.ClusterSyncMetadata;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.AbstractCreateSDKConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.AbstractMultiCreateSDKConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.NetAddress;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Data;
@@ -62,6 +68,9 @@ public class ColonyDO<C extends ClusterBaseDO> {
 
     private ClusterType clusterType;
 
+    private ClusterSyncMetadata clusterSyncMetadata;
+
+
     public static <T> T create(Class<?> clusterDO, Object metadata) {
 
         try {
@@ -70,7 +79,8 @@ public class ColonyDO<C extends ClusterBaseDO> {
             clusterEntityDO.setClusterInfo(metadata);
             colonyDO.setClusterDO(clusterEntityDO);
             colonyDO.setClusterBaseDO(clusterDO);
-            return (T) clusterDO;
+            colonyDO.allColonyDO = new ConcurrentHashMap<>();
+            return (T) colonyDO;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -78,26 +88,66 @@ public class ColonyDO<C extends ClusterBaseDO> {
     }
 
 
-    public void register(Long mainId, Long runtimeId, Object object) {
-        ColonyDO<C> mainColony = this.allColonyDO.get(mainId);
-        mainColony.getClusterDO().getRuntimeMap().put(runtimeId, object);
+    public void setClusterType(ClusterType clusterType) {
+        this.clusterType = clusterType;
+        this.clusterSyncMetadata = ClusterSyncMetadataEnum.valueOf(clusterType.toString()).getClusterSyncMetadata();
     }
 
-    public void relationship(Long mainId, Long clusterId, ClusterType clusterType, Object object) {
+
+    public void register(Long mainId, Long runtimeId, Object object, NetAddress netAddress) {
+        ColonyDO<C> mainColony = this.allColonyDO.get(mainId);
+        mainColony.getClusterDO().getRuntimeMap().put(runtimeId, object);
+        if (mainColony.getClusterSyncMetadata().getClusterFramework().isCAP()) {
+            AbstractMultiCreateSDKConfig abstractMultiCreateSDKConfig = mainColony.getClusterDO().getMultiCreateSDKConfig();
+            if (mainColony.getClusterType().isMeta()) {
+                abstractMultiCreateSDKConfig.addNetAddress(netAddress);
+            } else {
+                abstractMultiCreateSDKConfig.addMetaAddress(netAddress);
+            }
+        }
+    }
+
+    public void register(Long clusterId, ClusterType clusterType, Object object) {
         ColonyDO<C> colonyDO = create(this.clusterBaseDO, object);
-        colonyDO.setSuperiorId(mainId);
         colonyDO.setClusterId(clusterId);
         colonyDO.setClusterType(clusterType);
+        colonyDO.setClusterSyncMetadata(ClusterSyncMetadataEnum.getClusterSyncMetadata(clusterType));
         this.allColonyDO.put(clusterId, colonyDO);
+    }
 
+    public void relationship(Long mainId, Long clusterId) {
         ColonyDO<C> mainColony = this.allColonyDO.get(mainId);
+
+        ColonyDO<C> colonyDO = this.allColonyDO.get(clusterId);
+        colonyDO.setSuperiorId(mainId);
         colonyDO.setSuperiorDO(mainColony);
-        mainColony.relationship(clusterType, clusterId, colonyDO);
+
+        mainColony.relationship(colonyDO.getClusterType(), clusterId, colonyDO);
     }
 
     private void relationship(ClusterType clusterType, Long clusterId, ColonyDO<C> colonyDO) {
         Map<Long, ColonyDO<C>> colonyDOMap = this.getColonyDOMap(clusterType);
         colonyDOMap.put(clusterId, colonyDO);
+    }
+
+    public void unRelationship(Long mainId, Long clusterId) {
+        ColonyDO<C> mainColony = this.allColonyDO.get(mainId);
+        ColonyDO<C> colonyDO = this.allColonyDO.get(clusterId);
+        mainColony.remove(colonyDO.getClusterType(), clusterId);
+    }
+
+
+    public void removeRuntime(Long clusterId, Long runtimeId, NetAddress netAddress) {
+        ColonyDO<C> mainColony = this.allColonyDO.get(clusterId);
+        mainColony.getClusterDO().getRuntimeMap().remove(runtimeId);
+        if (mainColony.getClusterSyncMetadata().getClusterFramework().isCAP()) {
+            AbstractMultiCreateSDKConfig abstractMultiCreateSDKConfig = mainColony.getClusterDO().getMultiCreateSDKConfig();
+            if (mainColony.getClusterType().isMeta()) {
+                abstractMultiCreateSDKConfig.removeMetaAddress(netAddress);
+            } else {
+                abstractMultiCreateSDKConfig.removeNetAddress(netAddress);
+            }
+        }
     }
 
     public void remove(Long clusterId) {
@@ -110,8 +160,24 @@ public class ColonyDO<C extends ClusterBaseDO> {
         colonyDOMap.remove(clusterId);
     }
 
+    public void setAbstractMultiCreateSDKConfig(Long clusterId, AbstractMultiCreateSDKConfig abstractMultiCreateSDKConfig) {
+        ColonyDO<?> colonyDO = this.allColonyDO.get(clusterId);
+        colonyDO.getClusterDO().setMultiCreateSDKConfig(abstractMultiCreateSDKConfig);
+    }
+
+    public void setCreateSDKConfig(Long clusterId, Long runtime, AbstractCreateSDKConfig createSDKConfig) {
+        ColonyDO<?> colonyDO = this.allColonyDO.get(clusterId);
+        RuntimeBaseDO runtimeBaseDO = (RuntimeBaseDO) colonyDO.getClusterDO().getRuntimeMap().get(runtime);
+        runtimeBaseDO.setCreateSDKConfig(createSDKConfig);
+    }
+
     public Map<Long, ColonyDO<C>> getColonyDOMap(ClusterType clusterType) {
-        return clusterType.isMeta() ? this.metaColonyDOList : clusterType.isRuntime() ? this.runtimeColonyDOList : this.storageColonyDOList;
+        if (Objects.equals(this.clusterType, ClusterType.EVENTMESH_CLUSTER)) {
+            return clusterType.isStorage() ? this.storageColonyDOList
+                : clusterType.isMeta() ? this.metaColonyDOList : this.runtimeColonyDOList;
+        }
+        return clusterType.isMeta() ? this.metaColonyDOList : this.runtimeColonyDOList;
+
     }
 
     public Long getClusterId() {

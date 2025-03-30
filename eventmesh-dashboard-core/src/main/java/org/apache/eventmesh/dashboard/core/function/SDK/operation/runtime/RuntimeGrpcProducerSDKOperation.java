@@ -21,33 +21,24 @@ import static org.apache.eventmesh.dashboard.core.function.SDK.util.RuntimeSDKOp
 
 import org.apache.eventmesh.client.grpc.config.EventMeshGrpcClientConfig;
 import org.apache.eventmesh.client.grpc.producer.EventMeshGrpcProducer;
-import org.apache.eventmesh.common.exception.EventMeshException;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRuntimeConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
-
-import java.util.AbstractMap.SimpleEntry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RuntimeGrpcProducerSDKOperation extends AbstractSDKOperation<EventMeshGrpcProducer> {
+public class RuntimeGrpcProducerSDKOperation extends AbstractSDKOperation<EventMeshGrpcProducer, CreateRuntimeConfig> {
 
     @Override
-    public SimpleEntry<String, EventMeshGrpcProducer> createClient(CreateSDKConfig clientConfig) {
-        final CreateRuntimeConfig runtimeConfig = (CreateRuntimeConfig) clientConfig;
-        final EventMeshGrpcClientConfig grpcClientConfig = buildEventMeshGrpcProducerConfig(runtimeConfig);
-        EventMeshGrpcProducer grpcProducer = null;
-        try {
-            grpcProducer = new EventMeshGrpcProducer(grpcClientConfig);
-        } catch (EventMeshException e) {
-            log.error("create runtime grpc Producer client failed", e);
-        }
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), grpcProducer);
+    public EventMeshGrpcProducer createClient(CreateRuntimeConfig clientConfig) throws Exception {
+        final EventMeshGrpcClientConfig grpcClientConfig = buildEventMeshGrpcProducerConfig(clientConfig);
+        EventMeshGrpcProducer grpcProducer = new EventMeshGrpcProducer(grpcClientConfig);
+        return grpcProducer;
+
     }
 
     @Override
-    public void close(Object client) {
-        castClient(client).close();
+    public void close(EventMeshGrpcProducer client) throws Exception {
+        client.close();
     }
 }

@@ -17,18 +17,14 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import lombok.AllArgsConstructor;
+import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-public class RuntimeMetadata extends MetadataConfig {
+public class RuntimeMetadata extends BaseSyncBase {
 
     private String host;
 
@@ -42,14 +38,9 @@ public class RuntimeMetadata extends MetadataConfig {
 
     private Long storageClusterId;
 
-    private Long startTimestamp;
 
-    private String clusterName;
-
-    private Integer status;
-
-    @Override
-    public String getUnique() {
-        return host + ":" + port;
+    public boolean isCluster() {
+        return false;
     }
+
 }

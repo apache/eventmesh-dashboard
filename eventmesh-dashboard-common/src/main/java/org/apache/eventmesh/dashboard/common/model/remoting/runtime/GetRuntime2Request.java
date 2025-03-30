@@ -20,8 +20,10 @@ package org.apache.eventmesh.dashboard.common.model.remoting.runtime;
 import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class GetRuntime2Request extends Global2Request {
 
     private String registryAddress;

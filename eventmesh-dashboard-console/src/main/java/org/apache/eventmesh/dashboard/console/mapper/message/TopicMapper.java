@@ -19,6 +19,7 @@ package org.apache.eventmesh.dashboard.console.mapper.message;
 
 
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
+import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -33,7 +34,7 @@ import java.util.List;
  * operate Topic mapper
  **/
 @Mapper
-public interface TopicMapper {
+public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
 
 
     @Select("SELECT count(*) FROM topic WHERE cluster_id=#{clusterId} AND status=1")
@@ -87,5 +88,13 @@ public interface TopicMapper {
         + "ON DUPLICATE KEY UPDATE status = 1")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addTopic(TopicEntity topicEntity);
+
+    void syncInsert(List<TopicEntity> entityList);
+
+    void syncUpdate(List<TopicEntity> entityList);
+
+    void syncDelete(List<TopicEntity> entityList);
+
+    List<TopicEntity> syncGet(TopicEntity topicEntity);
 
 }

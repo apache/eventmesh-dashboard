@@ -54,4 +54,6 @@ public interface ClusterService {
     Integer updateClusterById(ClusterEntity cluster);
 
     Integer deactivate(ClusterEntity cluster);
+
+    List<ClusterEntity> selectByUpdateTime(ClusterEntity clusterEntity);
 }

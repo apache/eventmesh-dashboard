@@ -27,8 +27,6 @@ import org.apache.eventmesh.dashboard.console.service.function.HealthDataService
 
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -38,15 +36,21 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Deprecated
 public class Health2Executor {
 
     private final ThreadPoolExecutor executorService = new ThreadPoolExecutor(32, 32, 5, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
 
 
-
     @Getter
     private CountDownLatch countDownLatch;
 
+    @Setter
+    private HealthDataService dataService;
+
+    @Getter
+    @Setter
+    private CheckResultCache memoryCache;
 
     public void createCountDownLatch(int count) {
         this.countDownLatch = new CountDownLatch(count);
@@ -55,45 +59,45 @@ public class Health2Executor {
     /**
      * execute function is where health check services work.
      *
-     * @param service        The health check service to be executed.
+     * @param service The health check service to be executed.
      */
     public void execute(AbstractHealthCheckService service) {
         final long startTime = System.currentTimeMillis();
         //TODO: execute is called by a ScheduledThreadPoolExecutor,
         // when called, it should check if current service should doCheck(check service check rate can be dynamically configured).
         try {
-            memoryCache.update(service.getConfig().getHealthCheckResourceType(), service.getConfig().getInstanceId(), HealthCheckStatus.CHECKING, "",
-                null, service.getConfig());
             //The callback interface is used to pass the processing methods for checking success and failure.
-            executorService.submit(() -> service.check(new HealthCheckCallback() {
-                @Override
-                public void onSuccess() {
-                    countDownLatch.countDown();
-                    //when the health check is successful, the result is updated to the memory cache.
-                    Long latency = System.currentTimeMillis() - startTime;
-                    HealthCheckStatus status =
-                        latency > service.getConfig().getRequestTimeoutMillis() ? HealthCheckStatus.TIMEOUT : HealthCheckStatus.PASSED;
-                    memoryCache.update(service.getConfig().getHealthCheckResourceType(), service.getConfig().getInstanceId(),
-                        status, "Health check succeed.", latency
-                    );
-                }
+            executorService.submit(() -> {
+                try {
+                    service.check(new HealthCheckCallback() {
+                        @Override
+                        public void onSuccess() {
+                            countDownLatch.countDown();
+                            //when the health check is successful, the result is updated to the memory cache.
+                            Long latency = System.currentTimeMillis() - startTime;
 
-                @Override
-                public void onFail(Exception e) {
-                    countDownLatch.countDown();
-                    //when the health check fails, the result is updated to the memory cache, passing in the exception message.
-                    log.error("Health check failed for reason: {}. Service config is {}", e, service.getConfig());
-                    memoryCache.update(service.getConfig().getHealthCheckResourceType(), service.getConfig().getInstanceId(),
-                        HealthCheckStatus.FAILED, e.getMessage(),
-                        System.currentTimeMillis() - startTime);
+
+                        }
+
+                        @Override
+                        public void onFail(Exception e) {
+                            countDownLatch.countDown();
+                            //when the health check fails, the result is updated to the memory cache, passing in the exception message.
+                            log.error("Health check failed for reason: {}. Service config is {}", e, service.getConfig());
+                            memoryCache.update(service.getConfig().getHealthCheckResourceType(), service.getConfig().getInstanceId(),
+                                HealthCheckStatus.FAILED, e.getMessage(),
+                                System.currentTimeMillis() - startTime);
+                        }
+                    });
+                } catch (Exception e) {
+                    // TODO
+                    throw new RuntimeException(e);
                 }
-            }));
+            });
 
         } catch (Exception e) {
             log.error("Health check failed for reason: {}. Service config is {}", e, service.getConfig());
-            memoryCache.update(service.getConfig().getHealthCheckResourceType(), service.getConfig().getInstanceId(), HealthCheckStatus.FAILED,
-                e.getMessage(),
-                System.currentTimeMillis() - startTime);
+
         }
     }
 
@@ -143,7 +147,7 @@ public class Health2Executor {
         newEntity.setType(HealthCheckTypeEnum.toNumber(result.getConfig().getHealthCheckResourceType()));
         newEntity.setTypeId(result.getConfig().getInstanceId());
         newEntity.setResultDesc(result.getResultDesc());
-        newEntity.setState(result.getStatus().getNumber());
+        newEntity.setStatus(result.getStatus().getNumber());
 
         resultList.add(newEntity);
     }

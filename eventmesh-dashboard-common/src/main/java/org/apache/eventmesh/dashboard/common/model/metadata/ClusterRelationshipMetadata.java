@@ -18,12 +18,15 @@
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
 @Data
-public class ClusterRelationshipMetadata extends MetadataConfig {
+@EqualsAndHashCode(callSuper = false)
+public class ClusterRelationshipMetadata extends BaseRuntimeIdBase {
 
     private ClusterType clusterType;
 
@@ -31,10 +34,5 @@ public class ClusterRelationshipMetadata extends MetadataConfig {
 
     private ClusterType relationshipType;
 
-    private Integer status;
 
-    @Override
-    public String getUnique() {
-        return null;
-    }
 }

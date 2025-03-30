@@ -23,6 +23,7 @@ package org.apache.eventmesh.dashboard.common.enums;
  * sinkConnector:可选值(rocketmq,spring,pravega,wechat,openfunction,file,knative,pulsar,lark,slack,rabbitmq,redis,mongodb,dingtalk)
  * sourceConnector:可选值(rocketmq,spring,pravega,openfunction,jdbc,file,http,wecom,knative,pulsar,prometheus,rabbitmq,redis,mongodb)',
  */
+@Deprecated
 public enum BusinessType {
 
 }

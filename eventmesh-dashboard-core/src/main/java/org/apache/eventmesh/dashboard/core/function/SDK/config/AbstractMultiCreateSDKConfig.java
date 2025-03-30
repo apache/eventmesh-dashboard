@@ -8,6 +8,8 @@ public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
 
     private List<NetAddress> netAddresseList = new CopyOnWriteArrayList<>();
 
+    private List<NetAddress> metaAddressList = new CopyOnWriteArrayList<>();
+
     public void addNetAddress(NetAddress netAddress) {
         this.netAddresseList.add(netAddress);
     }
@@ -16,8 +18,15 @@ public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
         this.netAddresseList.remove(netAddress);
     }
 
-    @Override
-    public String doUniqueKey() {
+    public void addMetaAddress(NetAddress netAddress) {
+        this.metaAddressList.add(netAddress);
+    }
+
+    public void removeMetaAddress(NetAddress netAddress) {
+        this.metaAddressList.remove(netAddress);
+    }
+
+    private String doUniqueKey(List<NetAddress> netAddresseList) {
         StringBuffer sb = new StringBuffer();
         netAddresseList.forEach(netAddress -> {
             sb.append(netAddress.doUniqueKey());
@@ -26,7 +35,25 @@ public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
         return sb.toString();
     }
 
+    @Override
+    public String doUniqueKey() {
+        return this.doUniqueKey(this.netAddresseList);
+    }
+
+    public String doUniqueKeyByMeta() {
+        return this.doUniqueKey(this.metaAddressList);
+    }
+
+
+    public String[] getNetAddressesByMeta() {
+        return this.getNetAddresses(this.metaAddressList);
+    }
+
     public String[] getNetAddresses() {
+        return this.getNetAddresses(this.netAddresseList);
+    }
+
+    private String[] getNetAddresses(List<NetAddress> netAddresseList) {
         List<String> netAddresses = new ArrayList<>();
         netAddresseList.forEach(netAddress -> {
             netAddresses.add(netAddress.doUniqueKey());

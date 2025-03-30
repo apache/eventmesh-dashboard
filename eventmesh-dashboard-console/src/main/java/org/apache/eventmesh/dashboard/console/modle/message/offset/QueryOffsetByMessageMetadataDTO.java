@@ -21,8 +21,10 @@ package org.apache.eventmesh.dashboard.console.modle.message.offset;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class QueryOffsetByMessageMetadataDTO extends ClusterIdDTO {
 
 

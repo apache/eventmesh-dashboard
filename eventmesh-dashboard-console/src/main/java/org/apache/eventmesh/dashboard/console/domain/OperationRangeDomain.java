@@ -49,12 +49,14 @@ public class OperationRangeDomain {
     private OperationRangeDomainDataHandler rangeDomainDataHandler;
 
     public <T> T hander(OperationBaseDTO operationBaseDTO, OperationRangeDomainDataHandler rangeDomainDataHandler, Class<T> clazz) {
-        List<T> list = new ArrayList<>();
+
+        final List<Object> list = new ArrayList<>();
         this.rangeDomainDataHandler = rangeDomainDataHandler;
         this.clusterEntity = new ClusterEntity();
         clusterEntity = clusterService.selectClusterById(clusterEntity);
 
-        OperationRangeType operationRangeType = operationBaseDTO.getMetadataOperationType().getOperationRangeType(clusterEntity.getClusterType());
+        OperationRangeType operationRangeType = null;
+        //operationBaseDTO.getMetadataOperationType().getOperationRangeType(clusterEntity.getClusterType());
         if (Objects.equals(operationRangeType, OperationRangeType.ONCE_CLUSTER)) {
             //
         } else if (Objects.equals(operationRangeType, OperationRangeType.ALL_RUNTIME)) {

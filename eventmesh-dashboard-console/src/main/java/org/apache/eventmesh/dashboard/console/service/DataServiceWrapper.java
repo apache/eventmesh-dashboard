@@ -40,6 +40,7 @@ import lombok.Getter;
  */
 @Component
 @Getter
+@Deprecated
 public class DataServiceWrapper {
 
     @Autowired

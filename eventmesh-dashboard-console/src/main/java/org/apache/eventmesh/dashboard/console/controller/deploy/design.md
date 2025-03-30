@@ -1,4 +1,50 @@
 
+##  
+1. 存储 remote 服务
+   1. topic 创建在 cluster main runtime
+2. message
+   1. 发送
+   2. 查看消息
+   3. 发布订阅
+   4.  console  ->  抽象层  -> broker
+      5. rocketmq 4.0 push（pull）  5.0 pull 
+3. offset
+4. k8s 
+   1. 集群
+      2. 创建
+      3. 
+   2. 节点
+      3. 创建
+      4. 停用
+      5. 删除
+   2. console ， docker 执行脚本
+   2. console 与 操作分开
+   3. 6c 16G
+   4. eventmesh
+   5. kafka
+      1. 取舍问题
+   6. rocketmq
+      1. 简单
+      2. 不做难得
+      3. 两个集群
+         1. 单节点
+         2. 一主已从
+   7. pulsuer
+      1. 我有
+5. 数据采集快 
+   1. 存储已经支持的采集
+   2. RocketMQ 实现
+6. 前端
+7. 认证与权限，介入
+   1. rocketmq 的插件
+      2. acl  ->  console 同步
+   2. kafka 的 插件
+      3. 修改
+8. 一键部署
+9. 巡检
+10. 告警
+
+
 ## 部署业务模块
 > 
 

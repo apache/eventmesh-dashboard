@@ -52,7 +52,7 @@ public class ConfigServiceImpl implements ConfigService {
     public void logUpdateRuntimeConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigDTO> changeConfigDTOList) {
         changeConfigDTOList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(0);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -66,7 +66,7 @@ public class ConfigServiceImpl implements ConfigService {
     public void logUpdateStoreConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigDTO> changeConfigDTOList) {
         changeConfigDTOList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(1);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -80,7 +80,7 @@ public class ConfigServiceImpl implements ConfigService {
     public void logUpdateConnectorConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigDTO> changeConfigDTOList) {
         changeConfigDTOList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(2);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -94,7 +94,7 @@ public class ConfigServiceImpl implements ConfigService {
     public void logUpdateTopicConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigDTO> changeConfigDTOList) {
         changeConfigDTOList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(3);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -141,6 +141,10 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
+    public void restoreConfig(Long sourceId, Long targetId) {
+
+    }
+
     public String mapToYaml(Map<String, String> stringMap) {
         Yaml yaml = new Yaml();
         return yaml.dumpAsMap(stringMap);
@@ -168,7 +172,7 @@ public class ConfigServiceImpl implements ConfigService {
         return stringStringConcurrentHashMap;
     }
 
-    @Override
+
     public Integer addConfig(ConfigEntity configEntity) {
         return configMapper.addConfig(configEntity);
     }
@@ -182,7 +186,7 @@ public class ConfigServiceImpl implements ConfigService {
     public List<ConfigEntity> selectByInstanceIdAndType(Long instanceId, Integer type) {
         ConfigEntity config = new ConfigEntity();
         config.setInstanceId(instanceId);
-        config.setInstanceType(type);
+        config.setInstanceType(null);
         return configMapper.selectByInstanceId(config);
     }
 
@@ -205,7 +209,7 @@ public class ConfigServiceImpl implements ConfigService {
     public List<ConfigEntity> selectToFront(Long instanceId, Integer type, GetConfigsListDTO getConfigsListDTO) {
         ConfigEntity config = new ConfigEntity();
         config.setInstanceId(instanceId);
-        config.setInstanceType(type);
+        config.setInstanceType(null);
         config = this.setSearchCriteria(getConfigsListDTO, config);
         return configMapper.getConfigsToFrontWithDynamic(config);
     }

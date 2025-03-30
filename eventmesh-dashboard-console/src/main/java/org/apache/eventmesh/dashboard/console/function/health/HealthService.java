@@ -49,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
  * function executeAll is called, health check service will be executed by {@link HealthExecutor}.
  */
 @Slf4j
+@Deprecated
 public class HealthService {
 
     /**

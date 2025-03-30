@@ -6,6 +6,9 @@ public enum ClusterFramework {
 
     INDEPENDENCE,
 
+    /**
+     *  AP 架构，的 meta 有控制行为，需要逐一通知
+     */
     AP,
 
     CP,
