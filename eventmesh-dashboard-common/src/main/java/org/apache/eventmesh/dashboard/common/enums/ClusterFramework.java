@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public enum ClusterFramework {
 
+    NOT,
+
     INDEPENDENCE,
 
     /**
@@ -38,5 +40,9 @@ public enum ClusterFramework {
 
     public boolean isCAP() {
         return Objects.equals(this, ZK) || Objects.equals(this, RAFT) || Objects.equals(this, PAXOS) || Objects.equals(this, CAP);
+    }
+
+    public boolean isNot() {
+        return this == NOT;
     }
 }

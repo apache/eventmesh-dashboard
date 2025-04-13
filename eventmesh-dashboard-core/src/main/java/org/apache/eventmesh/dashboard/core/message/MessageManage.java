@@ -68,7 +68,9 @@ public class MessageManage {
             ConfigManage.getInstance().getMultiCreateSDKConfig(abstractMessageDTO.getClusterType(), sdkTypeEnum);
 
         CreateSDKConfig consumerConfig = abstractConsumerOperate.createSDKConfig(abstractMultiCreateSDKConfig, null);
-        Object client = SDKManage.getInstance().createClient(sdkTypeEnum, consumerConfig, abstractMessageDTO.getClusterType());
+        // RocketMQ，模式如何处理？
+        Object client = null;
+        //SDKManage.getInstance().createClient(sdkTypeEnum, consumerConfig, abstractMessageDTO.getClusterType());
         abstractConsumerOperate.setClient(client);
         abstractConsumerOperate.setAbstractMessageDTO(abstractMessageDTO);
 

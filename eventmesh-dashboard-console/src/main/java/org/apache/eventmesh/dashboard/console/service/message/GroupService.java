@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.service.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public interface GroupService {
 
     GroupEntity selectGroup(GroupEntity groupEntity);
 
-    Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity);
+    Integer insertMemberToGroup(SubscriptionEntity subscriptionEntity);
 
-    Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity);
+    Integer deleteMemberFromGroup(SubscriptionEntity subscriptionEntity);
 }

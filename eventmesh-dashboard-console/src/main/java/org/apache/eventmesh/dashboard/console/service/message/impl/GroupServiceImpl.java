@@ -19,7 +19,7 @@ package org.apache.eventmesh.dashboard.console.service.message.impl;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
 import org.apache.eventmesh.dashboard.console.service.message.GroupMemberService;
 import org.apache.eventmesh.dashboard.console.service.message.GroupService;
@@ -78,14 +78,14 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Integer insertMemberToGroup(GroupMemberEntity groupMemberEntity) {
-        groupMemberService.addGroupMember(groupMemberEntity);
+    public Integer insertMemberToGroup(SubscriptionEntity subscriptionEntity) {
+        groupMemberService.addGroupMember(subscriptionEntity);
         GroupEntity groupEntity = new GroupEntity();
-        groupEntity.setName(groupMemberEntity.getGroupName());
-        groupEntity.setClusterId(groupMemberEntity.getClusterId());
+        groupEntity.setName(subscriptionEntity.getGroupName());
+        groupEntity.setClusterId(subscriptionEntity.getClusterId());
         GroupEntity groupEntity1 = groupMapper.selectGroupByUnique(groupEntity);
         //^Obtain the group to which the member belongs
-        groupEntity1.setMembers(groupMemberEntity.getId() + "" + "," + groupEntity1.getMembers());
+        groupEntity1.setMembers(subscriptionEntity.getId() + "" + "," + groupEntity1.getMembers());
         //Concatenate the members of the group
         groupEntity1.setMemberCount(groupEntity1.getMemberCount() + 1);
         groupEntity1.setUpdateTime(LocalDateTime.now());
@@ -95,14 +95,14 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Integer deleteMemberFromGroup(GroupMemberEntity groupMemberEntity) {
-        groupMemberService.deleteGroupMember(groupMemberEntity);
+    public Integer deleteMemberFromGroup(SubscriptionEntity subscriptionEntity) {
+        groupMemberService.deleteGroupMember(subscriptionEntity);
         GroupEntity groupEntity = new GroupEntity();
-        groupEntity.setName(groupMemberEntity.getGroupName());
-        groupEntity.setClusterId(groupMemberEntity.getClusterId());
+        groupEntity.setName(subscriptionEntity.getGroupName());
+        groupEntity.setClusterId(subscriptionEntity.getClusterId());
         GroupEntity groupEntity1 = groupMapper.selectGroupByUnique(groupEntity);
         //^Obtain the group to which the member belongs
-        groupEntity1.setMembers(groupEntity1.getMembers().replaceAll(groupMemberEntity.getId() + "" + ",", ""));
+        groupEntity1.setMembers(groupEntity1.getMembers().replaceAll(subscriptionEntity.getId() + "" + ",", ""));
         groupEntity1.setMemberCount(groupEntity1.getMemberCount() - 1);
         groupEntity1.setUpdateTime(LocalDateTime.now());
         groupMapper.updateGroup(groupEntity1);

@@ -9,7 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class AbstractTopicHealthCheckService extends AbstractHealthCheckService {
+public abstract class AbstractTopicHealthCheckService<T> extends AbstractHealthCheckService<T> {
 
     @Setter
     @Getter

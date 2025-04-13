@@ -35,7 +35,7 @@ import lombok.EqualsAndHashCode;
  *   副本，随机出现在一个 broker
  */
 @Data
-@EqualsAndHashCode(callSuper = false, exclude = {"createTime", "updateTime"})
+@EqualsAndHashCode(callSuper = true, exclude = {"createTime", "updateTime"})
 @Schema(name = "BaseEntity", description = "Base entity")
 public class BaseEntity implements Serializable {
 

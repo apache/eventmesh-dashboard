@@ -17,7 +17,6 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.check;
 
-import org.apache.eventmesh.dashboard.console.function.health.HealthExecutor;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 
 /**
@@ -28,16 +27,10 @@ import org.apache.eventmesh.dashboard.console.function.health.callback.HealthChe
 public interface HealthCheckService {
 
 
+    void check(HealthCheckCallback callback) throws Exception;
 
-    /**
-     * Do the health check.<p> To implement a new check service, add the necessary logic to call the success and fail functions of the callback.
-     *
-     * @param callback The behaviour of the callback is defined as a lambda function when used. Please refer to {@link HealthExecutor} for usage.
-     */
-    public void check(HealthCheckCallback callback) throws Exception;
+    void init() throws Exception;
 
-    public void init()  throws Exception;
-
-    public void destroy();
+    void destroy() throws Exception;
 
 }

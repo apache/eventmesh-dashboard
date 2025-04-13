@@ -17,6 +17,9 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckTypeEnum;
+import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 
@@ -26,6 +29,7 @@ import io.lettuce.core.api.async.RedisAsyncCommands;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@HealthCheckType(clusterType = {ClusterType.STORAGE_REDIS_BROKER}, healthType = HealthCheckTypeEnum.PING)
 public class RedisCheck extends AbstractHealthCheckService<StatefulRedisConnection<String, String>> {
 
     @Override

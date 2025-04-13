@@ -126,6 +126,11 @@ public class ConfigServiceImpl implements ConfigService {
 
 
     @Override
+    public List<ConfigEntity> queryByClusterAndInstanceId(ConfigEntity configEntity){
+        return null;
+    }
+
+    @Override
     public List<ConfigEntity> selectAll() {
         return configMapper.selectAll();
     }

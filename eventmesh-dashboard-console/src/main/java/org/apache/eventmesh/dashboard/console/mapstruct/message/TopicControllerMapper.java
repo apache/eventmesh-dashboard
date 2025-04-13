@@ -21,6 +21,7 @@ import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.modle.IdDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.topic.CreateTopicDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
+import org.apache.eventmesh.dashboard.console.modle.vo.RuntimeIdDTO;
 
 import org.mapstruct.factory.Mappers;
 
@@ -34,7 +35,7 @@ public interface TopicControllerMapper {
 
     TopicEntity queryTopicListByClusterId(GetTopicListDTO getTopicListDTO);
 
-    TopicEntity queryTopicListById(IdDTO idDTO);
+    TopicEntity queryTopicListById(RuntimeIdDTO runtimeIdDTO);
 
     TopicEntity deleteTopic(IdDTO idDTO);
 

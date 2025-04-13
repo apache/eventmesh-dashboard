@@ -53,7 +53,7 @@ public class OperationRangeDomain {
         final List<Object> list = new ArrayList<>();
         this.rangeDomainDataHandler = rangeDomainDataHandler;
         this.clusterEntity = new ClusterEntity();
-        clusterEntity = clusterService.selectClusterById(clusterEntity);
+        clusterEntity = clusterService.queryClusterById(clusterEntity);
 
         OperationRangeType operationRangeType = null;
         //operationBaseDTO.getMetadataOperationType().getOperationRangeType(clusterEntity.getClusterType());

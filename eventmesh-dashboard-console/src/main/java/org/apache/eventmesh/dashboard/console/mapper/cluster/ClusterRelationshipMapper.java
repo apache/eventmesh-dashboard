@@ -40,7 +40,15 @@ public interface ClusterRelationshipMapper {
     })
     Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
 
-    Integer addClusterRelationshipEntry(List<ClusterRelationshipEntity> clusterRelationshipEntity);
+    @Insert(""" 
+            <script>
+            insert into cluster_relationship (cluster_type,cluster_id,relationship_type,relationship_id) values
+            <foreach collection='list' item='c' index='index' separator=','>"
+                ( #{clusterType},#{clusterId},#{relationshipType},#{relationshipId})
+            </foreach>
+            </script> 
+        """)
+    Integer batchClusterRelationshipEntry(List<ClusterRelationshipEntity> clusterRelationshipEntity);
 
     @Update("update cluster_relationship set status = 3 where id = #{id} ")
     Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);

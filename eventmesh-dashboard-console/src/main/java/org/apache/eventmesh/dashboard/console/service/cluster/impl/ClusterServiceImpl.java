@@ -18,11 +18,13 @@
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterMapper;
+import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ConnectionMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
@@ -33,6 +35,8 @@ import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMes
 import org.apache.eventmesh.dashboard.console.service.OverviewService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +54,9 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     private ClusterMapper clusterMapper;
 
     @Autowired
+    private ClusterRelationshipMapper clusterRelationshipMapper;
+
+    @Autowired
     private RuntimeMapper runtimeMapper;
 
     @Autowired
@@ -62,6 +69,28 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     @Override
     public void createCluster(ClusterEntity clusterEntity) {
 
+    }
+
+    @Override
+    public ClusterEntity queryClusterById(ClusterEntity clusterEntity) {
+        return this.clusterMapper.queryByClusterId(clusterEntity);
+    }
+
+    @Override
+    public List<ClusterEntity> queryStorageByClusterId(ClusterEntity clusterEntity) {
+        List<ClusterEntity> clusterEntityList = new ArrayList<>();
+        this.clusterMapper.queryRelationshipClusterByClusterId(clusterEntity).forEach(entity -> {
+            if (entity.getClusterType().isStorage()) {
+                clusterEntityList.add(entity);
+            }
+        });
+        return clusterEntityList;
+    }
+
+
+    @Override
+    public List<ClusterEntity> queryAllSubClusterByClusterId(ClusterEntity clusterEntity) {
+        return null;
     }
 
     @Override
@@ -95,8 +124,19 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
 
 
     @Override
-    public Integer batchInsert(List<ClusterEntity> clusterEntities) {
-        return clusterMapper.batchInsert(clusterEntities);
+    public Integer batchInsert(List<ClusterEntity> clusterEntities, ClusterEntity clusterEntity) {
+        clusterMapper.batchInsert(clusterEntities);
+        List<ClusterRelationshipEntity> clusterRelationshipEntityList = new ArrayList<>();
+        clusterEntities.forEach(entity -> {
+            ClusterRelationshipEntity clusterRelationshipEntity = new ClusterRelationshipEntity();
+            clusterRelationshipEntityList.add(clusterRelationshipEntity);
+
+            clusterRelationshipEntityList.add(clusterRelationshipEntity);
+            clusterRelationshipEntity.setClusterId(clusterEntity.getId());
+            clusterRelationshipEntity.setClusterType(clusterEntity.getClusterType());
+        });
+        this.clusterRelationshipMapper.batchClusterRelationshipEntry(clusterRelationshipEntityList);
+        return 1;
     }
 
     @Override
@@ -119,11 +159,6 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
         return clusterMapper.selectAllCluster();
     }
 
-    @Override
-    public ClusterEntity selectClusterById(ClusterEntity cluster) {
-        return clusterMapper.selectClusterById(cluster);
-    }
-
 
     @Override
     public Integer updateClusterById(ClusterEntity cluster) {
@@ -141,7 +176,16 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
-    public List<ClusterEntity> selectByUpdateTime(ClusterEntity clusterEntity) {
+    public List<ClusterEntity> queryByUpdateTime(ClusterEntity clusterEntity) {
         return null;
+    }
+
+    @Override
+    public LinkedList<Integer> getIndex(ClusterEntity clusterEntity) {
+        ClusterEntity before = this.clusterMapper.lockByClusterId(clusterEntity);
+        this.clusterMapper.updateNumByClusterId(clusterEntity);
+        ClusterEntity after = this.clusterMapper.queryByClusterId(clusterEntity);
+        LinkedList<Integer> indexList = new LinkedList<>();
+        return indexList;
     }
 }

@@ -17,16 +17,19 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AclMetadata extends MetadataConfig {
+public class AclMetadata extends BaseRuntimeIdBase {
 
     private Long clusterId;
 
     private String principal;
+
     private Integer operation;
 
     private String permissionType;
@@ -39,8 +42,9 @@ public class AclMetadata extends MetadataConfig {
 
     private Integer patternType;
 
+
     @Override
-    public String getUnique() {
-        return null;
+    public String nodeUnique() {
+        return this.principal;
     }
 }

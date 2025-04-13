@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import org.apache.eventmesh.dashboard.common.enums.StoreType;
-
 import lombok.Data;
 
 /**
@@ -28,7 +26,7 @@ import lombok.Data;
 public class InstanceUserMetadata {
 
     private String userName;
-    //service users are only store users by now
-    private StoreType serviceType;
+
+
     private String password;
 }

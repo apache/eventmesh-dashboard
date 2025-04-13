@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
 
+import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupsRequest;
 import org.apache.eventmesh.dashboard.service.remoting.GroupRemotingService;
@@ -25,6 +27,11 @@ public class RocketMQGroupRemotingService extends AbstractRocketMQRemotingServic
 
     @Override
     public GetGroupResult getAllGroups(GetGroupsRequest getGroupsRequest) {
+        return null;
+    }
+
+    @Override
+    public BaseGlobalResult deleteGroup(Global2Request global2Request) {
         return null;
     }
 }

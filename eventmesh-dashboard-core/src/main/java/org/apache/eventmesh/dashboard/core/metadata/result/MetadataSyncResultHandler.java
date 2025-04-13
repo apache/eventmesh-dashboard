@@ -13,6 +13,7 @@ public interface MetadataSyncResultHandler {
 
     void handleMetadataSyncResult(MetadataSyncResult metadataSyncResult);
 
+    void persistence();
 
 
 }

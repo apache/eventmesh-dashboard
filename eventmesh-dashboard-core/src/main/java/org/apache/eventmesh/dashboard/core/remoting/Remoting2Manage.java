@@ -17,34 +17,40 @@
 
 package org.apache.eventmesh.dashboard.core.remoting;
 
-import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMetadata;
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMapper;
 import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.common.enums.RemotingType;
+import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
 import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 import org.apache.eventmesh.dashboard.common.util.ClasspathScanner;
-import org.apache.eventmesh.dashboard.core.function.SDK.ClientWrapper;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKManage;
+import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import lombok.extern.slf4j.Slf4j;
 
+
+@Slf4j
 public class Remoting2Manage {
 
-    private static final Map<Class<?>, RemotingServiceMetadataWrapper> mapper = new HashMap<>();
+    private static final Remoting2Manage INSTANCE = new Remoting2Manage();
 
-    private final Map<RemotingType, Map<Class<?>, Class<?>>> remotingServiceClasses = new HashMap<>();
+    private static final Map<ClusterType, Map<Class<?>, RemotingServiceMetadataWrapper>> REMOTING_SERVICE_METADATA_WRAPPER_MAP = new HashMap<>();
 
+    private static final Map<Class<?>, Map<RemotingActionType, RemotingServiceMethodMapperWrapper>> CLASS_METHOD_MAPPER = new HashMap<>();
 
     static {
         ClasspathScanner classpathScanner = ClasspathScanner.builder().base(Remoting2Manage.class).subPath("/**").build();
@@ -59,165 +65,163 @@ public class Remoting2Manage {
         if (ArrayUtils.isEmpty(clazz.getInterfaces())) {
             return;
         }
-        Class<?> interfaces = clazz.getInterfaces()[0];
-        RemotingServiceMetadata remotingServiceMetadata = interfaces.getAnnotation(RemotingServiceMetadata.class);
-        if (Objects.isNull(remotingServiceMetadata)) {
+        if (Objects.isNull(clazz.getSuperclass())) {
             return;
         }
+        RemotingServiceMapper remotingServiceMapper = clazz.getSuperclass().getAnnotation(RemotingServiceMapper.class);
+        if (Objects.isNull(remotingServiceMapper)) {
+            return;
+        }
+        final Class<?> interfaces = clazz.getInterfaces()[0];
+
+        final Map<Class<?>, RemotingServiceMetadataWrapper> remotingServiceMetadataWrapperMap =
+            REMOTING_SERVICE_METADATA_WRAPPER_MAP.computeIfAbsent(remotingServiceMapper.clusterType(), k -> new ConcurrentHashMap<>());
+
         RemotingServiceMetadataWrapper remotingServiceMetadataWrapper = new RemotingServiceMetadataWrapper();
-        remotingServiceMetadataWrapper.remotingServiceType = interfaces;
-        remotingServiceMetadataWrapper.remotingServiceMetadata = remotingServiceMetadata;
-        Method[] methods = interfaces.getMethods();
-        for (Method method : methods) {
-            RemotingServiceMethodMapper[] remotingServiceMethodMappers = interfaces.getAnnotationsByType(RemotingServiceMethodMapper.class);
-            if (ArrayUtils.isEmpty(remotingServiceMethodMappers)) {
-                continue;
-            }
-            remotingServiceMetadataWrapper.remotingServiceMethodMapperWrapperMap = new HashMap<>();
+        remotingServiceMetadataWrapper.clusterType = remotingServiceMapper.clusterType();
+        remotingServiceMetadataWrapper.remotingServiceType = clazz;
+        remotingServiceMetadataWrapper.remotingServiceMapper = remotingServiceMapper;
+        remotingServiceMetadataWrapper.targetClass = interfaces;
+        remotingServiceMetadataWrapperMap.put(interfaces, remotingServiceMetadataWrapper);
 
-            for (RemotingServiceMethodMapper serviceMethodMapper : remotingServiceMethodMappers) {
+        Map<RemotingActionType, RemotingServiceMethodMapperWrapper> actionMap = CLASS_METHOD_MAPPER.get(interfaces);
+        if (Objects.isNull(actionMap)) {
+            actionMap = new HashMap<>();
+            CLASS_METHOD_MAPPER.put(interfaces, actionMap);
+            Method[] methods = interfaces.getMethods();
+            for (Method method : methods) {
+                RemotingServiceMethodMapper remotingServiceMethodMappers = method.getAnnotation(RemotingServiceMethodMapper.class);
+                if (Objects.isNull(remotingServiceMethodMappers)) {
+                    continue;
+                }
                 RemotingServiceMethodMapperWrapper remotingServiceMethodMapperWrapper = new RemotingServiceMethodMapperWrapper();
-                remotingServiceMethodMapperWrapper.serviceMethod = method;
-                remotingServiceMethodMapperWrapper.remotingServiceMethodMapper = serviceMethodMapper;
-                remotingServiceMetadataWrapper.remotingServiceMethodMapperWrapperMap.computeIfAbsent(serviceMethodMapper.mapperClass(),
-                    k -> new HashMap<>()).put(serviceMethodMapper.methodName(), remotingServiceMethodMapperWrapper);
+                remotingServiceMethodMapperWrapper.remotingServiceMethod = method;
 
+                for (RemotingActionType remotingActionType : remotingServiceMethodMappers.value()) {
+                    actionMap.put(remotingActionType, remotingServiceMethodMapperWrapper);
+                }
+
+                Class<?>[] clazzs = method.getParameterTypes();
+                if (ArrayUtils.isNotEmpty(clazzs)) {
+                    remotingServiceMethodMapperWrapper.parameterTypes = clazzs[0];
+                }
             }
+
         }
-        mapper.put(interfaces, remotingServiceMetadataWrapper);
+        remotingServiceMetadataWrapper.actionMap = actionMap;
 
     }
 
 
-    public Object createProxy(Class<?> clazz, BaseSyncBase baseSyncBase, ClusterType clusterType) {
-
-        try {
-            Map<Class<?>, Class<?>> serviceList = this.remotingServiceClasses.get(clusterType);
-            Class<?> executionClazz = serviceList.get(clazz);
-            AbstractRemotingService<Object> proxyObject = (AbstractRemotingService<Object>) executionClazz.newInstance();
-            ClientWrapper clientWrapper = SDKManage.getInstance().getClientWrapper(baseSyncBase.getUnique());
-            proxyObject.setClientWrapper(clientWrapper);
-            RemotingServiceHandler remotingServiceHandler = new RemotingServiceHandler();
-            remotingServiceHandler.execution = baseSyncBase;
-            remotingServiceHandler.proxyObject = proxyObject;
-            remotingServiceHandler.remotingResultType = RemotingResultType.ERROR_THROW_EXCEPTION;
-            Object object = Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class[] {clazz}, remotingServiceHandler);
-
-            return object;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public static Remoting2Manage getInstance() {
+        return INSTANCE;
     }
 
+    private Remoting2Manage() {}
 
     /**
-     * TODO 怎么做？？？？？？？？？？？？
-     *  不能调用批量？
-     *  这个 动态代理执行类，只能为了辅助大量重复调用且解决需要处理的
+     * @param clazz        Remoting Service
+     * @param baseSyncBase baseSyncBase
+     * @return RemotingService
      */
-    public class RemotingServiceHandler implements InvocationHandler {
+    public DataMetadataHandler<BaseClusterIdBase> createDataMetadataHandler(Class<?> clazz, BaseSyncBase baseSyncBase) {
+        RemotingServiceMetadataWrapper remotingServiceMetadataWrapper =
+            REMOTING_SERVICE_METADATA_WRAPPER_MAP.get(baseSyncBase.getClusterType()).get(clazz);
+        AbstractRemotingService<BaseClusterIdBase> proxyObject =
+            SDKManage.getInstance().createAbstractClientInfo(remotingServiceMetadataWrapper.remotingServiceType, baseSyncBase);
+        RemotingService<BaseClusterIdBase> remotingService = new RemotingService<>();
+        remotingService.execution = proxyObject;
+        remotingService.wrapper = remotingServiceMetadataWrapper;
+        return remotingService;
+    }
 
+
+    @SuppressWarnings("unchecked")
+    public static class RemotingService<T> implements DataMetadataHandler<T> {
+
+        private RemotingServiceMetadataWrapper wrapper;
 
         private Object execution;
 
-        private boolean isHandler = false;
-
-        private Object proxyObject;
-
-        private Map<Method, MethodWrapper> methodWrapperMap = new ConcurrentHashMap<>();
-
-        private RemotingResultType remotingResultType;
-
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        public void handleAll(List<T> addData, List<T> updateData, List<T> deleteData) {
+            this.execute(addData, RemotingActionType.ADD);
+            this.execute(addData, RemotingActionType.UPDATE);
+            this.execute(addData, RemotingActionType.DELETE);
+        }
 
-            MethodWrapper methodWrapper = this.getMethodWrapper(method);
-            if (this.isExecuteOne(methodWrapper, args)) {
-                return this.executeOne(methodWrapper, args);
+        private void execute(List<T> data, RemotingActionType remotingActionType) {
+            if (CollectionUtils.isEmpty(data)) {
+                return;
             }
-            // 如果 client 支持 batch 怎么办
-            List<Object> list = (List) args[0];
-
-            return null;
-        }
-
-        private boolean isExecuteOne(MethodWrapper methodWrapper, Object[] args) {
-            return args == null || args[0] == null || methodWrapper.parameterTypes != null || Objects.equals(methodWrapper.parameterTypes,
-                List.class);
-        }
-
-
-        private Object executeOne(MethodWrapper methodWrapper, Object[] args) {
-            Exception ex;
-            try {
-                GlobalResult<Object> result = (GlobalResult<Object>) methodWrapper.tagerMethod.invoke(proxyObject, args);
-                if (result.getCode() == 200) {
-                    return this.result(result, methodWrapper);
-                }
-                if (remotingResultType.equals(RemotingResultType.ERROR_THROW_EXCEPTION)) {
-                    return this.result(methodWrapper);
-                }
-                ex = new RuntimeException(result.getMessage());
-            } catch (Exception e) {
-                //
-                ex = e;
-            }
-            throw new RuntimeException(ex);
-        }
-
-
-        private MethodWrapper getMethodWrapper(Method method) {
-            return methodWrapperMap.computeIfAbsent(method, k -> {
-                for (Method method1 : proxyObject.getClass().getMethods()) {
-                    if (method1.getName().equals(method.getName())) {
-                        //
-                    }
-                }
-                MethodWrapper newMethodWrapper = new MethodWrapper();
-                newMethodWrapper.parameterTypes = method.getParameterTypes()[0];
-                newMethodWrapper.resultClass = method.getReturnType();
-                return newMethodWrapper;
+            data.forEach((value) -> {
+                this.execution(value, remotingActionType);
             });
         }
 
-        private Object result(GlobalResult<Object> result, MethodWrapper methodWrapper) {
-            return Objects.nonNull(methodWrapper.resultClass) ? result.getData() : null;
+        @SuppressWarnings("unchecked")
+        private Object execution(T object, RemotingActionType remotingActionType) {
+            RemotingServiceMethodMapperWrapper methodMapper = wrapper.actionMap.get(remotingActionType);
+            Object arg = null;
+            try {
+                if (Objects.nonNull(methodMapper.parameterTypes)) {
+                    AbstractGlobal2Request<Object> request =
+                        (AbstractGlobal2Request<Object>) methodMapper.parameterTypes.newInstance();
+                    request.setMetaData(object);
+                    arg = request;
+                }
+                GlobalResult<T> result = (GlobalResult<T>) methodMapper.remotingServiceMethod.invoke(execution, arg);
+                if (Objects.isNull(result)) {
+                    log.error(" result is null, service is {} action is {} , arg is {}", wrapper.remotingServiceType.getSimpleName(),
+                        remotingActionType, object);
+                    if (Objects.equals(RemotingActionType.QUEUE_ALL, remotingActionType)) {
+                        return Collections.EMPTY_LIST;
+                    }
+                    return null;
+                }
+                return result.getData();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        private Object result(MethodWrapper methodWrapper) throws InstantiationException, IllegalAccessException {
-            return Objects.nonNull(methodWrapper.resultClass) ? methodWrapper.resultClass.newInstance() : null;
-        }
+        @Override
+        public List<T> getData() {
+            return (List<T>) this.execution(null, RemotingActionType.QUEUE_ALL);
 
+        }
     }
+
 
     static class RemotingServiceMetadataWrapper {
 
-        private RemotingServiceMetadata remotingServiceMetadata;
+        private RemotingServiceMapper remotingServiceMapper;
+
+        private ClusterType clusterType;
+
+        private Class<?> targetClass;
 
         /**
          * 通过这个找到
          */
         private Class<?> remotingServiceType;
 
-        private Map<Class<?>, Map<String/** method name **/, RemotingServiceMethodMapperWrapper>> remotingServiceMethodMapperWrapperMap =
-            new HashMap<>();
+        private Map<RemotingActionType, RemotingServiceMethodMapperWrapper> actionMap;
     }
 
     static class RemotingServiceMethodMapperWrapper {
 
         private RemotingServiceMethodMapper remotingServiceMethodMapper;
 
-        private Method serviceMethod;
+        private Method remotingServiceMethod;
 
-    }
+        private Method targetMethod;
 
-
-    static class MethodWrapper {
+        private String targetMethodName;
 
         private Class<?> parameterTypes;
 
-        private Method tagerMethod;
 
-        private Class<?> resultClass;
     }
+
 }

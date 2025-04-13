@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.core.function.SDK;
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
+import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.common.util.ClasspathScanner;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.AbstractCreateSDKConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
@@ -59,13 +60,16 @@ public class SDKManage {
      */
     private static final Map<ClusterType, Map<SDKTypeEnum, SDKMetadataWrapper>> CLUSTER_TYPE_MAP_CONCURRENT_HASH_MAP =
         new ConcurrentHashMap<>();
-    private static volatile SDKManage INSTANCE = null;
+
+    private static final SDKManage INSTANCE = new SDKManage();
+
 
     // register all client create operation
     static {
         Set<Class<?>> interfaceSet = new HashSet<>();
         interfaceSet.add(SDKOperation.class);
-        ClasspathScanner classpathScanner = ClasspathScanner.builder().base(SDKManage.class).subPath("/operation").interfaceSet(interfaceSet).build();
+        ClasspathScanner classpathScanner =
+            ClasspathScanner.builder().base(SDKManage.class).subPath("/operation/**").interfaceSet(interfaceSet).build();
         try {
             List<Class<?>> classList = classpathScanner.getClazz();
             classList.forEach(SDKManage::createSDKMetadataWrapper);
@@ -86,7 +90,11 @@ public class SDKManage {
             for (ClusterType clusterType : sdkMetadata.clusterType()) {
                 Map<SDKTypeEnum, SDKMetadataWrapper> map =
                     CLUSTER_TYPE_MAP_CONCURRENT_HASH_MAP.computeIfAbsent(clusterType, k -> new ConcurrentHashMap<>());
-                for (SDKTypeEnum sdkTypeEnum : sdkMetadata.sdkTypeEnum()) {
+                SDKTypeEnum[] sdkTypeEnums = sdkMetadata.sdkTypeEnum();
+                if (Objects.equals(sdkTypeEnums[0], SDKTypeEnum.ALL)) {
+                    sdkTypeEnums = new SDKTypeEnum[] {SDKTypeEnum.ADMIN, SDKTypeEnum.PING, SDKTypeEnum.PRODUCER, SDKTypeEnum.CONSUMER};
+                }
+                for (SDKTypeEnum sdkTypeEnum : sdkTypeEnums) {
                     SDKMetadataWrapper sdkMetadataWrapper = new SDKMetadataWrapper();
                     sdkMetadataWrapper.sdkMetadata = sdkMetadata;
                     sdkMetadataWrapper.createSDKConfigClass = multi;
@@ -94,20 +102,33 @@ public class SDKManage {
                     map.put(sdkTypeEnum, sdkMetadataWrapper);
                 }
             }
-            SDKMetadataWrapper sdkMetadataWrapper = new SDKMetadataWrapper();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     private static Class<?> getCreateSDKConfigClass(Class<?> genericClass) {
-        Type type = genericClass.getGenericSuperclass();
-        if (type instanceof ParameterizedType) {
-            ParameterizedType ptype = (ParameterizedType) type;
-            Type[] typeArguments = ptype.getActualTypeArguments();
+        Type supercType = genericClass.getGenericSuperclass();
+        if (supercType instanceof ParameterizedType type) {
+            Type[] typeArguments = type.getActualTypeArguments();
             for (Type typeArgument : typeArguments) {
-                if (Objects.equals(typeArgument, AbstractCreateSDKConfig.class)) {
-                    return (Class<?>) typeArgument;
+                Class<?> argument;
+                if (typeArgument instanceof ParameterizedType parameterizedType) {
+                    argument = (Class<?>) parameterizedType.getRawType();
+                } else {
+                    argument = (Class<?>) typeArgument;
+                }
+                for (; ; ) {
+                    Class<?> superclass = argument.getSuperclass();
+                    if (Objects.isNull(superclass)) {
+                        break;
+                    }
+                    if (Objects.equals(superclass, AbstractCreateSDKConfig.class)) {
+                        if (typeArgument instanceof Class<?>) {
+                            return (Class<?>) typeArgument;
+                        }
+                    }
+                    argument = superclass;
                 }
             }
         }
@@ -118,13 +139,6 @@ public class SDKManage {
     }
 
     public static synchronized SDKManage getInstance() {
-        if (INSTANCE == null) {
-            synchronized (SDKManage.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new SDKManage();
-                }
-            }
-        }
         return INSTANCE;
     }
 
@@ -147,11 +161,12 @@ public class SDKManage {
             wrapper.setBaseSyncBase(baseSyncBase);
 
             wrapper.getClientMap().put(SDKTypeEnum.ADMIN, object);
+            // all 模式下应该共享一个对象。这里需要优化
             if (Objects.equals(SDKTypeEnum.ADMIN, sdkTypeEnum)) {
                 object = sdkMetadataWrapper.abstractSDKOperation.createClient(config);
                 wrapper.getClientMap().put(SDKTypeEnum.PING, object);
             }
-            final String uniqueKey = config.getUniqueKey();
+            final String uniqueKey = baseSyncBase.getUnique();
             clientMap.put(uniqueKey, wrapper);
             return (T) object;
         } catch (Exception e) {
@@ -168,8 +183,9 @@ public class SDKManage {
         }
     }
 
-    public Object getClient(SDKTypeEnum clientTypeEnum, String uniqueKey) {
-        return clientMap.get(uniqueKey).getClientMap().get(clientTypeEnum);
+    @SuppressWarnings("unchecked")
+    public <T> T getClient(SDKTypeEnum clientTypeEnum, String uniqueKey) {
+        return (T) clientMap.get(uniqueKey).getClientMap().get(clientTypeEnum);
     }
 
     public ClientWrapper getClientWrapper(String uniqueKey) {
@@ -178,11 +194,12 @@ public class SDKManage {
 
     public <T> T createAbstractClientInfo(Class<?> clazz, BaseSyncBase baseSyncBase) {
         try {
-            if (ClusterSyncMetadataEnum.getClusterSyncMetadata(baseSyncBase.getClusterType()).getClusterFramework().isCAP()) {
-
+            String unique = baseSyncBase.getUnique();
+            if (!baseSyncBase.isCluster() && ClusterSyncMetadataEnum.getClusterFramework(baseSyncBase.getClusterType()).isCAP()) {
+                unique = ((RuntimeMetadata) baseSyncBase).clusterUnique();
             }
-            AbstractClientInfo abstractClientInfo = (AbstractClientInfo) clazz.newInstance();
-            abstractClientInfo.setClientWrapper(clientMap.get(baseSyncBase.getUnique()));
+            AbstractClientInfo<Object> abstractClientInfo = (AbstractClientInfo<Object>) clazz.newInstance();
+            abstractClientInfo.setClientWrapper(clientMap.get(unique));
             return (T) abstractClientInfo;
         } catch (Exception e) {
             throw new RuntimeException(e);

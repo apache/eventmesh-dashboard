@@ -1,6 +1,6 @@
 package org.apache.eventmesh.dashboard.console.modle.cluster;
 
-import java.util.List;
+import org.apache.eventmesh.dashboard.common.enums.ReplicationType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,9 +10,13 @@ import lombok.EqualsAndHashCode;
 public class CreateClusterByCompleteDataDTO extends CreateClusterBySimpleDataDTO {
 
 
-    private List<Object> runtimeCLuster;
+    private Long k8sClusterId;
 
-    private List<Object> metadataCLuster;
+    private Long deployScriptId;
 
-    private List<Object> storageCLuster;
+    private Long resourcesId;
+
+    private Long createNum;
+
+    private ReplicationType replicationType;
 }

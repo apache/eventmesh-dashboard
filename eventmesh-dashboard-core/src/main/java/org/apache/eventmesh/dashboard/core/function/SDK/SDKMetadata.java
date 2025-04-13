@@ -2,6 +2,7 @@ package org.apache.eventmesh.dashboard.core.function.SDK;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.RemotingType;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.NullCreateSDKConfig;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -10,6 +11,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
+/**
+ * @author hahaha
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -23,7 +27,7 @@ public @interface SDKMetadata {
 
     SDKTypeEnum[] sdkTypeEnum();
 
-    Class<?> config();
+    Class<?> config() default NullCreateSDKConfig.class;
 
     /**
      * @return

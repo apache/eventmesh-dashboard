@@ -12,9 +12,9 @@ public class DatabaseAndMetadataMapper {
 
     private MetadataType metaType;
 
-    private Class<?> databaseClass;
+    private Class<?> databaseHandlerClass;
 
-    private Class<?> metadataClass;
+    private Class<?> metadataHandlerClass;
 
     private ConvertMetaData<?, ?> convertMetaData;
 

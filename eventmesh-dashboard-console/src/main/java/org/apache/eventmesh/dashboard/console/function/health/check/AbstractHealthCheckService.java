@@ -59,11 +59,11 @@ public abstract class AbstractHealthCheckService<T> extends AbstractClientInfo<T
     }
 
     @Override
-    public void init() {
+    public void init() throws Exception {
     }
 
     @Override
-    public void destroy() {
+    public void destroy() throws Exception{
 
     }
 }

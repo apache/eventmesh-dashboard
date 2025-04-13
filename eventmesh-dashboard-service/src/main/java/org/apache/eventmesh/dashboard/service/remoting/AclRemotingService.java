@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.service.remoting;
 
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.CreateAclRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.CreateAclResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.DeleteAclRequest;
@@ -29,9 +31,12 @@ import org.apache.eventmesh.dashboard.common.model.remoting.acl.GetAclsResult;
  */
 public interface AclRemotingService {
 
+    @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
     CreateAclResult createAcl(CreateAclRequest createAclRequest);
 
+    @RemotingServiceMethodMapper(RemotingActionType.DELETE)
     DeleteAclResult deleteAcl(DeleteAclRequest deleteAclRequest);
 
+    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
     GetAclsResult getAllAcls(GetAcls2Request getAclsRequest);
 }

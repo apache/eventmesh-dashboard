@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BaseSyncBase extends BaseClusterIdBase {
+public abstract class BaseSyncBase extends BaseClusterIdBase {
 
 
     private ClusterTrusteeshipType trusteeshipType;
@@ -25,6 +25,7 @@ public class BaseSyncBase extends BaseClusterIdBase {
 
     private SyncErrorType syncErrorType;
 
+    private String config;
 
     /**
      * 上线时间

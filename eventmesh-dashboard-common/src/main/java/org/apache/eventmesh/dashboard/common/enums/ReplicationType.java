@@ -7,6 +7,8 @@ public enum ReplicationType {
     MAIN,
 
     SLAVE,
+
+    MAIN_SLAVE,
     ;
 
 
@@ -22,4 +24,8 @@ public enum ReplicationType {
         return this == SLAVE;
     }
 
+
+    public boolean isMainSlave() {
+        return this == MAIN_SLAVE;
+    }
 }

@@ -31,11 +31,21 @@ public class ClusterEntity extends BaseSyncEntity {
 
     private String name;
 
+    private Long deployScriptId;
+
+    private Long deployScriptName;
+
+    private Long deployScriptVersion;
+
     private String version;
 
     private String jmxProperties;
 
+    private String config;
+
     private String description;
+
+    private Integer runtimeIndex;
 
     private Integer authType;
 

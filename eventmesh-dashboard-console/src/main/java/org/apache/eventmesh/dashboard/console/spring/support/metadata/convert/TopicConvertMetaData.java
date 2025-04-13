@@ -1,8 +1,8 @@
 package org.apache.eventmesh.dashboard.console.spring.support.metadata.convert;
 
-import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
-import org.apache.eventmesh.dashboard.console.spring.support.metadata.TopicMetadata;
 import org.apache.eventmesh.dashboard.common.model.ConvertMetaData;
+import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

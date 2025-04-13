@@ -42,6 +42,7 @@ public class ClusterController {
 
 
 
+
     @GetMapping("queryHomeClusterData")
     public GetClusterBaseMessageVO queryHomeClusterData(@RequestBody @Validated ClusterIdDTO clusterIdDTO) {
         return clusterService.getClusterBaseMessage(clusterIdDTO);

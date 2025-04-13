@@ -19,8 +19,9 @@ package org.apache.eventmesh.dashboard.console.service.message.impl;
 
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
@@ -69,17 +70,17 @@ public class TopicServiceImpl implements TopicService {
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setId(topicId);
         topicEntity = this.selectTopicById(topicEntity);
-        GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
-        groupMemberEntity.setClusterId(topicEntity.getClusterId());
-        groupMemberEntity.setTopicName(topicEntity.getTopicName());
-        List<String> groupNamelist = oprGroupMemberMapper.selectGroupNameByTopicName(groupMemberEntity);
+        SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
+        subscriptionEntity.setClusterId(topicEntity.getClusterId());
+        subscriptionEntity.setTopicName(topicEntity.getTopicName());
+        List<String> groupNamelist = oprGroupMemberMapper.selectGroupNameByTopicName(subscriptionEntity);
         ArrayList<TopicDetailGroupVO> topicDetailGroupVOList = new ArrayList<>();
         TopicEntity finalTopicEntity = topicEntity;
         groupNamelist.forEach(n -> {
             TopicDetailGroupVO topicDetailGroupVO = new TopicDetailGroupVO();
             topicDetailGroupVO.setGroupName(n);
-            groupMemberEntity.setGroupName(n);
-            List<String> list = oprGroupMemberMapper.selectTopicsByGroupNameAndClusterId(groupMemberEntity);
+            subscriptionEntity.setGroupName(n);
+            List<String> list = oprGroupMemberMapper.selectTopicsByGroupNameAndClusterId(subscriptionEntity);
             topicDetailGroupVO.setTopics(list);
             GroupEntity groupEntity = new GroupEntity();
             groupEntity.setClusterId(finalTopicEntity.getClusterId());
@@ -99,10 +100,17 @@ public class TopicServiceImpl implements TopicService {
         topicMapper.addTopic(topicEntity);
     }
 
+
     @Override
     public void batchInsert(List<TopicEntity> topicEntities) {
         topicMapper.batchInsert(topicEntities);
     }
+
+    public List<RuntimeEntity>  queryRuntimeByBaseSyncEntity(List<TopicEntity> topicName) {
+
+        return null;
+    }
+
 
     @Override
     public List<TopicEntity> selectAll() {
@@ -112,10 +120,9 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public void addTopic(TopicEntity topicEntity) {
-        GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
-        groupMemberEntity.setTopicName(topicEntity.getTopicName());
-        groupMemberEntity.setState("active");
-        oprGroupMemberMapper.updateMemberByTopic(groupMemberEntity);
+        SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
+        subscriptionEntity.setTopicName(topicEntity.getTopicName());
+        oprGroupMemberMapper.updateMemberByTopic(subscriptionEntity);
         topicMapper.addTopic(topicEntity);
     }
 
@@ -125,8 +132,8 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public void deleteTopicById(TopicEntity topicEntity) {
-        topicMapper.deleteTopic(topicEntity);
+    public Integer deleteTopicById(TopicEntity topicEntity) {
+        return topicMapper.deleteTopicById(topicEntity);
     }
 
     @Override
@@ -136,7 +143,7 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Override
-    public Integer deleteTopic(TopicEntity topicEntity) {
+    public Integer deleteTopicByRuntimeIdAndTopicName(List<TopicEntity> topicEntity) {
         return topicMapper.deleteTopic(topicEntity);
     }
 

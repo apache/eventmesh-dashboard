@@ -21,6 +21,7 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
 
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,12 @@ public interface ClusterService {
 
     boolean nameExist(ClusterEntity clusterEntity);
 
+    ClusterEntity queryClusterById(ClusterEntity clusterEntity);
+
+    List<ClusterEntity> queryStorageByClusterId(ClusterEntity clusterEntity);
+
+    List<ClusterEntity> queryAllSubClusterByClusterId(ClusterEntity clusterEntity);
+
     void createCluster(ClusterEntity clusterEntity);
 
     GetClusterBaseMessageVO getClusterBaseMessage(ClusterIdDTO clusterIdDTO);
@@ -39,7 +46,7 @@ public interface ClusterService {
 
     Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO);
 
-    Integer batchInsert(List<ClusterEntity> clusterEntities);
+    Integer batchInsert(List<ClusterEntity> clusterEntities, ClusterEntity clusterEntity);
 
     List<ClusterEntity> selectAll();
 
@@ -49,11 +56,12 @@ public interface ClusterService {
 
     List<ClusterEntity> selectAllCluster();
 
-    ClusterEntity selectClusterById(ClusterEntity cluster);
 
     Integer updateClusterById(ClusterEntity cluster);
 
     Integer deactivate(ClusterEntity cluster);
 
-    List<ClusterEntity> selectByUpdateTime(ClusterEntity clusterEntity);
+    List<ClusterEntity> queryByUpdateTime(ClusterEntity clusterEntity);
+
+    Deque<Integer> getIndex(ClusterEntity clusterEntity);
 }

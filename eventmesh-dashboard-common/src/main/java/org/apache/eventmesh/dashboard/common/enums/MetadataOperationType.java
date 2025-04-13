@@ -22,9 +22,9 @@ import static org.apache.eventmesh.dashboard.common.enums.MetadataType.GROUP;
 import static org.apache.eventmesh.dashboard.common.enums.MetadataType.OFFSET;
 import static org.apache.eventmesh.dashboard.common.enums.MetadataType.RUNTIME;
 import static org.apache.eventmesh.dashboard.common.enums.MetadataType.TOPIC;
+import static org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType.ALL;
 import static org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType.ALL_RUNTIME;
 import static org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType.CLUSTER;
-import static org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType.ALL;
 
 import org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType;
 
@@ -34,6 +34,7 @@ import java.util.Map;
 /**
  * 操作在不同的集群，有着不同的行为. 只是规范了，需要把操作时，需要定义操作范围。 在集群修改的时候，需要把整个集群中所有节点的配置显示出来，才修改。 所以查看维度。
  */
+@Deprecated
 public enum MetadataOperationType {
 
     RUNTIME_CONFIG_UPDATE(RUNTIME, CONFIG,

@@ -109,7 +109,7 @@ create table config
     edit           int           not null default 1 comment '是否可以编辑 1 不可编辑（程序获取） 2 可编辑',
     create_time    timestamp     not null default current_timestamp comment '创建时间',
     update_time    timestamp     not null default current_timestamp on update current_timestamp comment '修改时间',
-    is_modify      int           not null default 0,
+    is_modify      int           not null default 0 comment '是否修改元版本数据',
     already_update int           not null default 0 comment '0:no,1:yes',
     is_delete      int           not null default 0 comment '0',
     unique key uniq_cluster_id_instance_type_instance_id_config_name (instance_id, config_name, instance_type, cluster_id)

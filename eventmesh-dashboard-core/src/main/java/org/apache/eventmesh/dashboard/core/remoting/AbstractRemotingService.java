@@ -26,7 +26,8 @@ import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 public abstract class AbstractRemotingService<T> extends AbstractClientInfo<T> {
 
 
-    public SDKTypeEnum getSDKTypeEnum() {
+    @Override
+    protected SDKTypeEnum getSDKTypeEnum() {
         return SDKTypeEnum.ADMIN;
     }
 

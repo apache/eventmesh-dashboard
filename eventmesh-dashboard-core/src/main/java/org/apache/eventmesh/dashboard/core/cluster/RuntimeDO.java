@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class RuntimeDO extends RuntimeBaseDO<RuntimeMetadata, Object, ConfigMetadata> {
 
 

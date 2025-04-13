@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.annotation;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckTypeEnum;
 
 import java.lang.annotation.ElementType;
@@ -33,13 +34,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HealthCheckType {
 
-    /**
-     * type of resource. runtime, topic etc.
-     */
-    String type();
 
-    /**
-     * subtype of resource. For resource storage, it can be redis, rocketmq etc.
-     */
-    String subType() default "";
+    ClusterType[] clusterType();
+
+
+    HealthCheckTypeEnum healthType() default HealthCheckTypeEnum.PING;
 }

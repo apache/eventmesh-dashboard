@@ -19,59 +19,35 @@ package org.apache.eventmesh.dashboard.console.function.health.check.impl.storag
 
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.SDKManage;
-import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq.RocketMQRemotingSDKOperation.DefaultRemotingClient;
 
 import org.apache.rocketmq.remoting.InvokeCallback;
-import org.apache.rocketmq.remoting.RemotingClient;
 import org.apache.rocketmq.remoting.netty.ResponseFuture;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 import org.apache.rocketmq.remoting.protocol.RequestCode;
 
-import java.util.Objects;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Rocketmq4BrokerCheck extends AbstractHealthCheckService {
+public class Rocketmq4BrokerCheck extends AbstractHealthCheckService<DefaultRemotingClient> {
 
     private CreateRocketmqConfig config;
 
 
-
     @Override
-    public void doCheck(HealthCheckCallback callback) {
-        try {
-            RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_BROKER_RUNTIME_INFO, null);
-            DeRemotingClient client = (RemotingClient) SDKManage.getInstance().getClient(SDKTypeEnum.PING, config.getUniqueKey());
-
-                new InvokeCallback() {
-                    @Override
-                    public void operationComplete(ResponseFuture responseFuture) {
-                        if (responseFuture.isSendRequestOK()) {
-                            callback.onSuccess();
-                        } else {
-                            callback.onFail(new RuntimeException("RocketmqNameServerCheck failed caused by " + responseFuture.getCause()));
-                        }
-                    }
-
-                });
-        } catch (Exception e) {
-            log.error("RocketmqCheck failed.", e);
-            callback.onFail(e);
-        }
+    public void doCheck(HealthCheckCallback callback) throws Exception {
+        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_BROKER_RUNTIME_INFO, null);
+        this.getClient().invokeAsync(request, 3000, new InvokeCallback() {
+            @Override
+            public void operationComplete(ResponseFuture responseFuture) {
+                if (responseFuture.isSendRequestOK()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFail(new RuntimeException("RocketmqNameServerCheck failed caused by " + responseFuture.getCause()));
+                }
+            }
+        });
     }
 
-    @Override
-    public void init() {
-
-    }
-
-
-    @Override
-    public void destroy() {
-        //SDKManage.getInstance().deleteClient(SDKTypeEnum.STORAGE_ROCKETMQ_REMOTING, config.getUniqueKey());
-    }
 }

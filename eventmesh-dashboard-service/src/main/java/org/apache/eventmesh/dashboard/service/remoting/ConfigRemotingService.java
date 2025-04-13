@@ -17,7 +17,9 @@
 
 package org.apache.eventmesh.dashboard.service.remoting;
 
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
 import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.DeleteConfigRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigRequest;
@@ -31,17 +33,20 @@ import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResul
 public interface ConfigRemotingService {
 
 
+    @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
     BaseGlobalResult addConfig(AddConfigRequest addConfigRequest);
 
     default BaseGlobalResult updateConfig(UpdateConfigRequest updateConfigRequest) {
         return addConfig(updateConfigRequest);
     }
 
+    @RemotingServiceMethodMapper(RemotingActionType.DELETE)
     default BaseGlobalResult deleteConfig(DeleteConfigRequest deleteConfigRequest) {
         return addConfig(deleteConfigRequest);
     }
 
     GetTopicsResult getConfig(GetConfigRequest getConfigRequest);
 
+    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
     GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest);
 }

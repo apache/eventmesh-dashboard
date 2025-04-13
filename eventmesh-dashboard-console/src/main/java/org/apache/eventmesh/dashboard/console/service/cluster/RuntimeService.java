@@ -21,6 +21,7 @@ package org.apache.eventmesh.dashboard.console.service.cluster;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Runtime data service
@@ -32,6 +33,10 @@ public interface RuntimeService {
     List<RuntimeEntity> getRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity);
 
     List<RuntimeEntity> getRuntimeByClusterRelationship(RuntimeEntity runtimeEntity);
+
+    List<RuntimeEntity> queryOnlyRuntimeByClusterId(RuntimeEntity runtimeEntity);
+
+    Map<Long, List<RuntimeEntity>> queryMetaRuntimeByClusterId(RuntimeEntity runtimeEntity);
 
     void batchInsert(List<RuntimeEntity> runtimeEntities);
 

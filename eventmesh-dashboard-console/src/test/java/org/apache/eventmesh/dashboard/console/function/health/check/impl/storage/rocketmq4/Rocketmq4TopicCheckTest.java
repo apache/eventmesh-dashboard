@@ -18,7 +18,6 @@
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4;
 
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -37,11 +36,7 @@ class Rocketmq4TopicCheckTest {
     @BeforeEach
     public void init() throws InterruptedException {
         try {
-            HealthCheckObjectConfig config = new HealthCheckObjectConfig();
-            config.getRocketmqConfig().setBrokerUrl("127.0.0.1:10911");
-            config.getRocketmqConfig().setNameServerUrl("127.0.0.1:9876");
-            config.setRequestTimeoutMillis(1000L);
-            rocketmqCheck = new Rocketmq4TopicCheck(config);
+            rocketmqCheck = new Rocketmq4TopicCheck();
         } catch (Exception e) {
             log.error("Rocketmq4TopicCheck failed.", e);
         }

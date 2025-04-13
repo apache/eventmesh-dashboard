@@ -40,4 +40,9 @@ public class ConfigMetadata extends BaseRuntimeIdBase {
 
     private Long instanceId;
 
+
+    @Override
+    public String nodeUnique() {
+        return this.configKey;
+    }
 }

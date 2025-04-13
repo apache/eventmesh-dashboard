@@ -34,6 +34,7 @@ public class OperationRange {
 
     /**
      * 依据范围查询数据
+     *  集群， runtime ， topic ，SUBSCRIBER ， SUBSCRIBER_QUEUE
      */
     public enum OperationRangeType {
 

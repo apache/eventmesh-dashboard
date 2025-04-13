@@ -14,6 +14,10 @@ import lombok.Data;
 @Builder
 public class ClusterSyncMetadata {
 
+    public static final ClusterSyncMetadata EMPTY_OBJECT = new ClusterSyncMetadata(new ArrayList<>(), ReplicationDimension.NOT, ClusterFramework.NOT);
+
+    public static List<MetadataType> TEST_ONE = new ArrayList<>();
+
     public static List<MetadataType> META = new ArrayList<>();
 
     public static List<MetadataType> STORAGE = new ArrayList<>();
@@ -23,6 +27,9 @@ public class ClusterSyncMetadata {
     public static List<MetadataType> AUTH = new ArrayList<>();
 
     static {
+
+        TEST_ONE.add(MetadataType.TOPIC);
+
         META.add(MetadataType.RUNTIME);
 
         STORAGE.add(MetadataType.CONFIG);

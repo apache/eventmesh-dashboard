@@ -18,7 +18,6 @@
 package org.apache.eventmesh.dashboard.console.function.health.check;
 
 import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 /**
  *
@@ -31,6 +30,6 @@ public interface ClusterHealthCheckService {
     AbstractTopicHealthCheckService register(BaseSyncBase baseSyncBase);
 
 
-    void unRegister(HealthCheckObjectConfig healthCheckObjectConfig);
+    void unRegister(BaseSyncBase baseSyncBase);
 
 }

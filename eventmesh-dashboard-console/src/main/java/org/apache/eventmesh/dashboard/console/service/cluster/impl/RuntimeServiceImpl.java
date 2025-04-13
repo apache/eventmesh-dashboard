@@ -24,7 +24,10 @@ import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +50,24 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public List<RuntimeEntity> getRuntimeByClusterRelationship(RuntimeEntity runtimeEntity) {
         return this.runtimeMapper.getRuntimeByClusterRelationship(runtimeEntity);
+    }
+
+
+
+    @Override
+    public List<RuntimeEntity> queryOnlyRuntimeByClusterId(RuntimeEntity runtimeEntity){
+        return null;
+    }
+
+    @Override
+    public Map<Long, List<RuntimeEntity>> queryMetaRuntimeByClusterId(RuntimeEntity runtimeEntity) {
+        List<RuntimeEntity> runtimeEntityList = this.getRuntimeByClusterRelationship(runtimeEntity);
+
+        Map<Long, List<RuntimeEntity>> runtimeEntityMap = new HashMap<Long, List<RuntimeEntity>>();
+        runtimeEntityList.forEach(entity -> {
+            runtimeEntityMap.computeIfAbsent(entity.getClusterId(), k -> new ArrayList<>()).add(entity);
+        });
+        return runtimeEntityMap;
     }
 
     @Override

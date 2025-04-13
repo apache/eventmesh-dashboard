@@ -1,6 +1,6 @@
 package org.apache.eventmesh.dashboard.common.model.base;
 
-public class BaseRuntimeIdBase extends BaseClusterIdBase {
+public abstract class BaseRuntimeIdBase extends BaseClusterIdBase {
 
     private Long runtimeId;
 

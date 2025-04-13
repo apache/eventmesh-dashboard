@@ -17,7 +17,11 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.RemotingType;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateEtcdConfig;
 
 import java.time.Duration;
@@ -27,6 +31,8 @@ import io.etcd.jetcd.Client;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@SDKMetadata(clusterType = {ClusterType.EVENTMESH_META_ETCD}, remotingType = RemotingType.EVENT_MESH_ETCD, sdkTypeEnum = {SDKTypeEnum.ADMIN,
+    SDKTypeEnum.PING})
 public class EtcdSDKOperation extends AbstractSDKOperation<Client, CreateEtcdConfig> {
 
     @Override

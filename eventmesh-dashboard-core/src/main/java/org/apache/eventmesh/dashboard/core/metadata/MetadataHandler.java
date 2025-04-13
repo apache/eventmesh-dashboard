@@ -17,59 +17,12 @@
 
 package org.apache.eventmesh.dashboard.core.metadata;
 
-import java.util.List;
-
 /**
  * @param <T> metadata type or entity type, {@code <T>} is the source type of handler, there should be a converter in the handler to convert
  *            {@code <T>} to the target type.<p> method in this interface should be implemented as async method, if the method is eventmesh manage
  *            operation.
  */
-public interface MetadataHandler<T> extends DataMetadataHandler<T> {
+public interface MetadataHandler<T> extends DataMetadataHandler<T>, UpdateMetadataHandler<T> {
 
-
-    //metaData: topic, center, etc. add meta is to create a topic.
-    void addMetadata(T meta);
-
-    default void addMetadata(List<T> meta) {
-        if (meta != null) {
-            meta.forEach(this::addMetadata);
-        }
-    }
-
-    default void addMetadataObject(List<Object> meta) {
-        if (meta != null) {
-            meta.forEach(t -> addMetadata((T) t));
-        }
-    }
-
-    default void replaceMetadata(List<Object> meta) {
-        if (meta != null) {
-            deleteMetadata((List<T>) meta);
-            addMetadataObject(meta);
-        }
-    }
-
-    default void updateMetadata(T meta) {
-        this.addMetadata(meta);
-    }
-
-    /**
-     * If this handler is db handler, do implement this method to improve performance
-     *
-     * @param meta
-     */
-    default void updateMetadata(List<T> meta) {
-        if (meta != null) {
-            meta.forEach(this::updateMetadata);
-        }
-    }
-
-    void deleteMetadata(T meta);
-
-    default void deleteMetadata(List<T> meta) {
-        if (meta != null) {
-            meta.forEach(this::deleteMetadata);
-        }
-    }
 
 }

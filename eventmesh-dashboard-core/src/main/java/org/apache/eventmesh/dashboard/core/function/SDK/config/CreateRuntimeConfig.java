@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateRuntimeConfig implements CreateSDKConfig {
+public class CreateRuntimeConfig extends AbstractSimpleCreateSDKConfig {
 
     // 127.0.0.1:10105;127.0.0.2:10105
     private String runtimeServerAddress;

@@ -6,9 +6,21 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
 
+
     private List<NetAddress> netAddresseList = new CopyOnWriteArrayList<>();
 
+    /**
+     * TODO
+     * TODO
+     * TODO 有意义？
+     *  设定次字段的时候，是为了解决 kafka 老版本操作的时候是 需要操作zk。 目前还没解决这个问题
+     */
     private List<NetAddress> metaAddressList = new CopyOnWriteArrayList<>();
+
+
+    public boolean isNullAddress() {
+        return netAddresseList.isEmpty();
+    }
 
     public void addNetAddress(NetAddress netAddress) {
         this.netAddresseList.add(netAddress);
@@ -26,6 +38,8 @@ public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
         this.metaAddressList.remove(netAddress);
     }
 
+
+
     private String doUniqueKey(List<NetAddress> netAddresseList) {
         StringBuffer sb = new StringBuffer();
         netAddresseList.forEach(netAddress -> {
@@ -33,6 +47,11 @@ public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
             sb.append(";");
         });
         return sb.toString();
+    }
+
+    @Override
+    protected String uniqueKey() {
+        return "m_";
     }
 
     @Override

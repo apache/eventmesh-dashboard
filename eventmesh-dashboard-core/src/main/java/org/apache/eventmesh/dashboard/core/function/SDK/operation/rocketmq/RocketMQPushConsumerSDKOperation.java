@@ -17,7 +17,11 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.RemotingType;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqConsumerSDKConfig;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -25,10 +29,11 @@ import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@SDKMetadata(clusterType = ClusterType.RUNTIME_ROCKETMQ_BROKER, remotingType = RemotingType.ROCKETMQ, sdkTypeEnum = SDKTypeEnum.CONSUMER)
 public class RocketMQPushConsumerSDKOperation extends AbstractSDKOperation<DefaultMQPushConsumer, CreateRocketmqConsumerSDKConfig> {
 
     @Override
-    public DefaultMQPushConsumer createClient(CreateRocketmqConsumerSDKConfig clientConfig) throws  Exception {
+    public DefaultMQPushConsumer createClient(CreateRocketmqConsumerSDKConfig clientConfig) throws Exception {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(clientConfig.getConsumerGroup());
         consumer.setMessageModel(clientConfig.getMessageModel());
         consumer.setNamesrvAddr(clientConfig.doUniqueKey());

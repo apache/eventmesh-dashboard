@@ -17,7 +17,11 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.RemotingType;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRemotingConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq.RocketMQRemotingSDKOperation.DefaultRemotingClient;
 
@@ -37,6 +41,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+@SDKMetadata(clusterType = {ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE,
+    ClusterType.STORAGE_ROCKETMQ_NAMESERVER, ClusterType.STORAGE_ROCKETMQ_BROKER_RAFT}, remotingType = RemotingType.ROCKETMQ, sdkTypeEnum = {
+    SDKTypeEnum.ADMIN, SDKTypeEnum.PING})
 public class RocketMQRemotingSDKOperation extends AbstractSDKOperation<DefaultRemotingClient, CreateRemotingConfig> {
 
     private RemotingClient remotingClient;

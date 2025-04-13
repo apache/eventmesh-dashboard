@@ -17,9 +17,9 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.acl;
 
-import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 
-public class GetAcls2Request extends Global2Request {
+public class GetAcls2Request extends AbstractGlobal2Request<Object> {
 
 
 }

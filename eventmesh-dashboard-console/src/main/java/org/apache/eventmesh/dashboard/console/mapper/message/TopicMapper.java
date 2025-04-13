@@ -71,7 +71,11 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     void updateTopicCreateProgress(TopicEntity topicEntity);
 
     @Update("UPDATE `topic` SET status=0 WHERE id=#{id}")
-    Integer deleteTopic(TopicEntity topicEntity);
+    Integer deleteTopic(List<TopicEntity> topicEntity);
+
+
+    @Update("UPDATE `topic` SET status=0 WHERE id=#{id}")
+    Integer deleteTopicById(TopicEntity topicEntity);
 
     @Insert({
         "<script>",
@@ -89,12 +93,17 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addTopic(TopicEntity topicEntity);
 
+
+    @Override
     void syncInsert(List<TopicEntity> entityList);
 
+    @Override
     void syncUpdate(List<TopicEntity> entityList);
 
+    @Override
     void syncDelete(List<TopicEntity> entityList);
 
+    @Override
     List<TopicEntity> syncGet(TopicEntity topicEntity);
 
 }

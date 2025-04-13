@@ -25,13 +25,18 @@ import org.apache.eventmesh.client.tcp.impl.cloudevent.CloudEventTCPClient;
 import org.apache.eventmesh.client.tcp.impl.eventmeshmessage.EventMeshMessageTCPClient;
 import org.apache.eventmesh.client.tcp.impl.openmessage.OpenMessageTCPClient;
 import org.apache.eventmesh.common.Constants;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.RemotingType;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRuntimeConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.wrapper.RuntimeSDKWrapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@SDKMetadata(clusterType = {ClusterType.EVENTMESH_RUNTIME}, remotingType = RemotingType.EVENT_MESH_RUNTIME, sdkTypeEnum = SDKTypeEnum.ALL)
 public class RuntimeSDKOperation extends AbstractSDKOperation<RuntimeSDKWrapper, CreateRuntimeConfig> {
 
     private final RuntimeTcpCloudEventSDKOperation tcpCloudEventSDKOperation = new RuntimeTcpCloudEventSDKOperation();

@@ -17,7 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4;
 
-import org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckTypeEnum;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
@@ -31,7 +32,7 @@ import org.apache.rocketmq.remoting.protocol.RequestCode;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@HealthCheckType(type = HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE, subType = HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_ROCKETMQ)
+@HealthCheckType(clusterType = {ClusterType.STORAGE_ROCKETMQ_NAMESERVER}, healthType = HealthCheckTypeEnum.PING)
 public class Rocketmq4NameServerCheck extends AbstractHealthCheckService<DefaultRemotingClient> {
 
 

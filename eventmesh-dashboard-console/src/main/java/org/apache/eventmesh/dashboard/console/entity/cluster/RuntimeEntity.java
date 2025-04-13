@@ -40,9 +40,15 @@ public class RuntimeEntity extends BaseSyncEntity {
 
     private Integer jmxPort;
 
+    private Integer adminPort;
+
+    private Integer index;
+
 
     private String rack;
 
     private String endpointMap;
+
+    private String deployType;
 
 }

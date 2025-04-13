@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.dashboard.service.remoting;
 
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 import org.apache.eventmesh.dashboard.common.model.remoting.subscription.GetSubscriptionRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.subscription.GetSubscriptionResult;
 
@@ -25,6 +27,7 @@ import org.apache.eventmesh.dashboard.common.model.remoting.subscription.GetSubs
  */
 public interface SubscriptionRemotingService {
 
+    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
     GetSubscriptionResult getSubscription(GetSubscriptionRequest request);
 
 }

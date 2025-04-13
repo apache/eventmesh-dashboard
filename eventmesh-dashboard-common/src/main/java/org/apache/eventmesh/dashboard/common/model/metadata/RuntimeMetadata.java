@@ -39,8 +39,17 @@ public class RuntimeMetadata extends BaseSyncBase {
     private Long storageClusterId;
 
 
+    public String clusterUnique() {
+        return ClusterMetadata.class.getSimpleName() + "-" + this.getClusterId();
+    }
+
+    @Override
     public boolean isCluster() {
         return false;
     }
 
+    @Override
+    public String nodeUnique() {
+        return this.host + "-" + this.port;
+    }
 }

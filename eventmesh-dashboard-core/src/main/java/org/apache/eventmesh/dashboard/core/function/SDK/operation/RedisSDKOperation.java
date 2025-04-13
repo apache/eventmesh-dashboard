@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.RemotingType;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
@@ -30,8 +31,8 @@ import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 
 
-@SDKMetadata(clusterType = {}, remotingType = RemotingType.REDIS, sdkTypeEnum = {SDKTypeEnum.ADMIN, SDKTypeEnum.CONSUMER,
-    SDKTypeEnum.PRODUCER}, config = CreateRedisConfig.class)
+@SDKMetadata(clusterType = {
+    ClusterType.STORAGE_REDIS_BROKER}, remotingType = RemotingType.REDIS, sdkTypeEnum = SDKTypeEnum.ALL, config = CreateRedisConfig.class)
 public class RedisSDKOperation extends AbstractSDKOperation<StatefulRedisConnection<String, String>, CreateRedisConfig> {
 
     @Override

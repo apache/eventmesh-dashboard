@@ -22,13 +22,15 @@ package org.apache.eventmesh.dashboard.core.function.SDK;
  *    META 与 RUNTIME 有相同操作，如何确定.
  *    同时多协议，如何处理。
  *    TPC的优先级最高，那如何确定端口。
- *
+ * <p>
  * TODO 关于订阅与发布
  *    消费组 与 生产组 的 group name 是否随机
  *    RocketMQ 的 namespace 如何处理
  *    PRODUCER,CONSUMER,操作完之后，是否要删除 生产与消费相关信息
  */
 public enum SDKTypeEnum {
+
+    ALL,
 
     PING,
 

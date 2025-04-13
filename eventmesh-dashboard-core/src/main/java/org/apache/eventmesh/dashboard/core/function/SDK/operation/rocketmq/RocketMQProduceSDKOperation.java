@@ -17,7 +17,11 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.RemotingType;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqProduceSDKConfig;
 
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -25,6 +29,7 @@ import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@SDKMetadata(clusterType = ClusterType.RUNTIME_ROCKETMQ_BROKER, remotingType = RemotingType.ROCKETMQ, sdkTypeEnum = SDKTypeEnum.PRODUCER)
 public class RocketMQProduceSDKOperation extends AbstractSDKOperation<DefaultMQProducer, CreateRocketmqProduceSDKConfig> {
 
     @Override

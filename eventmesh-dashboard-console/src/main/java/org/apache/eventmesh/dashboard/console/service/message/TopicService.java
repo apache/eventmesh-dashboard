@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.service.message;
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
 
@@ -31,7 +32,10 @@ public interface TopicService {
 
     void createTopic(TopicEntity topicEntity);
 
+
     void batchInsert(List<TopicEntity> topicEntities);
+
+    List<RuntimeEntity> queryRuntimeByBaseSyncEntity(List<TopicEntity> topicName);
 
     List<TopicEntity> selectAll();
 
@@ -39,11 +43,11 @@ public interface TopicService {
 
     void updateTopic(TopicEntity topicEntity);
 
-    void deleteTopicById(TopicEntity topicEntity);
+    Integer deleteTopicById(TopicEntity topicEntity);
 
     TopicEntity selectTopicById(TopicEntity topicEntity);
 
-    Integer deleteTopic(TopicEntity topicEntity);
+    Integer deleteTopicByRuntimeIdAndTopicName(List<TopicEntity> topicEntity);
 
     List<TopicEntity> selectTopiByCluster(TopicEntity topicEntity);
 

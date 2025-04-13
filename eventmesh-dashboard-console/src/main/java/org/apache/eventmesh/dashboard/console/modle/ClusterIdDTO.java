@@ -20,9 +20,11 @@ package org.apache.eventmesh.dashboard.console.modle;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ClusterIdDTO {
+@EqualsAndHashCode(callSuper = false)
+public class ClusterIdDTO extends OrganizationIdDTO {
 
     @NotNull
     private Long clusterId;

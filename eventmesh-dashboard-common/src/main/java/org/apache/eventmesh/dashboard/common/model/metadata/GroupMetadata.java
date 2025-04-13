@@ -17,12 +17,14 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GroupMetadata extends MetadataConfig {
+public class GroupMetadata extends BaseRuntimeIdBase {
 
     private String name;
 
@@ -34,8 +36,9 @@ public class GroupMetadata extends MetadataConfig {
 
     private String state;
 
+
     @Override
-    public String getUnique() {
-        return name;
+    public String nodeUnique() {
+        return this.name;
     }
 }

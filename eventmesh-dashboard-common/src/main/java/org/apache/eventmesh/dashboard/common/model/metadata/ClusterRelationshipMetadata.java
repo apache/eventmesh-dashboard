@@ -25,7 +25,7 @@ import lombok.EqualsAndHashCode;
 
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class ClusterRelationshipMetadata extends BaseRuntimeIdBase {
 
     private ClusterType clusterType;
@@ -35,4 +35,8 @@ public class ClusterRelationshipMetadata extends BaseRuntimeIdBase {
     private ClusterType relationshipType;
 
 
+    @Override
+    public String nodeUnique() {
+        return this.relationshipId + "-" + this.getClusterId();
+    }
 }

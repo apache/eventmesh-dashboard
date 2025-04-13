@@ -29,9 +29,13 @@ public abstract class AbstractCreateSDKConfig implements CreateSDKConfig {
 
     private String secretKey;
 
+    private String config;
+
+
+    protected abstract String uniqueKey();
 
     public String getUniqueKey() {
-        return this.keyMode ? this.key : this.doUniqueKey();
+        return this.keyMode ? this.uniqueKey() + this.key : this.doUniqueKey();
     }
 
     abstract String doUniqueKey();

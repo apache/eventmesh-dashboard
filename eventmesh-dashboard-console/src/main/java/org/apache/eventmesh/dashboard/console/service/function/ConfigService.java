@@ -31,6 +31,8 @@ import java.util.Map;
  */
 public interface ConfigService {
 
+    List<ConfigEntity> queryByClusterAndInstanceId(ConfigEntity configEntity);
+
     List<ConfigEntity> selectToFront(Long instanceId, Integer type, GetConfigsListDTO getConfigsListDTO);
 
     void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId, List<ChangeConfigDTO> changeConfigDTOList);

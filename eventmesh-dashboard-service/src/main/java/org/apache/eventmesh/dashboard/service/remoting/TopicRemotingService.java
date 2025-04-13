@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.dashboard.service.remoting;
 
-import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMetadata;
-import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopic2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopicResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.DeleteTopicRequest;
@@ -29,14 +29,15 @@ import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResul
 /**
  * implement this interface to operate the eventmesh cluster
  */
-@RemotingServiceMetadata(metadataType = MetadataType.TOPIC)
 public interface TopicRemotingService {
 
-    //@RemotingServiceMethodMapper()
+    @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
     CreateTopicResult createTopic(CreateTopic2Request createTopicRequest);
 
+    @RemotingServiceMethodMapper(RemotingActionType.DELETE)
     DeleteTopicResult deleteTopic(DeleteTopicRequest deleteTopicRequest);
 
+    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
     GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest)
         throws Exception;
 

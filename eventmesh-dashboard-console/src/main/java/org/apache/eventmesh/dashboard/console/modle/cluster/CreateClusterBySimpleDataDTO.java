@@ -13,6 +13,8 @@ public class CreateClusterBySimpleDataDTO {
 
     private String name;
 
+    private Long currentClusterId;
+
     private Long configGatherId;
 
     private ClusterTrusteeshipType trusteeshipType;

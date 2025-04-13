@@ -48,5 +48,10 @@ public class ClientMetadata extends BaseRuntimeIdBase {
      * protocol used to connect to runtime.
      */
     private String protocol;
-    
+
+
+    @Override
+    public String nodeUnique() {
+        return this.host + "-" + this.port;
+    }
 }

@@ -26,8 +26,9 @@ public class ConfigManage {
     }
 
     private AbstractCreateSDKConfig getCreateSDKConfig(ClusterType clusterType, SDKTypeEnum sdkTypeEnum) {
-        Class<?> clazz = SDKManage.getInstance().getConfig(clusterType, sdkTypeEnum);
+
         try {
+            Class<?> clazz = SDKManage.getInstance().getConfig(clusterType, sdkTypeEnum);
             return (AbstractCreateSDKConfig) clazz.newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);

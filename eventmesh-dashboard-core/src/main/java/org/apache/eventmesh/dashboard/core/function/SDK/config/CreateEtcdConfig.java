@@ -21,7 +21,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class CreateEtcdConfig extends AbstractMultiCreateSDKConfig {
 
     private int connectTime = 10;

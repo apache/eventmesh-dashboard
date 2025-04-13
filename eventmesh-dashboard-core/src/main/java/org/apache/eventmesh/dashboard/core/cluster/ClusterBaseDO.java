@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class ClusterBaseDO<C, R extends  RuntimeBaseDO, RE, CM> extends BaseDataDO<RE, CM> {
 
 

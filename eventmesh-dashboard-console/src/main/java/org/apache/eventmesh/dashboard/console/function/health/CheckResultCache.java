@@ -19,7 +19,6 @@ package org.apache.eventmesh.dashboard.console.function.health;
 
 import org.apache.eventmesh.dashboard.common.constant.health.HealthConstant;
 import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckStatus;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -61,17 +60,17 @@ public class CheckResultCache {
         }
         description += " Latency: " + latency.toString() + "ms";
         CheckResult result = new CheckResult(status, description, LocalDateTime.now(),
-            latency, oldResult.getConfig());
+            latency);
         subMap.put(typeId, result);
     }
 
-    public void update(String type, Long typeId, HealthCheckStatus status, String resultDesc, Long latency, HealthCheckObjectConfig config) {
+    public void update1(String type, Long typeId, HealthCheckStatus status, String resultDesc, Long latency) {
         HashMap<Long, CheckResult> subMap = cacheMap.get(type);
         if (Objects.isNull(subMap)) {
             subMap = new HashMap<>();
             cacheMap.put(type, subMap);
         }
-        subMap.put(typeId, new CheckResult(status, resultDesc, LocalDateTime.now(), latency, config));
+        subMap.put(typeId, new CheckResult(status, resultDesc, LocalDateTime.now(), latency));
     }
 
     public Map<String, HashMap<Long, CheckResult>> getCacheMap() {
@@ -101,7 +100,5 @@ public class CheckResultCache {
          * latency of a health check, for example ping latency.
          */
         private Long latencyMilliSeconds;
-
-        private HealthCheckObjectConfig config;
     }
 }

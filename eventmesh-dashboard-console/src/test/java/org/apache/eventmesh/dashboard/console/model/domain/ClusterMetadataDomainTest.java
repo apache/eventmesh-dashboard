@@ -1,14 +1,21 @@
 package org.apache.eventmesh.dashboard.console.model.domain;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.console.domain.metadata.HandlerMetadataDO;
+import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterMetadataDomain;
+import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterMetadataDomain.DataHandler;
+import org.apache.eventmesh.dashboard.console.domain.metadata.MetadataAllDO;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseIdEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterMetadataDomain;
+import org.apache.eventmesh.dashboard.core.cluster.ClusterBaseDO;
+import org.apache.eventmesh.dashboard.core.cluster.ColonyDO;
+import org.apache.eventmesh.dashboard.core.cluster.RuntimeBaseDO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
@@ -16,7 +23,11 @@ import org.junit.Test;
 
 public class ClusterMetadataDomainTest {
 
-    private ClusterMetadataDomain clusterMetadataDomain = new ClusterMetadataDomain();
+    public ClusterMetadataDomain clusterMetadataDomain = new ClusterMetadataDomain();
+
+    private MetadataAllDO metadataAllDO;
+
+    private MetadataAllDO deleteMetadataAllDO;
 
     private ClusterEntity clusterEntity = new ClusterEntity();
 
@@ -32,6 +43,36 @@ public class ClusterMetadataDomainTest {
     @Before
     public void init() {
         clusterMetadataDomain.rootClusterDHO();
+        clusterMetadataDomain.useBuildConfig();
+        clusterMetadataDomain.isConsoleModel();
+        clusterMetadataDomain.setHandler(new DataHandler() {
+            @Override
+            public void registerRuntime(RuntimeEntity runtimeEntity, RuntimeBaseDO runtimeBaseDO, ColonyDO colonyDO) {
+                ClusterType clusterType = runtimeEntity.getClusterType();
+                System.out.println("registerRuntime clusterType : " + clusterType);
+            }
+
+            @Override
+            public void unRegisterRuntime(RuntimeEntity runtimeEntity, RuntimeBaseDO runtimeBaseDO, ColonyDO colonyDO) {
+                ClusterType clusterType = runtimeEntity.getClusterType();
+                System.out.println("unRegisterRuntime clusterType : " + clusterType);
+            }
+
+            @Override
+            public void registerCluster(ClusterEntity clusterEntity, ClusterBaseDO clusterBaseDO, ColonyDO colonyDO) {
+                ClusterType clusterType = clusterEntity.getClusterType();
+                System.out.println("registerCluster clusterType : " + clusterType);
+            }
+
+            @Override
+            public void unRegisterCluster(ClusterEntity clusterEntity, ClusterBaseDO clusterBaseDO, ColonyDO colonyDO) {
+                ClusterType clusterType = clusterEntity.getClusterType();
+                System.out.println("clusterType clusterType : " + clusterType);
+            }
+        });
+        metadataAllDO =
+            MetadataAllDO.builder().clusterEntityList(clusterEntityList).clusterRelationshipEntityList(clusterRelationshipEntityList)
+                .runtimeEntityList(runtimeEntityList).build();
         this.test_EventMesh_Cluster();
     }
 
@@ -40,9 +81,35 @@ public class ClusterMetadataDomainTest {
     }
 
     private void handler() {
-        clusterMetadataDomain.setClusterEntityAndDefinitionCluster(this.clusterEntityList, this.clusterRelationshipEntityList);
-        HandlerMetadataDO handlerMetadataDO = new HandlerMetadataDO();
-        clusterMetadataDomain.setRuntimeEntity(this.runtimeEntityList, handlerMetadataDO);
+        this.clusterMetadataDomain.handlerMetadata(this.metadataAllDO);
+        this.randomDelete();
+    }
+
+    private void randomDelete() {
+
+        deleteMetadataAllDO =
+            MetadataAllDO.builder()
+                .runtimeEntityList(this.deleteEntity(this.runtimeEntityList)).build();
+        this.clusterMetadataDomain.handlerMetadata(this.deleteMetadataAllDO);
+
+        deleteMetadataAllDO =
+            MetadataAllDO.builder()
+                .clusterEntityList(this.deleteEntity(this.clusterEntityList)).build();
+        this.clusterMetadataDomain.handlerMetadata(this.deleteMetadataAllDO);
+
+    }
+
+    private <T> T deleteEntity(Object object) {
+        List<BaseIdEntity> baseIdEntities = (List<BaseIdEntity>) object;
+        Random random = new Random();
+        List<BaseIdEntity> deleteBaseIdEntity = new ArrayList<>();
+        baseIdEntities.forEach((value) -> {
+            if (random.nextInt(100) < 10) {
+                value.setStatus(0L);
+                deleteBaseIdEntity.add(value);
+            }
+        });
+        return (T) deleteBaseIdEntity;
     }
 
     private void createClusterRelationshipEntity(ClusterEntity mainCluster, ClusterEntity clusterEntity) {
@@ -62,33 +129,11 @@ public class ClusterMetadataDomainTest {
         clusterEntity.setClusterType(ClusterType.EVENTMESH_CLUSTER);
         clusterEntityList.add(clusterEntity);
 
-        ClusterEntity meshCluster = new ClusterEntity();
-        meshCluster.setId(this.getId());
-        meshCluster.setClusterType(ClusterType.EVENTMESH_META_NACOS);
-        clusterEntityList.add(meshCluster);
-        this.createClusterRelationshipEntity(clusterEntity, meshCluster);
-        this.createRuntime(meshCluster);
+        this.createCluster(clusterEntity, ClusterType.EVENTMESH_META_NACOS);
+        this.createCluster(clusterEntity, ClusterType.EVENTMESH_META_NACOS);
 
-        meshCluster = new ClusterEntity();
-        meshCluster.setId(this.getId());
-        meshCluster.setClusterType(ClusterType.EVENTMESH_META_NACOS);
-        clusterEntityList.add(meshCluster);
-        this.createClusterRelationshipEntity(clusterEntity, meshCluster);
-        this.createRuntime(meshCluster);
-
-        ClusterEntity runtimeCluster = new ClusterEntity();
-        runtimeCluster.setId(this.getId());
-        runtimeCluster.setClusterType(ClusterType.EVENTMESH_RUNTIME);
-        clusterEntityList.add(runtimeCluster);
-        this.createClusterRelationshipEntity(clusterEntity, runtimeCluster);
-        this.createRuntime(runtimeCluster);
-
-        runtimeCluster = new ClusterEntity();
-        runtimeCluster.setId(this.getId());
-        runtimeCluster.setClusterType(ClusterType.EVENTMESH_RUNTIME);
-        clusterEntityList.add(runtimeCluster);
-        this.createClusterRelationshipEntity(clusterEntity, runtimeCluster);
-        this.createRuntime(runtimeCluster);
+        this.createCluster(clusterEntity, ClusterType.EVENTMESH_RUNTIME);
+        this.createCluster(clusterEntity, ClusterType.EVENTMESH_RUNTIME);
 
     }
 
@@ -98,76 +143,58 @@ public class ClusterMetadataDomainTest {
             runtimeEntity.setId(this.getId());
             runtimeEntity.setClusterId(cluster.getId());
             runtimeEntity.setClusterType(cluster.getClusterType());
+            runtimeEntity.setStatus(1L);
             this.runtimeEntityList.add(runtimeEntity);
         }
     }
 
     @Test
     public void test_RockerMQ_Cluster() {
-        ClusterEntity clusterEntity = new ClusterEntity();
-        clusterEntity.setId(this.getId());
-        clusterEntity.setClusterType(ClusterType.STORAGE_ROCKETMQ_CLUSTER);
-        clusterEntityList.add(clusterEntity);
-        this.createClusterRelationshipEntity(this.clusterEntity, clusterEntity);
+        ClusterEntity clusterEntity = this.createCluster(this.clusterEntity, ClusterType.STORAGE_ROCKETMQ_CLUSTER);
 
-        ClusterEntity meshCluster = new ClusterEntity();
-        meshCluster.setId(this.getId());
-        meshCluster.setClusterType(ClusterType.STORAGE_ROCKETMQ_NAMESERVER);
-        clusterEntityList.add(meshCluster);
-        this.createClusterRelationshipEntity(clusterEntity, meshCluster);
-        this.createRuntime(meshCluster);
-
-        meshCluster = new ClusterEntity();
-        meshCluster.setId(this.getId());
-        meshCluster.setClusterType(ClusterType.STORAGE_ROCKETMQ_NAMESERVER);
-        clusterEntityList.add(meshCluster);
-        this.createClusterRelationshipEntity(clusterEntity, meshCluster);
-        this.createRuntime(meshCluster);
+        this.createCluster(clusterEntity, ClusterType.STORAGE_ROCKETMQ_NAMESERVER);
+        this.createCluster(clusterEntity, ClusterType.STORAGE_ROCKETMQ_NAMESERVER);
 
         // 创建 broker cluster
-        ClusterEntity runtimeCluster = new ClusterEntity();
-        runtimeCluster.setId(this.getId());
-        runtimeCluster.setClusterType(ClusterType.STORAGE_ROCKETMQ_BROKER);
-        clusterEntityList.add(runtimeCluster);
-        this.createClusterRelationshipEntity(clusterEntity, runtimeCluster);
 
-        ClusterEntity mainSlaveCluster = new ClusterEntity();
-        mainSlaveCluster.setId(this.getId());
-        mainSlaveCluster.setClusterType(ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE);
-        clusterEntityList.add(mainSlaveCluster);
-        this.createClusterRelationshipEntity(runtimeCluster, mainSlaveCluster);
-        this.createRuntime(mainSlaveCluster);
-
-        mainSlaveCluster = new ClusterEntity();
-        mainSlaveCluster.setId(this.getId());
-        mainSlaveCluster.setClusterType(ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE);
-        clusterEntityList.add(mainSlaveCluster);
-        this.createClusterRelationshipEntity(runtimeCluster, mainSlaveCluster);
-        this.createRuntime(mainSlaveCluster);
+        ClusterEntity runtimeCluster = this.createCluster(clusterEntity, ClusterType.STORAGE_ROCKETMQ_BROKER);
+        this.createCluster(runtimeCluster, ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE);
+        this.createCluster(runtimeCluster, ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE);
 
         // 创建 broker cluster
-        runtimeCluster = new ClusterEntity();
-        runtimeCluster.setId(this.getId());
-        runtimeCluster.setClusterType(ClusterType.STORAGE_ROCKETMQ_BROKER);
-        clusterEntityList.add(runtimeCluster);
-        this.createClusterRelationshipEntity(clusterEntity, runtimeCluster);
-
-        mainSlaveCluster = new ClusterEntity();
-        mainSlaveCluster.setId(this.getId());
-        mainSlaveCluster.setClusterType(ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE);
-        clusterEntityList.add(mainSlaveCluster);
-        this.createClusterRelationshipEntity(runtimeCluster, mainSlaveCluster);
-        this.createRuntime(mainSlaveCluster);
-
-        mainSlaveCluster = new ClusterEntity();
-        mainSlaveCluster.setId(this.getId());
-        mainSlaveCluster.setClusterType(ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE);
-        clusterEntityList.add(mainSlaveCluster);
-        this.createClusterRelationshipEntity(runtimeCluster, mainSlaveCluster);
-        this.createRuntime(mainSlaveCluster);
+        runtimeCluster = this.createCluster(clusterEntity, ClusterType.STORAGE_ROCKETMQ_BROKER);
+        this.createCluster(runtimeCluster, ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE);
+        this.createCluster(runtimeCluster, ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE);
 
         this.handler();
-        System.out.println("111");
+
     }
 
+    @Test
+    public void test_Kafka_Cluster() {
+        ClusterEntity clusterEntity = this.createCluster(this.clusterEntity, ClusterType.STORAGE_KAFKA_CLUSTER);
+
+        this.createCluster(clusterEntity, ClusterType.STORAGE_KAFKA_ZK);
+
+        // 创建 broker cluster
+        this.createCluster(clusterEntity, ClusterType.STORAGE_KAFKA_BROKER);
+        this.handler();
+    }
+
+    public ClusterEntity createCluster(ClusterEntity mainCluster, ClusterType clusterType) {
+        ClusterEntity clusterEntity = new ClusterEntity();
+        clusterEntity.setId(this.getId());
+        clusterEntity.setClusterType(clusterType);
+        clusterEntity.setStatus(1L);
+        clusterEntityList.add(clusterEntity);
+        this.createClusterRelationshipEntity(mainCluster, clusterEntity);
+        if (!Objects.equals(clusterType.getAssemblyBusiness(), ClusterType.DEFINITION)) {
+            this.createRuntime(clusterEntity);
+        }
+        return clusterEntity;
+    }
+
+    private static class TestDataWrapper {
+
+    }
 }

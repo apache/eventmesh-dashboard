@@ -57,11 +57,28 @@ public enum ClusterTrusteeshipType {
 
     public enum FirstToWhom {
 
+        NOT,
+
         DASHBOARD,
 
         RUNTIME,
 
+        /**
+         * 等待开始
+         */
+        WAIT_START,
+
+        /**
+         *  同步完成
+         */
         COMPLETE,
+
+        /**
+         * 同步中
+         */
+        UNDER_WAY,
+
+        FAIL,
 
         ;
     }
@@ -103,5 +120,13 @@ public enum ClusterTrusteeshipType {
 
     public String getType() {
         return this.type;
+    }
+
+    public boolean isSelf() {
+        return this == ClusterTrusteeshipType.SELF || this == ClusterTrusteeshipType.TRUSTEESHIP;
+    }
+
+    public boolean isReverse() {
+        return this == ClusterTrusteeshipType.TRUSTEESHIP_FIND || this == ClusterTrusteeshipType.TRUSTEESHIP_FIND_REVERSE;
     }
 }

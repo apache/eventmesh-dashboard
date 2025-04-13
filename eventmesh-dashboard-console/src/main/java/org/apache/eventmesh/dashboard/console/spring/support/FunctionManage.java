@@ -17,12 +17,8 @@
 
 package org.apache.eventmesh.dashboard.console.spring.support;
 
-import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
-import org.apache.eventmesh.dashboard.common.model.ClusterSyncMetadata;
-import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
+import org.apache.eventmesh.dashboard.common.model.DatabaseAndMetadataMapper;
 import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterMetadataDomain;
-import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterMetadataDomain.DataHandler;
-import org.apache.eventmesh.dashboard.console.domain.metadata.HandlerMetadataDO;
 import org.apache.eventmesh.dashboard.console.domain.metadata.MetadataAllDO;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
@@ -31,22 +27,20 @@ import org.apache.eventmesh.dashboard.console.function.health.Health2Service;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
+import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.DatabaseAndMetadataType;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.DefaultMetadataSyncResultHandler;
-import org.apache.eventmesh.dashboard.console.spring.support.metadata.SyncMetadataManage;
-import org.apache.eventmesh.dashboard.core.cluster.ClusterBaseDO;
-import org.apache.eventmesh.dashboard.core.cluster.ClusterDO;
-import org.apache.eventmesh.dashboard.core.cluster.ColonyDO;
-import org.apache.eventmesh.dashboard.core.cluster.RuntimeDO;
-import org.apache.eventmesh.dashboard.core.function.SDK.SDKManage;
-import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
+import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataSyncManage;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -75,7 +69,10 @@ public class FunctionManage {
     private DefaultMetadataSyncResultHandler defaultMetadataSyncResultHandler;
 
     @Autowired
-    private SyncMetadataManage syncMetadataManage;
+    private HealthDataService dataService;
+
+    @Autowired
+    private List<DataMetadataHandler<Object>> dataMetadataHandlerList;
 
 
     private final MetadataSyncManage metadataSyncManage = new MetadataSyncManage();
@@ -94,65 +91,39 @@ public class FunctionManage {
     @PostConstruct
     private void init() {
         clusterMetadataDomain.rootClusterDHO();
-        LocalDateTime date = LocalDateTime.of(2000, 0, 0, 0, 0, 0, 0);
+        this.initQueueData();
+        this.createHandler();
+        this.buildMetadataSyncManage();
+    }
+
+    private void initQueueData() {
+        LocalDateTime date = LocalDateTime.of(2000, 1, 1, 0, 0, 0, 0);
         runtimeEntity.setUpdateTime(date);
         clusterEntity.setCreateTime(date);
         clusterRelationshipEntity.setUpdateTime(date);
-        this.createHandler();
     }
 
+    private void buildMetadataSyncManage() {
+        List<DatabaseAndMetadataMapper> databaseAndMetadataMapperList = new ArrayList<>();
+        for (DatabaseAndMetadataType databaseAndMetadataType : DatabaseAndMetadataType.values()) {
+            databaseAndMetadataMapperList.add(databaseAndMetadataType.getDatabaseAndMetadataMapper());
+        }
+        this.metadataSyncManage.setMetadataSyncResultHandler(this.defaultMetadataSyncResultHandler);
+        this.metadataSyncManage.setDataMetadataHandlerList(this.dataMetadataHandlerList);
+
+        this.metadataSyncManage.init(50, 100, databaseAndMetadataMapperList);
+    }
 
     private void createHandler() {
-        this.clusterMetadataDomain.setHandler(new DataHandler<RuntimeDO, ClusterDO>() {
+        DefaultDataHandler defaultDataHandler = new DefaultDataHandler();
+        defaultDataHandler.setHealthService(healthService);
+        defaultDataHandler.setMetadataSyncManage(metadataSyncManage);
+        this.clusterMetadataDomain.setHandler(defaultDataHandler);
+    }
 
-            @Override
-            public void registerRuntime(RuntimeEntity runtimeEntity, RuntimeDO runtimeDO, ColonyDO<ClusterDO> colonyDO) {
-                ClusterSyncMetadata clusterSyncMetadata = ClusterSyncMetadataEnum.getClusterSyncMetadata(runtimeEntity.getClusterType());
-                if (clusterSyncMetadata.getClusterFramework().isCAP()) {
-                    ClusterBaseDO clusterDO = colonyDO.getClusterDO();
-                    SDKManage.getInstance()
-                        .createClient(SDKTypeEnum.ADMIN, (BaseSyncBase) clusterDO.getClusterInfo(), clusterDO.getMultiCreateSDKConfig(),
-                            runtimeEntity.getClusterType());
-                    return;
-                }
-                SDKManage.getInstance().createClient(SDKTypeEnum.ADMIN, runtimeDO.getRuntimeMetadata(), runtimeDO.getCreateSDKConfig(),
-                    runtimeDO.getRuntimeMetadata().getClusterType());
-                healthService.register(runtimeDO.getRuntimeMetadata());
-                metadataSyncManage.register(runtimeDO.getRuntimeMetadata());
-            }
-
-            @Override
-            public void unRegisterRuntime(RuntimeEntity runtimeEntity, RuntimeDO runtimeDO, ColonyDO<ClusterDO> colonyDO) {
-                ClusterSyncMetadata clusterSyncMetadata = ClusterSyncMetadataEnum.getClusterSyncMetadata(runtimeEntity.getClusterType());
-
-                if (clusterSyncMetadata.getClusterFramework().isCAP()) {
-                    ClusterBaseDO clusterDO = colonyDO.getClusterDO();
-                    SDKManage.getInstance()
-                        .createClient(SDKTypeEnum.ADMIN, (BaseSyncBase) clusterDO.getClusterInfo(), clusterDO.getMultiCreateSDKConfig(),
-                            runtimeEntity.getClusterType());
-                    return;
-                }
-                healthService.unRegister(runtimeDO.getRuntimeMetadata());
-            }
-
-            @Override
-            public void registerCluster(ClusterEntity clusterEntity, ClusterDO clusterDO, ColonyDO<ClusterDO> colonyDO) {
-                ClusterSyncMetadata clusterSyncMetadata = ClusterSyncMetadataEnum.getClusterSyncMetadata(runtimeEntity.getClusterType());
-                if (!clusterSyncMetadata.getClusterFramework().isCAP()) {
-                    return;
-                }
-                SDKManage.getInstance().createClient(SDKTypeEnum.ADMIN, clusterDO.getClusterInfo(), clusterDO.getMultiCreateSDKConfig(),
-                    clusterDO.getClusterInfo().getClusterType());
-                healthService.register(clusterDO.getClusterInfo());
-                metadataSyncManage.register(clusterDO.getClusterInfo());
-            }
-
-            @Override
-            public void unRegisterCluster(ClusterEntity clusterEntity, ClusterDO clusterDO, ColonyDO<ClusterDO> colonyDO) {
-                healthService.unRegisterCluster(clusterEntity.getClusterId());
-
-            }
-        });
+    @Bean
+    public ClusterMetadataDomain registerBean() {
+        return this.clusterMetadataDomain;
     }
 
     /**
@@ -163,13 +134,14 @@ public class FunctionManage {
     @Scheduled(fixedRate = 5000)
     public void initFunctionManager() {
         healthService.executeAll();
+
     }
 
     @Scheduled(fixedRate = 5000)
     public void sync() {
         LocalDateTime date = LocalDateTime.now();
         final List<RuntimeEntity> runtimeEntityList = this.runtimeService.selectByUpdateTime(runtimeEntity);
-        final List<ClusterEntity> clusterEntityList = this.clusterService.selectByUpdateTime(clusterEntity);
+        final List<ClusterEntity> clusterEntityList = this.clusterService.queryByUpdateTime(clusterEntity);
         final List<ClusterRelationshipEntity> clusterRelationshipEntityList =
             this.clusterRelationshipService.selectByUpdateTime(clusterRelationshipEntity);
 
@@ -180,7 +152,7 @@ public class FunctionManage {
         MetadataAllDO metadataAll =
             MetadataAllDO.builder().clusterEntityList(clusterEntityList).clusterRelationshipEntityList(clusterRelationshipEntityList)
                 .runtimeEntityList(runtimeEntityList).build();
-        HandlerMetadataDO handlerMetadataDO = this.clusterMetadataDomain.handlerMetadata(metadataAll);
+        this.clusterMetadataDomain.handlerMetadata(metadataAll);
 
     }
 

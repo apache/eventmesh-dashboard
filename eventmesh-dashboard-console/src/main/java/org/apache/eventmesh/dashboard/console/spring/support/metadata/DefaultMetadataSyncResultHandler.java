@@ -55,6 +55,7 @@ public class DefaultMetadataSyncResultHandler implements MetadataSyncResultHandl
      *      2. 保存 FirstToWhom 处理结果
      *      3. 保存 节点异常状态
      */
+    @Override
     public void persistence() {
         List<MetadataSyncResultEntity> record = null;
         if (!this.record.isEmpty()) {

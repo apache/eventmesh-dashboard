@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
 
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class QueryRuntimeListByClusterIdDTO extends ClusterIdDTO {
 
     private String host;

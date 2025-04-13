@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.mapstruct.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.cluster.CreateClusterBySimpleDataDTO;
 
 import org.mapstruct.Mapper;
@@ -33,5 +34,7 @@ public interface ClusterControllerMapper {
 
 
     ClusterEntity createCluster(CreateClusterBySimpleDataDTO createClusterBySimpleDataDTO);
+
+    ClusterEntity toClusterEntity(ClusterIdDTO clusterIdDTO);
 
 }

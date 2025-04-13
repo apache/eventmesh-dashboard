@@ -24,6 +24,8 @@ public enum RemotingType {
 
     NOT,
 
+    JVM,
+
     META,
 
     STORAGE,
@@ -44,6 +46,8 @@ public enum RemotingType {
 
 
     ZK,
+
+    KUBERNETES,
 
     ;
 

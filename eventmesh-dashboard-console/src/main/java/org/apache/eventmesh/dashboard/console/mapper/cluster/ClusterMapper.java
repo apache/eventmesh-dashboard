@@ -37,7 +37,12 @@ import java.util.Map;
 public interface ClusterMapper {
 
     @Select("select * from cluster where id=#{id} and status=1")
-    ClusterEntity selectClusterById(ClusterEntity cluster);
+    ClusterEntity queryByClusterId(ClusterEntity cluster);
+
+    @Select("""
+        select * from cluster where id in( select from cluster_relationship where  cluster_id = #{clusterId} ) and status=1")";
+        """)
+    List<ClusterEntity> queryRelationshipClusterByClusterId(ClusterEntity clusterEntity);
 
     @Select("select * from cluster where status=1")
     List<ClusterEntity> selectAllCluster();
@@ -80,6 +85,11 @@ public interface ClusterMapper {
     @Update("UPDATE cluster SET status=0 WHERE id=#{id}")
     Integer deactivate(ClusterEntity clusterEntity);
 
+
+
+    ClusterEntity lockByClusterId(ClusterEntity clusterEntity);
+
+    Integer updateNumByClusterId(ClusterEntity clusterEntity);
 
 
 }

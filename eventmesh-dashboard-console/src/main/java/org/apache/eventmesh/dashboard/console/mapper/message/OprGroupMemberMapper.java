@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.mapper.message;
 
 
-import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -36,13 +36,13 @@ import java.util.List;
 public interface OprGroupMemberMapper {
 
     @Select("SELECT topic_name FROM group_member WHERE cluster_id=#{clusterId} AND group_name=#{groupName}")
-    List<String> selectTopicsByGroupNameAndClusterId(GroupMemberEntity groupMemberEntity);
+    List<String> selectTopicsByGroupNameAndClusterId(SubscriptionEntity subscriptionEntity);
 
     @Select("SELECT DISTINCT (group_name) FROM group_member WHERE cluster_id=#{clusterId} AND topic_name=#{topicName}")
-    List<String> selectGroupNameByTopicName(GroupMemberEntity groupMemberEntity);
+    List<String> selectGroupNameByTopicName(SubscriptionEntity subscriptionEntity);
 
     @Select("SELECT * FROM group_member WHERE status=1")
-    List<GroupMemberEntity> selectAll();
+    List<SubscriptionEntity> selectAll();
 
     @Insert({
         "<script>",
@@ -52,30 +52,30 @@ public interface OprGroupMemberMapper {
         "   </foreach>",
         "</script>"})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<GroupMemberEntity> groupMemberEntities);
+    void batchInsert(List<SubscriptionEntity> groupMemberEntities);
 
     @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND status=1")
-    List<GroupMemberEntity> getGroupByClusterId(GroupMemberEntity groupMemberEntity);
+    List<SubscriptionEntity> getGroupByClusterId(SubscriptionEntity subscriptionEntity);
 
     @Insert("INSERT INTO group_member (cluster_id, topic_name, group_name, eventmesh_user,state)"
         + " VALUE (#{clusterId},#{topicName},#{groupName},#{eventMeshUser},#{state})"
         + "ON DUPLICATE KEY UPDATE status=0")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addGroupMember(GroupMemberEntity groupMemberEntity);
+    void addGroupMember(SubscriptionEntity subscriptionEntity);
 
     @Update("UPDATE group_member SET state=#{state} WHERE id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void updateGroupMember(GroupMemberEntity groupMemberEntity);
+    void updateGroupMember(SubscriptionEntity subscriptionEntity);
 
     @Update("UPDATE group_member SET status=0 WHERE id=#{id} ")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
+    SubscriptionEntity deleteGroupMember(SubscriptionEntity subscriptionEntity);
 
     @Select("SELECT * FROM group_member WHERE cluster_id=#{clusterId} AND group_name=#{groupName} AND topic_name=#{topicName} AND status=1")
-    GroupMemberEntity selectGroupMemberByUnique(GroupMemberEntity groupMemberEntity);
+    SubscriptionEntity selectGroupMemberByUnique(SubscriptionEntity subscriptionEntity);
 
     @Select("SELECT * FROM group_member WHERE id=#{id} AND status=1")
-    GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
+    SubscriptionEntity selectGroupMemberById(SubscriptionEntity subscriptionEntity);
 
     @Select({
         "<script>",
@@ -93,8 +93,8 @@ public interface OprGroupMemberMapper {
         "    </where>",
         "   AND status=1",
         "</script>"})
-    List<GroupMemberEntity> selectMember(GroupMemberEntity groupMemberEntity);
+    List<SubscriptionEntity> selectMember(SubscriptionEntity subscriptionEntity);
 
     @Update("UPDATE group_member SET state=#{state} WHERE topic_name=#{topicName}")
-    void updateMemberByTopic(GroupMemberEntity groupMemberEntity);
+    void updateMemberByTopic(SubscriptionEntity subscriptionEntity);
 }

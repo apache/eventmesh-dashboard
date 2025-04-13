@@ -38,6 +38,8 @@ public enum ClusterType {
 
     RUNTIME(3),
 
+    META_AND_RUNTIME(4),
+
     BROKER(4),
 
     COPY_BROKER(5),
@@ -85,6 +87,7 @@ public enum ClusterType {
 
     META_TYPE_ROCKETMQ_NAMESERVER(ClusterType.META.code + 31),
 
+    KUBERNETES_RUNTIME(DEFAULT, DEFAULT, CLUSTER, RUNTIME, RemotingType.KUBERNETES),
 
     EVENTMESH_CLUSTER(EVENTMESH, EVENTMESH, CLUSTER, DEFINITION, RemotingType.EVENT_MESH_RUNTIME),
 
@@ -107,16 +110,35 @@ public enum ClusterType {
     STORAGE_ROCKETMQ_BROKER_RAFT(STORAGE, STORAGE_ROCKETMQ_BROKER, RUNTIME, DEFAULT, RemotingType.ROCKETMQ),
 
 
-    STORAGE_KAFKA(ClusterType.STORAGE.code + 1),
+    STORAGE_KAFKA(STORAGE_ROCKETMQ.code + 1),
 
-    STORAGE_KAFKA_CLUSTER(STORAGE, STORAGE_KAFKA, CLUSTER, DEFAULT, RemotingType.KAFKA),
+    STORAGE_KAFKA_CLUSTER(STORAGE, STORAGE_KAFKA, CLUSTER, DEFINITION, RemotingType.KAFKA),
 
     STORAGE_KAFKA_ZK(STORAGE, STORAGE_KAFKA, META, META_TYPE_ZK, RemotingType.ZK),
 
-    STORAGE_KAFKA_RAFT(STORAGE, STORAGE_KAFKA, META, STORAGE_KAFKA, RemotingType.KAFKA),
+    STORAGE_KAFKA_RAFT(STORAGE, STORAGE_KAFKA, META_AND_RUNTIME, STORAGE_KAFKA, RemotingType.KAFKA),
 
-    STORAGE_KAFKA_BROKER(STORAGE, STORAGE_KAFKA, RUNTIME, DEFAULT, RemotingType.KAFKA);
+    STORAGE_KAFKA_BROKER(STORAGE, STORAGE_KAFKA, RUNTIME, DEFAULT, RemotingType.KAFKA),
 
+
+    STORAGE_REDIS(STORAGE_KAFKA.code + 1),
+
+    STORAGE_REDIS_CLUSTER(STORAGE, STORAGE_REDIS, CLUSTER, DEFINITION, RemotingType.REDIS),
+
+    STORAGE_REDIS_BROKER(STORAGE, STORAGE_REDIS, RUNTIME, DEFAULT, RemotingType.REDIS),
+
+    STORAGE_JVM(STORAGE_REDIS.code + 1),
+
+    STORAGE_JVM_CLUSTER(STORAGE, STORAGE_JVM, CLUSTER, DEFINITION, RemotingType.JVM),
+
+    STORAGE_JVM_BROKER(STORAGE, STORAGE_JVM, RUNTIME, DEFAULT, RemotingType.JVM),
+
+    STORAGE_JVM_CAP(STORAGE_REDIS.code + 1),
+
+    STORAGE_JVM_CAP_CLUSTER(STORAGE, STORAGE_JVM_CAP, CLUSTER, DEFINITION, RemotingType.JVM),
+
+    STORAGE_JVM_CAP_BROKER(STORAGE, STORAGE_JVM_CAP, RUNTIME, DEFAULT, RemotingType.JVM),
+    ;
 
     public static final List<ClusterType> STORAGE_TYPES = getStorage();
     /**
@@ -186,12 +208,21 @@ public enum ClusterType {
         return this.eventmeshNodeType.equals(EVENTMESH) && this.assemblyNodeType.equals(META);
     }
 
+
+    public boolean isEventMethRuntime() {
+        return this == EVENTMESH_RUNTIME;
+    }
+
     public boolean isMeta() {
         return this.assemblyNodeType.equals(META);
     }
 
+    public boolean isMetaAndRuntime() {
+        return this.eventmeshNodeType.equals(META_AND_RUNTIME);
+    }
+
     public boolean isRuntime() {
-        return this.assemblyNodeType.equals(RUNTIME);
+        return this.assemblyNodeType.equals(RUNTIME) || this.eventmeshNodeType.equals(META_AND_RUNTIME);
     }
 
     public boolean isStorage() {

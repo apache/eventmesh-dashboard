@@ -8,6 +8,10 @@ import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 
+import lombok.Getter;
+
+
+@Getter
 public enum MetadataType {
 
 

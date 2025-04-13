@@ -25,7 +25,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class GetRuntimeResult extends GlobalResult<GetRuntimeResponse> {
 
     private CompletableFuture<GetRuntimeResponse> future;

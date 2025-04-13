@@ -17,22 +17,16 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import org.apache.eventmesh.dashboard.common.enums.StoreType;
 import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class TopicMetadata extends BaseRuntimeIdBase {
 
-    private StoreType storeType;
 
-    private String storeAddress;
-
-    //rocketmq -> broker url
-    private String connectionUrl;
 
     private String topicName;
 
@@ -48,4 +42,9 @@ public class TopicMetadata extends BaseRuntimeIdBase {
 
     private String topicConfig;
 
+
+    @Override
+    public String nodeUnique() {
+        return this.topicName;
+    }
 }

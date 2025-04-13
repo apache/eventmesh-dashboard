@@ -17,7 +17,11 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.RemotingType;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateNacosConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.wrapper.NacosSDKWrapper;
 
@@ -28,6 +32,8 @@ import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
 
+@SDKMetadata(clusterType = {ClusterType.EVENTMESH_META_NACOS}, remotingType = RemotingType.EVENT_MESH_NACOS, sdkTypeEnum = {SDKTypeEnum.ADMIN,
+    SDKTypeEnum.PING})
 public class NacosSDKOperation extends AbstractSDKOperation<NacosSDKWrapper, CreateNacosConfig> {
 
 

@@ -1,13 +1,19 @@
 package org.apache.eventmesh.dashboard.core.metadata;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
+import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.common.model.ConvertMetaData;
 import org.apache.eventmesh.dashboard.common.model.DatabaseAndMetadataMapper;
+import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
+import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Getter;
@@ -16,25 +22,27 @@ import lombok.Setter;
 /**
  * MetadataHandler。 读写行为 每个 runtime or cluster 。所有 MetadataType 的 MetadataHandler 已经关系 从 runtime（Cluster） -> 读 -> createDataMetadataHandler 缓存 -> 定时写
  * 从 db 定时读  发动  -> SyncMetadataCreateFactory -> createDataMetadataHandler 获得 runtime 或则 cluster 维度数据，在写入 runtime 1000个节点，进行一千次db操作， db直接费了。
- *
- * @param <T>
  */
-public class SyncMetadataCreateFactory<T> {
+public class SyncMetadataCreateFactory {
 
     @Setter
     private DataMetadataHandler<Object> dataMetadataHandler;
 
-    @Getter
+    @Setter
     private MetadataType metadataType;
 
     @Getter
-    private ConvertMetaData<Object, Object> convertMetaData;
+    @Setter
+    private ConvertMetaData<Object, BaseClusterIdBase> convertMetaData;
 
 
     @Getter
+    @Setter
     private DatabaseAndMetadataMapper databaseAndMetadataMapper;
 
-    private Map<Long, List<Object>> metadataMap = new ConcurrentHashMap<>();
+    private final Map<Long, List<BaseClusterIdBase>> runtimeMetadataMap = new ConcurrentHashMap<>();
+
+    private final Map<Long, List<BaseClusterIdBase>> clusterMetadataMap = new ConcurrentHashMap<>();
 
     private List<Object> addData = new ArrayList<>();
 
@@ -43,10 +51,16 @@ public class SyncMetadataCreateFactory<T> {
     private List<Object> deleteData = new ArrayList<>();
 
     public void loadData() {
-        Map<Long, List<Object>> metadataMap = new ConcurrentHashMap<>();
-        // TODO 排除
+        // TODO 加载的时候， 目前永远不会加载 Runtime
         dataMetadataHandler.getData().forEach(data -> {
-            metadataMap.computeIfAbsent(2L, k -> new ArrayList<>()).add(this.convertMetaData.toMetaData(data));
+            BaseRuntimeIdBase baseRuntimeIdBase = (BaseRuntimeIdBase) this.convertMetaData.toMetaData(data);
+            ClusterFramework clusterFramework =
+                ClusterSyncMetadataEnum.getClusterFramework(baseRuntimeIdBase.getClusterType());
+            if (clusterFramework.isCAP()) {
+                this.clusterMetadataMap.computeIfAbsent(baseRuntimeIdBase.getClusterId(), (value) -> new ArrayList<>()).add(baseRuntimeIdBase);
+            } else {
+                this.runtimeMetadataMap.computeIfAbsent(baseRuntimeIdBase.getRuntimeId(), (value) -> new ArrayList<>()).add(baseRuntimeIdBase);
+            }
         });
 
     }
@@ -58,39 +72,42 @@ public class SyncMetadataCreateFactory<T> {
         this.deleteData = new ArrayList<>();
     }
 
-    public MetadataHandler<Object> createDataMetadataHandler(BaseSyncBase runtimeEntity, Long id) {
-        return new MetadataHandler<Object>() {
+    public MetadataHandler<BaseClusterIdBase> createDataMetadataHandler(BaseSyncBase baseSyncBase) {
+        Map<Long, List<BaseClusterIdBase>> mapetadataMap =
+            Objects.equals(baseSyncBase.getClass(), RuntimeMetadata.class) ? this.runtimeMetadataMap : this.clusterMetadataMap;
+
+        return new MetadataHandler<BaseClusterIdBase>() {
             @Override
-            public void addMetadata(Object meta) {
+            public void addMetadata(BaseClusterIdBase meta) {
                 SyncMetadataCreateFactory.this.addData.add(SyncMetadataCreateFactory.this.convertMetaData.toEntity(meta));
             }
 
             @Override
-            public void deleteMetadata(Object meta) {
+            public void deleteMetadata(BaseClusterIdBase meta) {
                 SyncMetadataCreateFactory.this.deleteData.add(SyncMetadataCreateFactory.this.convertMetaData.toEntity(meta));
             }
 
             @Override
-            public void updateMetadata(Object meta) {
+            public void updateMetadata(BaseClusterIdBase meta) {
                 SyncMetadataCreateFactory.this.updateData.add(meta);
             }
 
             @Override
-            public void handleAll(List<Object> addData, List<Object> updateData, List<Object> deleteData) {
+            public void handleAll(List<BaseClusterIdBase> addData, List<BaseClusterIdBase> updateData, List<BaseClusterIdBase> deleteData) {
                 this.addAll(SyncMetadataCreateFactory.this.addData, addData);
                 this.addAll(SyncMetadataCreateFactory.this.updateData, updateData);
                 this.addAll(SyncMetadataCreateFactory.this.deleteData, deleteData);
             }
 
-            private void addAll(List<Object> persistenceData, List<Object> handleData) {
+            private void addAll(List<Object> persistenceData, List<BaseClusterIdBase> handleData) {
                 handleData.forEach(data -> {
                     persistenceData.add(SyncMetadataCreateFactory.this.convertMetaData.toEntity(data));
                 });
             }
 
             @Override
-            public List<Object> getData() {
-                return SyncMetadataCreateFactory.this.metadataMap.get(id);
+            public List<BaseClusterIdBase> getData() {
+                return mapetadataMap.remove(baseSyncBase.getId());
             }
 
         };
