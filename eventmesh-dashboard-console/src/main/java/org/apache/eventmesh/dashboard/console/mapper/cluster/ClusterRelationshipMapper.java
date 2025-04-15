@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 
 import org.apache.ibatis.annotations.Insert;
@@ -33,6 +34,24 @@ import java.util.List;
 @Mapper
 public interface ClusterRelationshipMapper {
 
+
+
+    @Select("""
+        <script>
+            select *  from cluster_relationship where cluster_id (
+                <foreach item='item' index='index' collection='list' separator=','>
+                    #{item.id}
+                </foreach>
+            )
+           union all
+           select *  from cluster_relationship where relationship_id (
+                <foreach item='item' index='index' collection='list' separator=','>
+                    #{item.id}
+                </foreach>
+            )
+        </script>
+        """)
+    List<ClusterRelationshipEntity> queryClusterRelationshipEntityListByClusterId(List<ClusterEntity> clusterEntityList);
 
     @Insert({
         " insert into cluster_relationship (cluster_type,cluster_id,relationship_type,relationship_id)values( #{clusterType},#{clusterId},",

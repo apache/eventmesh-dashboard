@@ -11,6 +11,10 @@ import lombok.EqualsAndHashCode;
 public class CreateRuntimeByDeployScriptDO extends ClusterIdDTO {
 
 
+    private Long deployScriptId;
+
+    private Long resourcesConfigId;
+
     private Integer createNum;
 
     private ReplicationType replicationType;

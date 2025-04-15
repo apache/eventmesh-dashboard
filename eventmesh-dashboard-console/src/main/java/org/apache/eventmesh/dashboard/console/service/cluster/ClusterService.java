@@ -35,6 +35,8 @@ public interface ClusterService {
 
     ClusterEntity queryClusterById(ClusterEntity clusterEntity);
 
+    ClusterEntity queryRelationshipClusterByClusterIdAndType(ClusterEntity clusterEntity);
+
     List<ClusterEntity> queryStorageByClusterId(ClusterEntity clusterEntity);
 
     List<ClusterEntity> queryAllSubClusterByClusterId(ClusterEntity clusterEntity);
@@ -52,7 +54,7 @@ public interface ClusterService {
 
     List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity);
 
-    void addCluster(ClusterEntity cluster);
+    void insertCluster(ClusterEntity cluster);
 
     List<ClusterEntity> selectAllCluster();
 

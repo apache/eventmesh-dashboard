@@ -40,9 +40,27 @@ public interface ClusterMapper {
     ClusterEntity queryByClusterId(ClusterEntity cluster);
 
     @Select("""
-        select * from cluster where id in( select from cluster_relationship where  cluster_id = #{clusterId} ) and status=1")";
+        select * from cluster where id in( 
+            select from cluster_relationship where  cluster_id = #{clusterId} 
+              <if test= "clusterType != null"> 
+                 cluster_type = #{clusterType}
+              </test>
+        ) and status=1;
         """)
     List<ClusterEntity> queryRelationshipClusterByClusterId(ClusterEntity clusterEntity);
+
+
+    @Select("""
+            <script>
+                select * from cluster where cluster_id in(
+                    select id from cluster_relationship where id in(
+                        <foreach item='item' index='index' separator=','>
+                            item.id
+                        </foreach>
+                    )
+            </script>
+        """)
+    List<ClusterEntity> queryRelationshipClusterByClusterId(List<ClusterEntity> clusterEntityList);
 
     @Select("select * from cluster where status=1")
     List<ClusterEntity> selectAllCluster();
@@ -84,7 +102,6 @@ public interface ClusterMapper {
 
     @Update("UPDATE cluster SET status=0 WHERE id=#{id}")
     Integer deactivate(ClusterEntity clusterEntity);
-
 
 
     ClusterEntity lockByClusterId(ClusterEntity clusterEntity);

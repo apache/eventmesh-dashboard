@@ -19,6 +19,7 @@ package org.apache.eventmesh.dashboard.console.service.cluster;
 
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.modle.deploy.ClusterAllMetadataDO;
 
 import java.util.List;
 import java.util.Map;
@@ -34,15 +35,24 @@ public interface RuntimeService {
 
     List<RuntimeEntity> getRuntimeByClusterRelationship(RuntimeEntity runtimeEntity);
 
+    /**
+     *  获得当前集群的节点
+     * @param runtimeEntity
+     * @return
+     */
     List<RuntimeEntity> queryOnlyRuntimeByClusterId(RuntimeEntity runtimeEntity);
 
-    Map<Long, List<RuntimeEntity>> queryMetaRuntimeByClusterId(RuntimeEntity runtimeEntity);
+    Map<Long, List<RuntimeEntity>> queryMetaRuntimeByStorageClusterId(RuntimeEntity runtimeEntity);
+
+    ClusterAllMetadataDO queryAllByClusterId(RuntimeEntity runtimeEntity, boolean isRuntime, boolean isRelationship);
 
     void batchInsert(List<RuntimeEntity> runtimeEntities);
 
+    Integer batchUpdate(List<RuntimeEntity> runtimeEntities);
+
     List<RuntimeEntity> selectAll();
 
-    List<RuntimeEntity> selectByUpdateTime(RuntimeEntity runtimeEntity);
+    List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity);
 
     List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity);
 

@@ -114,6 +114,9 @@ public class FunctionManage {
         this.metadataSyncManage.init(50, 100, databaseAndMetadataMapperList);
     }
 
+    /**
+     * TODO 核心逻辑在这里
+     */
     private void createHandler() {
         DefaultDataHandler defaultDataHandler = new DefaultDataHandler();
         defaultDataHandler.setHealthService(healthService);
@@ -137,14 +140,16 @@ public class FunctionManage {
 
     }
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(initialDelay = 100L, fixedDelay = 100)
     public void sync() {
         LocalDateTime date = LocalDateTime.now();
-        final List<RuntimeEntity> runtimeEntityList = this.runtimeService.selectByUpdateTime(runtimeEntity);
-        final List<ClusterEntity> clusterEntityList = this.clusterService.queryByUpdateTime(clusterEntity);
-        final List<ClusterRelationshipEntity> clusterRelationshipEntityList =
-            this.clusterRelationshipService.selectByUpdateTime(clusterRelationshipEntity);
-
+        List<RuntimeEntity> runtimeEntityList = this.runtimeService.queryByUpdateTime(runtimeEntity);
+        List<ClusterEntity> clusterEntityList = this.clusterService.queryByUpdateTime(clusterEntity);
+        List<ClusterRelationshipEntity> clusterRelationshipEntityList =
+            this.clusterRelationshipService.queryByUpdateTime(clusterRelationshipEntity);
+        if (runtimeEntityList.isEmpty() && clusterEntityList.isEmpty() && clusterRelationshipEntityList.isEmpty()) {
+            log.info("No runtime entities found");
+        }
         runtimeEntity.setUpdateTime(date);
         clusterEntity.setUpdateTime(date);
         clusterRelationshipEntity.setUpdateTime(date);

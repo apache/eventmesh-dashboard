@@ -49,6 +49,5 @@ public class RuntimeEntity extends BaseSyncEntity {
 
     private String endpointMap;
 
-    private String deployType;
 
 }

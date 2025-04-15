@@ -1,0 +1,52 @@
+package org.apache.eventmesh.dashboard.common.enums;
+
+public enum DeployStatusType {
+
+
+    RESOURCE_APPLY,
+
+    RESOURCE_APPLY_FAILED,
+
+    CREATE_WAIT,
+
+    CREATE_FULL_WAIT,
+
+    CREATE_WAIT_TIMEOUT,
+
+    CREATE_CAP_UPDATE_WAIT,
+
+    CREATE_CAP_UPDATE_WAIT_TIMEOUT,
+
+    CREATE_ING,
+
+    CREATE_CAP_UPDATE_ING,
+
+    CREATE_SUCCESS,
+
+    CREATE_CAP_UPDATE_SUCCESS,
+
+    UPDATE_WAIT,
+
+    UPDATE_ING,
+
+    PAUSE_WAIT,
+
+    PAUSE_ING,
+
+    PAUSE_FULL_WAIT,
+
+    PAUSE_SUCCESS,
+
+    PAUSE_FAIL,
+
+    RESET_WAIT,
+
+    RESET_ING,
+
+    RESET_SUCCESS,
+
+    UNINSTALL,
+
+    UNINSTALL_FAILED,
+    ;
+}

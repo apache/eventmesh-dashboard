@@ -64,7 +64,7 @@ public class ClusterRelationshipServiceImpl implements ClusterRelationshipServic
     }
 
     @Override
-    public List<ClusterRelationshipEntity> selectByUpdateTime(ClusterRelationshipEntity clusterRelationshipEntity) {
+    public List<ClusterRelationshipEntity> queryByUpdateTime(ClusterRelationshipEntity clusterRelationshipEntity) {
         return null;
     }
 }

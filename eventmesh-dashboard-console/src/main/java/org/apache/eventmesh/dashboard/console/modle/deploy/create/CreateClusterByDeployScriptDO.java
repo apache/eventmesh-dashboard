@@ -33,6 +33,6 @@ public class CreateClusterByDeployScriptDO extends CreateRuntimeByDeployScriptDO
 
     private Long deployScriptId;
 
-    private Long resourcesId;
+    private Long resourcesConfigId;
 
 }

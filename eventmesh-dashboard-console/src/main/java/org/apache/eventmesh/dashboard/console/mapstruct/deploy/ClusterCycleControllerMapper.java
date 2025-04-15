@@ -2,6 +2,7 @@ package org.apache.eventmesh.dashboard.console.mapstruct.deploy;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateClusterByDeployScriptDO;
 import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateClusterByOnlyDataDO;
 import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateRuntimeByOnlyDataDO;
 
@@ -19,4 +20,8 @@ public interface ClusterCycleControllerMapper {
 
     ClusterEntity createClusterByOnlyDataHandler(CreateClusterByOnlyDataDO createClusterByOnlyDataDO);
 
+
+    ClusterEntity createClusterByDeployScript(CreateClusterByDeployScriptDO createClusterByDeployScriptDO);
+
+    RuntimeEntity createRuntimeByDeployScript(CreateClusterByDeployScriptDO createClusterByDeployScriptDO);
 }

@@ -2,6 +2,7 @@ package org.apache.eventmesh.dashboard.console.entity.base;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
 import org.apache.eventmesh.dashboard.common.enums.ReplicationType;
 import org.apache.eventmesh.dashboard.common.enums.SyncErrorType;
 
@@ -27,6 +28,17 @@ public abstract class BaseSyncEntity extends BaseClusterIdEntity {
     private ReplicationType replicationType;
 
     private SyncErrorType syncErrorType;
+
+    private DeployStatusType deployStatusType;
+
+    private Long resourcesConfigId;
+
+    private Long deployScriptId;
+
+    private Long deployScriptName;
+
+    private Long deployScriptVersion;
+
 
     /**
      * 上线时间

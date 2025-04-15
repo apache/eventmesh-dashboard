@@ -2,6 +2,7 @@ package org.apache.eventmesh.dashboard.common.enums;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.AclMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConnectionMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
@@ -14,6 +15,7 @@ import lombok.Getter;
 @Getter
 public enum MetadataType {
 
+    CLUSTER(ClusterMetadata.class),
 
     CONFIG(ConfigMetadata.class),
 

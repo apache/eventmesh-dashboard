@@ -98,4 +98,35 @@ public class ClusterCycleController {
         this.createClusterByOnlyDataHandler.handler(createClusterByOnlyDataDO);
     }
 
+
+    @PostMapping("pauseCluster")
+    public void pauseCluster(@RequestBody @Validated CreateClusterByOnlyDataDO createClusterByOnlyDataDO) {
+        this.createClusterByOnlyDataHandler.handler(createClusterByOnlyDataDO);
+    }
+
+    @PostMapping("pauseRuntime")
+    public void pauseRuntime(@RequestBody @Validated CreateClusterByOnlyDataDO createClusterByOnlyDataDO) {
+        this.createClusterByOnlyDataHandler.handler(createClusterByOnlyDataDO);
+    }
+
+    @PostMapping("relationship")
+    public void relationship(@RequestBody @Validated CreateClusterByOnlyDataDO createClusterByOnlyDataDO) {
+        this.createClusterByOnlyDataHandler.handler(createClusterByOnlyDataDO);
+    }
+
+    @PostMapping("unrelationship")
+    public void unrelationship(@RequestBody @Validated CreateClusterByOnlyDataDO createClusterByOnlyDataDO) {
+        this.createClusterByOnlyDataHandler.handler(createClusterByOnlyDataDO);
+    }
+
+    @PostMapping("uninstallCluster")
+    public void uninstallCluster(@RequestBody @Validated CreateClusterByOnlyDataDO createClusterByOnlyDataDO) {
+        this.createClusterByOnlyDataHandler.handler(createClusterByOnlyDataDO);
+    }
+
+    @PostMapping("uninstallRuntime")
+    public void uninstallRuntime(@RequestBody @Validated CreateClusterByOnlyDataDO createClusterByOnlyDataDO) {
+        this.createClusterByOnlyDataHandler.handler(createClusterByOnlyDataDO);
+    }
+
 }

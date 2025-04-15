@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 
 import org.apache.ibatis.annotations.Insert;
@@ -39,6 +40,28 @@ public interface RuntimeMapper {
 
     @Select("SELECT * FROM runtime WHERE status=1")
     List<RuntimeEntity> selectAll();
+
+
+    @Select("""
+            <script>
+                select * from runtime where cluster_id in(
+                    <foreach item='item' index='index' separator=','>
+                        item.id
+                    </foreach>
+                )
+            </script>
+        """)
+    List<RuntimeEntity> queryRuntimeByClusterId(List<ClusterEntity> clusterEntityList);
+
+
+    @Select("""
+         select * from runtime where cluster_id in(
+             select cluster_id from cluster_relationship where cluster_id in(
+                 select cluster_id from cluster_relationship where cluster_id = #{id}
+             )
+         )
+        """)
+    List<RuntimeEntity> queryRuntimeByClusterId(@Param("clusterId") String clusterId);
 
     @Select("select * from runtime where update_time = #{updateTime} and status=1")
     List<RuntimeEntity> selectByUpdateTime(RuntimeEntity runtimeEntity);

@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterOwnType;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseSyncEntity;
 
 import lombok.Data;
@@ -31,12 +32,6 @@ public class ClusterEntity extends BaseSyncEntity {
 
     private String name;
 
-    private Long deployScriptId;
-
-    private Long deployScriptName;
-
-    private Long deployScriptVersion;
-
     private String version;
 
     private String jmxProperties;
@@ -47,8 +42,13 @@ public class ClusterEntity extends BaseSyncEntity {
 
     private Integer runtimeIndex;
 
-    private Integer authType;
+    private String authType;
 
     private Integer runState;
+
+    /**
+     * 如何解除共享
+     */
+    private ClusterOwnType clusterOwnType;
 
 }

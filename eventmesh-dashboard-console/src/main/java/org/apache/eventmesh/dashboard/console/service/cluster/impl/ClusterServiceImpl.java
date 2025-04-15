@@ -77,6 +77,12 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
+    public ClusterEntity queryRelationshipClusterByClusterIdAndType(ClusterEntity clusterEntity) {
+        List<ClusterEntity> clusterEntityList = this.clusterMapper.queryRelationshipClusterByClusterId(clusterEntity);
+        return clusterEntityList.isEmpty() ? null : clusterEntityList.get(0);
+    }
+
+    @Override
     public List<ClusterEntity> queryStorageByClusterId(ClusterEntity clusterEntity) {
         List<ClusterEntity> clusterEntityList = new ArrayList<>();
         this.clusterMapper.queryRelationshipClusterByClusterId(clusterEntity).forEach(entity -> {
@@ -150,7 +156,7 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
-    public void addCluster(ClusterEntity cluster) {
+    public void insertCluster(ClusterEntity cluster) {
         clusterMapper.insertCluster(cluster);
     }
 

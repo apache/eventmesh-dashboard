@@ -126,7 +126,7 @@ public class ConfigServiceImpl implements ConfigService {
 
 
     @Override
-    public List<ConfigEntity> queryByClusterAndInstanceId(ConfigEntity configEntity){
+    public List<ConfigEntity> queryByClusterAndInstanceId(ConfigEntity configEntity) {
         return null;
     }
 
