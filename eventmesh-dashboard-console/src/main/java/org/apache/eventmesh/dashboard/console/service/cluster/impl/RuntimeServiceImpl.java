@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
 
@@ -95,7 +96,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         List<ClusterEntity> clusterEntityList = new ArrayList<>();
         List<ClusterEntity> definitionList = new ArrayList<>();
         definitionList.add(clusterEntity);
-        do { // TODO bug 会出现死循环
+        for (int i = 0; i < 5; i++) {
             List<ClusterEntity> relationshipList = this.clusterMapper.queryRelationshipClusterByClusterId(definitionList);
             definitionList.clear();
             relationshipList.forEach(entity -> {
@@ -104,7 +105,11 @@ public class RuntimeServiceImpl implements RuntimeService {
                 }
                 clusterEntityList.add(entity);
             });
-        } while (definitionList.isEmpty());
+            if (definitionList.isEmpty()) {
+                break;
+            }
+        }
+
         ClusterAllMetadataDO clusterAllMetadata = new ClusterAllMetadataDO();
         clusterAllMetadata.setClusterEntityList(clusterEntityList);
         if (isRuntime) {

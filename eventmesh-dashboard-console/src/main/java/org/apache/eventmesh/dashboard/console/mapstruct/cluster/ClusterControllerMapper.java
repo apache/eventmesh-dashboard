@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapstruct.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.cluster.CreateClusterBySimpleDataDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.QueryClusterByOrganizationIdAndTypeDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.QueryRelationClusterByClusterIdAndTypeDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -32,6 +35,10 @@ public interface ClusterControllerMapper {
 
     ClusterControllerMapper INSTANCE = Mappers.getMapper(ClusterControllerMapper.class);
 
+
+    ClusterEntity queryClusterByOrganizationIdAndType(QueryClusterByOrganizationIdAndTypeDTO dto);
+
+    ClusterEntity queryRelationClusterByClusterIdAndType(QueryRelationClusterByClusterIdAndTypeDTO dto);
 
     ClusterEntity createCluster(CreateClusterBySimpleDataDTO createClusterBySimpleDataDTO);
 

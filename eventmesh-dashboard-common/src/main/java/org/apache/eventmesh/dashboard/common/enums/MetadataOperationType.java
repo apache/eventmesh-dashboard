@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.enums;
 
 import static org.apache.eventmesh.dashboard.common.enums.MetadataType.CONFIG;

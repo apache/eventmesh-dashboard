@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapstruct.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;

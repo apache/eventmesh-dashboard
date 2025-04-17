@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle;
 
 import javax.validation.constraints.NotNull;
@@ -28,5 +29,7 @@ public class ClusterIdDTO extends OrganizationIdDTO {
 
     @NotNull
     private Long clusterId;
+
+
 
 }

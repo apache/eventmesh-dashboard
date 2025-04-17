@@ -1,4 +1,22 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+/*
  * licensed to the apache software foundation (asf) under one or more
  * contributor license agreements.  see the notice file distributed with
  * this work for additional information regarding copyright ownership.
@@ -137,7 +155,7 @@ create table `topic`
 (
     `id`               bigint unsigned primary key auto_increment comment 'id',
     `cluster_id`       bigint          not null default '-1' comment '集群id',
-    runtime_id         bigint unsigned not null default '-1' comment 'kafka 没有runtime',
+    runtime_id         bigint unsigned not null default 0 comment 'kafka 没有runtime',
     `topic_name`       varchar(192)    not null default '' comment 'topic名称',
     topic_type         varchar(16)     not null default '' comment 'topic 类型。用户，broker，console，console',
     read_queue_num     int             not null default 8 comment '读队列数量',
@@ -162,7 +180,7 @@ create table `group`
     cluster_id      bigint          not null comment '集群id',
     name            varchar(192)    not null comment 'group名称',
     type            tinyint         not null comment 'group类型 0：consumer 1：producer',
-    own_type      varchar(16)     not null default '' comment 'topic 类型。用户，broker，console，console',
+    own_type        varchar(16)     not null default '' comment 'topic 类型。用户，broker，console，console',
     state           varchar(64)     not null default '' comment '状态',
     create_time     timestamp       not null default current_timestamp comment '创建时间',
     update_time     timestamp       not null default current_timestamp on update current_timestamp comment '修改时间',

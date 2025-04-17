@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.enums.health;
 
 import org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant;

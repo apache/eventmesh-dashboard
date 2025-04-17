@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
@@ -28,6 +29,7 @@ import java.util.List;
 
 public interface GroupService {
 
+    @Deprecated
     List<GroupEntity> selectAll();
 
     void batchInsert(List<GroupEntity> groupEntities);
@@ -36,13 +38,17 @@ public interface GroupService {
 
     void addGroup(GroupEntity groupEntity);
 
+    @Deprecated
     void updateGroup(GroupEntity groupEntity);
 
     Integer deleteGroup(GroupEntity groupEntity);
 
+    @Deprecated
     GroupEntity selectGroup(GroupEntity groupEntity);
 
+    @Deprecated
     Integer insertMemberToGroup(SubscriptionEntity subscriptionEntity);
 
+    @Deprecated
     Integer deleteMemberFromGroup(SubscriptionEntity subscriptionEntity);
 }

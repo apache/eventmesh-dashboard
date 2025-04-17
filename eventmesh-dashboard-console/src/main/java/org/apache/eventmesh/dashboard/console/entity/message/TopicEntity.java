@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.message;
 
 import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
@@ -25,7 +26,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "status")
+@EqualsAndHashCode(callSuper = true)
 public class TopicEntity extends BaseRuntimeIdEntity {
 
 

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
@@ -34,6 +35,11 @@ public interface ClusterService {
     boolean nameExist(ClusterEntity clusterEntity);
 
     ClusterEntity queryClusterById(ClusterEntity clusterEntity);
+
+    List<ClusterEntity> queryClusterByOrganizationIdAndType(ClusterEntity clusterEntity);
+
+
+    List<ClusterEntity> queryRelationClusterByClusterIdAndType(ClusterEntity clusterEntity);
 
     ClusterEntity queryRelationshipClusterByClusterIdAndType(ClusterEntity clusterEntity);
 

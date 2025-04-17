@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.controller.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
@@ -37,13 +38,14 @@ public class ClusterRelationshipController {
     @Autowired
     private ClusterRelationshipService clusterRelationshipService;
 
-
+    @Deprecated
     @PostMapping("addClusterRelationshipEntry")
     public void addClusterRelationshipEntry(@RequestBody ClusterRelationshipEntity clusterRelationshipEntity) {
         this.clusterRelationshipService.addClusterRelationshipEntry(clusterRelationshipEntity);
 
     }
 
+    @Deprecated
     @PostMapping("relieveRelationship")
     public Integer relieveRelationship(@RequestBody ClusterRelationshipEntity clusterRelationshipEntity) {
         return this.clusterRelationshipService.relieveRelationship(clusterRelationshipEntity);

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.cases;
 
 import org.apache.eventmesh.dashboard.console.entity.base.BaseOrganizationEntity;

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.modle.cluster.client;
+
+package org.apache.eventmesh.dashboard.console.modle.cluster.cluster;
+
+public class ClusterDetailsVO {
 
 
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 
-public class SelectByClusterIdDTO extends ClusterIdDTO {
 
 }

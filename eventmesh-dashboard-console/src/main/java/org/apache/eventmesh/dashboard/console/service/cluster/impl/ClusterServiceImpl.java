@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
@@ -74,6 +75,16 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     @Override
     public ClusterEntity queryClusterById(ClusterEntity clusterEntity) {
         return this.clusterMapper.queryByClusterId(clusterEntity);
+    }
+
+    @Override
+    public List<ClusterEntity> queryClusterByOrganizationIdAndType(ClusterEntity clusterEntity) {
+        return this.clusterMapper.queryClusterByOrganizationIdAndType(clusterEntity);
+    }
+
+    @Override
+    public List<ClusterEntity> queryRelationClusterByClusterIdAndType(ClusterEntity clusterEntity) {
+        return this.clusterMapper.queryRelationClusterByClusterIdAndType(clusterEntity);
     }
 
     @Override

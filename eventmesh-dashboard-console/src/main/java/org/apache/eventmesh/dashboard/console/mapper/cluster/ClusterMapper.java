@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
@@ -39,12 +40,31 @@ public interface ClusterMapper {
     @Select("select * from cluster where id=#{id} and status=1")
     ClusterEntity queryByClusterId(ClusterEntity cluster);
 
+
+    @Select("""
+        select * from cluster where organization_id =#{organizationId}  and cluster_type=#{clusterType}
+        """)
+    List<ClusterEntity> queryClusterByOrganizationIdAndType(ClusterEntity clusterEntity);
+
+
+    @Select("""
+        <script>
+        select * from cluster where id in(
+            select relationship_id from cluster_relationship where cluster_id=#{clusterId} 
+               <if test="clusterType != null and clusterType != ''"> 
+                 and cluster_type = #{clusterType}
+               </if> 
+            )
+        </script>
+        """)
+    List<ClusterEntity> queryRelationClusterByClusterIdAndType(ClusterEntity clusterEntity);
+
     @Select("""
         select * from cluster where id in( 
             select from cluster_relationship where  cluster_id = #{clusterId} 
               <if test= "clusterType != null"> 
                  cluster_type = #{clusterType}
-              </test>
+              </if>
         ) and status=1;
         """)
     List<ClusterEntity> queryRelationshipClusterByClusterId(ClusterEntity clusterEntity);

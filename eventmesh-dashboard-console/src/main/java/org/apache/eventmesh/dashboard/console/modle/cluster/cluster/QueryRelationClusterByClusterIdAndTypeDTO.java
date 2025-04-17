@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.common.constant;
 
-public class ConfigConst {
+package org.apache.eventmesh.dashboard.console.modle.cluster.cluster;
 
-    // yml config
-    public static final String ADMIN_PROPS_PREFIX = "eventmesh";
-    public static final String META_TYPE_NACOS = "nacos";
-    public static final String META_TYPE_ETCD = "etcd";
-    public static final String STORE_TYPE_STANDALONE = "standalone";
-    public static final String STORE_TYPE_ROCKETMQ = "rocketmq";
-    public static final String STORE_TYPE_KAFKA = "kafka";
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 
-    // Open-API
-    public static final String HTTP_PREFIX = "http://";
-    public static final String HTTPS_PREFIX = "https://";
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-    // common
-    /**
-     * colon with space
-     */
-    public static final String COLON = ": ";
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class QueryRelationClusterByClusterIdAndTypeDTO extends ClusterIdDTO {
 
+
+    private ClusterType clusterType;
 }
