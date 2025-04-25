@@ -18,8 +18,7 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import java.sql.Timestamp;
 
@@ -29,16 +28,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "status")
-public class ClientEntity extends BaseEntity {
+@EqualsAndHashCode(callSuper = true)
+public class ClientEntity extends BaseRuntimeIdEntity {
 
     private static final long serialVersionUID = 8204133370609215856L;
-
-    /**
-     * Primary key
-     */
-    @Schema(name = "id", description = "primary key")
-    private Long id;
 
     private String name;
 
@@ -66,13 +59,6 @@ public class ClientEntity extends BaseEntity {
     @Schema(name = "protocol", example = "http", allowableValues = {"http", "grpc", "tcp"})
     private String protocol;
 
-    /**
-     * 0: not active, 1: active
-     *
-     * @see RecordStatus
-     */
-    @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:not active, 1:active")
-    private Integer status;
 
     /**
      * csv format config id list.<br> Example value: 1,2,7<br> This field is updated when the configuration is modified via the web API, but is not
@@ -88,8 +74,5 @@ public class ClientEntity extends BaseEntity {
     private Timestamp endTime;
 
 
-    public void setStatusEntity(RecordStatus status) {
-        this.status = status.getNumber();
-    }
 }
     

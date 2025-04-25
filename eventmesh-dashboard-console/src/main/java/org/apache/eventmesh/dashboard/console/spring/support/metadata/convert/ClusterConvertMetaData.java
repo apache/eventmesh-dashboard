@@ -31,7 +31,9 @@ public interface ClusterConvertMetaData extends ConvertMetaData<ClusterEntity, C
 
     ClusterConvertMetaData INSTANCE = Mappers.getMapper(ClusterConvertMetaData.class);
 
+    @Override
     ClusterEntity toEntity(ClusterMetadata meta);
 
+    @Override
     ClusterMetadata toMetaData(ClusterEntity entity);
 }

@@ -20,10 +20,24 @@ package org.apache.eventmesh.dashboard.console.spring.support.metadata;
 
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.common.model.DatabaseAndMetadataMapper;
+import org.apache.eventmesh.dashboard.console.service.metadata.ClientDataMetadataHandler;
+import org.apache.eventmesh.dashboard.console.service.metadata.ConfigDataMetadataHandler;
+import org.apache.eventmesh.dashboard.console.service.metadata.ConsumeOffsetDataMetadataHandler;
+import org.apache.eventmesh.dashboard.console.service.metadata.GroupDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.RuntimeDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.TopicDataMetadataHandler;
+import org.apache.eventmesh.dashboard.console.service.metadata.TopicOffsetDataMetadataHandler;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ConfigConvertMetaData;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ConsumeOffsetConvertMetaData;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.GroupConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.RuntimeConvertMetaData;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.TopicOffsetConvertMetaData;
+import org.apache.eventmesh.dashboard.service.remoting.ClientRemotingService;
+import org.apache.eventmesh.dashboard.service.remoting.ConfigRemotingService;
+import org.apache.eventmesh.dashboard.service.remoting.ConsumeOffsetRemotingService;
+import org.apache.eventmesh.dashboard.service.remoting.GroupRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.MetaRemotingService;
+import org.apache.eventmesh.dashboard.service.remoting.TopicOffsetRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.TopicRemotingService;
 
 import lombok.Getter;
@@ -38,13 +52,21 @@ public enum DatabaseAndMetadataType {
         .metadataHandlerClass(TopicRemotingService.class).convertMetaData(RuntimeConvertMetaData.INSTANCE).build()),
 
 
-    OFFSET(null),
+    TOPIC_OFFSET(DatabaseAndMetadataMapper.builder().metaType(MetadataType.TOPIC_OFFSET).databaseHandlerClass(TopicOffsetDataMetadataHandler.class)
+        .metadataHandlerClass(TopicOffsetRemotingService.class).convertMetaData(TopicOffsetConvertMetaData.INSTANCE).build()),
 
-    GROUP(null),
+    CONSUME_OFFSET(
+        DatabaseAndMetadataMapper.builder().metaType(MetadataType.CONSUME_OFFSET).databaseHandlerClass(ConsumeOffsetDataMetadataHandler.class)
+            .metadataHandlerClass(ConsumeOffsetRemotingService.class).convertMetaData(ConsumeOffsetConvertMetaData.INSTANCE).build()),
 
-    CONFIG(null),
+    GROUP(DatabaseAndMetadataMapper.builder().metaType(MetadataType.GROUP).databaseHandlerClass(GroupDataMetadataHandler.class)
+        .metadataHandlerClass(GroupRemotingService.class).convertMetaData(GroupConvertMetaData.INSTANCE).build()),
 
-    CLIENT(null),
+    CONFIG(DatabaseAndMetadataMapper.builder().metaType(MetadataType.CONFIG).databaseHandlerClass(ConfigDataMetadataHandler.class)
+        .metadataHandlerClass(ConfigRemotingService.class).convertMetaData(ConfigConvertMetaData.INSTANCE).build()),
+
+    CLIENT(DatabaseAndMetadataMapper.builder().metaType(MetadataType.CLIENT).databaseHandlerClass(ClientDataMetadataHandler.class)
+        .metadataHandlerClass(ClientRemotingService.class).convertMetaData(ConfigConvertMetaData.INSTANCE).build()),
     ;
 
 

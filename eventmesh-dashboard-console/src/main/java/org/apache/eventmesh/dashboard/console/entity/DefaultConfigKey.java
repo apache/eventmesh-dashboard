@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Deprecated
 public class DefaultConfigKey {
 
     private String businessType;

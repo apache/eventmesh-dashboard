@@ -23,6 +23,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -67,6 +68,9 @@ public class ClasspathScanner {
                 continue;
             }
             Class<?> clazz = this.createClass(resource);
+            if (Modifier.isAbstract(clazz.getModifiers())) {
+                continue;
+            }
             if (this.includeInterface(clazz)) {
                 resourcesList.add(clazz);
             }

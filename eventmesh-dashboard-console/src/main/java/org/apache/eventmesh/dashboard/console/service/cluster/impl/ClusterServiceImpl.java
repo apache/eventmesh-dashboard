@@ -89,14 +89,16 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
 
     @Override
     public ClusterEntity queryRelationshipClusterByClusterIdAndType(ClusterEntity clusterEntity) {
-        List<ClusterEntity> clusterEntityList = this.clusterMapper.queryRelationshipClusterByClusterId(clusterEntity);
+        List<ClusterEntity> queryData = new ArrayList<>();
+        queryData.add(clusterEntity);
+        List<ClusterEntity> clusterEntityList = this.clusterMapper.queryRelationshipClusterByClusterIdAndType(queryData);
         return clusterEntityList.isEmpty() ? null : clusterEntityList.get(0);
     }
 
     @Override
     public List<ClusterEntity> queryStorageByClusterId(ClusterEntity clusterEntity) {
         List<ClusterEntity> clusterEntityList = new ArrayList<>();
-        this.clusterMapper.queryRelationshipClusterByClusterId(clusterEntity).forEach(entity -> {
+        this.clusterMapper.queryRelationshipClusterByClusterIdAndType(clusterEntityList).forEach(entity -> {
             if (entity.getClusterType().isStorage()) {
                 clusterEntityList.add(entity);
             }
@@ -158,12 +160,12 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
 
     @Override
     public List<ClusterEntity> selectAll() {
-        return clusterMapper.selectAllCluster();
+        return clusterMapper.queryAllCluster();
     }
 
     @Override
     public List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity) {
-        return clusterMapper.selectAllCluster();
+        return clusterMapper.queryAllCluster();
     }
 
     @Override
@@ -172,8 +174,14 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
+    public void insertClusterAndRelationship(ClusterEntity cluster, ClusterRelationshipEntity clusterRelationshipEntity) {
+        clusterMapper.insertCluster(cluster);
+        clusterRelationshipMapper.insertClusterRelationshipEntry(clusterRelationshipEntity);
+    }
+
+    @Override
     public List<ClusterEntity> selectAllCluster() {
-        return clusterMapper.selectAllCluster();
+        return clusterMapper.queryAllCluster();
     }
 
 
@@ -201,8 +209,10 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     public LinkedList<Integer> getIndex(ClusterEntity clusterEntity) {
         ClusterEntity before = this.clusterMapper.lockByClusterId(clusterEntity);
         this.clusterMapper.updateNumByClusterId(clusterEntity);
-        ClusterEntity after = this.clusterMapper.queryByClusterId(clusterEntity);
         LinkedList<Integer> indexList = new LinkedList<>();
+        for (int i = before.getRuntimeIndex(); i <= before.getRuntimeIndex() + clusterEntity.getRuntimeIndex(); i++) {
+            indexList.add(i);
+        }
         return indexList;
     }
 }

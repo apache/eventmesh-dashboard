@@ -18,15 +18,15 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "status")
-public class InstanceUserEntity extends BaseEntity {
+@EqualsAndHashCode(callSuper = true)
+public class InstanceUserEntity extends BaseRuntimeIdEntity {
 
     private Integer instanceType;
 
@@ -37,7 +37,5 @@ public class InstanceUserEntity extends BaseEntity {
     private String name;
 
     private String token;
-
-    private Integer status;
 
 }

@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.springframework.stereotype.Component;
 
 @Component
+@Deprecated
 public class HealthDataServiceMemoryStorage {
 
     private static final List<HealthCheckResultEntity> cache = new ArrayList<>();

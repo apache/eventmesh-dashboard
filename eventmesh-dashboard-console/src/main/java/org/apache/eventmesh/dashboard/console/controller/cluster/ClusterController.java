@@ -24,7 +24,6 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
-import org.apache.eventmesh.dashboard.console.modle.cluster.CreateClusterBySimpleDataDTO;
 import org.apache.eventmesh.dashboard.console.modle.cluster.client.QueryClientByUserFormDTO;
 import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.ClusterDetailsVO;
 import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.QueryClusterByOrganizationIdAndTypeDTO;
@@ -47,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("cluster/user")
+@RequestMapping("user/cluster")
 public class ClusterController {
 
     @Autowired
@@ -74,7 +73,6 @@ public class ClusterController {
         CompletableFuture<ClusterAllMetadataDO> completableFuture =
             CompletableFuture.supplyAsync(() -> this.runtimeService.queryAllByClusterId(runtimeEntity, true, false));
 
-
         // 存储集群详情
         // meta 集群详情
         // runtime集群详情
@@ -86,6 +84,17 @@ public class ClusterController {
     @PostMapping("queryClusterByUserForm")
     public List<ClientEntity> queryClusterByUserForm(QueryClientByUserFormDTO queryClientByUserFormDTO) {
         return null;
+    }
+
+    /**
+     * 这个接口用户 cluster 对应业务的 首页，方便查询
+     *
+     * @param dto
+     * @return
+     */
+    @PostMapping("queryVisualizationClusterByOrganizationIdAndType")
+    public List<ClusterEntity> queryVisualizationClusterByOrganizationIdAndType(@RequestBody @Validated QueryClusterByOrganizationIdAndTypeDTO dto) {
+        return this.clusterService.queryClusterByOrganizationIdAndType(ClusterControllerMapper.INSTANCE.queryClusterByOrganizationIdAndType(dto));
     }
 
     @PostMapping("queryClusterByOrganizationIdAndType")
@@ -105,15 +114,5 @@ public class ClusterController {
             ClusterControllerMapper.INSTANCE.queryRelationClusterByClusterIdAndType(dto));
     }
 
-    /**
-     * 这里只传递
-     *
-     * @param createClusterBySimpleDataDTO
-     */
-    @Deprecated
-    @PostMapping("createClusterByConfig")
-    public void createClusterByConfig(@RequestBody CreateClusterBySimpleDataDTO createClusterBySimpleDataDTO) {
-        this.clusterService.createCluster(ClusterControllerMapper.INSTANCE.createCluster(createClusterBySimpleDataDTO));
-    }
 
 }

@@ -41,6 +41,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -73,7 +74,7 @@ public class FunctionManage {
     private HealthDataService dataService;
 
     @Autowired
-    private List<DataMetadataHandler<Object>> dataMetadataHandlerList;
+    private List<DataMetadataHandler> dataMetadataHandlerList;
 
 
     private final MetadataSyncManage metadataSyncManage = new MetadataSyncManage();
@@ -88,9 +89,14 @@ public class FunctionManage {
 
     private final ClusterRelationshipEntity clusterRelationshipEntity = new ClusterRelationshipEntity();
 
+    @Value("${function.enabled:false}")
+    private boolean enabled;
 
     @PostConstruct
     private void init() {
+        if (!this.enabled) {
+            return;
+        }
         clusterMetadataDomain.rootClusterDHO();
         this.initQueueData();
         this.createHandler();
@@ -110,9 +116,9 @@ public class FunctionManage {
             databaseAndMetadataMapperList.add(databaseAndMetadataType.getDatabaseAndMetadataMapper());
         }
         this.metadataSyncManage.setMetadataSyncResultHandler(this.defaultMetadataSyncResultHandler);
-        this.metadataSyncManage.setDataMetadataHandlerList(this.dataMetadataHandlerList);
+        this.metadataSyncManage.setDataMetadataHandlerList((List<DataMetadataHandler<Object>>) ((Object) this.dataMetadataHandlerList));
 
-        this.metadataSyncManage.init(50, 100, databaseAndMetadataMapperList);
+        this.metadataSyncManage.init(5000, 100, databaseAndMetadataMapperList);
     }
 
     /**
@@ -137,12 +143,18 @@ public class FunctionManage {
      */
     @Scheduled(fixedRate = 5000)
     public void initFunctionManager() {
+        if (!this.enabled) {
+            return;
+        }
         healthService.executeAll();
 
     }
 
-    @Scheduled(initialDelay = 100L, fixedDelay = 100)
+    @Scheduled(initialDelay = 500L, fixedDelay = 100)
     public void sync() {
+        if (!this.enabled) {
+            return;
+        }
         LocalDateTime date = LocalDateTime.now();
         List<RuntimeEntity> runtimeEntityList = this.runtimeService.queryByUpdateTime(runtimeEntity);
         List<ClusterEntity> clusterEntityList = this.clusterService.queryByUpdateTime(clusterEntity);

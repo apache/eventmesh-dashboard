@@ -19,6 +19,7 @@
 package org.apache.eventmesh.dashboard.console.mapper.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -33,7 +34,7 @@ import java.util.List;
  * config table operation
  */
 @Mapper
-public interface ConfigMapper {
+public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
     @Select({
         "<script>",
@@ -81,14 +82,14 @@ public interface ConfigMapper {
 
 
     @Insert("insert into config () select *,#{targetId} as cluster_id from config where clster where cluster_id = #{sourceId}")
-    void copyConfig(@Param("sourceId") Long sourceId, @Param("targetId")Long targetId);
+    void copyConfig(@Param("sourceId") Long sourceId, @Param("targetId") Long targetId);
 
     @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, "
-        + "status, is_default,  diff_type, description, edit, is_modify,start_version,"
-        + "eventmesh_version,end_version) VALUE "
-        + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
-        + "#{configValue},#{status},#{isDefault},#{diffType},#{description},#{edit},#{isModify},"
-        + "#{startVersion},#{eventmeshVersion},#{endVersion})")
+            + "status, is_default,  diff_type, description, edit, is_modify,start_version,"
+            + "eventmesh_version,end_version) VALUE "
+            + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
+            + "#{configValue},#{status},#{isDefault},#{diffType},#{description},#{edit},#{isModify},"
+            + "#{startVersion},#{eventmeshVersion},#{endVersion})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer addConfig(ConfigEntity configEntity);
 
@@ -96,7 +97,7 @@ public interface ConfigMapper {
     Integer deleteConfig(ConfigEntity configEntity);
 
     @Update("UPDATE config SET config_value=#{configValue} ,already_update=#{alreadyUpdate} WHERE instance_type=#{instanceType} AND"
-        + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
+            + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
     void updateConfig(ConfigEntity configEntity);
 
     @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId} AND is_default=0")
@@ -109,6 +110,14 @@ public interface ConfigMapper {
     List<ConfigEntity> selectAllDefaultConfig();
 
     @Select("SELECT * FROM config WHERE cluster_id=#{clusterId} AND instance_type=#{instanceType} "
-        + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
+            + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
     ConfigEntity selectByUnique(ConfigEntity configEntity);
+
+    void syncInsert(List<ConfigEntity> entityList);
+
+    void syncUpdate(List<ConfigEntity> entityList);
+
+    void syncDelete(List<ConfigEntity> entityList);
+
+    List<ConfigEntity> syncGet(ConfigEntity topicEntity);
 }

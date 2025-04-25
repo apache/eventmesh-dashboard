@@ -18,6 +18,40 @@
 
 package org.apache.eventmesh.dashboard.console.modle.deploy.create;
 
-public class CreateRuntimeByOnlyDataDO {
+import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
+import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
+
+import javax.validation.constraints.NotNull;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class CreateRuntimeByOnlyDataDO extends ClusterIdDTO {
+
+    @NotNull
+    private String name;
+
+    @NotNull
+    private String host;
+
+    /**
+     * 添加的时候只需要 host 与 post eventmesh runtime 是 admin port。通过 runtime admin 获得所有的配置。 meta 需要 host 与 post store host 与 post jmxPort
+     */
+    @NotNull
+    private Integer port;
+
+    private Integer jmxPort;
+
+    private Integer adminPort;
+
+    @NotNull
+    private ClusterTrusteeshipType trusteeshipType;
+
+    @NotNull
+    private FirstToWhom firstToWhom;
 
 }

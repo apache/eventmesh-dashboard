@@ -27,13 +27,13 @@ import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
+import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
+import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
 import org.apache.eventmesh.dashboard.console.modle.deploy.ClusterAllMetadataDO;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,28 +61,17 @@ public class RuntimeServiceImpl implements RuntimeService {
         return this.runtimeMapper.queryRuntimeEntityById(runtimeEntity);
     }
 
-    @Override
-    public List<RuntimeEntity> getRuntimeByClusterRelationship(RuntimeEntity runtimeEntity) {
-        return this.runtimeMapper.getRuntimeByClusterRelationship(runtimeEntity);
-    }
-
 
     @Override
-    public List<RuntimeEntity> queryOnlyRuntimeByClusterId(RuntimeEntity runtimeEntity) {
-        return null;
+    public List<RuntimeEntity> queryRuntimeByBigExpandCluster(QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO) {
+        return this.runtimeMapper.queryRuntimeByBigExpandCluster(queryRuntimeByBigExpandClusterDO);
     }
 
     @Override
-    public Map<Long, List<RuntimeEntity>> queryMetaRuntimeByStorageClusterId(RuntimeEntity runtimeEntity) {
+    public List<RuntimeEntity> queryMetaRuntimeByStorageClusterId(QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO) {
         // 通过 storage cluster id ， 获得 main cluster id
         // 通过 子集群 id  获得 主(多) 集群 下面的其他集群
-        List<RuntimeEntity> runtimeEntityList = this.getRuntimeByClusterRelationship(runtimeEntity);
-
-        Map<Long, List<RuntimeEntity>> runtimeEntityMap = new HashMap<Long, List<RuntimeEntity>>();
-        runtimeEntityList.forEach(entity -> {
-            runtimeEntityMap.computeIfAbsent(entity.getClusterId(), k -> new ArrayList<>()).add(entity);
-        });
-        return runtimeEntityMap;
+        return this.runtimeMapper.queryClusterRuntimeOnClusterSpecifyByClusterId(queryRuntimeByBigExpandClusterDO);
     }
 
     @Override
@@ -97,7 +86,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         List<ClusterEntity> definitionList = new ArrayList<>();
         definitionList.add(clusterEntity);
         for (int i = 0; i < 5; i++) {
-            List<ClusterEntity> relationshipList = this.clusterMapper.queryRelationshipClusterByClusterId(definitionList);
+            List<ClusterEntity> relationshipList = this.clusterMapper.queryRelationshipClusterByClusterIdAndType(definitionList);
             definitionList.clear();
             relationshipList.forEach(entity -> {
                 if (entity.getClusterType().isRuntime()) {
@@ -117,15 +106,16 @@ public class RuntimeServiceImpl implements RuntimeService {
             clusterAllMetadata.setRuntimeEntityList(runtimeEntityList);
         }
         if (isRelationship) {
+            QueryListByClusterIdAndTypeDO data = QueryListByClusterIdAndTypeDO.builder().build();
             List<ClusterRelationshipEntity> relationshipEntityList =
-                this.clusterRelationshipMapper.queryClusterRelationshipEntityListByClusterId(clusterEntityList);
+                this.clusterRelationshipMapper.queryClusterRelationshipEntityListByClusterId(data);
             clusterAllMetadata.setClusterRelationshipEntityList(relationshipEntityList);
         }
         return clusterAllMetadata;
     }
 
     @Override
-    public List<RuntimeEntity> getRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity) {
+    public List<RuntimeEntity> queryRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity) {
         List<RuntimeEntity> runtimeByClusterId = runtimeMapper.getRuntimesToFrontByCluster(runtimeEntity);
         runtimeByClusterId.forEach(n -> {
             n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", n.getId()));
@@ -146,22 +136,18 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     @Override
     public List<RuntimeEntity> selectAll() {
-        return runtimeMapper.selectAll();
+        return runtimeMapper.queryAll();
     }
 
     @Override
     public List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity) {
-        return runtimeMapper.selectByUpdateTime(runtimeEntity);
+        return runtimeMapper.queryByUpdateTime(runtimeEntity);
     }
 
-    @Override
-    public List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity) {
-        return runtimeMapper.selectByHostPort(runtimeEntity);
-    }
 
     @Override
     public void insertRuntime(RuntimeEntity runtimeEntity) {
-        runtimeMapper.addRuntime(runtimeEntity);
+        runtimeMapper.insertRuntime(runtimeEntity);
     }
 
     @Override

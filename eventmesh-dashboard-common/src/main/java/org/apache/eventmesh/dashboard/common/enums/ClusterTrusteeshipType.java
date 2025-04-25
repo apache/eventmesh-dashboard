@@ -18,43 +18,49 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+import java.util.List;
+
+import lombok.Getter;
+
 /**
  *
  */
+@Getter
 public enum ClusterTrusteeshipType {
 
+
+    NOT("", List.of(ClusterType.CLUSTER, ClusterType.META, ClusterType.RUNTIME, ClusterType.META_AND_RUNTIME)),
 
     /**
      * 全托管 存储不好做全托管 RocketMQ， kafhka，都适合
      **/
-    SELF("自维护"),
+    SELF("自维护", List.of(ClusterType.CLUSTER, ClusterType.META, ClusterType.RUNTIME, ClusterType.META_AND_RUNTIME)),
 
     /**
      *
      */
-    TRUSTEESHIP("托管"),
+    TRUSTEESHIP("托管", List.of(ClusterType.CLUSTER, ClusterType.META, ClusterType.RUNTIME, ClusterType.META_AND_RUNTIME)),
 
     /**
      * 托管，从 meta 获得 runtime 提供了 meta地址，从 meta 获得 runtime 主要用于已经存在的集群 支持： eventmesh cluster RocketMQ cluster
      **/
-    TRUSTEESHIP_FIND("托管且从 meta 获得 runtime，同时同步配置"),
+    TRUSTEESHIP_FIND("托管且从 meta 获得 runtime，同时同步配置", List.of(ClusterType.META, ClusterType.META_AND_RUNTIME)),
 
     /**
      * 继承 TRUSTEESHIP_FIND 能力 同时以 集群为主
      **/
-    TRUSTEESHIP_FIND_REVERSE("以集群为主"),
+    TRUSTEESHIP_FIND_REVERSE("以集群为主", List.of(ClusterType.CLUSTER, ClusterType.META, ClusterType.RUNTIME, ClusterType.META_AND_RUNTIME)),
 
     // 不托管
-    NO_TRUSTEESHIP("不托管");
+    NO_TRUSTEESHIP("不托管", List.of(ClusterType.CLUSTER, ClusterType.META, ClusterType.RUNTIME, ClusterType.META_AND_RUNTIME));
 
-    private String type;
+    private List<ClusterType> clusterTypeList;
+
+    private final String type;
 
     private String name;
 
-    private TrusteeshipArrangeType arrange;
-
     private FirstToWhom firstToWhom;
-
 
     public enum FirstToWhom {
 
@@ -70,7 +76,7 @@ public enum ClusterTrusteeshipType {
         WAIT_START,
 
         /**
-         *  同步完成
+         * 同步完成
          */
         COMPLETE,
 
@@ -90,6 +96,7 @@ public enum ClusterTrusteeshipType {
      * 读取 runtime 的会后， 如何是  DASHBOARD ， 使用 database 同步 如果是  RUNTIME   ， 使用 runtime 同步 执行完之后，判断 同步状态， 如果是 以 runtime 为主，使用 runtime 同步， 以 runtime 的不允许修改
      * 如果是 以  database 为主，使用 database 同步 分为第一次同步，与永久同步
      */
+    @Deprecated
     public enum TrusteeshipArrangeType {
 
         /**
@@ -115,13 +122,10 @@ public enum ClusterTrusteeshipType {
 
     }
 
-    ClusterTrusteeshipType(String type) {
+    ClusterTrusteeshipType(String type, List<ClusterType> clusterTypeList) {
         this.type = type;
     }
 
-    public String getType() {
-        return this.type;
-    }
 
     public boolean isSelf() {
         return this == ClusterTrusteeshipType.SELF || this == ClusterTrusteeshipType.TRUSTEESHIP;

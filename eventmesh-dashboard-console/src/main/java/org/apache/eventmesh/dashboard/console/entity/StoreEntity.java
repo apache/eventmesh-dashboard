@@ -24,6 +24,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Deprecated
 public class StoreEntity extends BaseEntity {
 
     private Long clusterId;

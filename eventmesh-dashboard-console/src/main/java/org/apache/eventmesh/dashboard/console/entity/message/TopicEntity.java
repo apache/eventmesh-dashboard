@@ -43,7 +43,7 @@ public class TopicEntity extends BaseRuntimeIdEntity {
     /**
      * 副本个数
      */
-    private Short replicationFactor;
+    private Integer replicationFactor;
 
     /**
      * topic 拦截器类型

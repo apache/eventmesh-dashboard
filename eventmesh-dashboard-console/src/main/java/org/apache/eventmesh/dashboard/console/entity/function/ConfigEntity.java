@@ -50,8 +50,6 @@ public class ConfigEntity extends BaseClusterIdEntity {
 
     private String eventmeshVersion;
 
-    private Integer status;
-
     private String endVersion;
 
     private Integer diffType;

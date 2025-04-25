@@ -19,17 +19,16 @@
 package org.apache.eventmesh.dashboard.console.service.connector.Impl;
 
 
-import jdk.jfr.Threshold;
-
 import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
 import org.apache.eventmesh.dashboard.console.service.connector.ResourcesConfigService;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Threshold
+@Transactional
 public class ResourcesConfigServiceImpl implements ResourcesConfigService {
 
 
@@ -47,5 +46,10 @@ public class ResourcesConfigServiceImpl implements ResourcesConfigService {
     @Override
     public List<ResourcesConfigEntity> queryResourcesByOrganizationId(ResourcesConfigEntity resourcesConfigEntity) {
         return List.of();
+    }
+
+    @Override
+    public void copyResources(ResourcesConfigEntity resourcesConfigEntity) {
+
     }
 }

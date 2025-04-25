@@ -23,7 +23,9 @@ import org.apache.eventmesh.dashboard.console.mapper.deploy.PortMapper;
 import org.apache.eventmesh.dashboard.console.modle.deploy.GetPortsDO;
 import org.apache.eventmesh.dashboard.console.service.deploy.PortService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +39,18 @@ public class PortServiceImpl implements PortService {
     @Override
     public List<String> getPorts(GetPortsDO getPortsDO) {
         PortEntity portEntity = new PortEntity();
+        portEntity.setClusterId(getPortsDO.getClusterId());
         PortEntity newPort = this.portMapper.lockPort(portEntity);
-        return List.of();
+        if (Objects.isNull(newPort)) {
+            portEntity.setCurrentPort(2000);
+            this.portMapper.insertPort(portEntity);
+            newPort = this.portMapper.lockPort(portEntity);
+        }
+        List<String> ports = new ArrayList<>();
+        this.portMapper.updatePort(portEntity);
+        for (int i = 1; i <= getPortsDO.getPortNum(); i++) {
+            ports.add((newPort.getCurrentPort() + i) + "");
+        }
+        return ports;
     }
 }

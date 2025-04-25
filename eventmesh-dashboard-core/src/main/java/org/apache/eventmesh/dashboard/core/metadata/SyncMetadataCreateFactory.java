@@ -70,6 +70,10 @@ public class SyncMetadataCreateFactory {
 
     public void loadData() {
         // TODO 加载的时候， 目前永远不会加载 Runtime
+        if (metadataType.isReadOnly()) {
+            return;
+        }
+
         dataMetadataHandler.getData().forEach(data -> {
             BaseRuntimeIdBase baseRuntimeIdBase = (BaseRuntimeIdBase) this.convertMetaData.toMetaData(data);
             ClusterFramework clusterFramework =
@@ -84,6 +88,9 @@ public class SyncMetadataCreateFactory {
     }
 
     public void persistence() {
+        if (this.deleteData.isEmpty() && this.updateData.isEmpty() && this.clusterMetadataMap.isEmpty()) {
+            return;
+        }
         this.dataMetadataHandler.handleAll(this.addData, this.updateData, this.deleteData);
         this.addData = new ArrayList<>();
         this.updateData = new ArrayList<>();

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rocketmq-namesrv
+  name: rocketmq-namesrv
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocketmq-namesrv
+  template:
+    metadata:
+      labels:
+        app: rocketmq-namesrv
+    spec:
+      containers:
+        - image: rocketmqinc/rocketmq:4.4.0
+          name: rockermq-namesrv
+          command: ["/bin/sh","mqnamesrv"]
+          ports:
+            - containerPort: 9876
+              name: tcp-9876
+              protocol: TCP
+          resources:
+            limits:
+              memory: 600Mi
+            requests:
+              memory: 600Mi

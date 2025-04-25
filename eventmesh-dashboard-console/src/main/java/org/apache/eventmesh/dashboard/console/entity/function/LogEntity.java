@@ -19,7 +19,7 @@
 package org.apache.eventmesh.dashboard.console.entity.function;
 
 
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import java.sql.Timestamp;
 
@@ -31,8 +31,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"endTime", "operationUser", "result"})
-public class LogEntity extends BaseEntity {
+@EqualsAndHashCode(callSuper = true)
+public class LogEntity extends BaseRuntimeIdEntity {
 
     private Long id;
 

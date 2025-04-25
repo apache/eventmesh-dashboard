@@ -31,7 +31,9 @@ public interface TopicConvertMetaData extends ConvertMetaData<TopicEntity, Topic
 
     TopicConvertMetaData INSTANCE = Mappers.getMapper(TopicConvertMetaData.class);
 
+    @Override
     TopicEntity toEntity(TopicMetadata meta);
 
+    @Override
     TopicMetadata toMetaData(TopicEntity entity);
 }

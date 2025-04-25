@@ -35,7 +35,6 @@ public class GroupMetadata extends BaseRuntimeIdBase {
 
     private Integer type;
 
-    private String state;
 
 
     @Override

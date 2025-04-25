@@ -20,16 +20,22 @@ package org.apache.eventmesh.dashboard.console.mapper.deploy;
 
 import org.apache.eventmesh.dashboard.console.entity.cases.PortEntity;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface PortMapper {
 
 
-
+    @Insert("insert into port(cluster_id, current_port)values (#{clusterId},#{currentPort})")
     void insertPort(PortEntity portEntity);
 
+
+    @Select(" select * from port where cluster_id = #{clusterId} for update")
     PortEntity lockPort(PortEntity portEntity);
 
+    @Update(" update port set current_port = current_port + #{currentPort} where cluster_id=#{clusterId}")
     void updatePort(PortEntity portEntity);
 }

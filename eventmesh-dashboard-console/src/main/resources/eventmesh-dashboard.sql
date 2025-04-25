@@ -16,24 +16,6 @@
  */
 
 
-/*
- * licensed to the apache software foundation (asf) under one or more
- * contributor license agreements.  see the notice file distributed with
- * this work for additional information regarding copyright ownership.
- * the asf licenses this file to you under the apache license, version 2.0
- * (the "license"); you may not use this file except in compliance with
- * the license.  you may obtain a copy of the license at
- *
- *     http://www.apache.org/licenses/license-2.0
- *
- * unless required by applicable law or agreed to in writing, software
- * distributed under the license is distributed on an "as is" basis,
- * without warranties or conditions of any kind, either express or implied.
- * see the license for the specific language governing permissions and
- * limitations under the license.
- */
-
-
 drop table if exists `case`;
 
 create table `case`
@@ -76,25 +58,26 @@ create table cluster
 (
     id                    bigint unsigned primary key auto_increment comment '集群id',
     organization_id       bigint unsigned not null comment '组织id',
+    cluster_type          varchar(64)     not null comment '集群类型',
     name                  varchar(128)    not null comment '集群名称',
     version               varchar(32)     not null comment 'eventmesh版本',
-    cluster_index         int             not null comment '在 集群里面的索引',
+    cluster_index         int             not null default 0 comment '在 集群里面的索引',
     jmx_properties        varchar(256)    not null default '' comment 'jmx配置',
-    cluster_type          varchar(16)     not null comment '集群类型',
-    trusteeship_type      varchar(16)     not null comment '托管类型',
-    cluster_own_type      varchar(16)     not null comment '共享类型',
-    runtime_index         int             not null comment 'runtime索引值',
+    trusteeship_type      varchar(32)     not null comment '托管类型',
+    cluster_own_type      varchar(32)     not null comment '共享类型',
+    runtime_index         int             not null default 0 comment 'runtime索引值',
     first_to_whom         varchar(16)     not null comment '第一次同步模式',
-    first_sync_state      varchar(16)     not null comment '第一次同步结果',
+    first_sync_state      varchar(16)     not null default 'NOT' comment '第一次同步结果',
     replication_type      varchar(16)     not null comment '复制模式',
-    sync_error_type       varchar(16)     not null comment '同步数据异常标识字段',
+    sync_error_type       varchar(16)     not null default 'NOT' comment '同步数据异常标识字段',
     deploy_status_type    varchar(16)     not null comment '部署进行中状态',
     resources_config_id   varchar(16)     not null comment '默认部署配置',
     deploy_script_id      bigint unsigned not null comment '默认部署脚本id',
-    deploy_script_name    varchar(16)     not null comment '脚本名字',
-    deploy_script_version varchar(16)     not null comment '脚本版本',
+    deploy_script_name    varchar(16)     not null default '' comment '脚本名字',
+    deploy_script_version varchar(16)     not null default '' comment '脚本版本',
+    config                varchar(8192)   not null comment '集群配置',
     description           text comment '备注',
-    auth_type             int             not null default 0 comment '认证类型，-1未知，0:无认证，',
+    auth_type             varchar(32)     not null default 0 comment '认证类型，-1未知，0:无认证，',
     run_state             tinyint         not null default 1 comment '运行状态, 0表示未监控, 1监控中，有注册中心，2:监控中，无注册中心',
     online_timestamp      datetime        not null default current_timestamp comment '上线时间',
     offline_timestamp     datetime        not null default current_timestamp comment '下线时间',
@@ -111,9 +94,9 @@ create table `cluster_relationship`
 (
     id                bigint unsigned primary key auto_increment,
     organization_id   bigint unsigned not null comment '组织id',
-    cluster_type      varchar(16)     not null comment '主集群类型',
+    cluster_type      varchar(63)     not null comment '主集群类型',
     cluster_id        bigint          not null comment '主集群id',
-    relationship_type varchar(16)     not null comment '关联集群类型',
+    relationship_type varchar(63)     not null comment '关联集群类型',
     relationship_id   bigint          not null comment '关联集群id',
     create_time       timestamp       not null default current_timestamp comment '创建时间',
     update_time       timestamp       not null default current_timestamp on update current_timestamp comment '修改时间',
@@ -214,32 +197,36 @@ create table runtime
     id                    bigint primary key auto_increment comment 'id',
     organization_id       bigint unsigned not null comment '组织id',
     cluster_id            bigint          not null default -1 comment '集群id',
-    cluster_type          varchar(16)     not null comment '集群类型',
-    name                  varchar(128)    not null comment '节点名字',
+    cluster_type          varchar(63)     not null comment '集群类型',
+    `name`                varchar(128)    not null comment '节点名字',
     host                  int             not null comment 'runtime 对外的 IP，kubernetes这个ip 有问题',
     port                  int             not null comment 'runtime port',
-    runtime_index         int             not null comment 'runtime 在 cluster 里面的索引',
+    runtime_index         int             not null default -1 comment 'runtime 在 cluster 里面的索引',
     version               varchar(32)     not null comment 'runtime版本',
-    jmx_properties        varchar(256)    not null default '' comment 'jmx配置',
+    jmx_port              varchar(256)    not null default '' comment 'jmx配置',
     trusteeship_type      varchar(16)     not null comment '托管类型',
-    cluster_own_type      varchar(16)     not null comment '共享类型',
     first_to_whom         varchar(16)     not null comment '第一次同步模式',
-    first_sync_state      varchar(16)     not null comment '第一次同步结果',
+    first_sync_state      varchar(16)     not null default 'NOT' comment '第一次同步结果',
     replication_type      varchar(16)     not null comment '节点在集群的复制类型',
-    sync_error_type       varchar(16)     not null comment '同步数据异常标识字段',
+    sync_error_type       varchar(16)     not null default 'NOT' comment '同步数据异常标识字段',
     deploy_status_type    varchar(16)     not null comment '部署进行中状态',
+    kubernetes_cluster_id bigint unique   not null default 0 comment 'kubernetes cluster id',
+    create_script_content text            not null comment ' kubernetes 创建时的内容',
     resources_config_id   varchar(16)     not null comment '默认部署配置',
     deploy_script_id      bigint unsigned not null comment '默认部署脚本id',
-    deploy_script_name    varchar(16)     not null comment '脚本名字',
-    deploy_script_version varchar(16)     not null comment '脚本版本',
+    deploy_script_name    varchar(16)     not null default '' comment '脚本名字',
+    deploy_script_version varchar(16)     not null default '' comment '脚本版本',
+    auth_type             varchar(16)     not null default '' comment '认真类型',
     description           text comment '备注',
     rack                  varchar(128)    not null default '' comment '哪个机架信息',
     status                int             not null default 1 comment '状态: 1启用，0未启用',
+    online_timestamp      datetime        not null default current_timestamp comment '上线时间',
+    offline_timestamp     datetime        not null default current_timestamp comment '下线时间',
     create_time           timestamp       not null default current_timestamp comment '创建时间',
     update_time           timestamp       not null default current_timestamp on update current_timestamp comment '修改时间',
     endpoint_map          varchar(1024)   not null default '' comment '监听信息',
     is_delete             int             not null default 0 comment '0',
-    unique key uniq_cluster_phy_id__host_port (cluster_id, host)
+    unique key uniq_cluster_phy_id_host_port (cluster_id, host)
 ) comment 'runtime信息表';
 
 drop table if exists `client`;
@@ -380,7 +367,19 @@ create table `health_check_result`
 
 
 
+drop table if exists `port`;
 
+create table `port`
+(
+    `id`           bigint unsigned primary key auto_increment comment '自增id',
+    `cluster_id`   bigint    not null default '0' comment '集群id',
+    `current_port` int       not null default 0 comment '当前 port value',
+    `status`       int                default 1 not null comment '状态: 1启用，0未启用',
+    `create_time`  timestamp not null default current_timestamp comment '创建时间',
+    `update_time`  timestamp not null default current_timestamp on update current_timestamp comment '修改时间',
+    is_delete      int       not null default 0 comment '0',
+    unique key unique_cluster_id (cluster_id)
+);
 
 
 

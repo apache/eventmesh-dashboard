@@ -36,6 +36,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public abstract class BaseSyncEntity extends BaseClusterIdEntity {
 
+    private String name;
+
+    private String version;
 
     private ClusterTrusteeshipType trusteeshipType;
 
@@ -53,10 +56,14 @@ public abstract class BaseSyncEntity extends BaseClusterIdEntity {
 
     private Long deployScriptId;
 
-    private Long deployScriptName;
+    private String deployScriptName;
 
-    private Long deployScriptVersion;
+    private String deployScriptVersion;
 
+    /**
+     * 不想加字段，这个字段作为 port 的索引，目前只支持范围获得
+     */
+    private Integer runtimeIndex;
 
     /**
      * 上线时间

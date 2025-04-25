@@ -18,7 +18,6 @@
 
 package org.apache.eventmesh.dashboard.console.modle.dto.operation;
 
-import org.apache.eventmesh.dashboard.common.enums.MetadataOperationType;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
@@ -34,11 +33,6 @@ import lombok.EqualsAndHashCode;
 public class OperationBaseDTO extends ClusterIdDTO {
 
     private MetadataType rangeType;
-
-    /**
-     * 接口传入
-     */
-    private MetadataOperationType metadataOperationType;
 
 
     /**

@@ -18,10 +18,15 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cases;
 
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseClusterIdEntity;
 
-public class PortEntity extends ClusterIdDTO {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-    private Long port;
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class PortEntity extends BaseClusterIdEntity {
+
+    private Integer currentPort;
 
 }

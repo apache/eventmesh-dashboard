@@ -18,18 +18,14 @@
 
 package org.apache.eventmesh.dashboard.console.entity.message;
 
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "status")
-public class GroupEntity extends BaseEntity {
-
-    private Long id;
-
-    private Long clusterId;
+@EqualsAndHashCode(callSuper = true)
+public class GroupEntity extends BaseRuntimeIdEntity {
 
     private String name;
 
@@ -38,9 +34,5 @@ public class GroupEntity extends BaseEntity {
     private String members;
 
     private Integer type;
-
-    private String state;
-
-    private Integer status;
 
 }

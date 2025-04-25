@@ -37,6 +37,16 @@ public enum DeployStatusType {
 
     CREATE_ING,
 
+    CREATE_FULL_ING,
+
+    CREATE_FAIL,
+
+    CREATE_FULL_SUCCESS,
+
+    CREATE_FULL_FAIL,
+
+    CREATE_CAP_UPDATE_FAIL,
+
     CREATE_CAP_UPDATE_ING,
 
     CREATE_SUCCESS,
@@ -47,9 +57,24 @@ public enum DeployStatusType {
 
     UPDATE_ING,
 
+    UPDATE_SUCCESS,
+
+    UPDATE_FAIL,
+
+    UPDATE_FULL_WAIT,
+
+    UPDATE_FULL_ING,
+
+    UPDATE_FULL_SUCCESS,
+
+    UPDATE_FULL_FAIL,
+
+
     PAUSE_WAIT,
 
     PAUSE_ING,
+
+    PAUSE_FULL_ING,
 
     PAUSE_FULL_WAIT,
 
@@ -57,14 +82,26 @@ public enum DeployStatusType {
 
     PAUSE_FAIL,
 
+    PAUSE_FULL_SUCCESS,
+
+    PAUSE_FULL_FAIL,
+
     RESET_WAIT,
 
     RESET_ING,
+
+    RESET_FAIL,
 
     RESET_SUCCESS,
 
     UNINSTALL,
 
+    UNINSTALL_FAIL,
+
     UNINSTALL_FAILED,
+
+    UNINSTALL_ING,
+
+    UNINSTALL_SUCCESS,
     ;
 }

@@ -33,6 +33,8 @@ public class RuntimeMetadata extends BaseSyncBase {
 
     private Integer jmxPort;
 
+    private Integer runtimeIndex;
+
     private String rack;
 
     private String endpointMap;

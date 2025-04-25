@@ -39,7 +39,6 @@ import com.lamp.decoration.core.result.ResultObject;
 @RequestMapping("offset")
 public class OffsetOperateController {
 
-    @Autowired
     private OffsetRemotingService offsetRemotingService;
 
 

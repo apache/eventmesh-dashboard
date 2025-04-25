@@ -36,12 +36,12 @@ public class ClusterRelationshipServiceImpl implements ClusterRelationshipServic
 
     @Override
     public Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity) {
-        return this.clusterRelationshipMapper.addClusterRelationshipEntry(clusterRelationshipEntity);
+        return this.clusterRelationshipMapper.insertClusterRelationshipEntry(clusterRelationshipEntity);
     }
 
     @Override
     public Integer addClusterRelationshipEntry(List<ClusterRelationshipEntity> clusterRelationshipList) {
-        return this.clusterRelationshipMapper.addClusterRelationshipEntry(clusterRelationshipList);
+        return this.clusterRelationshipMapper.batchClusterRelationshipEntry(clusterRelationshipList);
     }
 
     @Override
@@ -56,12 +56,12 @@ public class ClusterRelationshipServiceImpl implements ClusterRelationshipServic
 
     @Override
     public List<ClusterRelationshipEntity> selectAll() {
-        return this.clusterRelationshipMapper.selectAll();
+        return this.clusterRelationshipMapper.queryAll(null);
     }
 
     @Override
     public List<ClusterRelationshipEntity> selectNewlyIncreased(ClusterRelationshipEntity clusterRelationshipEntity) {
-        return this.clusterRelationshipMapper.selectNewlyIncreased();
+        return this.clusterRelationshipMapper.queryNewlyIncreased(clusterRelationshipEntity);
     }
 
     @Override

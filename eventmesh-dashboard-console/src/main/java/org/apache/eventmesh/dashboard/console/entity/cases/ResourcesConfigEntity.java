@@ -26,13 +26,13 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ResourcesConfigEntity extends CaseEntity {
 
-    private Integer cpuNum;
+    private Float cpuNum;
 
-    private Integer memNum;
+    private Float memNum;
 
-    private Integer diskNum;
+    private Float diskNum;
 
-    private Integer gpuNum;
+    private Float gpuNum;
 
 
 }

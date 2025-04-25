@@ -62,37 +62,49 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     List<TopicEntity> selectAll();
 
     @Select("SELECT * FROM topic WHERE id=#{id}")
-    TopicEntity selectTopicById(TopicEntity topicEntity);
+    TopicEntity queryTopicById(TopicEntity topicEntity);
 
 
-    @Update("UPDATE topic SET type=#{type},description=#{description} WHERE id=#{id}")
+    @Update("UPDATE topic SET topic_type=#{topicType},description=#{description} WHERE id=#{id}")
     void updateTopic(TopicEntity topicEntity);
 
     @Update("UPDATE topic SET create_progress=#{createProgress} WHERE id=#{id}")
     void updateTopicCreateProgress(TopicEntity topicEntity);
 
-    @Update("UPDATE `topic` SET status=0 WHERE id=#{id}")
-    Integer deleteTopic(List<TopicEntity> topicEntity);
+    @Update("""
+        <script>
+            update  `topic` set status=0 where id in(
+               <foreach collection='list'  item='item' index='index' separator=','>
+                    #{item.id}
+               </foreach>
+            )
+        </script>
+        """)
+    Integer deleteTopicByIds(List<TopicEntity> topicEntity);
 
 
     @Update("UPDATE `topic` SET status=0 WHERE id=#{id}")
     Integer deleteTopicById(TopicEntity topicEntity);
 
-    @Insert({
-        "<script>",
-        "INSERT INTO topic (cluster_id, topic_name, retention_ms, type, description, create_progress) VALUES ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "       (#{c.clusterId},#{c.topicName},#{c.storageId},#{c.retentionMs},#{c.type},#{c.description},#{c.createProgress})",
-        "   </foreach>",
-        "</script>"})
+    @Insert("""
+        <script>
+        insert into topic (cluster_id, topic_name, retention_ms, topic_type, description, create_progress)
+           values
+               <foreach collection='list' item='c' index='index' separator=','>
+                   (#{c.clusterId},#{c.topicName},#{c.retentionMs},#{c.topicType},#{c.description},#{c.createProgress})
+               </foreach>
+        </script>
+        """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void batchInsert(List<TopicEntity> topicEntities);
 
-    @Insert("INSERT INTO topic (cluster_id, topic_name, retention_ms, type, description, create_progress) "
-        + "VALUE (#{clusterId},#{topicName},#{storageId},#{retentionMs},#{type},#{description},#{createProgress})"
-        + "ON DUPLICATE KEY UPDATE status = 1")
+    @Insert("""
+        insert into topic (cluster_id   , topic_name , retention_ms , topic_type   , description, create_progress)
+                   values (#{clusterId} ,#{topicName},#{retentionMs},#{topicType},#{description},#{createProgress})
+        on duplicate key update status = 1
+        """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addTopic(TopicEntity topicEntity);
+    void insertTopic(TopicEntity topicEntity);
 
 
     @Override

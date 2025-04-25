@@ -19,7 +19,7 @@
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
-import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 import org.apache.eventmesh.dashboard.console.modle.cluster.client.QueryClientByUserFormDTO;
 
 import org.apache.ibatis.annotations.Insert;
@@ -30,15 +30,12 @@ import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 /**
  * Mybatis Mapper for the table of client.
  */
 @Mapper
-public interface ClientMapper {
+public interface ClientMapper extends SyncDataHandlerMapper<ClientEntity> {
 
 
     @Select({
@@ -99,4 +96,12 @@ public interface ClientMapper {
     @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE `host` = #{host} AND `port` = #{port}")
     void deActiveByHostPort(ClientEntity clientEntity);
 
+
+    void syncInsert(List<ClientEntity> entityList);
+
+    void syncUpdate(List<ClientEntity> entityList);
+
+    void syncDelete(List<ClientEntity> entityList);
+
+    List<ClientEntity> syncGet(ClientEntity topicEntity);
 }

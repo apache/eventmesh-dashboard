@@ -23,9 +23,11 @@ import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConnectionMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.ConsumeOffsetMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.TopicOffsetMetadata;
 
 import lombok.Getter;
 
@@ -43,7 +45,9 @@ public enum MetadataType {
 
     GROUP(GroupMetadata.class),
 
-    OFFSET(TopicMetadata.class),
+    TOPIC_OFFSET(TopicOffsetMetadata.class, true),
+
+    CONSUME_OFFSET(ConsumeOffsetMetadata.class, true),
 
     SUBSCRIBER(GroupMetadata.class),
 

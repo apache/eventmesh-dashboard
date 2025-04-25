@@ -20,7 +20,6 @@ package org.apache.eventmesh.dashboard.console;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SpringBootApplication
 @EnableTransactionManagement
-@EnableAspectJAutoProxy(exposeProxy = true)
 public class EventMeshDashboardApplication {
 
     public static void main(String[] args) {

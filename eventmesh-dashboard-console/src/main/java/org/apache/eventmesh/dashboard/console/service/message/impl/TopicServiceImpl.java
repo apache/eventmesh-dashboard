@@ -30,7 +30,6 @@ import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultM
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
-import org.apache.eventmesh.dashboard.console.mapper.storage.StoreMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
 import org.apache.eventmesh.dashboard.console.service.message.TopicService;
@@ -60,9 +59,6 @@ public class TopicServiceImpl implements TopicService {
     RuntimeMapper runtimeMapper;
 
     @Autowired
-    StoreMapper storeMapper;
-
-    @Autowired
     GroupMapper groupMapper;
 
 
@@ -88,7 +84,7 @@ public class TopicServiceImpl implements TopicService {
             groupEntity.setName(n);
             GroupEntity group = groupMapper.selectGroupByNameAndClusterId(groupEntity);
             topicDetailGroupVO.setMemberNum(group.getMemberCount());
-            topicDetailGroupVO.setState(group.getState());
+
             topicDetailGroupVOList.add(topicDetailGroupVO);
         });
         return topicDetailGroupVOList;
@@ -98,7 +94,7 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public void createTopic(TopicEntity topicEntity) {
         topicEntity.setCreateProgress(1);
-        topicMapper.addTopic(topicEntity);
+        topicMapper.insertTopic(topicEntity);
     }
 
 
@@ -124,7 +120,7 @@ public class TopicServiceImpl implements TopicService {
         SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
         subscriptionEntity.setTopicName(topicEntity.getTopicName());
         oprGroupMemberMapper.updateMemberByTopic(subscriptionEntity);
-        topicMapper.addTopic(topicEntity);
+        topicMapper.insertTopic(topicEntity);
     }
 
     @Override
@@ -139,13 +135,13 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public TopicEntity selectTopicById(TopicEntity topicEntity) {
-        return topicMapper.selectTopicById(topicEntity);
+        return topicMapper.queryTopicById(topicEntity);
     }
 
 
     @Override
     public Integer deleteTopicByRuntimeIdAndTopicName(List<TopicEntity> topicEntity) {
-        return topicMapper.deleteTopic(topicEntity);
+        return topicMapper.deleteTopicByIds(topicEntity);
     }
 
     @Override

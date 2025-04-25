@@ -116,7 +116,22 @@ public class MetadataSyncManage {
     public void init(Integer initialDelay, Integer period, Map<Class<?>, DatabaseAndMetadataMapper> databaseAndMetadataMapperMap) {
 
         dataMetadataHandlerList.forEach((v) -> {
-            DatabaseAndMetadataMapper databaseAndMetadataMapper = databaseAndMetadataMapperMap.get(v.getClass());
+            Class<?> clazz = v.getClass();
+            DatabaseAndMetadataMapper databaseAndMetadataMapper = databaseAndMetadataMapperMap.get(clazz);
+            if (Objects.isNull(databaseAndMetadataMapper)) {
+                String className = clazz.getName();
+                className = className.substring(0, className.indexOf("$$"));
+                try {
+                    clazz = Class.forName(className);
+                    databaseAndMetadataMapper = databaseAndMetadataMapperMap.get(clazz);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (Objects.isNull(databaseAndMetadataMapper)) {
+                log.error("can not find databaseAndMetadataMapper for class {}", v);
+                return;
+            }
             SyncMetadataCreateFactory syncMetadataCreateFactory = new SyncMetadataCreateFactory();
             syncMetadataCreateFactory.setDataMetadataHandler(v);
             syncMetadataCreateFactory.setConvertMetaData((ConvertMetaData<Object, BaseClusterIdBase>) databaseAndMetadataMapper.getConvertMetaData());

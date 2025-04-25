@@ -19,6 +19,7 @@
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
 
@@ -61,6 +62,8 @@ public interface ClusterService {
     List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity);
 
     void insertCluster(ClusterEntity cluster);
+
+    void insertClusterAndRelationship(ClusterEntity cluster, ClusterRelationshipEntity clusterRelationshipEntity);
 
     List<ClusterEntity> selectAllCluster();
 

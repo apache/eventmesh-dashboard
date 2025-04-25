@@ -39,6 +39,7 @@ public class UnRelationshipHandler implements UpdateHandler<ClusterRelationshipE
 
     @Override
     public void handler(ClusterRelationshipEntity clusterRelationshipEntity) {
-
+        // 取消 runtime ，什么都不用管
+        // 接触 meta ，关联 集群下 runtime 都需要管理
     }
 }

@@ -26,7 +26,7 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
 import org.apache.eventmesh.dashboard.console.mapstruct.deploy.ClusterCycleControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateClusterByDeployScriptDO;
+import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateRuntimeByDeployScriptDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class CreateRuntimeByDeployScriptHandler implements UpdateHandler<CreateClusterByDeployScriptDO> {
+public class CreateRuntimeByDeployScriptHandler implements UpdateHandler<CreateRuntimeByDeployScriptDTO> {
 
 
     @Autowired
@@ -56,10 +56,10 @@ public class CreateRuntimeByDeployScriptHandler implements UpdateHandler<CreateC
     }
 
     @Override
-    public void handler(CreateClusterByDeployScriptDO createRuntimeByDeployScriptDO) {
-        ClusterEntity clusterEntity = ClusterControllerMapper.INSTANCE.toClusterEntity(createRuntimeByDeployScriptDO);
+    public void handler(CreateRuntimeByDeployScriptDTO createRuntimeByDeployScriptDTO) {
+        ClusterEntity clusterEntity = ClusterControllerMapper.INSTANCE.toClusterEntity(createRuntimeByDeployScriptDTO);
         clusterEntity = this.clusterService.queryClusterById(clusterEntity);
-        RuntimeEntity runtimeEntity = ClusterCycleControllerMapper.INSTANCE.createRuntimeByDeployScript(createRuntimeByDeployScriptDO);
+        RuntimeEntity runtimeEntity = ClusterCycleControllerMapper.INSTANCE.createRuntimeByDeployScript(createRuntimeByDeployScriptDTO);
         if (Objects.isNull(runtimeEntity.getDeployScriptId()) && Objects.isNull(clusterEntity.getDeployScriptId())) {
             return;
         }
@@ -68,15 +68,16 @@ public class CreateRuntimeByDeployScriptHandler implements UpdateHandler<CreateC
             return;
         }
         if (Objects.nonNull(runtimeEntity.getDeployScriptId())) {
-            runtimeEntity.setDeployScriptId(createRuntimeByDeployScriptDO.getDeployScriptId());
+            runtimeEntity.setDeployScriptId(createRuntimeByDeployScriptDTO.getDeployScriptId());
         }
 
         if (Objects.nonNull(runtimeEntity.getResourcesConfigId())) {
-            runtimeEntity.setResourcesConfigId(createRuntimeByDeployScriptDO.getResourcesConfigId());
+            runtimeEntity.setResourcesConfigId(createRuntimeByDeployScriptDTO.getResourcesConfigId());
         }
-        ReplicationType replicationType = createRuntimeByDeployScriptDO.getReplicationType();
+        ReplicationType replicationType = createRuntimeByDeployScriptDTO.getReplicationType();
         Deque<Integer> linkedList = new ArrayDeque<>();
         if (!Objects.equals(replicationType, ReplicationType.SLAVE) && clusterEntity.getClusterType().isStorage()) {
+            clusterEntity.setRuntimeIndex(1);
             linkedList = this.clusterService.getIndex(clusterEntity);
         } else if (Objects.equals(replicationType, ReplicationType.SLAVE)) {
             linkedList.add(1);
@@ -88,7 +89,7 @@ public class CreateRuntimeByDeployScriptHandler implements UpdateHandler<CreateC
         runtimeEntity.setTrusteeshipType(ClusterTrusteeshipType.SELF);
         runtimeEntity.setReplicationType(replicationType);
         runtimeEntity.setDeployStatusType(DeployStatusType.CREATE_WAIT);
-        runtimeEntity.setIndex(linkedList.poll());
+        runtimeEntity.setRuntimeIndex(linkedList.poll());
         this.runtimeService.insertRuntime(runtimeEntity);
 
     }

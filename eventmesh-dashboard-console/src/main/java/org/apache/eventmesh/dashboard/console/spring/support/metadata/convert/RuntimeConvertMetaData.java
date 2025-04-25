@@ -32,7 +32,9 @@ public interface RuntimeConvertMetaData extends ConvertMetaData<RuntimeEntity, R
 
     RuntimeConvertMetaData INSTANCE = Mappers.getMapper(RuntimeConvertMetaData.class);
 
+    @Override
     RuntimeEntity toEntity(RuntimeMetadata meta);
 
+    @Override
     RuntimeMetadata toMetaData(RuntimeEntity entity);
 }

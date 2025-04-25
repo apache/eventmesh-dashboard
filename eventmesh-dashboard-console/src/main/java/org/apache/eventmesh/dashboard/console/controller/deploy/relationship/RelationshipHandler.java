@@ -41,13 +41,14 @@ public class RelationshipHandler implements UpdateHandler<ClusterRelationshipEnt
 
     @Override
     public void handler(ClusterRelationshipEntity clusterRelationshipEntity) {
-        //  只关心 meta 集群
+        //  绑定 meta 集群， 那么下面所有的 runtime 集群，需要更新更新
+        //  绑定 runtime 集群， main cluster 依赖的
         clusterRelationshipService.addClusterRelationshipEntry(clusterRelationshipEntity);
 
         if (clusterRelationshipEntity.getRelationshipType().isMeta()) {
             RuntimeEntity runtimeEntity = new RuntimeEntity();
             runtimeEntity.setClusterId(clusterRelationshipEntity.getClusterId());
-            runtimeService.queryOnlyRuntimeByClusterId(runtimeEntity);
+            //runtimeService.queryOnlyRuntimeByClusterId(runtimeEntity);
         }
     }
 }

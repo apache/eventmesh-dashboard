@@ -29,4 +29,5 @@ public class GetPortsDO extends ClusterIdDTO {
 
     private Integer portNum;
 
+    private String kubernetesPortModel;
 }

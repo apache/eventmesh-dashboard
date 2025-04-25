@@ -20,6 +20,8 @@ package org.apache.eventmesh.dashboard.common.enums;
 
 public enum ClusterOwnType {
 
+    NOT,
+
     INDEPENDENCE,
 
     SHARE,

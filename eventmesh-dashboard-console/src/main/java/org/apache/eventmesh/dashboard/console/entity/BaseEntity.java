@@ -30,14 +30,13 @@ import lombok.EqualsAndHashCode;
 
 /**
  * Base Entity provide some basic fields that every Eventmesh Dashboard Entity would have
- *
- * 12 broker -> 12 queue ，
- *     11 queue ，  1broker 没有 队列。
- *   副本，随机出现在一个 broker
+ * <p>
+ * 12 broker -> 12 queue ， 11 queue ，  1broker 没有 队列。 副本，随机出现在一个 broker
  */
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = {"createTime", "updateTime"})
+@EqualsAndHashCode(callSuper = false)
 @Schema(name = "BaseEntity", description = "Base entity")
+@Deprecated
 public class BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -2697805837923579585L;

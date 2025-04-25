@@ -23,7 +23,6 @@ import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.RuntimeControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.IdDTO;
-import org.apache.eventmesh.dashboard.console.modle.cluster.runtime.CreateRuntimeDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
 import java.util.List;
@@ -46,7 +45,7 @@ public class RuntimeController {
     @PostMapping("/queryRuntimeListByClusterId")
     public List<RuntimeEntity> queryRuntimeListByClusterId(@Validated @RequestBody ClusterIdDTO clusterIdDTO) {
         List<RuntimeEntity> runtimeEntityList =
-            runtimeService.getRuntimeToFrontByClusterId(RuntimeControllerMapper.INSTANCE.queryRuntimeListByClusterId(clusterIdDTO));
+            runtimeService.queryRuntimeToFrontByClusterId(RuntimeControllerMapper.INSTANCE.queryRuntimeListByClusterId(clusterIdDTO));
         runtimeEntityList.forEach(n -> {
             n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", n.getId()));
         });
@@ -57,11 +56,6 @@ public class RuntimeController {
     @PostMapping("/queryRuntimeListById")
     public RuntimeEntity queryRuntimeListById(@Validated @RequestBody IdDTO idDTO) {
         return this.runtimeService.queryRuntimeEntityById(RuntimeControllerMapper.INSTANCE.queryRuntimeListById(idDTO));
-    }
-
-    @PostMapping("/createRuntime")
-    public void crateRuntime(@Validated @RequestBody CreateRuntimeDTO crateRuntimeDTO) {
-        runtimeService.insertRuntime(RuntimeControllerMapper.INSTANCE.crateRuntime(crateRuntimeDTO));
     }
 
 

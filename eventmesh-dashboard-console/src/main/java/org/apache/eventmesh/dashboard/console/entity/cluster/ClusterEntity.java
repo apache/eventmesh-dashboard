@@ -31,9 +31,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ClusterEntity extends BaseSyncEntity {
 
-    private String name;
-
-    private String version;
 
     private String jmxProperties;
 
@@ -41,11 +38,8 @@ public class ClusterEntity extends BaseSyncEntity {
 
     private String description;
 
-    private Integer runtimeIndex;
-
     private String authType;
 
-    private Integer runState;
 
     /**
      * 如何解除共享

@@ -27,7 +27,7 @@
             <charset class="java.nio.charset.Charset">UTF-8</charset>
         </encoder>
     </appender>
-
+    <logger name="org.apache.eventmesh.dashboard.console.mapper" level="debug" />
     <root level="INFO">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />

@@ -21,9 +21,11 @@ package org.apache.eventmesh.dashboard.console.mapper.cluster;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
+import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -36,42 +38,40 @@ import java.util.List;
 public interface ClusterRelationshipMapper {
 
 
-
     @Select("""
         <script>
-            select *  from cluster_relationship where cluster_id (
-                <foreach item='item' index='index' collection='list' separator=','>
-                    #{item.id}
-                </foreach>
-            )
+            select *  from cluster_relationship where cluster_id = #{clusterId}
+                <if test = "clusterTypeList != null">
+                     and relationship_type in
+                     <foreach item='item' index='index' collection='relationshipTypeList'  open="(" separator=',' close=")">
+                        #{item}
+                    </foreach>
+                </if>
            union all
-           select *  from cluster_relationship where relationship_id (
-                <foreach item='item' index='index' collection='list' separator=','>
-                    #{item.id}
-                </foreach>
+            select *  from cluster_relationship where relationship_id = #{clusterId}
+                <if test = "clusterTypeList != null">
+                     and cluster_type in
+                     <foreach item='item' index='index' collection='clusterTypeList'  open="(" separator=',' close=")">
+                        #{item}
+                    </foreach>
+                </if>
             )
         </script>
         """)
-    List<ClusterRelationshipEntity> queryClusterRelationshipEntityListByClusterId(List<ClusterEntity> clusterEntityList);
+    List<ClusterRelationshipEntity> queryClusterRelationshipEntityListByClusterId(QueryListByClusterIdAndTypeDO data);
 
-    @Insert({
-        " insert into cluster_relationship (cluster_type,cluster_id,relationship_type,relationship_id)values( #{clusterType},#{clusterId},",
-        "#{relationshipType},#{relationshipId})"
-    })
-    Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
-
-    @Insert(""" 
-            <script>
-            insert into cluster_relationship (cluster_type,cluster_id,relationship_type,relationship_id) values
-            <foreach collection='list' item='c' index='index' separator=','>"
-                ( #{clusterType},#{clusterId},#{relationshipType},#{relationshipId})
-            </foreach>
-            </script> 
+    @Select("""
+        <script>
+            select *  from cluster_relationship where cluster_id = #{clusterId}
+                <if test = "clusterTypeList != null">
+                     and relationship_type in
+                     <foreach item='item' index='index' collection='relationshipTypeList'  open="(" separator=',' close=")">
+                        #{item}
+                    </foreach>
+                </if>
+        </script>
         """)
-    Integer batchClusterRelationshipEntry(List<ClusterRelationshipEntity> clusterRelationshipEntity);
-
-    @Update("update cluster_relationship set status = 3 where id = #{id} ")
-    Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);
+    List<ClusterRelationshipEntity> queryListByClusterIdAndType(QueryListByClusterIdAndTypeDO data);
 
 
     @Select({
@@ -87,9 +87,40 @@ public interface ClusterRelationshipMapper {
     })
     List<ClusterAndRelationshipEntity> queryClusterAndRelationshipEntityListByClusterId(ClusterRelationshipEntity clusterRelationshipEntity);
 
-    @Select(" select * from cluster_relationship where status = 3")
-    List<ClusterRelationshipEntity> selectAll();
 
-    @Select(" select * from cluster_relationship where update_time = #{updateTime} and status in( 2 ,3)")
-    List<ClusterRelationshipEntity> selectNewlyIncreased();
+
+    @Select(" select * from cluster_relationship where update_time > #{updateTime} and status in(1, 2 ,3)")
+    List<ClusterRelationshipEntity> queryNewlyIncreased(ClusterRelationshipEntity clusterRelationshipEntity);
+
+
+    @Select(" select * from cluster_relationship where status = 1")
+    List<ClusterRelationshipEntity> queryAll(ClusterRelationshipEntity clusterRelationshipEntity);
+
+    @Select("""
+            select * from cluster_relationship where id = #{id}
+        """)
+    ClusterRelationshipEntity queryById(ClusterRelationshipEntity clusterRelationshipEntity);
+
+
+    @Update("update cluster_relationship set status = 3 where id = #{id} ")
+    Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);
+
+    @Insert(""" 
+        <script>
+            insert into cluster_relationship (organization_id , cluster_type,cluster_id,relationship_type,relationship_id)
+            values
+                <foreach collection='list' item='item' index='index' separator=','>
+                    (#{item.organizationId}, #{item.clusterType},#{item.clusterId},#{item.relationshipType},#{item.relationshipId})
+                </foreach>
+        </script> 
+        """)
+    Integer batchClusterRelationshipEntry(List<ClusterRelationshipEntity> clusterRelationshipEntity);
+
+    @Insert("""
+        insert into cluster_relationship (organization_id , cluster_type,cluster_id,relationship_type,relationship_id)
+                           values(#{organizationId}, #{clusterType},#{clusterId},#{relationshipType},#{relationshipId})
+        """)
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    Integer insertClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
+
 }

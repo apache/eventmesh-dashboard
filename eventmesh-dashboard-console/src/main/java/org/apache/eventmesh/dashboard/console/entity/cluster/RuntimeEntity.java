@@ -30,8 +30,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class RuntimeEntity extends BaseSyncEntity {
 
-    private String name;
-
     private String host;
 
     /**
@@ -43,12 +41,16 @@ public class RuntimeEntity extends BaseSyncEntity {
 
     private Integer adminPort;
 
-    private Integer index;
-
-
     private String rack;
 
     private String endpointMap;
+
+    private String createScriptContent;
+
+    private Long kubernetesClusterId;
+
+    private String authType;
+
 
 
 }

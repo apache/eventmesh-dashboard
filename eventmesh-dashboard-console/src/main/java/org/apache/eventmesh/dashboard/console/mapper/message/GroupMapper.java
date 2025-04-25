@@ -19,6 +19,7 @@
 package org.apache.eventmesh.dashboard.console.mapper.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
+import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -32,7 +33,7 @@ import java.util.List;
  * operate Group mapper
  **/
 @Mapper
-public interface GroupMapper {
+public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
 
     @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND type=0 ")
     GroupEntity selectGroupByNameAndClusterId(GroupEntity groupEntity);
@@ -46,7 +47,7 @@ public interface GroupMapper {
     List<GroupEntity> selectAll();
 
     @Update("UPDATE `group` SET member_count=#{memberCount},"
-        + "members=#{members},type=#{type},state=#{state} WHERE id=#{id}")
+            + "members=#{members},type=#{type},state=#{state} WHERE id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer updateGroup(GroupEntity groupEntity);
 
@@ -87,17 +88,21 @@ public interface GroupMapper {
     void batchInsert(List<GroupEntity> groupEntities);
 
     @Insert("INSERT INTO `group` (cluster_id, name, member_count, members, type, state)"
-        + "VALUE (#{clusterId},#{name},#{memberCount},#{members},#{type},#{state}) "
-        + "ON DUPLICATE KEY UPDATE status=1")
+            + "VALUE (#{clusterId},#{name},#{memberCount},#{members},#{type},#{state}) "
+            + "ON DUPLICATE KEY UPDATE status=1")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroup(GroupEntity groupEntity);
 
 
+    @Override
     void syncInsert(List<GroupEntity> entityList);
 
+    @Override
     void syncUpdate(List<GroupEntity> entityList);
 
+    @Override
     void syncDelete(List<GroupEntity> entityList);
 
+    @Override
     List<GroupEntity> syncGet(GroupEntity topicEntity);
 }

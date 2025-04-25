@@ -49,9 +49,9 @@ public class TestOprLog {
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setClusterId(1L);
         groupEntity.setName("logTest");
-        groupEntity.setStatus(1);
+        groupEntity.setStatus(1L);
         groupEntity.setType(0);
-        groupEntity.setState("OS");
+
         groupService.addGroup(groupEntity);
         LogEntity logEntity = new LogEntity();
         logEntity.setClusterId(1L);

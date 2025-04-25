@@ -20,10 +20,10 @@ package org.apache.eventmesh.dashboard.console.service.cluster;
 
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
 import org.apache.eventmesh.dashboard.console.modle.deploy.ClusterAllMetadataDO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Runtime data service
@@ -32,18 +32,11 @@ public interface RuntimeService {
 
     RuntimeEntity queryRuntimeEntityById(RuntimeEntity runtimeEntity);
 
-    List<RuntimeEntity> getRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity);
+    List<RuntimeEntity> queryRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity);
 
-    List<RuntimeEntity> getRuntimeByClusterRelationship(RuntimeEntity runtimeEntity);
+    List<RuntimeEntity> queryRuntimeByBigExpandCluster(QueryRuntimeByBigExpandClusterDO data);
 
-    /**
-     *  获得当前集群的节点
-     * @param runtimeEntity
-     * @return
-     */
-    List<RuntimeEntity> queryOnlyRuntimeByClusterId(RuntimeEntity runtimeEntity);
-
-    Map<Long, List<RuntimeEntity>> queryMetaRuntimeByStorageClusterId(RuntimeEntity runtimeEntity);
+    List<RuntimeEntity> queryMetaRuntimeByStorageClusterId(QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO);
 
     ClusterAllMetadataDO queryAllByClusterId(RuntimeEntity runtimeEntity, boolean isRuntime, boolean isRelationship);
 
@@ -54,8 +47,6 @@ public interface RuntimeService {
     List<RuntimeEntity> selectAll();
 
     List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity);
-
-    List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity);
 
     void insertRuntime(RuntimeEntity runtimeEntity);
 

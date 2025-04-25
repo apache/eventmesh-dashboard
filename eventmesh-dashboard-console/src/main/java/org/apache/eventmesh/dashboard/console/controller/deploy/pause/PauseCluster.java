@@ -19,7 +19,6 @@
 package org.apache.eventmesh.dashboard.console.controller.deploy.pause;
 
 import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
-import org.apache.eventmesh.dashboard.console.controller.deploy.handler.AbstractMetadataExampleHandler;
 import org.apache.eventmesh.dashboard.console.controller.deploy.handler.UpdateHandler;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
@@ -53,7 +52,6 @@ public class PauseCluster implements UpdateHandler<ClusterEntity> {
 
     private List<RuntimeEntity> notSelfRuntimeList = new ArrayList<>();
 
-    private
 
     @Override
     public void init() {
