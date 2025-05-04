@@ -15,23 +15,15 @@
  * limitations under the License.
  */
 
+package org.apache.eventmesh.dashboard.console.modle.cluster.runtime;
 
-package org.apache.eventmesh.dashboard.console.modle.cluster.cluster;
-
-import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.modle.OrganizationIdDTO;
-
-import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class QueryClusterByOrganizationIdAndTypeDTO extends OrganizationIdDTO {
+public class QueryRuntimeListByOrganizationIdAndFormDTO extends OrganizationIdDTO {
 
-    @NotNull
-    private ClusterType clusterType;
-
-    private String name;
 }

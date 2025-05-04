@@ -28,7 +28,7 @@
         </encoder>
     </appender>
     <logger name="org.apache.eventmesh.dashboard.console.mapper" level="debug" />
-    <root level="INFO">
+    <root level="debug">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
     </root>

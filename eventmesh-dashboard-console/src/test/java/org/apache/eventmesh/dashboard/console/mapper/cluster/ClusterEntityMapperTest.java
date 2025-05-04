@@ -40,13 +40,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {EventMeshDashboardApplication.class})
-@Sql(scripts = {"classpath:eventmesh-dashboard.sql"})
+//@Sql(scripts = {"classpath:eventmesh-dashboard.sql"})
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class ClusterEntityMapperTest {
 

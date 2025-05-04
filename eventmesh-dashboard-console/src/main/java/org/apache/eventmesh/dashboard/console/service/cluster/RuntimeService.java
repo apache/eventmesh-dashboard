@@ -34,6 +34,8 @@ public interface RuntimeService {
 
     List<RuntimeEntity> queryRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity);
 
+    List<RuntimeEntity> queryRuntimeListByClusterIdForm(RuntimeEntity runtimeEntity);
+
     List<RuntimeEntity> queryRuntimeByBigExpandCluster(QueryRuntimeByBigExpandClusterDO data);
 
     List<RuntimeEntity> queryMetaRuntimeByStorageClusterId(QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO);

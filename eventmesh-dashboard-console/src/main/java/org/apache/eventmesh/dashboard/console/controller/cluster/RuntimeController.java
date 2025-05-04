@@ -19,10 +19,11 @@
 package org.apache.eventmesh.dashboard.console.controller.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.RuntimeControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.IdDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.runtime.QueryRuntimeListByClusterIdFormDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.runtime.QueryRuntimeListByOrganizationIdAndFormDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
 import java.util.List;
@@ -36,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("runtime")
+@RequestMapping("/user/runtime")
 public class RuntimeController {
 
     @Autowired
@@ -46,15 +47,24 @@ public class RuntimeController {
     public List<RuntimeEntity> queryRuntimeListByClusterId(@Validated @RequestBody ClusterIdDTO clusterIdDTO) {
         List<RuntimeEntity> runtimeEntityList =
             runtimeService.queryRuntimeToFrontByClusterId(RuntimeControllerMapper.INSTANCE.queryRuntimeListByClusterId(clusterIdDTO));
-        runtimeEntityList.forEach(n -> {
-            n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", n.getId()));
-        });
         return runtimeEntityList;
     }
 
+    @PostMapping("/queryRuntimeListByClusterIdForm")
+    public List<RuntimeEntity> queryRuntimeListByClusterIdForm(@Validated @RequestBody QueryRuntimeListByClusterIdFormDTO dto) {
+        return this.runtimeService.queryRuntimeListByClusterIdForm(RuntimeControllerMapper.INSTANCE.queryRuntimeListByClusterIdForm(dto));
+    }
 
-    @PostMapping("/queryRuntimeListById")
-    public RuntimeEntity queryRuntimeListById(@Validated @RequestBody IdDTO idDTO) {
+
+    @PostMapping("/queryRuntimeListByOrganizationIdAndForm")
+    public List<RuntimeEntity> queryRuntimeListByOrganizationIdAndForm(@Validated @RequestBody
+    QueryRuntimeListByOrganizationIdAndFormDTO dto) {
+        return this.runtimeService.queryRuntimeListByClusterIdForm(RuntimeControllerMapper.INSTANCE.queryRuntimeListByOrganizationIdAndForm(dto));
+    }
+
+
+    @PostMapping("/queryRuntimeById")
+    public RuntimeEntity queryRuntimeById(@Validated @RequestBody IdDTO idDTO) {
         return this.runtimeService.queryRuntimeEntityById(RuntimeControllerMapper.INSTANCE.queryRuntimeListById(idDTO));
     }
 

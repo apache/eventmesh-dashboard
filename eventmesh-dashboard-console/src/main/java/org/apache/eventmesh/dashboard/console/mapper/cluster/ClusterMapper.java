@@ -42,7 +42,14 @@ public interface ClusterMapper {
 
 
     @Select("""
-        select * from cluster where organization_id =#{organizationId}  and cluster_type=#{clusterType}
+        <script>
+        select * from cluster where 
+          organization_id =#{organizationId} 
+          and cluster_type=#{clusterType}
+          <if test = 'name != null'>
+            and `name` like concat('%',#{name},'%')
+          </if>
+        </script>
         """)
     List<ClusterEntity> queryClusterByOrganizationIdAndType(ClusterEntity clusterEntity);
 

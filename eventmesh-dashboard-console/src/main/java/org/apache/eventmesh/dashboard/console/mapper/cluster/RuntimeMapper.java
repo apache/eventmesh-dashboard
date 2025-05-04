@@ -38,6 +38,27 @@ import java.util.List;
 @Mapper
 public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
 
+
+
+    @Select("""
+        <script>
+            select * from runtime where
+                <choose>
+                    <when test="organizationId!=null">
+                        organization_id = #{organizationId}
+                    </when>
+                    <when test="clusterId!=null">
+                        cluster_id = #{clusterId}
+                    </when>
+                </choose>
+                <if test="name!=null">
+                    name like concat('%', #{name}, '%')
+                </if>
+        </script>
+        """)
+    List<RuntimeEntity> queryRuntimeListByClusterIdForm(RuntimeEntity runtimeEntity);
+
+
     @Select("""
         <script>
             select * from runtime where cluster_id =#{runtimeEntity.clusterId}

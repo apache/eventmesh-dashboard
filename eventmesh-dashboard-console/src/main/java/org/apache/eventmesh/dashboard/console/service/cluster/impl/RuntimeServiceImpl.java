@@ -63,6 +63,11 @@ public class RuntimeServiceImpl implements RuntimeService {
 
 
     @Override
+    public List<RuntimeEntity> queryRuntimeListByClusterIdForm(RuntimeEntity runtimeEntity) {
+        return this.runtimeMapper.queryRuntimeListByClusterIdForm(runtimeEntity);
+    }
+
+    @Override
     public List<RuntimeEntity> queryRuntimeByBigExpandCluster(QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO) {
         return this.runtimeMapper.queryRuntimeByBigExpandCluster(queryRuntimeByBigExpandClusterDO);
     }

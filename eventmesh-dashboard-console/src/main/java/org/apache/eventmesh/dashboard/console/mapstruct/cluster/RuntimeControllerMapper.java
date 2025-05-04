@@ -22,6 +22,8 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.IdDTO;
 import org.apache.eventmesh.dashboard.console.modle.cluster.runtime.CreateRuntimeDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.runtime.QueryRuntimeListByClusterIdFormDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.runtime.QueryRuntimeListByOrganizationIdAndFormDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -34,6 +36,11 @@ public interface RuntimeControllerMapper {
 
     RuntimeControllerMapper INSTANCE = Mappers.getMapper(RuntimeControllerMapper.class);
 
+
+
+    RuntimeEntity queryRuntimeListByClusterIdForm(QueryRuntimeListByClusterIdFormDTO dto);
+
+    RuntimeEntity queryRuntimeListByOrganizationIdAndForm(QueryRuntimeListByOrganizationIdAndFormDTO dto);
 
     RuntimeEntity queryRuntimeListByClusterId(ClusterIdDTO clusterIdDTO);
 

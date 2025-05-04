@@ -144,6 +144,15 @@ public class RuntimeDeployServiceTest {
             configEntityList.add(configEntity);
         }
         Mockito.when(configService.queryByClusterAndInstanceId(Mockito.any())).thenReturn(configEntityList);
+        List<RuntimeEntity> runtimeEntityList = new ArrayList<>();
+        for (int i = 1; i <= 30; i++) {
+            RuntimeEntity runtimeEntity = new RuntimeEntity();
+            runtimeEntity.setClusterId(10L);
+            runtimeEntity.setId(1L);
+            runtimeEntity.setClusterType(ClusterType.EVENTMESH);
+            runtimeEntityList.add(runtimeEntity);
+        }
+        Mockito.when(runtimeService.queryMetaRuntimeByStorageClusterId(Mockito.any())).thenReturn(runtimeEntityList);
 
         runtimeEntity.setClusterType(ClusterType.EVENTMESH_RUNTIME);
         runtimeEntity.setDeployStatusType(DeployStatusType.CREATE_WAIT);
