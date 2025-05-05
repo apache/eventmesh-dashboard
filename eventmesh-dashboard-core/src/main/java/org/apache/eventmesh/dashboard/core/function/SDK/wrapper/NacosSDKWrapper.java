@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.wrapper;
 
 import com.alibaba.nacos.api.config.ConfigService;
@@ -28,11 +29,11 @@ import lombok.Data;
 @AllArgsConstructor
 public class NacosSDKWrapper {
 
+    private ConfigService configService;
+    private NamingService namingService;
+
     public void shutdown() throws NacosException {
         configService.shutDown();
         namingService.shutDown();
     }
-
-    private ConfigService configService;
-    private NamingService namingService;
 }

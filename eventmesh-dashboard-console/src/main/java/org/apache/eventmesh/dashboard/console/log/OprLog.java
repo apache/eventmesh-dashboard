@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.log;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
-import org.apache.eventmesh.dashboard.console.entity.log.LogEntity;
-import org.apache.eventmesh.dashboard.console.service.log.LogService;
+import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
+import org.apache.eventmesh.dashboard.console.service.function.LogService;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -99,7 +101,7 @@ public class OprLog implements Ordered, ApplicationContextAware {
         logEntity.setOperationType(declaredAnnotation.OprType());
         logEntity.setTargetType(declaredAnnotation.OprTarget());
         logEntity.setState(1);
-        logEntity.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        logEntity.setCreateTime(LocalDateTime.now());
         return logEntity;
     }
 

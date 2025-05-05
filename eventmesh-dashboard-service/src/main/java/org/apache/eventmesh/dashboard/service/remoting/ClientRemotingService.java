@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.remoting;
 
 
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 
 import java.util.List;
 
 /**
- * A remoting service for client operations.
-    Not implemented in eventmesh by now
+ * A remoting service for client operations. Not implemented in eventmesh by now
  */
 public interface ClientRemotingService {
-    // get consumer only for now
+
+    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
     List<ClientMetadata> getClientList();
 }

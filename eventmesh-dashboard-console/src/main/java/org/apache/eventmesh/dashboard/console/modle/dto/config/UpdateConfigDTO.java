@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle.dto.config;
 
-import java.util.List;
+import org.apache.eventmesh.dashboard.console.modle.dto.operation.OperationBaseDTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Data
-public class UpdateConfigDTO {
+@EqualsAndHashCode(callSuper = true)
+public class UpdateConfigDTO extends OperationBaseDTO {
 
-    private Long clusterId;
 
-    private List<ChangeConfigDTO> changeConfigDTOS;
-
-    private String username;
-
-    private Integer instanceType;
-
-    private Long instanceId;
+    private String configValue;
 }

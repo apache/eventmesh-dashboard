@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.user;
 
 import org.apache.eventmesh.dashboard.common.enums.StoreType;
 
 public class GetUserRequest {
+
     private StoreType serviceType;
 
     private String serviceAddress;

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.config;
 
 import java.util.concurrent.CompletableFuture;
@@ -28,5 +29,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 public class GetConfigResult {
+
     CompletableFuture<GetConfigResponse> getConfigResponseFuture;
 }

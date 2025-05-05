@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
 import lombok.AllArgsConstructor;
@@ -25,5 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateTopicResponse {
+
     private String result;
 }

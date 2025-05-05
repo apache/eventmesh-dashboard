@@ -30,9 +30,10 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>eventmesh-dashboard-core</name>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <kubernetes.client.version>7.1.0</kubernetes.client.version>
     </properties>
 
     <dependencies>
@@ -95,20 +96,29 @@
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
-            <version>4.9.8</version>
+            <version>5.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-tools</artifactId>
-            <version>4.9.8</version>
+            <version>5.2.0</version>
         </dependency>
         <!-- kafka client -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.9.3</version>
+        </dependency>
         <!-- health check client end -->
-
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client</artifactId>
+            <version>${kubernetes.client.version}</version>
+        </dependency>
         <!-- Unit Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

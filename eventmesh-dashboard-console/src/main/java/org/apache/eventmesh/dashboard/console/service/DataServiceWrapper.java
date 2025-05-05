@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service;
 
 
-import org.apache.eventmesh.dashboard.console.service.client.ClientDataService;
+import org.apache.eventmesh.dashboard.console.service.cluster.ClientDataService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
-import org.apache.eventmesh.dashboard.console.service.config.ConfigService;
-import org.apache.eventmesh.dashboard.console.service.connection.ConnectionDataService;
+import org.apache.eventmesh.dashboard.console.service.cluster.ConnectionDataService;
+import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 import org.apache.eventmesh.dashboard.console.service.connector.ConnectorDataService;
-import org.apache.eventmesh.dashboard.console.service.group.GroupService;
-import org.apache.eventmesh.dashboard.console.service.groupmember.GroupMemberService;
-import org.apache.eventmesh.dashboard.console.service.health.HealthDataService;
-import org.apache.eventmesh.dashboard.console.service.registry.RegistryDataService;
-import org.apache.eventmesh.dashboard.console.service.runtime.RuntimeService;
+import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
+import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
+import org.apache.eventmesh.dashboard.console.service.message.GroupMemberService;
+import org.apache.eventmesh.dashboard.console.service.message.GroupService;
+import org.apache.eventmesh.dashboard.console.service.message.TopicService;
 import org.apache.eventmesh.dashboard.console.service.store.StoreService;
-import org.apache.eventmesh.dashboard.console.service.topic.TopicService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,6 +41,7 @@ import lombok.Getter;
  */
 @Component
 @Getter
+@Deprecated
 public class DataServiceWrapper {
 
     @Autowired
@@ -66,9 +67,6 @@ public class DataServiceWrapper {
 
     @Autowired
     private HealthDataService healthDataService;
-
-    @Autowired
-    private RegistryDataService registryDataService;
 
     @Autowired
     private RuntimeService runtimeDataService;

@@ -15,32 +15,27 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
 
+import org.apache.eventmesh.dashboard.common.enums.ResetOffsetMode;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ResetOffsetRequest {
+@EqualsAndHashCode(callSuper = true)
+public class ResetOffsetRequest extends Global2Request {
 
-    Long timestamp;
+    private Long timestamp;
 
-    Long offset;
-
+    private Long offset;
+    private ResetOffsetMode resetOffsetMode;
     private String topic;
-
     private String bootstrapServers;
-
     private Integer partitionId;
-
-    ResetOffsetMode resetOffsetMode;
-
     private String groupName;
 
-    public enum ResetOffsetMode {
-        EARLIEST,
-        LATEST,
-        TIMESTAMP,
-        OFFSET
-    }
 }

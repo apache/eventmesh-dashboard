@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4;
 
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -37,12 +37,7 @@ class Rocketmq4NameserverCheckTest {
     @BeforeEach
     public void init() {
         try {
-            HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
-
-                .connectUrl("127.0.0.1:9876")
-                .requestTimeoutMillis(1000L)
-                .build();
-            rocketmqCheck = new Rocketmq4NameServerCheck(config);
+            rocketmqCheck = new Rocketmq4NameServerCheck();
         } catch (Exception e) {
             log.error("Rocketmq4NameserverCheck failed.", e);
         }

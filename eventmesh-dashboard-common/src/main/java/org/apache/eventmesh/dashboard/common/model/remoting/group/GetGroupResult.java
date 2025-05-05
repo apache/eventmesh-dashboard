@@ -15,14 +15,19 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.group;
+
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 
 import java.util.concurrent.CompletableFuture;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class GetGroupResult {
+@EqualsAndHashCode(callSuper = true)
+public class GetGroupResult extends GlobalResult<GetGroupsResponse> {
 
     private CompletableFuture<GetGroupsResponse> future;
 }

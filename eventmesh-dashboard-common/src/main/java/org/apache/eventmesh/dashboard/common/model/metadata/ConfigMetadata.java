@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Config metadata is a piece of config with key and value
  */
 @Data
-public class ConfigMetadata extends MetadataConfig {
+@EqualsAndHashCode(callSuper = true)
+public class ConfigMetadata extends BaseRuntimeIdBase {
 
     /**
      * property key
@@ -36,8 +41,9 @@ public class ConfigMetadata extends MetadataConfig {
 
     private Long instanceId;
 
+
     @Override
-    public String getUnique() {
-        return configKey;
+    public String nodeUnique() {
+        return this.configKey;
     }
 }

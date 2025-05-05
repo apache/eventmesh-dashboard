@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
 import java.util.concurrent.CompletableFuture;
@@ -23,6 +24,7 @@ import lombok.Data;
 
 @Data
 public class ResetOffsetResult {
+
     private Boolean success;
 
     private CompletableFuture<ResetOffsetResponse> future;

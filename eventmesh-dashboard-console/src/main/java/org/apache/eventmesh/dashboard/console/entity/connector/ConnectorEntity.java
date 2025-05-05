@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.connector;
 
 import org.apache.eventmesh.dashboard.common.enums.KubernetesPodStatus;
 import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
-import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = "status")
-@SuperBuilder
 public class ConnectorEntity extends BaseEntity {
 
     private static final long serialVersionUID = -8226303660232951326L;

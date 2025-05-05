@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import org.apache.eventmesh.dashboard.common.enums.KubernetesPodStatus;
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 
 
-public class ConnectorMetadata extends MetadataConfig {
+public class ConnectorMetadata extends BaseRuntimeIdBase {
 
     private String name;
 
@@ -37,8 +39,9 @@ public class ConnectorMetadata extends MetadataConfig {
      */
     private Integer podState;
 
+
     @Override
-    public String getUnique() {
-        return host + ":" + port;
+    public String nodeUnique() {
+        return "";
     }
 }

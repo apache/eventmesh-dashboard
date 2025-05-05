@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.user;
 
 public class DeleteUserResponse {
+
     Boolean success;
 }

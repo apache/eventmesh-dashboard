@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * cluster table operation
@@ -33,41 +37,96 @@ import java.util.List;
 @Mapper
 public interface ClusterMapper {
 
-    @Select("SELECT * FROM cluster WHERE status=1")
+    @Select("select * from cluster where id=#{id} and status=1")
+    ClusterEntity queryByClusterId(ClusterEntity cluster);
+
+
+    @Select("""
+        select * from cluster where organization_id =#{organizationId}  and cluster_type=#{clusterType}
+        """)
+    List<ClusterEntity> queryClusterByOrganizationIdAndType(ClusterEntity clusterEntity);
+
+
+    @Select("""
+        <script>
+        select * from cluster where id in(
+            select relationship_id from cluster_relationship where cluster_id=#{clusterId} 
+               <if test="clusterType != null and clusterType != ''"> 
+                 and cluster_type = #{clusterType}
+               </if> 
+            )
+        </script>
+        """)
+    List<ClusterEntity> queryRelationClusterByClusterIdAndType(ClusterEntity clusterEntity);
+
+    @Select("""
+        select * from cluster where id in( 
+            select from cluster_relationship where  cluster_id = #{clusterId} 
+              <if test= "clusterType != null"> 
+                 cluster_type = #{clusterType}
+              </if>
+        ) and status=1;
+        """)
+    List<ClusterEntity> queryRelationshipClusterByClusterId(ClusterEntity clusterEntity);
+
+
+    @Select("""
+            <script>
+                select * from cluster where cluster_id in(
+                    select id from cluster_relationship where id in(
+                        <foreach item='item' index='index' separator=','>
+                            item.id
+                        </foreach>
+                    )
+            </script>
+        """)
+    List<ClusterEntity> queryRelationshipClusterByClusterId(List<ClusterEntity> clusterEntityList);
+
+    @Select("select * from cluster where status=1")
     List<ClusterEntity> selectAllCluster();
 
-    @Select("SELECT * FROM cluster WHERE status=1 LIMIT #{rowIndex},#{pageNum}")
-    List<ClusterEntity> selectAllClusterToFront(Integer rowIndex, Integer pageNum);
+    @Select("SELECT * FROM cluster where update_time >  #{updateTime}")
+    List<ClusterEntity> selectClusterByUpdate(@Param("updateTime") long updateTime);
 
     @Insert({
         "<script>",
-        "   INSERT INTO cluster (name, registry_address, bootstrap_servers, eventmesh_version, client_properties, jmx_properties,",
-        "reg_properties, description, auth_type,run_state, store_type) VALUES ",
+        "   insert into cluster (name,trusteeship_type, cluster_type, version, jmx_properties, description, auth_type) values ",
         "   <foreach collection='list' item='c' index='index' separator=','>",
-        "   (#{c.name}, #{c.registryAddress}, #{c.bootstrapServers}, #{c.eventmeshVersion}, #{c.clientProperties}, #{c.jmxProperties}, ",
-        "   #{c.regProperties}, #{c.description}, #{c.authType}, #{c.runState},#{c.storeType})",
+        "   (#{c.name}, #{c.trusteeshipType}, #{c.clusterType}, #{c.version}, , #{c.jmxProperties}, #{c.description}, #{c.authType})",
         "   </foreach>",
         "</script>"})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<ClusterEntity> clusterEntities);
+    Integer batchInsert(List<ClusterEntity> clusterEntities);
 
-    @Select("SELECT * FROM cluster WHERE id=#{id} AND status=1")
-    ClusterEntity selectClusterById(ClusterEntity cluster);
 
-    @Insert("INSERT INTO cluster (name, registry_address, bootstrap_servers, eventmesh_version, client_properties, "
-        + "jmx_properties, reg_properties, description, auth_type, run_state,store_type) VALUES (#{name},#{registryAddress},"
-        + "#{bootstrapServers},#{eventmeshVersion},#{clientProperties},#{jmxProperties},#{regProperties},#{description},#{authType},"
-        + "#{runState},#{storeType})"
-        + "ON DUPLICATE KEY UPDATE status = 1")
+    @Select({
+        "<script>",
+        "",
+        "",
+        "</script>"
+    })
+    Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO);
+
+
+    @Insert({
+        "insert into cluster(name,trusteeship_type,cluster_type,version,jmx_properties,description,auth_type)values",
+        "(#{name},#{c.trusteeshipType},#{c.clusterType},#{c.version},#{jmxProperties},#{regProperties},#{description},#{authType})"
+    })
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addCluster(ClusterEntity cluster);
+    Integer insertCluster(ClusterEntity cluster);
 
-    @Update("UPDATE cluster SET name =#{name},reg_properties=#{regProperties},bootstrap_servers=#{bootstrapServers},"
-        + "eventmesh_version=#{eventmeshVersion},client_properties=#{clientProperties},jmx_properties=#{jmxProperties},"
-        + "reg_properties=#{regProperties},description=#{description},auth_type=#{authType},run_state=#{runState} ,"
-        + "registry_address=#{registryAddress} WHERE id=#{id}")
-    void updateClusterById(ClusterEntity cluster);
+    @Update({"update cluster set name=#{name},jmx_properties=#{jmxProperties},description=#{description},auth_type=#{authType},run_state=#{runState}",
+        " where id=#{id}"
+    })
+    Integer updateClusterById(ClusterEntity cluster);
 
     @Update("UPDATE cluster SET status=0 WHERE id=#{id}")
-    void deactivate(ClusterEntity clusterEntity);
+    Integer deactivate(ClusterEntity clusterEntity);
+
+
+    ClusterEntity lockByClusterId(ClusterEntity clusterEntity);
+
+    Integer updateNumByClusterId(ClusterEntity clusterEntity);
+
+
 }

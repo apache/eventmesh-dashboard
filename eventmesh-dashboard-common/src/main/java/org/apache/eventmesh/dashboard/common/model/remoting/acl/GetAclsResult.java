@@ -15,8 +15,15 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.acl;
 
-public class GetAclsResult {
+
+import org.apache.eventmesh.dashboard.common.model.metadata.AclMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
+
+import java.util.List;
+
+public class GetAclsResult extends GlobalResult<List<AclMetadata>> {
 
 }

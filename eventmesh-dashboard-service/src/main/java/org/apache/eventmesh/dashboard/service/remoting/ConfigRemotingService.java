@@ -15,21 +15,39 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.remoting;
 
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
+import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
+import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.config.DeleteConfigRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.config.UpdateConfigRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
 
 /**
- * A remoting service for config operations. Getting configs from different sources
+ * A remoting service for config operations. Getting configs from different sources 1. runtime 2. RocketMQ 3. connector to db
  */
 public interface ConfigRemotingService {
-    // get from meta service
-    public GetConfigResult getConfigsFromRegistry(GetConfigRequest getConfigRequest);
 
-    public GetConfigResult getConfigsFromRuntime(GetConfigRequest getConfigRequest);
 
-    public GetConfigResult getConfigsFromKafka(GetConfigRequest getConfigRequest);
+    @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
+    BaseGlobalResult addConfig(AddConfigRequest addConfigRequest);
 
-    public GetConfigResult getConfigsFromRocketMQ(GetConfigRequest getConfigRequest);
+    default BaseGlobalResult updateConfig(UpdateConfigRequest updateConfigRequest) {
+        return addConfig(updateConfigRequest);
+    }
+
+    @RemotingServiceMethodMapper(RemotingActionType.DELETE)
+    default BaseGlobalResult deleteConfig(DeleteConfigRequest deleteConfigRequest) {
+        return addConfig(deleteConfigRequest);
+    }
+
+    GetTopicsResult getConfig(GetConfigRequest getConfigRequest);
+
+    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
+    GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest);
 }

@@ -15,64 +15,41 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
-import org.apache.eventmesh.dashboard.console.entity.base.BaseEntity;
+import org.apache.eventmesh.dashboard.common.enums.ClusterOwnType;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseSyncEntity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
+/**
+ *
+ */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true, exclude = "status")
-public class ClusterEntity extends BaseEntity {
+@EqualsAndHashCode(callSuper = true)
+public class ClusterEntity extends BaseSyncEntity {
 
     private String name;
 
-    private String registryAddress;
-
-    private String bootstrapServers;
-
-    private String eventmeshVersion;
-
-    private String clientProperties;
+    private String version;
 
     private String jmxProperties;
 
-    private String regProperties;
+    private String config;
 
     private String description;
 
-    private Integer authType;
+    private Integer runtimeIndex;
+
+    private String authType;
 
     private Integer runState;
 
-    private Integer status;
+    /**
+     * 如何解除共享
+     */
+    private ClusterOwnType clusterOwnType;
 
-    private Integer storeType;
-
-    public ClusterEntity(ClusterMetadata source) {
-        if (source.getClusterName() != null && !source.getClusterName().isEmpty()) {
-            setAuthType(source.getAuthType());
-            setBootstrapServers(source.getBootstrapServers());
-            setClientProperties(source.getClientProperties());
-            setRegistryAddress(source.getRegistryAddress());
-            setEventmeshVersion(source.getEventmeshVersion());
-            setJmxProperties(source.getJmxProperties());
-            setRegProperties(source.getRegProperties());
-            setDescription(source.getDescription());
-            setAuthType(source.getAuthType());
-            setRunState(source.getRunState());
-            setStoreType(source.getStoreType().getNumber());
-            setName(source.getClusterName());
-        } else {
-            throw new RuntimeException("cluster name is empty");
-        }
-    }
 }

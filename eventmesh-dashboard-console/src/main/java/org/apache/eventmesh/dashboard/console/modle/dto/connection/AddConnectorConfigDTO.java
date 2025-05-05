@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle.dto.connection;
 
-import org.apache.eventmesh.dashboard.console.entity.config.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 
 import java.util.List;
 

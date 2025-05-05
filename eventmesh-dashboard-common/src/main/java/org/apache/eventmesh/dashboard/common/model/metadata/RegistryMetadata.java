@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@SuperBuilder
-@NoArgsConstructor
-public class RegistryMetadata extends MetadataConfig {
+public class RegistryMetadata {
 
 
     private String clusterName;
@@ -53,9 +50,4 @@ public class RegistryMetadata extends MetadataConfig {
      * @see RecordStatus
      */
     private Integer status;
-
-    @Override
-    public String getUnique() {
-        return host + ":" + port;
-    }
 }

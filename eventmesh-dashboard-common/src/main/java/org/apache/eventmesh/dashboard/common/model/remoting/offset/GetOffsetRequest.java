@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
 
@@ -26,4 +27,5 @@ public class GetOffsetRequest {
     private String bootstrapServers;
 
     private String groupName;
+
 }

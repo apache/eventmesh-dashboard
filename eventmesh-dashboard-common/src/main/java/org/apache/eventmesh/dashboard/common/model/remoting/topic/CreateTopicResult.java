@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
-import java.util.concurrent.CompletableFuture;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class CreateTopicResult {
-    CompletableFuture<CreateTopicResponse> createTopicResponseFuture;
+public class CreateTopicResult extends GlobalResult<CreateTopicResponse> {
+
 }

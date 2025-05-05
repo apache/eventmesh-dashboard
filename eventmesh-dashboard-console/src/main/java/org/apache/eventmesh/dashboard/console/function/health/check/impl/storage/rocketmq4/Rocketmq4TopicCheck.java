@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4;
 
 import static org.apache.rocketmq.client.producer.SendStatus.SEND_OK;
@@ -22,7 +23,7 @@ import static org.apache.rocketmq.client.producer.SendStatus.SEND_OK;
 import org.apache.eventmesh.dashboard.common.constant.health.HealthConstant;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq.RocketMQRemotingSDKOperation.DefaultRemotingClient;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
@@ -35,14 +36,14 @@ import org.apache.rocketmq.common.TopicFilterType;
 import org.apache.rocketmq.common.constant.PermName;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
-import org.apache.rocketmq.common.protocol.RequestCode;
-import org.apache.rocketmq.common.protocol.header.CreateTopicRequestHeader;
-import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.apache.rocketmq.remoting.RemotingClient;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.netty.NettyClientConfig;
 import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
+import org.apache.rocketmq.remoting.protocol.RequestCode;
+import org.apache.rocketmq.remoting.protocol.header.CreateTopicRequestHeader;
+import org.apache.rocketmq.remoting.protocol.heartbeat.MessageModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,7 +56,7 @@ import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
+public class Rocketmq4TopicCheck extends AbstractHealthCheckService<DefaultRemotingClient> {
 
     private RemotingClient remotingClient;
 
@@ -67,9 +68,6 @@ public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
 
     private BlockingQueue<Message> consumedMessages = new LinkedBlockingQueue<>();
 
-    public Rocketmq4TopicCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
-        super(healthCheckObjectConfig);
-    }
 
     @Override
     public void doCheck(HealthCheckCallback callback) {
@@ -109,7 +107,7 @@ public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
 
     private synchronized void consume(HealthCheckCallback callback, String uuid) {
         try {
-            while (System.currentTimeMillis() - startTime < getConfig().getRequestTimeoutMillis()) {
+            while (System.currentTimeMillis() - startTime < 3000) {
                 Message message = consumedMessages.poll(System.currentTimeMillis() - startTime, TimeUnit.MILLISECONDS);
                 if (message != null) {
                     log.debug("RocketmqTopicCheck consume message:{}", new String(message.getBody()));
@@ -144,7 +142,7 @@ public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
             requestHeader.setWriteQueueNums(8);
             requestHeader.setPerm(PermName.PERM_READ | PermName.PERM_WRITE);
             RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC, requestHeader);
-            Object result = remotingClient.invokeSync(getConfig().getRocketmqConfig().getBrokerUrl(), request, getConfig().getRequestTimeoutMillis());
+            Object result = this.getClient().invokeSync(request, 3000);
             log.info(result.toString());
         } catch (Exception e) {
             log.error("RocketmqTopicCheck init failed when examining topic stats.", e);
@@ -153,13 +151,13 @@ public class Rocketmq4TopicCheck extends AbstractHealthCheckService {
 
         try {
             producer = new DefaultMQProducer(HealthConstant.ROCKETMQ_CHECK_PRODUCER_GROUP);
-            producer.setNamesrvAddr(getConfig().getRocketmqConfig().getNameServerUrl());
+            //producer.setNamesrvAddr(getConfig().getRocketmqConfig().getNameServerUrl());
             producer.setCompressMsgBodyOverHowmuch(16);
             producer.start();
 
             consumer = new DefaultMQPushConsumer(HealthConstant.ROCKETMQ_CHECK_CONSUMER_GROUP);
             consumer.setMessageModel(MessageModel.CLUSTERING);
-            consumer.setNamesrvAddr(getConfig().getRocketmqConfig().getNameServerUrl());
+            //consumer.setNamesrvAddr(getConfig().getRocketmqConfig().getNameServerUrl());
             consumer.subscribe(HealthConstant.ROCKETMQ_CHECK_TOPIC, "*");
             consumer.registerMessageListener(new MessageListenerConcurrently() {
                 @Override

@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.acl;
 
 public class CreateAclRequest {
+
     //acl is included in runtime config
     private String runtimeAddress;
 }

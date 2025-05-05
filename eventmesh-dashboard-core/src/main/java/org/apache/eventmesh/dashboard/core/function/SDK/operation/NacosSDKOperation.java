@@ -15,42 +15,79 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.RemotingType;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateNacosConfig;
 import org.apache.eventmesh.dashboard.core.function.SDK.wrapper.NacosSDKWrapper;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Objects;
+import java.util.Properties;
 
+import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.naming.NamingService;
 
-public class NacosSDKOperation extends AbstractSDKOperation<NacosSDKWrapper> {
+@SDKMetadata(clusterType = {ClusterType.EVENTMESH_META_NACOS}, remotingType = RemotingType.EVENT_MESH_NACOS, sdkTypeEnum = {SDKTypeEnum.ADMIN,
+    SDKTypeEnum.PING})
+public class NacosSDKOperation extends AbstractSDKOperation<NacosSDKWrapper, CreateNacosConfig> {
+
+
+    private static Properties createProperties(CreateNacosConfig clientConfig) {
+        Properties properties = new Properties();
+        properties.put(PropertyKeyConst.SERVER_ADDR, clientConfig.doUniqueKey());
+        properties.put(PropertyKeyConst.NAMESPACE, clientConfig.getNamespace());
+        properties.put(PropertyKeyConst.USERNAME, clientConfig.getUsername());
+        properties.put(PropertyKeyConst.PASSWORD, clientConfig.getPassword());
+        properties.put(PropertyKeyConst.ACCESS_KEY, clientConfig.getAccessKey());
+        properties.put(PropertyKeyConst.SECRET_KEY, clientConfig.getSecretKey());
+        return properties;
+    }
 
     private final NacosConfigSDKOperation nacosConfigClientCreateOperation = new NacosConfigSDKOperation();
+
     private final NacosNamingSDKOperation nacosNamingClientCreateOperation = new NacosNamingSDKOperation();
 
     @Override
-    public SimpleEntry<String, NacosSDKWrapper> createClient(CreateSDKConfig createClientConfig) {
-        SimpleEntry<String, ConfigService> configSimpleEntry = nacosConfigClientCreateOperation.createClient(createClientConfig);
-        SimpleEntry<String, NamingService> namingSimpleEntry = nacosNamingClientCreateOperation.createClient(createClientConfig);
-        if (!Objects.equals(configSimpleEntry.getKey(), namingSimpleEntry.getKey())) {
-            throw new RuntimeException("Nacos config and naming server address not match");
-        }
-        NacosSDKWrapper nacosClient = new NacosSDKWrapper(
-            (ConfigService) configSimpleEntry.getValue(), (NamingService) namingSimpleEntry.getValue()
-        );
-        return new SimpleEntry<>(configSimpleEntry.getKey(), nacosClient);
+    public NacosSDKWrapper createClient(CreateNacosConfig createClientConfig) throws Exception {
+        ConfigService configSimpleEntry = nacosConfigClientCreateOperation.createClient(createClientConfig);
+        NamingService namingSimpleEntry = nacosNamingClientCreateOperation.createClient(createClientConfig);
+        return new NacosSDKWrapper(configSimpleEntry, namingSimpleEntry);
     }
 
     @Override
-    public void close(Object client) {
-        try {
-            castClient(client).shutdown();
-        } catch (Exception e) {
-            throw new RuntimeException("Nacos client close failed", e);
+    public void close(NacosSDKWrapper client) throws Exception {
+        client.shutdown();
+    }
+
+    public static class NacosConfigSDKOperation extends AbstractSDKOperation<ConfigService, CreateNacosConfig> {
+
+        @Override
+        public ConfigService createClient(CreateNacosConfig clientConfig) throws Exception {
+            return NacosFactory.createConfigService(createProperties(clientConfig));
+        }
+
+        @Override
+        public void close(ConfigService client) throws Exception {
+            client.shutDown();
+        }
+    }
+
+    public static class NacosNamingSDKOperation extends AbstractSDKOperation<NamingService, CreateNacosConfig> {
+
+        @Override
+        public NamingService createClient(CreateNacosConfig clientConfig) throws Exception {
+            return NacosFactory.createNamingService(createProperties(clientConfig));
+        }
+
+        @Override
+        public void close(NamingService client) throws Exception {
+            client.shutDown();
         }
     }
 }

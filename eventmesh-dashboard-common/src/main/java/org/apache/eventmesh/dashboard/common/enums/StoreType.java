@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.enums;
 
 import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.STORE_TYPE_KAFKA;
@@ -27,6 +28,7 @@ import static org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant.S
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@Deprecated
 @AllArgsConstructor
 public enum StoreType {
 
