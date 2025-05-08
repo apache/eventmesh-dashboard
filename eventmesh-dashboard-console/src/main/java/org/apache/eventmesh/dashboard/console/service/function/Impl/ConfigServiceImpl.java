@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.function.Impl;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.DefaultConfigKey;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
-import org.apache.eventmesh.dashboard.console.modle.config.ChangeConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.config.UpdateConfigsLog;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.ChangeConfigDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigsLog;
 import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
 
 import java.util.Arrays;
@@ -51,7 +53,7 @@ public class ConfigServiceImpl implements ConfigService {
     public void logUpdateRuntimeConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigEntity> changeConfigEntityList) {
         changeConfigEntityList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(0);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -65,7 +67,7 @@ public class ConfigServiceImpl implements ConfigService {
     public void logUpdateStoreConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigEntity> changeConfigEntityList) {
         changeConfigEntityList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(1);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -79,7 +81,7 @@ public class ConfigServiceImpl implements ConfigService {
     public void logUpdateConnectorConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigEntity> changeConfigEntityList) {
         changeConfigEntityList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(2);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -93,7 +95,7 @@ public class ConfigServiceImpl implements ConfigService {
     public void logUpdateTopicConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigEntity> changeConfigEntityList) {
         changeConfigEntityList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(3);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -128,6 +130,11 @@ public class ConfigServiceImpl implements ConfigService {
 
 
     @Override
+    public List<ConfigEntity> queryByClusterAndInstanceId(ConfigEntity configEntity) {
+        return null;
+    }
+
+    @Override
     public List<ConfigEntity> selectAll() {
         return configMapper.selectAll();
     }
@@ -138,6 +145,15 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
+    public void copyConfig(Long sourceId, Long targetId) {
+        configMapper.copyConfig(sourceId, targetId);
+    }
+
+    @Override
+    public void restoreConfig(Long sourceId, Long targetId) {
+
+    }
+
     public String mapToYaml(Map<String, String> stringMap) {
         Yaml yaml = new Yaml();
         return yaml.dumpAsMap(stringMap);
@@ -165,9 +181,9 @@ public class ConfigServiceImpl implements ConfigService {
         return stringStringConcurrentHashMap;
     }
 
-    @Override
-    public void insertConfig(ConfigEntity configEntity) {
-        configMapper.insertConfig(configEntity);
+
+    public Integer addConfig(ConfigEntity configEntity) {
+        return configMapper.addConfig(configEntity);
     }
 
     @Override
@@ -179,14 +195,18 @@ public class ConfigServiceImpl implements ConfigService {
     public List<ConfigEntity> selectByInstanceIdAndType(Long instanceId, Integer type) {
         ConfigEntity config = new ConfigEntity();
         config.setInstanceId(instanceId);
-        config.setInstanceType(type);
+        config.setInstanceType(null);
         return configMapper.selectByInstanceId(config);
     }
 
 
     @Override
-    public List<ConfigEntity> selectToFront(ConfigEntity config) {
-        return configMapper.selectConfigsToFrontWithDynamic(config);
+    public List<ConfigEntity> selectToFront(Long instanceId, Integer type, GetConfigsListDTO getConfigsListDTO) {
+        ConfigEntity config = new ConfigEntity();
+        config.setInstanceId(instanceId);
+        config.setInstanceType(null);
+        config = this.setSearchCriteria(getConfigsListDTO, config);
+        return configMapper.getConfigsToFrontWithDynamic(config);
     }
 
     public void insertDefaultConfigToCache() {

@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.message;
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
 
@@ -27,25 +29,26 @@ import java.util.List;
  */
 public interface TopicService {
 
-    List<TopicDetailGroupVO> selectTopicDetailGroups(Long topicId);
+    List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId);
 
     void createTopic(TopicEntity topicEntity);
 
+
     void batchInsert(List<TopicEntity> topicEntities);
+
+    List<RuntimeEntity> queryRuntimeByBaseSyncEntity(List<TopicEntity> topicName);
 
     List<TopicEntity> selectAll();
 
-    void insertTopic(TopicEntity topicEntity);
-
     Integer updateTopic(TopicEntity topicEntity);
 
-    void deleteTopicById(TopicEntity topicEntity);
+    Integer deleteTopicById(TopicEntity topicEntity);
 
     TopicEntity selectTopicById(TopicEntity topicEntity);
 
-    Integer deleteTopic(TopicEntity topicEntity);
+    Integer deleteTopicByRuntimeIdAndTopicName(List<TopicEntity> topicEntity);
 
     List<TopicEntity> selectTopiByCluster(TopicEntity topicEntity);
 
-    List<TopicEntity> selectTopicListToFront(TopicEntity topicEntity);
+    List<TopicEntity> getTopicListToFront(TopicEntity topicEntity);
 }

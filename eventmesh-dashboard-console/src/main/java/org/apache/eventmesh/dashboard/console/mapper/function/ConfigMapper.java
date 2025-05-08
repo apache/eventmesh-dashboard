@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapper.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -31,7 +34,7 @@ import java.util.List;
  * config table operation
  */
 @Mapper
-public interface ConfigMapper {
+public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
     @Select({
         "<script>",
@@ -63,26 +66,6 @@ public interface ConfigMapper {
     @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId}")
     List<ConfigEntity> selectConfigsByInstance(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId} AND is_default=0")
-    List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
-
-    @Select("SELECT * FROM config WHERE cluster_id=-1 AND business_type=#{businessType} AND instance_type=#{instanceType} AND is_default=1")
-    List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
-
-    @Select("SELECT * FROM config WHERE is_default=1")
-    List<ConfigEntity> selectAllDefaultConfig();
-
-    @Select("SELECT * FROM config WHERE cluster_id=#{clusterId} AND instance_type=#{instanceType} "
-        + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
-    ConfigEntity selectByUnique(ConfigEntity configEntity);
-
-    @Update("UPDATE config SET status=0 WHERE id=#{id}")
-    Integer deleteConfig(ConfigEntity configEntity);
-
-    @Update("UPDATE config SET config_value=#{configValue} ,already_update=#{alreadyUpdate} WHERE instance_type=#{instanceType} AND"
-        + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
-    Integer updateConfig(ConfigEntity configEntity);
-
     @Insert({
         "<script>",
         "   INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, start_version,",
@@ -94,15 +77,46 @@ public interface ConfigMapper {
         "   </foreach>",
         "</script>"})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    Integer batchInsert(List<ConfigEntity> configEntityList);
+    void batchInsert(List<ConfigEntity> configEntityList);
+
+
+    @Insert("insert into config () select *,#{targetId} as cluster_id from config where clster where cluster_id = #{sourceId}")
+    void copyConfig(@Param("sourceId") Long sourceId, @Param("targetId") Long targetId);
 
     @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, "
-        + "status, is_default,  diff_type, description, edit, is_modify,start_version,"
-        + "eventmesh_version,end_version) VALUE "
-        + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
-        + "#{configValue},#{status},#{isDefault},#{diffType},#{description},#{edit},#{isModify},"
-        + "#{startVersion},#{eventmeshVersion},#{endVersion})")
+            + "status, is_default,  diff_type, description, edit, is_modify,start_version,"
+            + "eventmesh_version,end_version) VALUE "
+            + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
+            + "#{configValue},#{status},#{isDefault},#{diffType},#{description},#{edit},#{isModify},"
+            + "#{startVersion},#{eventmeshVersion},#{endVersion})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void insertConfig(ConfigEntity configEntity);
+    Integer addConfig(ConfigEntity configEntity);
 
+    @Update("UPDATE config SET status=0 WHERE id=#{id}")
+    Integer deleteConfig(ConfigEntity configEntity);
+
+    @Update("UPDATE config SET config_value=#{configValue} ,already_update=#{alreadyUpdate} WHERE instance_type=#{instanceType} AND"
+            + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
+    void updateConfig(ConfigEntity configEntity);
+
+    @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId} AND is_default=0")
+    List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
+
+    @Select("SELECT * FROM config WHERE cluster_id=-1 AND business_type=#{businessType} AND instance_type=#{instanceType} AND is_default=1")
+    List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
+
+    @Select("SELECT * FROM config WHERE is_default=1")
+    List<ConfigEntity> selectAllDefaultConfig();
+
+    @Select("SELECT * FROM config WHERE cluster_id=#{clusterId} AND instance_type=#{instanceType} "
+            + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
+    ConfigEntity selectByUnique(ConfigEntity configEntity);
+
+    void syncInsert(List<ConfigEntity> entityList);
+
+    void syncUpdate(List<ConfigEntity> entityList);
+
+    void syncDelete(List<ConfigEntity> entityList);
+
+    List<ConfigEntity> syncGet(ConfigEntity topicEntity);
 }

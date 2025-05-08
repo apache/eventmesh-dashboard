@@ -15,39 +15,31 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.runtime;
 
 import static org.apache.eventmesh.dashboard.core.function.SDK.util.RuntimeSDKOperationUtils.buildEventMeshHttpProducerConfig;
 
 import org.apache.eventmesh.client.http.conf.EventMeshHttpClientConfig;
 import org.apache.eventmesh.client.http.producer.EventMeshHttpProducer;
-import org.apache.eventmesh.common.exception.EventMeshException;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRuntimeConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
-
-import java.util.AbstractMap.SimpleEntry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RuntimeHttpProducerSDKOperation extends AbstractSDKOperation<EventMeshHttpProducer> {
+public class RuntimeHttpProducerSDKOperation extends AbstractSDKOperation<EventMeshHttpProducer, CreateRuntimeConfig> {
 
     @Override
-    public SimpleEntry<String, EventMeshHttpProducer> createClient(CreateSDKConfig clientConfig) {
-        final CreateRuntimeConfig runtimeConfig = (CreateRuntimeConfig) clientConfig;
+    public EventMeshHttpProducer createClient(CreateRuntimeConfig runtimeConfig) throws Exception {
         final EventMeshHttpClientConfig httpClientConfig = buildEventMeshHttpProducerConfig(runtimeConfig);
-        EventMeshHttpProducer httpProducer = null;
-        try {
-            httpProducer = new EventMeshHttpProducer(httpClientConfig);
-        } catch (EventMeshException e) {
-            log.error("create runtime http Producer client failed", e);
-        }
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), httpProducer);
+
+        return new EventMeshHttpProducer(httpClientConfig);
+
     }
 
     @Override
-    public void close(Object client) {
-        castClient(client).close();
+    public void close(EventMeshHttpProducer client) throws Exception {
+        client.close();
     }
 }

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.function.Impl;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
@@ -100,7 +101,7 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
 
 
     @Override
-    public List<HealthCheckResultEntity> selectInstanceLiveStatusHistory(Integer type, Long instanceId, LocalDateTime startTime) {
+    public List<HealthCheckResultEntity> getInstanceLiveStatusHistory(Integer type, Long instanceId, LocalDateTime startTime) {
         HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity();
         healthCheckResultEntity.setType(type);
         healthCheckResultEntity.setTypeId(instanceId);
@@ -159,7 +160,7 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
             healthCheckResultEntityList.forEach(updateEntity -> {
                 if (entity.getClusterId().equals(updateEntity.getClusterId()) && entity.getType().equals(updateEntity.getType())
                     && entity.getTypeId().equals(updateEntity.getTypeId())) {
-                    entity.setState(updateEntity.getState());
+                    entity.setStatus(updateEntity.getStatus());
                     entity.setResultDesc(updateEntity.getResultDesc());
                 }
             });

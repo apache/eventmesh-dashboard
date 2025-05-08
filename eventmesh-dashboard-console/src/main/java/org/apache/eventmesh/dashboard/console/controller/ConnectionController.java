@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.controller;
 
-
-import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.mapstruct.connection.ConnectionControllerMapper;
+import org.apache.eventmesh.dashboard.console.modle.dto.connection.AddConnectionDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.connection.CreateConnectionDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.connection.GetConnectionListDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.connection.ConnectionListVO;
@@ -29,7 +28,6 @@ import org.apache.eventmesh.dashboard.console.service.cluster.ConnectionDataServ
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/cluster/connection")
 public class ConnectionController {
 
-    @Autowired
+
     private ConnectionDataService connectionDataService;
 
     /**

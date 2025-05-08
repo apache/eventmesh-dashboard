@@ -15,40 +15,29 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq;
 
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqAdminSDKConfig;
 
-import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
-
-import java.util.AbstractMap.SimpleEntry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RocketMQAdminOperation extends AbstractSDKOperation<DefaultMQAdminExt> {
+public class RocketMQAdminOperation extends AbstractSDKOperation<DefaultMQAdminExt, CreateRocketmqAdminSDKConfig> {
 
     @Override
-    public SimpleEntry<String, DefaultMQAdminExt> createClient(CreateSDKConfig clientConfig) {
-        DefaultMQAdminExt admin = null;
-        try {
-
-            CreateRocketmqConfig config = (CreateRocketmqConfig) clientConfig;
-            admin = new DefaultMQAdminExt();
-            admin.setNamesrvAddr(config.getNameServerUrl());
-            admin.start();
-        } catch (MQClientException e) {
-            log.error("create rocketmq producer failed", e);
-        }
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), admin);
+    public DefaultMQAdminExt createClient(CreateRocketmqAdminSDKConfig clientConfig) throws Exception {
+        DefaultMQAdminExt admin = new DefaultMQAdminExt();
+        admin.setNamesrvAddr(clientConfig.doUniqueKey());
+        admin.start();
+        return admin;
     }
 
     @Override
-    public void close(Object client) {
-        ((DefaultMQProducer) client).shutdown();
+    public void close(DefaultMQAdminExt client) throws Exception {
+        client.shutdown();
     }
 }

@@ -15,26 +15,37 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.metadata;
+
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AclMetadata extends MetadataConfig {
+public class AclMetadata extends BaseRuntimeIdBase {
 
     private Long clusterId;
+
     private String principal;
+
     private Integer operation;
+
     private String permissionType;
+
     private String host;
+
     private String resourceType;
+
     private String resourceName;
+
     private Integer patternType;
 
+
     @Override
-    public String getUnique() {
-        return null;
+    public String nodeUnique() {
+        return this.principal;
     }
 }

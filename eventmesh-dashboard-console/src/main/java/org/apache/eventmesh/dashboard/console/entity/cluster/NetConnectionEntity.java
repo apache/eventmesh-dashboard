@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import java.time.LocalDateTime;
 
@@ -26,7 +27,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class NetConnectionEntity extends BaseEntity {
+public class NetConnectionEntity extends BaseRuntimeIdEntity {
 
 
     private Long clusterId;
@@ -41,7 +42,6 @@ public class NetConnectionEntity extends BaseEntity {
 
     private Integer runtimePort;
 
-    private int status;
 
     private String description;
 

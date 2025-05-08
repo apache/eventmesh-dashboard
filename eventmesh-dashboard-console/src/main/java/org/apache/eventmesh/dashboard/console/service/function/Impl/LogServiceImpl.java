@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.function.Impl;
 
 import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
 import org.apache.eventmesh.dashboard.console.mapper.function.OprLogMapper;
+import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
 import org.apache.eventmesh.dashboard.console.service.function.LogService;
 
 import java.util.List;

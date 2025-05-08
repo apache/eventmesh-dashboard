@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.controller.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.mapstruct.config.ConfigControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.DetailConfigsVO;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigDTO;
@@ -44,12 +44,7 @@ public class ConfigController {
 
     @PostMapping("/updateConfigs")
     public String updateConfigsByTypeAndId(@Validated @RequestBody UpdateConfigDTO updateConfigDTO) {
-        try {
-            configService.updateConfigsByInstanceId(updateConfigDTO.getUsername(), updateConfigDTO.getClusterId(), updateConfigDTO.getInstanceType(),
-                updateConfigDTO.getInstanceId(), updateConfigDTO.getChangeConfigEntities());
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+        
         return "success";
     }
 

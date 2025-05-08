@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity;
 
 
 import lombok.Data;
 
 @Data
+@Deprecated
 public class DefaultConfigKey {
 
     private String businessType;

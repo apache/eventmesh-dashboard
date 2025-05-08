@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eventmesh-runtime
+  labels:
+    app: eventmesh
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: eventmesh-runtime
+  template:
+    metadata:
+      labels:
+        app: eventmesh-runtime
+    spec:
+      containers:
+        - name: eventmesh-container
+          image: apache/eventmesh-runtime:latest
+          ports:
+            - containerPort: 10000  # HTTP API 端口
+            - containerPort: 10105  # gRPC 端口
+            - containerPort: 10111  # tcp 端口
+            - containerPort: 11111  # admin 端口
+          env:
+            - name: EVENTMESH_STORAGE_TYPE
+              value: "rocketmq"  # 指定事件存储类型（如 RocketMQ/Kafka）
+            - name: ROCKETMQ_NAMESRV_ADDR
+              value: "rocketmq-namesrv:9876"  # 中间件地址
+          volumeMounts:
+            - name: eventmesh-config
+              mountPath: /eventmesh/conf
+      volumes:
+        - name: eventmesh-config
+          configMap:
+            name: eventmesh-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eventmesh-service
+spec:
+  type: LoadBalancer
+  ports:
+    - name: admin
+      port: 11111
+      targetPort: 11111
+      protocol: TCP
+    - name: TCP
+      port: 10111
+      targetPort: 10111
+      protocol: TCP
+    - name: http
+      port: 10000
+      targetPort: 10000
+      protocol: TCP
+    - name: grpc
+      port: 10105
+      targetPort: 10105
+      protocol: TCP
+  selector:
+    app: eventmesh-runtime

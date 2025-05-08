@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.remoting;
 
 /**
  *
  */
+@Deprecated
 public interface RemotingIntegrationService extends AclRemotingService, ClientRemotingService, ConfigRemotingService, ConnectorRemotingService,
     GroupRemotingService, MetaRemotingService, OffsetRemotingService, SubscriptionRemotingService, TopicRemotingService, UserRemotingService {
 

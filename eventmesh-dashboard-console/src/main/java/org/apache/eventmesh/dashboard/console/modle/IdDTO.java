@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle;
+
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalRequest;
 
 import lombok.Data;
 

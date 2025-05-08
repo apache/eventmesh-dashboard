@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.meta;
 
-import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_NACOS_REGISTRY;
-import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_META;
-import static org.apache.eventmesh.dashboard.common.constant.health.HealthConstant.NACOS_CHECK_SERVICE_CLUSTER_NAME;
 import static org.apache.eventmesh.dashboard.common.constant.health.HealthConstant.NACOS_CHECK_SERVICE_NAME;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckTypeEnum;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
-
-import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
+import org.apache.eventmesh.dashboard.core.function.SDK.wrapper.NacosSDKWrapper;
 
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.api.naming.NamingFactory;
-import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,20 +37,15 @@ import lombok.extern.slf4j.Slf4j;
  */
 
 @Slf4j
-@HealthCheckType(type = HEALTH_CHECK_TYPE_META, subType = HEALTH_CHECK_SUBTYPE_NACOS_REGISTRY)
-public class NacosNamingServiceCheck extends AbstractHealthCheckService {
+@HealthCheckType(clusterType = {ClusterType.EVENTMESH_META_NACOS}, healthType = HealthCheckTypeEnum.PING)
+public class NacosNamingServiceCheck extends AbstractHealthCheckService<NacosSDKWrapper> {
 
-    private NamingService namingService;
-
-    public NacosNamingServiceCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
-        super(healthCheckObjectConfig);
-    }
 
     @Override
     public void doCheck(HealthCheckCallback callback) {
-        CompletableFuture.runAsync(() -> {
+        this.completableFuture(() -> {
             try {
-                Instance result = namingService.selectOneHealthyInstance(NACOS_CHECK_SERVICE_NAME);
+                Instance result = this.getClient().getNamingService().selectOneHealthyInstance(NACOS_CHECK_SERVICE_NAME);
                 if (result.isHealthy()) {
                     callback.onSuccess();
                 } else {
@@ -63,30 +53,7 @@ public class NacosNamingServiceCheck extends AbstractHealthCheckService {
                 }
             } catch (NacosException e) {
                 callback.onFail(e);
-            } finally {
-                destroy();
             }
         });
-    }
-
-    @Override
-    public void init() {
-        try {
-            Properties properties = new Properties();
-            properties.put("serverAddr", getConfig().getConnectUrl());
-            namingService = NamingFactory.createNamingService(properties);
-            namingService.registerInstance(NACOS_CHECK_SERVICE_NAME, "11.11.11.11", 8888, NACOS_CHECK_SERVICE_CLUSTER_NAME);
-        } catch (NacosException e) {
-            log.error("NacosRegistryCheck init failed", e);
-        }
-    }
-
-    @Override
-    public void destroy() {
-        try {
-            namingService.deregisterInstance(NACOS_CHECK_SERVICE_NAME, "11.11.11.11", 8888, NACOS_CHECK_SERVICE_CLUSTER_NAME);
-        } catch (NacosException e) {
-            log.error("NacosRegistryCheck destroy failed", e);
-        }
     }
 }

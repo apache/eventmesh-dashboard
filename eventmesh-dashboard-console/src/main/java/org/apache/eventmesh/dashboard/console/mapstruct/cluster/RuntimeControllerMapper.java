@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapstruct.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.IdDTO;
-import org.apache.eventmesh.dashboard.console.modle.cluster.runtime.CrateRuntimeDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.runtime.CreateRuntimeDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.runtime.QueryRuntimeListByClusterIdFormDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.runtime.QueryRuntimeListByOrganizationIdAndFormDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -34,11 +37,16 @@ public interface RuntimeControllerMapper {
     RuntimeControllerMapper INSTANCE = Mappers.getMapper(RuntimeControllerMapper.class);
 
 
+
+    RuntimeEntity queryRuntimeListByClusterIdForm(QueryRuntimeListByClusterIdFormDTO dto);
+
+    RuntimeEntity queryRuntimeListByOrganizationIdAndForm(QueryRuntimeListByOrganizationIdAndFormDTO dto);
+
     RuntimeEntity queryRuntimeListByClusterId(ClusterIdDTO clusterIdDTO);
 
     RuntimeEntity queryRuntimeListById(IdDTO idDTO);
 
-    RuntimeEntity crateRuntime(CrateRuntimeDTO crateRuntimeDTO);
+    RuntimeEntity crateRuntime(CreateRuntimeDTO crateRuntimeDTO);
 
 
 }

@@ -15,35 +15,18 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class CreateNacosConfig implements CreateSDKConfig {
-
-    private String serverAddress = "127.0.0.1:8848";
-
-    private String namespace = "";
+@EqualsAndHashCode(callSuper = true)
+public class CreateNacosConfig extends AbstractSimpleCreateSDKConfig {
 
     private String username = "nacos";
 
-    private String password = "nacos";
-
-    private String accessKey = "";
-
-    private String secretKey = "";
-
-    @Override
-    public String getUniqueKey() {
-        return serverAddress;
-    }
 }
 
 

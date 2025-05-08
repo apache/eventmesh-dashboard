@@ -36,14 +36,11 @@
     </properties>
 
     <dependencies>
-        <!-- TODO: common module should not contains spring framework, considering remove this dependency -->
-        <!-- Spring Boot Starter -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <scope>provided</scope>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>5.1.19.RELEASE</version>
         </dependency>
-
         <!-- Utility -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -53,6 +50,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>

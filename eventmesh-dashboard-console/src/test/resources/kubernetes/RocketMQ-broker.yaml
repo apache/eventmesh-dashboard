@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rocketmq-broker
+  name: rocketmq-broker
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocketmq-broker
+  template:
+    metadata:
+      labels:
+        app: rocketmq-broker
+    spec:
+      containers:
+        - env:
+            - name: ${metaAddress}     #通过环境变量指定namesrv 地址，注意该值为namesrv svc地址
+              value: rocketmq-dialevoneid:9876
+          image: rocketmqinc/rocketmq:4.4.0
+          command: ["/bin/sh","mqbroker"]
+          name: rocketmq-broker
+          ports:
+            - containerPort: ${prot1}
+              name: tcp-10909
+              protocol: TCP
+            - containerPort: ${prot2}
+              name: tcp-10911
+              protocol: TCP
+            - containerPort: ${prot3}
+              name: tcp-10912
+              protocol: TCP
+          resources:
+            limits:
+              memory: 1200Mi
+            requests:
+              memory: 1200Mi

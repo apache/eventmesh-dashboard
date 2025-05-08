@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.controller.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
@@ -38,7 +39,7 @@ public class HealthController {
 
     @GetMapping("/getHistoryLiveStatus")
     public List<HealthCheckResultEntity> getHistoryLiveStatusById(Integer type, Long instanceId, String startTime) {
-        return healthDataService.selectInstanceLiveStatusHistory(type, instanceId, LocalDateTime.parse(startTime));
+        return healthDataService.getInstanceLiveStatusHistory(type, instanceId, LocalDateTime.parse(startTime));
     }
 
     @GetMapping("/getInstanceLiveProportion")

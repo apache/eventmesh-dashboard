@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
@@ -31,7 +32,7 @@ public interface HealthDataService {
 
     InstanceLiveProportionVo selectInstanceLiveProportion(Long clusterId, Integer instanceType);
 
-    List<HealthCheckResultEntity> selectInstanceLiveStatusHistory(Integer type, Long clusterId, LocalDateTime startTime);
+    List<HealthCheckResultEntity> getInstanceLiveStatusHistory(Integer type, Long clusterId, LocalDateTime startTime);
 
     HealthCheckResultEntity insertHealthCheckResult(HealthCheckResultEntity healthCheckResultEntity);
 

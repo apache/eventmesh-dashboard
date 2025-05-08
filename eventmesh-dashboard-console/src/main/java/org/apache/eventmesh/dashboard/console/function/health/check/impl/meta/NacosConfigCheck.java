@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.meta;
 
-import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_NACOS_CONFIG;
-import static org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant.HEALTH_CHECK_TYPE_META;
 import static org.apache.eventmesh.dashboard.common.constant.health.HealthConstant.NACOS_CHECK_CONTENT;
 import static org.apache.eventmesh.dashboard.common.constant.health.HealthConstant.NACOS_CHECK_DATA_ID;
 import static org.apache.eventmesh.dashboard.common.constant.health.HealthConstant.NACOS_CHECK_GROUP;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.wrapper.NacosSDKWrapper;
 
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
-import com.alibaba.nacos.api.NacosFactory;
-import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,20 +38,15 @@ import lombok.extern.slf4j.Slf4j;
  * Interface to check the state of nacos
  */
 @Slf4j
-@HealthCheckType(type = HEALTH_CHECK_TYPE_META, subType = HEALTH_CHECK_SUBTYPE_NACOS_CONFIG)
-public class NacosConfigCheck extends AbstractHealthCheckService {
+@HealthCheckType(clusterType = {ClusterType.EVENTMESH_META_NACOS})
+public class NacosConfigCheck extends AbstractHealthCheckService<NacosSDKWrapper> {
 
-    private ConfigService configService;
-
-    public NacosConfigCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
-        super(healthCheckObjectConfig);
-    }
 
     @Override
     public void doCheck(HealthCheckCallback callback) {
         CompletableFuture.runAsync(() -> {
             try {
-                String content = configService.getConfig(NACOS_CHECK_DATA_ID, NACOS_CHECK_GROUP, getConfig().getRequestTimeoutMillis());
+                String content = this.getClient().getConfigService().getConfig(NACOS_CHECK_DATA_ID, NACOS_CHECK_GROUP, 3000);
                 if (NACOS_CHECK_CONTENT.equals(content)) {
                     callback.onSuccess();
                 } else {
@@ -66,40 +58,4 @@ public class NacosConfigCheck extends AbstractHealthCheckService {
         });
     }
 
-    @Override
-    public void init() {
-        //create a config
-        try {
-            Properties properties = new Properties();
-            properties.put("serverAddr", getConfig().getConnectUrl());
-            ConfigService configService = NacosFactory.createConfigService(properties);
-            boolean isPublishOk = configService.publishConfig(NACOS_CHECK_DATA_ID, NACOS_CHECK_GROUP,
-                NACOS_CHECK_CONTENT);
-            if (!isPublishOk) {
-                log.error("NacosCheck init failed caused by crate config failed");
-            }
-        } catch (NacosException e) {
-            log.error("NacosCheck init failed caused by {}", e.getErrMsg());
-        }
-
-        try {
-            Properties properties = new Properties();
-            properties.put("serverAddr", getConfig().getConnectUrl());
-            configService = NacosFactory.createConfigService(properties);
-        } catch (NacosException e) {
-            log.error("NacosCheck init failed caused by {}", e.getErrMsg());
-        }
-    }
-
-    @Override
-    public void destroy() {
-        if (configService != null) {
-            try {
-                configService.removeConfig(NACOS_CHECK_DATA_ID, NACOS_CHECK_GROUP);
-            } catch (NacosException e) {
-                log.error("NacosCheck destroy failed caused by {}", e.getErrMsg());
-            }
-
-        }
-    }
 }

@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.constant.health;
 
 import org.apache.eventmesh.dashboard.common.constant.StoreTypeConstant;
 
+@Deprecated
 public class HealthCheckTypeConstant {
 
     public static final String HEALTH_CHECK_TYPE_UNKNOWN = "unknown";

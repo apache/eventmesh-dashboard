@@ -15,8 +15,13 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.remoting;
 
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
+import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupsRequest;
 
@@ -25,5 +30,9 @@ import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupsReque
  */
 public interface GroupRemotingService {
 
+    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
     GetGroupResult getAllGroups(GetGroupsRequest getGroupsRequest);
+
+    @RemotingServiceMethodMapper(RemotingActionType.DELETE)
+    BaseGlobalResult deleteGroup(Global2Request global2Request);
 }

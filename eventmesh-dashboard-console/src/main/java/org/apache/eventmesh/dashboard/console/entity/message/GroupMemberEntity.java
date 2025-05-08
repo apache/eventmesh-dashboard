@@ -15,28 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.entity.message;
 
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+
+package org.apache.eventmesh.dashboard.console.modle.message.offset;
+
+
+import org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType;
+import org.apache.eventmesh.dashboard.common.enums.ResetOffsetMode;
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
+
+import java.time.LocalDateTime;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "status")
-public class GroupMemberEntity extends BaseEntity {
+@EqualsAndHashCode(callSuper = true)
+public class ResetOffsetDTO extends ClusterIdDTO {
 
-    private Long id;
+    private OperationRangeType operationRangeType;
 
-    private Long clusterId;
+    private Long rangeId;
 
-    private String topicName;
+    private Long subscribeId;
 
-    private String groupName;
+    private Integer queueIndex;
 
-    private String eventMeshUser;
+    private ResetOffsetMode resetOffsetMode;
 
-    private String state;
-
-    private Integer status;
+    /**
+     *
+     */
+    private LocalDateTime resetTime;
 }

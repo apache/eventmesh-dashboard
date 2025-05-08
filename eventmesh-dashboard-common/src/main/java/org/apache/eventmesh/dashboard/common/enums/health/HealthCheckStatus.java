@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.enums.health;
 
 import lombok.AllArgsConstructor;
@@ -23,12 +24,25 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum HealthCheckStatus {
-    FAILED(0, "failed"),
-    PASSED(1, "passed"),
-    CHECKING(2, "checking"),
-    TIMEOUT(3, "timeout"),
-    NOT_CONNECTED(4, "not connected");
 
-    private final Integer number;
+    SUCCESS(1L, "success"),
+
+    FAILED(0L, "failed"),
+
+    PASSED(1L, "passed"),
+
+    CHECKING(2L, "checking"),
+
+    TIMEOUT(3L, "timeout"),
+
+    NOT_CONNECTED(4L, "not connected"),
+
+    USER_AUTHENTICATION_FAIL(5L, "user authentication fail"),
+
+    REQUEST_AUTHENTICATION_FAIL(6L, "request authentication fail"),
+    ;
+
+    private final Long number;
+
     private final String name;
 }
