@@ -18,15 +18,18 @@
 
 package org.apache.eventmesh.dashboard.console.controller.function;
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.mapstruct.function.ConfigControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.DetailConfigsVO;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.QueryConfigByInstanceId;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigDTO;
+import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
+import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -34,36 +37,42 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("/user/config")
 public class ConfigController {
 
     @Autowired
     private ConfigService configService;
 
-    @PostMapping("/cluster/config/updateConfigs")
-    public String updateConfigsByTypeAndId(@Validated @RequestBody UpdateConfigDTO updateConfigDTO) {
-        
-        return "success";
+    @Autowired
+    private ClusterService clusterService;
+
+    @Autowired
+    private RuntimeService runtimeService;
+
+    @PostMapping("/updateConfigs")
+    public Integer updateConfigsByTypeAndId(@Validated @RequestBody UpdateConfigDTO updateConfigDTO) {
+        return this.configService.updateConfigValueById(ConfigControllerMapper.INSTANCE.updateConfigsByTypeAndId(updateConfigDTO));
     }
 
 
-    @PostMapping("/cluster/config/getInstanceDetailConfigs")
-    public List<DetailConfigsVO> getInstanceDetailConfigs(@Validated @RequestBody GetConfigsListDTO getConfigsListDTO) {
-        List<ConfigEntity> configEntityList = configService.selectToFront(getConfigsListDTO.getInstanceId(),
-            getConfigsListDTO.getInstanceType(), getConfigsListDTO);
-        Map<String, String> stringStringConcurrentHashMap = configService.selectDefaultConfig(getConfigsListDTO.getBusinessType(),
-            getConfigsListDTO.getInstanceId(), getConfigsListDTO.getInstanceType());
-        ArrayList<DetailConfigsVO> showDetailConfigsVOS = new ArrayList<>();
-        configEntityList.forEach(n -> {
-            DetailConfigsVO showDetailConfigsVO = new DetailConfigsVO();
-            showDetailConfigsVO.setDefaultValue(stringStringConcurrentHashMap.get(n.getConfigName()));
-            showDetailConfigsVO.setIsModify(n.getIsModify());
-            showDetailConfigsVO.setConfigName(n.getConfigName());
-            showDetailConfigsVO.setConfigValue(n.getConfigValue());
-            showDetailConfigsVO.setAlreadyUpdate(n.getAlreadyUpdate());
-            showDetailConfigsVOS.add(showDetailConfigsVO);
-        });
-        return showDetailConfigsVOS;
+    @PostMapping("/queryConfigByInstanceId")
+    public List<DetailConfigsVO> queryConfigByInstanceId(@Validated @RequestBody QueryConfigByInstanceId data) {
+        ConfigEntity configEntity = ConfigControllerMapper.INSTANCE.queryConfigByInstanceId(data);
+        if (Objects.equals(data.getInstanceType(), "runtime")) {
+            RuntimeEntity runtimeEntity = new RuntimeEntity();
+            runtimeEntity.setId(data.getInstanceId());
+            runtimeEntity = this.runtimeService.queryRuntimeEntityById(runtimeEntity);
+
+            ConfigEntity clusterConfigEntity = new ConfigEntity();
+            this.configService.queryByInstanceId(configEntity);
+
+            ConfigEntity runtimeConfigEntity = new ConfigEntity();
+            this.configService.queryByInstanceId(configEntity);
+        } else {
+            this.configService.queryByInstanceId(configEntity);
+        }
+
+        return null;
     }
 
 

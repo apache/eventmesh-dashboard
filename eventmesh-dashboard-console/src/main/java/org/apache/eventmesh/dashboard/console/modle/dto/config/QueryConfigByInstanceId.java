@@ -16,29 +16,22 @@
  */
 
 
-package org.apache.eventmesh.dashboard.console.service.function;
+package org.apache.eventmesh.dashboard.console.modle.dto.config;
 
+import lombok.Data;
 
-import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+@Data
+public class QueryConfigByInstanceId {
 
-import java.util.List;
+    private String businessType;
 
+    private Long instanceId;
 
-/**
- * config data service
- */
-public interface ConfigService {
+    private String instanceType;
 
-    List<ConfigEntity> queryByInstanceId(ConfigEntity configEntity);
+    private String configName;
 
-    List<ConfigEntity> selectAll();
+    private Integer isModify;
 
-    Integer updateConfigValueById(ConfigEntity configEntity);
-
-    void batchInsert(List<ConfigEntity> configEntityList);
-
-    void copyConfig(Long sourceId, Long targetId);
-
-
-
+    private Integer alreadyUpdate;
 }

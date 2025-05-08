@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-
-package org.apache.eventmesh.dashboard.console.service.function;
-
+package org.apache.eventmesh.dashboard.console.mapstruct.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.QueryConfigByInstanceId;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigDTO;
 
-import java.util.List;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
+@Mapper
+public interface ConfigControllerMapper {
 
-/**
- * config data service
- */
-public interface ConfigService {
-
-    List<ConfigEntity> queryByInstanceId(ConfigEntity configEntity);
-
-    List<ConfigEntity> selectAll();
-
-    Integer updateConfigValueById(ConfigEntity configEntity);
-
-    void batchInsert(List<ConfigEntity> configEntityList);
-
-    void copyConfig(Long sourceId, Long targetId);
+    ConfigControllerMapper INSTANCE = Mappers.getMapper(ConfigControllerMapper.class);
 
 
+    ConfigEntity updateConfigsByTypeAndId(UpdateConfigDTO data);
+
+    ConfigEntity queryConfigByInstanceId(QueryConfigByInstanceId data);
 
 }
