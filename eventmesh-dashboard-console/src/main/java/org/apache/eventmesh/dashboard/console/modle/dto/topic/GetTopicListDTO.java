@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle.dto.topic;
 
+
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 
 import lombok.Data;
 
 @Data
-public class GetTopicListDTO {
-
-    private Long clusterId;
+public class GetTopicListDTO extends ClusterIdDTO {
 
     private String topicName;
 }

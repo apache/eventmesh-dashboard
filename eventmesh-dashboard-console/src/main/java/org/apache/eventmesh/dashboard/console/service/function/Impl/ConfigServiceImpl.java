@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.function.Impl;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.DefaultConfigKey;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
-import org.apache.eventmesh.dashboard.console.modle.config.ChangeConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.config.UpdateConfigsLog;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.ChangeConfigDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigsLog;
 import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
 
 import java.util.Arrays;
@@ -48,10 +50,10 @@ public class ConfigServiceImpl implements ConfigService {
 
 
     @EmLog(OprTarget = "Runtime", OprType = "UpdateConfigs")
-    public void logUpdateRuntimeConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigEntity> changeConfigEntityList) {
-        changeConfigEntityList.forEach(n -> {
+    public void logUpdateRuntimeConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigDTO> changeConfigDTOList) {
+        changeConfigDTOList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(0);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -62,10 +64,10 @@ public class ConfigServiceImpl implements ConfigService {
 
 
     @EmLog(OprTarget = "store", OprType = "UpdateConfigs")
-    public void logUpdateStoreConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigEntity> changeConfigEntityList) {
-        changeConfigEntityList.forEach(n -> {
+    public void logUpdateStoreConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigDTO> changeConfigDTOList) {
+        changeConfigDTOList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(1);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -76,10 +78,10 @@ public class ConfigServiceImpl implements ConfigService {
 
 
     @EmLog(OprTarget = "Connector", OprType = "UpdateConfigs")
-    public void logUpdateConnectorConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigEntity> changeConfigEntityList) {
-        changeConfigEntityList.forEach(n -> {
+    public void logUpdateConnectorConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigDTO> changeConfigDTOList) {
+        changeConfigDTOList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(2);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -90,10 +92,10 @@ public class ConfigServiceImpl implements ConfigService {
 
 
     @EmLog(OprTarget = "Topic", OprType = "UpdateConfigs")
-    public void logUpdateTopicConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigEntity> changeConfigEntityList) {
-        changeConfigEntityList.forEach(n -> {
+    public void logUpdateTopicConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigDTO> changeConfigDTOList) {
+        changeConfigDTOList.forEach(n -> {
             ConfigEntity config = new ConfigEntity();
-            config.setInstanceType(3);
+            config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
             config.setConfigName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
@@ -104,28 +106,30 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     public void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId,
-        List<ChangeConfigEntity> changeConfigEntityList) {
+        List<ChangeConfigDTO> changeConfigDTOList) {
         ConcurrentHashMap<String, String> stringStringConcurrentHashMap = new ConcurrentHashMap<>();
-        changeConfigEntityList.forEach(n -> {
+        changeConfigDTOList.forEach(n -> {
             stringStringConcurrentHashMap.put(n.getConfigName(), n.getConfigValue());
         });
-        UpdateConfigsLog updateConfigsLog = new UpdateConfigsLog();
-        updateConfigsLog.setInstanceId(instanceId);
-        updateConfigsLog.setClusterId(clusterId);
-        updateConfigsLog.setName(name);
-        updateConfigsLog.setConfigProperties(this.mapToProperties(stringStringConcurrentHashMap));
+        UpdateConfigsLog updateConfigsLog =
+            new UpdateConfigsLog(instanceId, clusterId, name, this.mapToProperties(stringStringConcurrentHashMap));
         ConfigServiceImpl service = (ConfigServiceImpl) AopContext.currentProxy();
         if (instanceType == 0) {
-            service.logUpdateRuntimeConfigs(updateConfigsLog, changeConfigEntityList);
+            service.logUpdateRuntimeConfigs(updateConfigsLog, changeConfigDTOList);
         } else if (instanceType == 1) {
-            service.logUpdateStoreConfigs(updateConfigsLog, changeConfigEntityList);
+            service.logUpdateStoreConfigs(updateConfigsLog, changeConfigDTOList);
         } else if (instanceType == 2) {
-            service.logUpdateConnectorConfigs(updateConfigsLog, changeConfigEntityList);
+            service.logUpdateConnectorConfigs(updateConfigsLog, changeConfigDTOList);
         } else if (instanceType == 3) {
-            service.logUpdateTopicConfigs(updateConfigsLog, changeConfigEntityList);
+            service.logUpdateTopicConfigs(updateConfigsLog, changeConfigDTOList);
         }
     }
 
+
+    @Override
+    public List<ConfigEntity> queryByClusterAndInstanceId(ConfigEntity configEntity) {
+        return null;
+    }
 
     @Override
     public List<ConfigEntity> selectAll() {
@@ -133,11 +137,20 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public Integer batchInsert(List<ConfigEntity> configEntityList) {
-        return configMapper.batchInsert(configEntityList);
+    public void batchInsert(List<ConfigEntity> configEntityList) {
+        configMapper.batchInsert(configEntityList);
     }
 
     @Override
+    public void copyConfig(Long sourceId, Long targetId) {
+        configMapper.copyConfig(sourceId, targetId);
+    }
+
+    @Override
+    public void restoreConfig(Long sourceId, Long targetId) {
+
+    }
+
     public String mapToYaml(Map<String, String> stringMap) {
         Yaml yaml = new Yaml();
         return yaml.dumpAsMap(stringMap);
@@ -165,9 +178,9 @@ public class ConfigServiceImpl implements ConfigService {
         return stringStringConcurrentHashMap;
     }
 
-    @Override
-    public void insertConfig(ConfigEntity configEntity) {
-        configMapper.insertConfig(configEntity);
+
+    public Integer addConfig(ConfigEntity configEntity) {
+        return configMapper.addConfig(configEntity);
     }
 
     @Override
@@ -179,31 +192,47 @@ public class ConfigServiceImpl implements ConfigService {
     public List<ConfigEntity> selectByInstanceIdAndType(Long instanceId, Integer type) {
         ConfigEntity config = new ConfigEntity();
         config.setInstanceId(instanceId);
-        config.setInstanceType(type);
+        config.setInstanceType(null);
         return configMapper.selectByInstanceId(config);
     }
 
-
-    @Override
-    public List<ConfigEntity> selectToFront(ConfigEntity config) {
-        return configMapper.selectConfigsToFrontWithDynamic(config);
+    public ConfigEntity setSearchCriteria(GetConfigsListDTO getConfigsListDTO, ConfigEntity configEntity) {
+        if (getConfigsListDTO != null) {
+            if (getConfigsListDTO.getConfigName() != null) {
+                configEntity.setConfigName(getConfigsListDTO.getConfigName());
+            }
+            if (getConfigsListDTO.getIsModify() != null) {
+                configEntity.setIsModify(getConfigsListDTO.getIsModify());
+            }
+            if (getConfigsListDTO.getAlreadyUpdate() != null) {
+                configEntity.setAlreadyUpdate(getConfigsListDTO.getAlreadyUpdate());
+            }
+        }
+        return configEntity;
     }
 
-    public void insertDefaultConfigToCache() {
+    @Override
+    public List<ConfigEntity> selectToFront(Long instanceId, Integer type, GetConfigsListDTO getConfigsListDTO) {
+        ConfigEntity config = new ConfigEntity();
+        config.setInstanceId(instanceId);
+        config.setInstanceType(null);
+        config = this.setSearchCriteria(getConfigsListDTO, config);
+        return configMapper.getConfigsToFrontWithDynamic(config);
+    }
+
+    public void addDefaultConfigToCache() {
         List<ConfigEntity> configEntityList = configMapper.selectAllDefaultConfig();
         configEntityList.forEach(n -> {
-            DefaultConfigKey defaultConfigKey = new DefaultConfigKey();
-            defaultConfigKey.setConfigName(n.getConfigName());
-            defaultConfigKey.setBusinessType(n.getBusinessType());
+            DefaultConfigKey defaultConfigKey = new DefaultConfigKey(n.getBusinessType(), n.getConfigName());
             defaultConfigCache.putIfAbsent(defaultConfigKey, n.getConfigValue());
 
         });
     }
 
     @Override
-    public Map<String, String> selectDefaultConfig(String businessType) {
+    public Map<String, String> selectDefaultConfig(String businessType, Long instanceId, Integer instanceType) {
         if (defaultConfigCache.size() == 0) {
-            this.insertDefaultConfigToCache();
+            this.addDefaultConfigToCache();
         }
         ConcurrentHashMap<String, String> stringStringConcurrentHashMap = new ConcurrentHashMap<>();
         defaultConfigCache.forEach((k, v) -> {

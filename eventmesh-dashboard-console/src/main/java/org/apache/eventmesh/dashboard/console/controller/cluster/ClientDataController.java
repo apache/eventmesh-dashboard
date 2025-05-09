@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.controller.cluster;
 
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
-import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClientDataControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.cluster.client.SelectByClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.client.QueryClientByUserFormDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClientDataService;
 
 import java.util.List;
@@ -41,8 +41,8 @@ public class ClientDataController {
     private ClientDataService clientDataService;
 
 
-    @PostMapping("selectByClusterId")
-    public List<ClientEntity> selectByClusterId(@RequestBody @Validated SelectByClusterIdDTO selectByClusterIdDTO) {
-        return clientDataService.selectByClusterId(ClientDataControllerMapper.INSTANCE.selectByClusterIdDTO(selectByClusterIdDTO));
+    @PostMapping("queryClientByUserForm")
+    public List<ClientEntity> queryClientByUserForm(@RequestBody @Validated QueryClientByUserFormDTO queryClientByUserFormDTO) {
+        return clientDataService.queryClientByUserForm(queryClientByUserFormDTO);
     }
 }

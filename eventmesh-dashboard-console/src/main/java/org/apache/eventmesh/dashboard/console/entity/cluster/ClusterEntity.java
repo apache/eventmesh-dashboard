@@ -15,36 +15,35 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
-import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
-
+import org.apache.eventmesh.dashboard.common.enums.ClusterOwnType;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseSyncEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ *
+ */
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "status")
-public class ClusterEntity extends BaseEntity {
+@EqualsAndHashCode(callSuper = true)
+public class ClusterEntity extends BaseSyncEntity {
 
-    private String name;
-
-    private ClusterTrusteeshipType trusteeshipType;
-
-    private ClusterType clusterType;
-
-    private String version;
 
     private String jmxProperties;
 
+    private String config;
+
     private String description;
 
-    private Integer authType;
+    private String authType;
 
-    private Integer runState;
 
-    private Integer status;
+    /**
+     * 如何解除共享
+     */
+    private ClusterOwnType clusterOwnType;
 
 }

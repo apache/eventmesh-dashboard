@@ -15,8 +15,12 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.config;
 
+/**
+ *
+ */
 public enum ConfigType {
 
     NODE,

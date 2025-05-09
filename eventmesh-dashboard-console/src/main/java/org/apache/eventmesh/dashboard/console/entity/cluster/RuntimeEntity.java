@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
-
-import java.time.LocalDateTime;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseSyncEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,23 +27,30 @@ import lombok.EqualsAndHashCode;
  *
  */
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "status")
-public class RuntimeEntity extends BaseEntity {
-
-    private String name;
+@EqualsAndHashCode(callSuper = true)
+public class RuntimeEntity extends BaseSyncEntity {
 
     private String host;
 
+    /**
+     * 添加的时候只需要 host 与 post eventmesh runtime 是 admin port。通过 runtime admin 获得所有的配置。 meta 需要 host 与 post store host 与 post jmxPort
+     */
     private Integer port;
 
     private Integer jmxPort;
 
-    private LocalDateTime startTimestamp;
+    private Integer adminPort;
 
     private String rack;
 
-    private Integer status;
-
     private String endpointMap;
+
+    private String createScriptContent;
+
+    private Long kubernetesClusterId;
+
+    private String authType;
+
+
 
 }

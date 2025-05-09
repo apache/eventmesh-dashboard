@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
+import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterMapper;
+import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
+import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
+import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
+import org.apache.eventmesh.dashboard.console.modle.deploy.ClusterAllMetadataDO;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RuntimeServiceImpl implements RuntimeService {
@@ -39,14 +49,74 @@ public class RuntimeServiceImpl implements RuntimeService {
     private HealthCheckResultMapper healthCheckResultMapper;
 
 
+    @Autowired
+    private ClusterMapper clusterMapper;
+
+
+    @Autowired
+    private ClusterRelationshipMapper clusterRelationshipMapper;
+
     @Override
     public RuntimeEntity queryRuntimeEntityById(RuntimeEntity runtimeEntity) {
         return this.runtimeMapper.queryRuntimeEntityById(runtimeEntity);
     }
 
+
     @Override
-    public List<RuntimeEntity> selectRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity) {
-        List<RuntimeEntity> runtimeByClusterId = runtimeMapper.selectRuntimesToFrontByCluster(runtimeEntity);
+    public List<RuntimeEntity> queryRuntimeByBigExpandCluster(QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO) {
+        return this.runtimeMapper.queryRuntimeByBigExpandCluster(queryRuntimeByBigExpandClusterDO);
+    }
+
+    @Override
+    public List<RuntimeEntity> queryMetaRuntimeByStorageClusterId(QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO) {
+        // 通过 storage cluster id ， 获得 main cluster id
+        // 通过 子集群 id  获得 主(多) 集群 下面的其他集群
+        return this.runtimeMapper.queryClusterRuntimeOnClusterSpecifyByClusterId(queryRuntimeByBigExpandClusterDO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ClusterAllMetadataDO queryAllByClusterId(RuntimeEntity runtimeEntity, boolean isRuntime, boolean isRelationship) {
+
+        ClusterEntity clusterEntity = new ClusterEntity();
+        clusterEntity.setId(runtimeEntity.getClusterId());
+        clusterEntity = this.clusterMapper.queryByClusterId(clusterEntity);
+
+        List<ClusterEntity> clusterEntityList = new ArrayList<>();
+        List<ClusterEntity> definitionList = new ArrayList<>();
+        definitionList.add(clusterEntity);
+        for (int i = 0; i < 5; i++) {
+            List<ClusterEntity> relationshipList = this.clusterMapper.queryRelationshipClusterByClusterIdAndType(definitionList);
+            definitionList.clear();
+            relationshipList.forEach(entity -> {
+                if (entity.getClusterType().isRuntime()) {
+                    definitionList.add(entity);
+                }
+                clusterEntityList.add(entity);
+            });
+            if (definitionList.isEmpty()) {
+                break;
+            }
+        }
+
+        ClusterAllMetadataDO clusterAllMetadata = new ClusterAllMetadataDO();
+        clusterAllMetadata.setClusterEntityList(clusterEntityList);
+        if (isRuntime) {
+            List<RuntimeEntity> runtimeEntityList = this.runtimeMapper.queryRuntimeByClusterId(clusterEntityList);
+            clusterAllMetadata.setRuntimeEntityList(runtimeEntityList);
+        }
+        if (isRelationship) {
+            QueryListByClusterIdAndTypeDO data = QueryListByClusterIdAndTypeDO.builder().build();
+            List<ClusterRelationshipEntity> relationshipEntityList =
+                this.clusterRelationshipMapper.queryClusterRelationshipEntityListByClusterId(data);
+            clusterAllMetadata.setClusterRelationshipEntityList(relationshipEntityList);
+        }
+        return clusterAllMetadata;
+    }
+
+    @Override
+    public List<RuntimeEntity> queryRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity) {
+        List<RuntimeEntity> runtimeByClusterId = runtimeMapper.getRuntimesToFrontByCluster(runtimeEntity);
         runtimeByClusterId.forEach(n -> {
             n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", n.getId()));
         });
@@ -55,19 +125,25 @@ public class RuntimeServiceImpl implements RuntimeService {
 
 
     @Override
-    public Integer batchInsert(List<RuntimeEntity> runtimeEntities) {
-        return runtimeMapper.batchInsert(runtimeEntities);
+    public void batchInsert(List<RuntimeEntity> runtimeEntities) {
+        runtimeMapper.batchInsert(runtimeEntities);
+    }
+
+    @Override
+    public Integer batchUpdate(List<RuntimeEntity> runtimeEntities) {
+        return 0;
     }
 
     @Override
     public List<RuntimeEntity> selectAll() {
-        return runtimeMapper.selectAll();
+        return runtimeMapper.queryAll();
     }
 
     @Override
-    public List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity) {
-        return runtimeMapper.selectByHostPort(runtimeEntity);
+    public List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity) {
+        return runtimeMapper.queryByUpdateTime(runtimeEntity);
     }
+
 
     @Override
     public void insertRuntime(RuntimeEntity runtimeEntity) {
@@ -75,17 +151,17 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public Integer updateRuntimeByCluster(RuntimeEntity runtimeEntity) {
-        return runtimeMapper.updateRuntimeByCluster(runtimeEntity);
+    public void updateRuntimeByCluster(RuntimeEntity runtimeEntity) {
+        runtimeMapper.updateRuntimeByCluster(runtimeEntity);
     }
 
     @Override
-    public Integer deleteRuntimeByCluster(RuntimeEntity runtimeEntity) {
-        return runtimeMapper.deleteRuntimeByCluster(runtimeEntity);
+    public void deleteRuntimeByCluster(RuntimeEntity runtimeEntity) {
+        runtimeMapper.deleteRuntimeByCluster(runtimeEntity);
     }
 
     @Override
-    public Integer deactivate(RuntimeEntity runtimeEntity) {
-        return runtimeMapper.deactivate(runtimeEntity);
+    public void deactivate(RuntimeEntity runtimeEntity) {
+        runtimeMapper.deactivate(runtimeEntity);
     }
 }

@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class CreateRocketmqAdminSDKConfig implements CreateSDKConfig {
+@EqualsAndHashCode(callSuper = true)
+public class CreateRocketmqAdminSDKConfig extends AbstractMultiCreateSDKConfig {
 
-    private String nameServerUrl;
-
-    private String clusterName;
-
-
-    @Override
-    public String getUniqueKey() {
-        return nameServerUrl;
-    }
 }

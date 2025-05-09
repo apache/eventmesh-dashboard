@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.function;
 
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.config.ChangeConfigEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.ChangeConfigDTO;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -30,18 +32,19 @@ import java.util.Map;
  */
 public interface ConfigService {
 
-    List<ConfigEntity> selectToFront(ConfigEntity configEntity);
+    List<ConfigEntity> queryByClusterAndInstanceId(ConfigEntity configEntity);
 
-    void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId,
-        List<ChangeConfigEntity> changeConfigEntityList);
+    List<ConfigEntity> selectToFront(Long instanceId, Integer type, GetConfigsListDTO getConfigsListDTO);
+
+    void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId, List<ChangeConfigDTO> changeConfigDTOList);
 
     List<ConfigEntity> selectAll();
 
-    Integer batchInsert(List<ConfigEntity> configEntityList);
+    void batchInsert(List<ConfigEntity> configEntityList);
 
-    String mapToYaml(Map<String, String> stringMap);
+    void copyConfig(Long sourceId, Long targetId);
 
-    void insertConfig(ConfigEntity configEntity);
+    void restoreConfig(Long sourceId, Long targetId);
 
     Integer deleteConfig(ConfigEntity configEntity);
 
@@ -51,7 +54,7 @@ public interface ConfigService {
 
     List<ConfigEntity> selectByInstanceIdAndType(Long instanceId, Integer type);
 
-    Map<String, String> selectDefaultConfig(String businessType);
+    Map<String, String> selectDefaultConfig(String version, Long instanceId, Integer instanceType);
 
 
 }

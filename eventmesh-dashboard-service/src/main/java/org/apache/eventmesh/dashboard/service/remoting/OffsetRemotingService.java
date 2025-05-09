@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.remoting;
 
 import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetRequest;
@@ -26,6 +27,7 @@ import org.apache.eventmesh.dashboard.common.model.remoting.offset.ResetOffsetRe
  * interface to operate storage offset
  */
 public interface OffsetRemotingService {
+
 
     GetOffsetResult getOffset(GetOffsetRequest getOffsetRequest);
 

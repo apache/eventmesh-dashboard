@@ -15,10 +15,15 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle.vo.cluster;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class GetClusterBaseMessageVO {
 

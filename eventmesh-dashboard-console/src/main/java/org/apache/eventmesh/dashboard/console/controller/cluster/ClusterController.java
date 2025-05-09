@@ -15,14 +15,26 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.controller.cluster;
 
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
-import org.apache.eventmesh.dashboard.console.modle.cluster.CreateClusterDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.client.QueryClientByUserFormDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.ClusterDetailsVO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.QueryClusterByOrganizationIdAndTypeDTO;
+import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.QueryRelationClusterByClusterIdAndTypeDTO;
+import org.apache.eventmesh.dashboard.console.modle.deploy.ClusterAllMetadataDO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
+import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -32,72 +44,75 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 1. 用户首页列表
- * 2. 集群首页概要
- */
+
 @RestController
-@RequestMapping("cluster")
+@RequestMapping("user/cluster")
 public class ClusterController {
 
     @Autowired
-    ClusterService clusterService;
+    private ClusterService clusterService;
+
+    @Autowired
+    public RuntimeService runtimeService;
+
 
     @GetMapping("queryHomeClusterData")
     public GetClusterBaseMessageVO queryHomeClusterData(@RequestBody @Validated ClusterIdDTO clusterIdDTO) {
-        return clusterService.selectClusterBaseMessage(clusterIdDTO.getClusterId());
+        return clusterService.getClusterBaseMessage(clusterIdDTO);
+    }
+
+    @PostMapping("queryClusterDetails")
+    public ClusterDetailsVO queryClusterDetails(@RequestBody @Validated ClusterIdDTO clusterIdDTO) {
+        ClusterEntity clusterEntity = new ClusterEntity();
+        // eventmesh 集群详情
+        // 基本统计信息
+        // 部署信息，巡查信息
+        // meta 列表， runtime 列表  存储列表
+        RuntimeEntity runtimeEntity = new RuntimeEntity();
+        runtimeEntity.setClusterId(clusterIdDTO.getClusterId());
+        CompletableFuture<ClusterAllMetadataDO> completableFuture =
+            CompletableFuture.supplyAsync(() -> this.runtimeService.queryAllByClusterId(runtimeEntity, true, false));
+
+        // 存储集群详情
+        // meta 集群详情
+        // runtime集群详情
+        ClusterDetailsVO clusterDetailsVO = new ClusterDetailsVO();
+        return clusterDetailsVO;
     }
 
 
-    @PostMapping("createCluster")
-    public void createCluster(@RequestBody CreateClusterDTO createClusterDTO) {
-        this.clusterService.createCluster(ClusterControllerMapper.INSTANCE.createCluster(createClusterDTO));
-    }
-
-    /**
-     * 那些集群可以暂停。被依赖的集群不允许暂停。暂停的含义是什么 暂停是否释放资源
-     *
-     * @return
-     */
-    public Integer pauseCluster() {
-        // 查询集群
-
-        // 判断集群类型
-
-        // 查询依赖
+    @PostMapping("queryClusterByUserForm")
+    public List<ClientEntity> queryClusterByUserForm(QueryClientByUserFormDTO queryClientByUserFormDTO) {
         return null;
     }
 
     /**
-     * 重新开始集群
+     * 这个接口用户 cluster 对应业务的 首页，方便查询
      *
+     * @param dto
      * @return
      */
-    public Integer resumeCluster() {
-        // 查询集群
+    @PostMapping("queryVisualizationClusterByOrganizationIdAndType")
+    public List<ClusterEntity> queryVisualizationClusterByOrganizationIdAndType(@RequestBody @Validated QueryClusterByOrganizationIdAndTypeDTO dto) {
+        return this.clusterService.queryClusterByOrganizationIdAndType(ClusterControllerMapper.INSTANCE.queryClusterByOrganizationIdAndType(dto));
+    }
 
-        // 判断集群类型
-
-        // 查询依赖
-        return null;
+    @PostMapping("queryClusterByOrganizationIdAndType")
+    public List<ClusterEntity> queryClusterByOrganizationIdAndType(@RequestBody @Validated QueryClusterByOrganizationIdAndTypeDTO dto) {
+        return this.clusterService.queryClusterByOrganizationIdAndType(ClusterControllerMapper.INSTANCE.queryClusterByOrganizationIdAndType(dto));
     }
 
     /**
-     * 注销集群
+     * 查询 cluster 的关联集群列表
      *
+     * @param dto
      * @return
      */
-    public Integer cancelCluster() {
-        // 查询集群
-
-        // 判断集群类型
-
-        // 查询依赖
-
-        // 如果是全程托管，释放k8s 集群
-        return null;
+    @PostMapping("queryRelationClusterByClusterIdAndType")
+    public List<ClusterEntity> queryRelationClusterByClusterIdAndType(@RequestBody @Validated QueryRelationClusterByClusterIdAndTypeDTO dto) {
+        return this.clusterService.queryRelationClusterByClusterIdAndType(
+            ClusterControllerMapper.INSTANCE.queryRelationClusterByClusterIdAndType(dto));
     }
-
 
 
 }

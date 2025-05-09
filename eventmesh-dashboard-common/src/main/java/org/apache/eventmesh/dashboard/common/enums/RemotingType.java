@@ -15,15 +15,23 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.enums;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public enum RemotingType {
 
     NOT,
 
+    JVM,
+
     META,
 
     STORAGE,
+
+    REDIS,
 
     EVENT_MESH_RUNTIME,
 
@@ -32,5 +40,29 @@ public enum RemotingType {
     EVENT_MESH_ETCD,
 
     ROCKETMQ,
-    ROCKETMQ_NAMESERVER;
+
+    ROCKETMQ_NAMESERVER,
+
+    KAFKA,
+
+
+    ZK,
+
+    KUBERNETES,
+
+    ;
+
+    private Set<ClusterType> supportClusterType = new HashSet<>();
+
+    RemotingType() {
+    }
+
+    RemotingType(ClusterType... clusterType) {
+        for (ClusterType c : clusterType) {
+            this.supportClusterType.add(c);
+        }
+
+    }
+
+
 }

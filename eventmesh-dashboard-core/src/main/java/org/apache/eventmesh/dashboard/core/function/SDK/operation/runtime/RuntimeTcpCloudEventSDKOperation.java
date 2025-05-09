@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.runtime;
 
 import static org.apache.eventmesh.dashboard.core.function.SDK.util.RuntimeSDKOperationUtils.buildEventMeshTCPClientConfig;
@@ -22,41 +23,28 @@ import static org.apache.eventmesh.dashboard.core.function.SDK.util.RuntimeSDKOp
 
 import org.apache.eventmesh.client.tcp.conf.EventMeshTCPClientConfig;
 import org.apache.eventmesh.client.tcp.impl.cloudevent.CloudEventTCPClient;
-import org.apache.eventmesh.common.exception.EventMeshException;
 import org.apache.eventmesh.common.protocol.tcp.UserAgent;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRuntimeConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
-
-import java.util.AbstractMap.SimpleEntry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RuntimeTcpCloudEventSDKOperation extends AbstractSDKOperation<CloudEventTCPClient> {
+public class RuntimeTcpCloudEventSDKOperation extends AbstractSDKOperation<CloudEventTCPClient, CreateRuntimeConfig> {
 
     @Override
-    public SimpleEntry<String, CloudEventTCPClient> createClient(CreateSDKConfig clientConfig) {
-        final CreateRuntimeConfig runtimeConfig = (CreateRuntimeConfig) clientConfig;
-        CloudEventTCPClient cloudEventTCPClient = null;
-        try {
-            final UserAgent userAgent = buildUserAgent(runtimeConfig.getUserAgent());
-            final EventMeshTCPClientConfig eventMeshTCPClientConfig = buildEventMeshTCPClientConfig(
-                runtimeConfig.getRuntimeServerAddress(), userAgent);
-            cloudEventTCPClient = new CloudEventTCPClient(eventMeshTCPClientConfig);
-            cloudEventTCPClient.init();
-        } catch (EventMeshException e) {
-            log.error("create runtime CloudEvent tcp client failed", e);
-        }
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), cloudEventTCPClient);
+    public CloudEventTCPClient createClient(CreateRuntimeConfig clientConfig) throws Exception {
+        final UserAgent userAgent = buildUserAgent(clientConfig.getUserAgent());
+        final EventMeshTCPClientConfig eventMeshTCPClientConfig = buildEventMeshTCPClientConfig(
+            clientConfig.getRuntimeServerAddress(), userAgent);
+        CloudEventTCPClient cloudEventTCPClient = new CloudEventTCPClient(eventMeshTCPClientConfig);
+        cloudEventTCPClient.init();
+        return cloudEventTCPClient;
+
     }
 
     @Override
-    public void close(Object client) {
-        try {
-            castClient(client).close();
-        } catch (Exception e) {
-            log.error("close eventmesh runtime tcp client failed");
-        }
+    public void close(CloudEventTCPClient client) throws Exception {
+        client.close();
     }
 }

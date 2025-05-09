@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.controller.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
-import org.apache.eventmesh.dashboard.console.mapstruct.log.LogControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
 import org.apache.eventmesh.dashboard.console.service.function.LogService;
 
@@ -28,19 +28,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/cluster/log")
 public class LogController {
 
     @Autowired
     private LogService logService;
 
-    @PostMapping("/getList")
+    @PostMapping("/cluster/log/getList")
     public List<LogEntity> getLogLIstToFront(@Validated @RequestBody GetLogListDTO getLogListDTO) {
-        return logService.selectLogListByCluster(LogControllerMapper.INSTANCE.queryEntityByLog(getLogListDTO));
+        return logService.getLogListByCluster(getLogListDTO);
     }
 
 }

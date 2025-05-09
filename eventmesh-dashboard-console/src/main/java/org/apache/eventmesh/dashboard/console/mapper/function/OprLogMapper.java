@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapper.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
@@ -49,7 +50,15 @@ public interface OprLogMapper {
         "       AND is_delete=0",
         "   </where>",
         "</script>"})
-    List<LogEntity> selectLogList(LogEntity logEntity);
+    List<LogEntity> getLogList(LogEntity logEntity);
+
+    @Insert("INSERT INTO operation_log ( cluster_id, operation_type,target_type, content,operation_user,result)"
+        + "VALUE (#{clusterId},#{operationType},#{targetType},#{content},#{operationUser},#{result})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    Long addLog(LogEntity logEntity);
+
+    @Update("UPDATE operation_log SET state=#{state} ,result=#{result} WHERE id=#{id}")
+    Integer updateLog(LogEntity logEntity);
 
     @Select({
         "<script>",
@@ -73,14 +82,5 @@ public interface OprLogMapper {
         "</where>",
         "</script>"
     })
-    List<LogEntity> selectLogListToFront(LogEntity logEntity);
-
-    @Update("UPDATE operation_log SET state=#{state} ,result=#{result} WHERE id=#{id}")
-    Integer updateLog(LogEntity logEntity);
-
-    @Insert("INSERT INTO operation_log ( cluster_id, operation_type,target_type, content,operation_user,result)"
-        + "VALUE (#{clusterId},#{operationType},#{targetType},#{content},#{operationUser},#{result})")
-    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void insertLog(LogEntity logEntity);
-
+    List<LogEntity> getLogListToFront(LogEntity logEntity);
 }

@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClientMapper;
+import org.apache.eventmesh.dashboard.console.modle.cluster.client.QueryClientByUserFormDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClientDataService;
 
 import java.util.List;
@@ -32,31 +34,18 @@ public class ClientDataServiceImpl implements ClientDataService {
     @Autowired
     private ClientMapper clientMapper;
 
-    @Override
-    public Integer deActive(ClientEntity clientEntity) {
-        return clientMapper.deactivate(clientEntity);
-    }
 
     @Override
-    public Integer deActiveByHostPort(ClientEntity clientEntity) {
-        return clientMapper.deActiveByHostPort(clientEntity);
+    public List<ClientEntity> queryClientByUserForm(QueryClientByUserFormDTO queryClientByUserFormDTO) {
+        return this.clientMapper.queryClientByUserForm(queryClientByUserFormDTO);
     }
 
-    @SuppressWarnings("checkstyle:Indentation")
-    @Override
-    public void insertClient(ClientEntity clientEntity) {
-         clientMapper.insert(clientEntity);
-    }
 
     @Override
-    public Integer batchInsert(List<ClientEntity> clientEntityList) {
-        return clientMapper.batchInsert(clientEntityList);
+    public void batchInsert(List<ClientEntity> clientEntityList) {
+        clientMapper.batchInsert(clientEntityList);
     }
 
-    @Override
-    public List<ClientEntity> selectByHostPort(ClientEntity clientEntity) {
-        return clientMapper.selectByHostPort(clientEntity);
-    }
 
     @Override
     public List<ClientEntity> selectByClusterId(ClientEntity clientEntity) {

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model;
 
 import lombok.Builder;
@@ -22,6 +23,7 @@ import lombok.Data;
 
 @Data
 @Builder
+@Deprecated
 public class SubscriptionInfo {
 
     // client name

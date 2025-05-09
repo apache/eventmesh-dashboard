@@ -15,11 +15,16 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle.vo.connection;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ConnectionListVO {
 
     private Long sinkConnectorId;

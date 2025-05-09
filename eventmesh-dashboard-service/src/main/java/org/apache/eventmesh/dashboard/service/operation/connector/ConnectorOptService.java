@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.operation.connector;
 
 /**
  * k8s operation service
  */
+@Deprecated
 public interface ConnectorOptService {
 
     void createConnector();

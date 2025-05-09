@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.constant;
 
+@Deprecated
 public class StoreTypeConstant {
 
     public static final String STORE_TYPE_TYPE_UNKNOWN = "unknown";
