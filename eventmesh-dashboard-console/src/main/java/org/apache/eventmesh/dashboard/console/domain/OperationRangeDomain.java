@@ -134,8 +134,10 @@ public class OperationRangeDomain {
         return (T) operationList;
     }
 
-
-    public static interface OperationRangeDomainDataHandler {
+    /**
+     *
+     */
+    public interface OperationRangeDomainDataHandler {
 
 
         Object handler(BaseSyncEntity baseEntity);

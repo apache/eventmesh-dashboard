@@ -16,15 +16,12 @@
  */
 
 
-import { ResourceStats } from '../routes/navigation/navigation.types'
-import { TopicStats } from '../routes/cluster/topic/stats/topic-stats.types'
-import {
-  TopicListDatas,
-  TopicListParams
-} from '../routes/cluster/topic/topic-list/TopicList'
-import { Topic } from '../routes/cluster/topic/topic.types'
-import { InstanceTypeEnum } from '../types/types'
-import { FetchRespone, ListApiRespone } from './request.types'
+import {ResourceStats} from '../routes/navigation/navigation.types'
+import {TopicStats} from '../routes/cluster/topic/stats/topic-stats.types'
+import {TopicListDatas, TopicListParams} from '../routes/cluster/topic/topic-list/TopicList'
+import {Topic} from '../routes/cluster/topic/topic.types'
+import {InstanceTypeEnum} from '../types/types'
+import {FetchRespone, ListApiRespone} from './request.types'
 
 const ServiceHost = process.env.REACT_APP_SERVICE_HOST
 

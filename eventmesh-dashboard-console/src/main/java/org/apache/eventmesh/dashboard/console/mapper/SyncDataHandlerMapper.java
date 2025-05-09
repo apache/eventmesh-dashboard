@@ -19,6 +19,10 @@
 package org.apache.eventmesh.dashboard.console.mapper;
 
 
+
+/**
+ *
+ */
 public interface SyncDataHandlerMapper<T> {
 
     void syncInsert(List<T> entityList);

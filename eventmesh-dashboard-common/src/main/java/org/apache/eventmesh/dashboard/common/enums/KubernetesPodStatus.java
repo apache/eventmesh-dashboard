@@ -21,6 +21,9 @@ package org.apache.eventmesh.dashboard.common.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ *
+ */
 @Getter
 @AllArgsConstructor
 public enum KubernetesPodStatus {

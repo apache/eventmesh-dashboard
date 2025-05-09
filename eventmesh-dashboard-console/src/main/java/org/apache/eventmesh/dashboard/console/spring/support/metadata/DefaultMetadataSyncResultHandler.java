@@ -175,7 +175,7 @@ public class DefaultMetadataSyncResultHandler implements MetadataSyncResultHandl
         private BaseSyncBase baseSyncBase;
 
 
-        private Map<MetadataType, Integer> metadataTypeMap = new ConcurrentHashMap<>();
+        private final Map<MetadataType, Integer> metadataTypeMap = new ConcurrentHashMap<>();
 
 
         public BaseSyncEntity getBaseSyncEntity() {

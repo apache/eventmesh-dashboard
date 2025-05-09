@@ -18,17 +18,17 @@
 
 import * as echarts from 'echarts/core'
 
-import { LineChart } from 'echarts/charts'
+import {LineChart} from 'echarts/charts'
 import {
-    PolarComponent,
-    TitleComponent,
-    TooltipComponent,
-    GridComponent,
-    MarkAreaComponent,
-    MarkLineComponent,
-    ToolboxComponent
+  GridComponent,
+  MarkAreaComponent,
+  MarkLineComponent,
+  PolarComponent,
+  TitleComponent,
+  ToolboxComponent,
+  TooltipComponent
 } from 'echarts/components'
-import { CanvasRenderer } from 'echarts/renderers'
+import {CanvasRenderer} from 'echarts/renderers'
 
 echarts.use([
     LineChart,

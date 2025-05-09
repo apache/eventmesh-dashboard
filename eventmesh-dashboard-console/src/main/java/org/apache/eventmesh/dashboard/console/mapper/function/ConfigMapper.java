@@ -19,7 +19,6 @@
 package org.apache.eventmesh.dashboard.console.mapper.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -34,6 +33,7 @@ import java.util.List;
  * config table operation
  */
 @Mapper
+<<<<<<< HEAD
 public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
     @Select({
@@ -60,11 +60,35 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
     @Select("SELECT DISTINCT business_type FROM config WHERE instance_type=2 AND is_default=1 AND business_type LIKE CONCAT('%',#{businessType},'%')")
     List<String> selectConnectorBusinessType(ConfigEntity configEntity);
 
+=======
+public interface ConfigMapper {
+
+    @Select("""
+        <script>
+        select * from config where
+                instance_type = #{instanceType} and instance_id = #{instanceId}
+                <if test='isModify != null'>
+                    and is_modify = #{isModify}
+                </if>
+                <if test='alreadyUpdate != null'>
+                    and already_update = #{alreadyUpdate}
+                </if>
+                <if test='configName != null'>
+                    and config_name like CONCAT('%',#{configName},'%')
+                </if>
+        </script>
+        """)
+    List<ConfigEntity> queryByInstanceId(ConfigEntity configEntity);
+
+>>>>>>> feat/kubernetes-agent
     @Select("SELECT * FROM config WHERE status=1 AND is_default=0")
     List<ConfigEntity> selectAll();
 
-    @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId}")
-    List<ConfigEntity> selectConfigsByInstance(ConfigEntity configEntity);
+
+    @Update("""
+        update config set config_value = #{configValue} where id = #{id}
+        """)
+    Integer updateConfigValueById(ConfigEntity configEntity);
 
     @Insert({
         "<script>",
@@ -99,24 +123,5 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
             + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
     void updateConfig(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId} AND is_default=0")
-    List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE cluster_id=-1 AND business_type=#{businessType} AND instance_type=#{instanceType} AND is_default=1")
-    List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
-
-    @Select("SELECT * FROM config WHERE is_default=1")
-    List<ConfigEntity> selectAllDefaultConfig();
-
-    @Select("SELECT * FROM config WHERE cluster_id=#{clusterId} AND instance_type=#{instanceType} "
-            + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
-    ConfigEntity selectByUnique(ConfigEntity configEntity);
-
-    void syncInsert(List<ConfigEntity> entityList);
-
-    void syncUpdate(List<ConfigEntity> entityList);
-
-    void syncDelete(List<ConfigEntity> entityList);
-
-    List<ConfigEntity> syncGet(ConfigEntity topicEntity);
 }

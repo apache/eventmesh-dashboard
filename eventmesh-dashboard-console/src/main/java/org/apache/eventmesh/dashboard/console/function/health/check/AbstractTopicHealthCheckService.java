@@ -37,7 +37,7 @@ public abstract class AbstractTopicHealthCheckService<T> extends AbstractHealthC
     @Getter
     private Integer queue = 0;
 
-    private AtomicLong atomicLong = new AtomicLong();
+    private final AtomicLong atomicLong = new AtomicLong();
 
     protected byte[] messageContext() {
         return ("{ 'uid': " + atomicLong.incrementAndGet() + "}").getBytes();

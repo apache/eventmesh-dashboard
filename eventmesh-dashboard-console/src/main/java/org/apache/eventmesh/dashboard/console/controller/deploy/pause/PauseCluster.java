@@ -48,9 +48,9 @@ public class PauseCluster implements UpdateHandler<ClusterEntity> {
     private ClusterRelationshipService clusterRelationshipService;
 
 
-    private List<RuntimeEntity> selfRuntimeList = new ArrayList<>();
+    private final List<RuntimeEntity> selfRuntimeList = new ArrayList<>();
 
-    private List<RuntimeEntity> notSelfRuntimeList = new ArrayList<>();
+    private final List<RuntimeEntity> notSelfRuntimeList = new ArrayList<>();
 
 
     @Override

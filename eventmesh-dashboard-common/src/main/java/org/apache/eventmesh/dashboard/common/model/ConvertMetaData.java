@@ -18,6 +18,11 @@
 
 package org.apache.eventmesh.dashboard.common.model;
 
+/**
+ *
+ * @param <E>
+ * @param <M>
+ */
 public interface ConvertMetaData<E, M> {
 
 

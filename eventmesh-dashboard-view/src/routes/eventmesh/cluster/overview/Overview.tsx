@@ -17,9 +17,15 @@
 
 
 import React from 'react'
-import { Box, Stack } from '@mui/material'
+import {Box, Stack} from '@mui/material'
 
+<<<<<<< HEAD:eventmesh-dashboard-view/src/routes/eventmesh/cluster/overview/Overview.tsx
 interface HomeProps extends BoxProps {}
+=======
+import {Outlet} from 'react-router-dom'
+import {grey} from '@mui/material/colors'
+import Navigation from './navigation/Navigation'
+>>>>>>> feat/kubernetes-agent:eventmesh-dashboard-view/src/routes/RootLayout.tsx
 
 const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
   return (

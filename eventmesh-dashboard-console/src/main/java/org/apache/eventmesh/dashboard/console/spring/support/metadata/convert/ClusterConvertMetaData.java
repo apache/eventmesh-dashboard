@@ -25,7 +25,9 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-
+/**
+ *
+ */
 @Mapper
 public interface ClusterConvertMetaData extends ConvertMetaData<ClusterEntity, ClusterMetadata> {
 

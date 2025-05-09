@@ -16,24 +16,16 @@
  */
 
 
-import React, { forwardRef, useEffect, useState } from 'react'
-import {
-  Stack,
-  StackProps,
-  Box,
-  Divider,
-  Typography,
-  alpha
-} from '@mui/material'
-import { Icons } from '../../assets/icons'
-import { grey } from '@mui/material/colors'
+import React, {forwardRef, useState} from 'react'
+import {alpha, Box, Divider, Stack, StackProps, Typography} from '@mui/material'
+import {Icons} from '../../assets/icons'
+import {grey} from '@mui/material/colors'
 import NavigationItem from './NavigationItem'
-import { NavMenuIdEnum, NavMenuType } from './navigation.types'
-import { useNavigate } from 'react-router-dom'
-import { fetchResourceStats } from '../../service/topics'
+import {NavMenuIdEnum, NavMenuType} from './navigation.types'
+import {useNavigate} from 'react-router-dom'
 import NavigationSubMenu from './NavigationSubMenu'
-import { useAppDispatch, useAppSelector } from '../../store'
-import { globalSlice } from '../../store/reducers/public/public.slice'
+import {useAppDispatch, useAppSelector} from '../../store'
+import {globalSlice} from '../../store/reducers/public/public.slice'
 
 const getNavigationMenus = (): NavMenuType[] => {
   return [

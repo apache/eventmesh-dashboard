@@ -25,7 +25,7 @@ import org.junit.Test;
 
 public class DefaultDataHandlerTest {
 
-    private ClusterMetadataDomainTest clusterMetadataDomainTest = new ClusterMetadataDomainTest();
+    private final ClusterMetadataDomainTest clusterMetadataDomainTest = new ClusterMetadataDomainTest();
 
     @Test
     public void test() {

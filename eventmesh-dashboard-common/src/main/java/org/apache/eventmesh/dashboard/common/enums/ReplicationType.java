@@ -18,6 +18,9 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+/**
+ *
+ */
 public enum ReplicationType {
 
     NOT,

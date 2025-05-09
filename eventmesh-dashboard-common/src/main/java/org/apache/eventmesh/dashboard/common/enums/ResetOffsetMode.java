@@ -18,6 +18,10 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+
+/**
+ *
+ */
 public enum ResetOffsetMode {
 
     /**

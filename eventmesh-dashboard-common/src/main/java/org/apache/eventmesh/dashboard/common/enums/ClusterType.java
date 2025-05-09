@@ -26,6 +26,9 @@ import java.util.Objects;
 
 import lombok.Getter;
 
+/**
+ *
+ */
 public enum ClusterType {
 
     DEFINITION(0),

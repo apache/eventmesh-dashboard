@@ -16,8 +16,8 @@
  */
 
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps, Stack } from '@mui/material'
+import React, {forwardRef} from 'react'
+import {Box, BoxProps, Stack} from '@mui/material'
 import Page from '../../../components/page/Layout'
 import Stats from './stats/Stats'
 import TopicList from './topic-list/TopicList'

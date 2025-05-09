@@ -16,27 +16,15 @@
  */
 
 
-import React, { forwardRef, useEffect, useState } from 'react'
-import {
-  Stack,
-  StackProps,
-  TextField,
-  Paper,
-  Button,
-  Typography
-} from '@mui/material'
-import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid'
-import { grey } from '@mui/material/colors'
-import { fetchTopics } from '../../../../service/topics'
-import { useAppSelector } from '../../../../store'
-import {
-  Topic,
-  TopicCreationStatusEnum,
-  TopicHealthStatusEnum
-} from '../topic.types'
-import { TopicCreationStatusText, TopicHealthStatusText } from '../topic.const'
-import { useParams } from 'react-router-dom'
-import { AppSectionBoxShadow } from '../../../../app.const'
+import React, {forwardRef, useEffect, useState} from 'react'
+import {Button, Paper, Stack, StackProps, TextField, Typography} from '@mui/material'
+import {DataGrid, GridColDef} from '@mui/x-data-grid'
+import {grey} from '@mui/material/colors'
+import {fetchTopics} from '../../../../service/topics'
+import {Topic, TopicCreationStatusEnum, TopicHealthStatusEnum} from '../topic.types'
+import {TopicCreationStatusText, TopicHealthStatusText} from '../topic.const'
+import {useParams} from 'react-router-dom'
+import {AppSectionBoxShadow} from '../../../../app.const'
 
 export type TopicListParams = {
   page: number

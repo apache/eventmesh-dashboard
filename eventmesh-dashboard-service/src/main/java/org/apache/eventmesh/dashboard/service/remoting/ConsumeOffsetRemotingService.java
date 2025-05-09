@@ -22,6 +22,9 @@ import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 
 import java.util.List;
 
+/**
+ *
+ */
 public interface ConsumeOffsetRemotingService {
 
 

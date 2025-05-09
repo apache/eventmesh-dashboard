@@ -29,7 +29,7 @@ public class MetadataSyncResultMetadata {
 
     private ClusterTrusteeshipType clusterTrusteeshipType;
 
-    private boolean isFast = false;
+    private final boolean isFast = false;
 
     private String resultData;
 }

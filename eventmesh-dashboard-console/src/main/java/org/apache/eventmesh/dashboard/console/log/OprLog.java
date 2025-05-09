@@ -45,7 +45,7 @@ import org.springframework.util.ClassUtils;
 @Service
 public class OprLog implements Ordered, ApplicationContextAware {
 
-    private int order = LOWEST_PRECEDENCE - 1000; // Specify the order of execution
+    private final int order = LOWEST_PRECEDENCE - 1000; // Specify the order of execution
 
     private LogService logService;
 

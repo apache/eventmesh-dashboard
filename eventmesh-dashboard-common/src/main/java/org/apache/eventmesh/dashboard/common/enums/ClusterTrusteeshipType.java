@@ -87,7 +87,6 @@ public enum ClusterTrusteeshipType {
 
         FAIL,
 
-        ;
     }
 
     /**

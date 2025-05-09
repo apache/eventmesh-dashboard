@@ -16,9 +16,9 @@
  */
 
 
-import React, { forwardRef } from "react";
-import { Box, BoxProps, Stack } from "@mui/material";
-import { LoginOutlined } from "@mui/icons-material";
+import React, {forwardRef} from "react";
+import {Box, BoxProps, Stack} from "@mui/material";
+import {LoginOutlined} from "@mui/icons-material";
 
 interface LoginProps extends BoxProps {}
 

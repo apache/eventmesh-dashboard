@@ -94,7 +94,7 @@ public enum ClusterSyncMetadataEnum {
             return new ListWrapper();
         }
 
-        private List<MetadataType> list = new ArrayList<>();
+        private final List<MetadataType> list = new ArrayList<>();
 
         ListWrapper add(List<MetadataType> list) {
             list.addAll(list);
@@ -103,7 +103,7 @@ public enum ClusterSyncMetadataEnum {
     }
 
     @Getter
-    private ClusterSyncMetadata clusterSyncMetadata;
+    private final ClusterSyncMetadata clusterSyncMetadata;
 
     ClusterSyncMetadataEnum(ClusterSyncMetadata clusterSyncMetadata) {
         this.clusterSyncMetadata = clusterSyncMetadata;

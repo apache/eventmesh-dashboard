@@ -19,7 +19,6 @@
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
-import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
 

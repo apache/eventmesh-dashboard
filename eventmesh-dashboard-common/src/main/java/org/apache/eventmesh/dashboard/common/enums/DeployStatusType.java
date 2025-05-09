@@ -18,6 +18,9 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+/**
+ *
+ */
 public enum DeployStatusType {
 
 
@@ -103,5 +106,4 @@ public enum DeployStatusType {
     UNINSTALL_ING,
 
     UNINSTALL_SUCCESS,
-    ;
 }

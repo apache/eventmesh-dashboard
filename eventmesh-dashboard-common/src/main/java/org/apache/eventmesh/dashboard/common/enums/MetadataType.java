@@ -31,7 +31,9 @@ import org.apache.eventmesh.dashboard.common.model.metadata.TopicOffsetMetadata;
 
 import lombok.Getter;
 
-
+/**
+ *
+ */
 @Getter
 public enum MetadataType {
 
@@ -59,7 +61,7 @@ public enum MetadataType {
 
     ACL(AclMetadata.class);
 
-    private Class<?> metadataClass;
+    private final Class<?> metadataClass;
 
     private boolean readOnly = false;
 

@@ -22,6 +22,9 @@ import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
 
 import java.util.List;
 
+/**
+ *
+ */
 public interface MetadataSyncResultHandler {
 
 

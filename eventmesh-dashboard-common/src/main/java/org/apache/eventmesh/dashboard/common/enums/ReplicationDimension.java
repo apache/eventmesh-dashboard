@@ -18,6 +18,9 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+/**
+ *
+ */
 public enum ReplicationDimension {
 
     NOT,
@@ -34,5 +37,4 @@ public enum ReplicationDimension {
      *  部分复制
      */
     SECTION_REPLICATION,
-    ;
 }

@@ -18,6 +18,10 @@
 
 package org.apache.eventmesh.dashboard.core.metadata.difference;
 
+/**
+ *
+ * @param <T>
+ */
 public interface Difference<T> {
 
 

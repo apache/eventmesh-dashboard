@@ -54,7 +54,7 @@ import io.micrometer.core.instrument.util.IOUtils;
 public class RuntimeDeployServiceTest {
 
 
-    private RuntimeDeployService runtimeDeployService = new RuntimeDeployService();
+    private final RuntimeDeployService runtimeDeployService = new RuntimeDeployService();
 
 
     @Mock
@@ -76,7 +76,7 @@ public class RuntimeDeployServiceTest {
     private ConfigService configService;
 
 
-    private RuntimeEntity runtimeEntity = new RuntimeEntity();
+    private final RuntimeEntity runtimeEntity = new RuntimeEntity();
 
     private MockedStatic<SDKManage> sdkManageMockedStatic;
 

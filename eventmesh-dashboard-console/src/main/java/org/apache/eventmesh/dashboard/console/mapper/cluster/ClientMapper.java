@@ -67,7 +67,7 @@ public interface ClientMapper extends SyncDataHandlerMapper<ClientEntity> {
                 </where>
                 and status = #{status}
             </script>
-        """})
+            """})
     List<ClientEntity> queryClientByUserForm(QueryClientByUserFormDTO queryClientByUserFormDTO);
 
     @Select("SELECT * FROM `client` WHERE `host` = #{host} AND `port` = #{port} AND status = 1")

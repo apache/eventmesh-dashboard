@@ -15,14 +15,26 @@
  * limitations under the License.
  */
 
+package org.apache.eventmesh.dashboard.console.mapstruct.function;
 
-package org.apache.eventmesh.dashboard.core.meta.connection;
+import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.QueryConfigByInstanceId;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigDTO;
 
-import org.apache.eventmesh.dashboard.service.meta.ConnectionCore;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-import lombok.extern.slf4j.Slf4j;
+/**
+ *
+ */
+@Mapper
+public interface ConfigControllerMapper {
 
-@Slf4j
-public class NacosConnectionCore implements ConnectionCore {
+    ConfigControllerMapper INSTANCE = Mappers.getMapper(ConfigControllerMapper.class);
+
+
+    ConfigEntity updateConfigsByTypeAndId(UpdateConfigDTO data);
+
+    ConfigEntity queryConfigByInstanceId(QueryConfigByInstanceId data);
 
 }

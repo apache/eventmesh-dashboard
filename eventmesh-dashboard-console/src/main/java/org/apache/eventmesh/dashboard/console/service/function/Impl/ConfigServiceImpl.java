@@ -18,34 +18,26 @@
 
 package org.apache.eventmesh.dashboard.console.service.function.Impl;
 
-import org.apache.eventmesh.dashboard.console.annotation.EmLog;
-import org.apache.eventmesh.dashboard.console.entity.DefaultConfigKey;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.ChangeConfigDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigsLog;
+import org.apache.eventmesh.dashboard.console.modle.dto.config.QueryConfigByInstanceId;
 import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.Yaml;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class ConfigServiceImpl implements ConfigService {
 
 
     @Autowired
     ConfigMapper configMapper;
 
+<<<<<<< HEAD
     private Map<DefaultConfigKey, String> defaultConfigCache = new HashMap<>();
 
 
@@ -132,6 +124,12 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public List<ConfigEntity> queryByClusterAndInstanceId(ConfigEntity configEntity) {
         return null;
+=======
+
+    @Override
+    public List<ConfigEntity> queryByInstanceId(ConfigEntity configEntity) {
+        return configMapper.queryByInstanceId(configEntity);
+>>>>>>> feat/kubernetes-agent
     }
 
     @Override
@@ -140,8 +138,18 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
+<<<<<<< HEAD
     public Integer batchInsert(List<ConfigEntity> configEntityList) {
         return configMapper.batchInsert(configEntityList);
+=======
+    public Integer updateConfigValueById(ConfigEntity configEntity) {
+        return this.configMapper.updateConfigValueById(configEntity);
+    }
+
+    @Override
+    public void batchInsert(List<ConfigEntity> configEntityList) {
+        configMapper.batchInsert(configEntityList);
+>>>>>>> feat/kubernetes-agent
     }
 
     @Override
@@ -149,48 +157,13 @@ public class ConfigServiceImpl implements ConfigService {
         configMapper.copyConfig(sourceId, targetId);
     }
 
-    @Override
-    public void restoreConfig(Long sourceId, Long targetId) {
-
-    }
-
-    public String mapToYaml(Map<String, String> stringMap) {
-        Yaml yaml = new Yaml();
-        return yaml.dumpAsMap(stringMap);
-    }
-
-    @Override
-    public String mapToProperties(Map<String, String> stringMap) {
-        Properties properties = new Properties();
-        stringMap.forEach((key, value) -> {
-            properties.setProperty(key, value);
-        });
-        return properties.toString().replace(",", ",\n");
-    }
-
-    @Override
-    public Map<String, String> propertiesToMap(String configProperties) {
-        ConcurrentHashMap<String, String> stringStringConcurrentHashMap = new ConcurrentHashMap<>();
-        String replace = configProperties.replace("{", "");
-        String replace1 = replace.replace("}", "");
-        String[] split = replace1.split(",");
-        Arrays.stream(split).forEach(n -> {
-            String[] split1 = n.split("=");
-            stringStringConcurrentHashMap.put(split1[0].replace("\n ", ""), split1[1]);
-        });
-        return stringStringConcurrentHashMap;
-    }
-
 
     public Integer addConfig(ConfigEntity configEntity) {
         return configMapper.addConfig(configEntity);
     }
 
-    @Override
-    public Integer deleteConfig(ConfigEntity configEntity) {
-        return configMapper.deleteConfig(configEntity);
-    }
 
+<<<<<<< HEAD
     @Override
     public List<ConfigEntity> selectByInstanceIdAndType(Long instanceId, Integer type) {
         ConfigEntity config = new ConfigEntity();
@@ -199,16 +172,25 @@ public class ConfigServiceImpl implements ConfigService {
         return configMapper.selectByInstanceId(config);
     }
 
-
-    @Override
-    public List<ConfigEntity> selectToFront(Long instanceId, Integer type, GetConfigsListDTO getConfigsListDTO) {
-        ConfigEntity config = new ConfigEntity();
-        config.setInstanceId(instanceId);
-        config.setInstanceType(null);
-        config = this.setSearchCriteria(getConfigsListDTO, config);
-        return configMapper.getConfigsToFrontWithDynamic(config);
+=======
+    public ConfigEntity setSearchCriteria(QueryConfigByInstanceId queryConfigByInstanceId, ConfigEntity configEntity) {
+        if (queryConfigByInstanceId != null) {
+            if (queryConfigByInstanceId.getConfigName() != null) {
+                configEntity.setConfigName(queryConfigByInstanceId.getConfigName());
+            }
+            if (queryConfigByInstanceId.getIsModify() != null) {
+                configEntity.setIsModify(queryConfigByInstanceId.getIsModify());
+            }
+            if (queryConfigByInstanceId.getAlreadyUpdate() != null) {
+                configEntity.setAlreadyUpdate(queryConfigByInstanceId.getAlreadyUpdate());
+            }
+        }
+        return configEntity;
     }
+>>>>>>> feat/kubernetes-agent
 
+
+<<<<<<< HEAD
     public void insertDefaultConfigToCache() {
         List<ConfigEntity> configEntityList = configMapper.selectAllDefaultConfig();
         configEntityList.forEach(n -> {
@@ -216,10 +198,11 @@ public class ConfigServiceImpl implements ConfigService {
             defaultConfigKey.setConfigName(n.getConfigName());
             defaultConfigKey.setBusinessType(n.getBusinessType());
             defaultConfigCache.putIfAbsent(defaultConfigKey, n.getConfigValue());
+=======
+>>>>>>> feat/kubernetes-agent
 
-        });
-    }
 
+<<<<<<< HEAD
     @Override
     public Map<String, String> selectDefaultConfig(String businessType) {
         if (defaultConfigCache.size() == 0) {
@@ -235,3 +218,6 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
 }
+=======
+}
+>>>>>>> feat/kubernetes-agent

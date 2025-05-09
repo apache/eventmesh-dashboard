@@ -16,13 +16,22 @@
  */
 
 
-package org.apache.eventmesh.dashboard.service.meta;
+package org.apache.eventmesh.dashboard.console.modle.dto.config;
 
-/**
- * "Connection" refers to the subscription relationship between connectors. It focuses on the configuration deployed on the source and sink connectors
- * themselves, reported by the connector.
- */
-@Deprecated
-public interface ConnectionCore {
+import lombok.Data;
 
+@Data
+public class QueryConfigByInstanceId {
+
+    private String businessType;
+
+    private Long instanceId;
+
+    private String instanceType;
+
+    private String configName;
+
+    private Integer isModify;
+
+    private Integer alreadyUpdate;
 }

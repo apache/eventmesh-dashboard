@@ -18,6 +18,10 @@
 
 package org.apache.eventmesh.dashboard.console.controller.deploy.handler;
 
+/**
+ *
+ * @param <T>
+ */
 public interface UpdateHandler<T> {
 
     void init();

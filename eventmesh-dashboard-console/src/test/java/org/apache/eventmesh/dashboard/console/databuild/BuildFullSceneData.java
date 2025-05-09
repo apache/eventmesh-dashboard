@@ -68,9 +68,9 @@ public class BuildFullSceneData {
     private final Map<Long, RuntimeEntity> runtimeEntityMap = new HashMap<>();
 
 
-    private ShareMetadata runtimeShareMetadata = new ShareMetadata();
+    private final ShareMetadata runtimeShareMetadata = new ShareMetadata();
 
-    private ShareMetadata mateShareMetadata = new ShareMetadata();
+    private final ShareMetadata mateShareMetadata = new ShareMetadata();
 
 
     @Getter

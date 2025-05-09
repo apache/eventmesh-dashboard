@@ -16,11 +16,9 @@
  */
 
 
-import React, { forwardRef } from 'react'
-import { Box, Stack, StackProps } from '@mui/material'
-
-import { Outlet } from 'react-router-dom'
-import { grey } from '@mui/material/colors'
+import React, {forwardRef} from 'react'
+import {Box, Stack, StackProps} from '@mui/material'
+import {grey} from '@mui/material/colors'
 import Navigation from '../../routes/navigation/Navigation'
 
 interface RootLayoutProps extends StackProps {}

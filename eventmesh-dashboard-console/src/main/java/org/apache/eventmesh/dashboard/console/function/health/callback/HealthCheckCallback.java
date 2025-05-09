@@ -23,7 +23,7 @@ package org.apache.eventmesh.dashboard.console.function.health.callback;
  */
 public interface HealthCheckCallback {
 
-    public void onSuccess();
+    void onSuccess();
 
-    public void onFail(Exception e);
+    void onFail(Exception e);
 }

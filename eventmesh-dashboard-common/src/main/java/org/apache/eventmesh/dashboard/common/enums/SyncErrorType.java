@@ -18,6 +18,9 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+/**
+ *
+ */
 public enum SyncErrorType {
 
     NOT,
@@ -25,6 +28,5 @@ public enum SyncErrorType {
     METADATA_SYNC_ERROR,
 
     CHECK_SYNC_ERROR,
-    ;
 
 }
