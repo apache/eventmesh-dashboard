@@ -20,6 +20,10 @@ package org.apache.eventmesh.dashboard.core.metadata;
 
 import java.util.List;
 
+/**
+ *
+ * @param <T>
+ */
 public interface UpdateMetadataHandler<T> {
 
 

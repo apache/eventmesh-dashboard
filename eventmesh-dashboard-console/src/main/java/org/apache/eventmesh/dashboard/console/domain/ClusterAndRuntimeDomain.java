@@ -23,6 +23,9 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 
 import java.util.List;
 
+/**
+ *
+ */
 public interface ClusterAndRuntimeDomain {
 
 

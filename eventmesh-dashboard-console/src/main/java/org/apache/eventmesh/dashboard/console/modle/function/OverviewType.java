@@ -20,8 +20,7 @@ package org.apache.eventmesh.dashboard.console.modle.function;
 
 public enum OverviewType {
 
-    GROUP;
-
+    GROUP
 
 
 }

@@ -25,7 +25,9 @@ import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-
+/**
+ *
+ */
 @Mapper
 public interface ConfigConvertMetaData extends ConvertMetaData<ConfigEntity, ConfigMetadata> {
 

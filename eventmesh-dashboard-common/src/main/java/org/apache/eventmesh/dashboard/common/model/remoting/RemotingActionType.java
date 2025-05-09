@@ -28,6 +28,4 @@ public enum RemotingActionType {
 
     QUEUE_ALL,
 
-    ;
-
 }

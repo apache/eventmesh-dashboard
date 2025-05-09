@@ -60,7 +60,7 @@ public class RuntimeEntityMapperTest {
     @Autowired
     private ClusterRelationshipMapper clusterRelationshipMapper;
 
-    private BuildFullSceneData buildFullSceneData = new BuildFullSceneData();
+    private final BuildFullSceneData buildFullSceneData = new BuildFullSceneData();
 
     private static final AtomicLong nameIndex = new AtomicLong(2);
 

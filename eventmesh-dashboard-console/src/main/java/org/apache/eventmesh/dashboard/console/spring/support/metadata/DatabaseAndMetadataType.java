@@ -70,7 +70,7 @@ public enum DatabaseAndMetadataType {
     ;
 
 
-    private DatabaseAndMetadataMapper databaseAndMetadataMapper;
+    private final DatabaseAndMetadataMapper databaseAndMetadataMapper;
 
 
     DatabaseAndMetadataType(DatabaseAndMetadataMapper databaseAndMetadataMapper) {

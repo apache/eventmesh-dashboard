@@ -17,10 +17,10 @@
 
 
 import React from 'react'
-import { Box, Stack } from '@mui/material'
+import {Box, Stack} from '@mui/material'
 
-import { Outlet } from 'react-router-dom'
-import { grey } from '@mui/material/colors'
+import {Outlet} from 'react-router-dom'
+import {grey} from '@mui/material/colors'
 import Navigation from './navigation/Navigation'
 
 const RootLayout = () => {

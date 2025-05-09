@@ -31,7 +31,7 @@ public class OperationRange {
 
     private static final OperationRange operationRange = new OperationRange();
 
-    private static Map<ClusterType, List<OperationRangeType>> operationRangeListHashMap = new HashMap<>();
+    private static final Map<ClusterType, List<OperationRangeType>> operationRangeListHashMap = new HashMap<>();
 
     public static OperationRange getInstance() {
         return operationRange;

@@ -18,6 +18,7 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,15 +53,13 @@ public enum RemotingType {
 
     ;
 
-    private Set<ClusterType> supportClusterType = new HashSet<>();
+    private final Set<ClusterType> supportClusterType = new HashSet<>();
 
     RemotingType() {
     }
 
     RemotingType(ClusterType... clusterType) {
-        for (ClusterType c : clusterType) {
-            this.supportClusterType.add(c);
-        }
+        Collections.addAll(this.supportClusterType, clusterType);
 
     }
 

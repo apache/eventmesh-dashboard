@@ -386,7 +386,7 @@ public class RuntimeDeployService {
             configEntity.setClusterId(this.clusterEntity.getId());
             configEntity.setInstanceId(this.clusterEntity.getId());
             configEntity.setInstanceType(MetadataType.CLUSTER);
-            List<ConfigEntity> configEntityList = configService.queryByClusterAndInstanceId(configEntity);
+            List<ConfigEntity> configEntityList = configService.queryByInstanceId(configEntity);
 
             this.scriptBuildData.setConfigEntityList(configEntityList);
             this.buildMetadata.buildConfig(this.scriptBuildData, this.runtimeEntity);

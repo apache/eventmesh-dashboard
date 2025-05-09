@@ -16,17 +16,17 @@
  */
 
 
-import React, { forwardRef, useState, useEffect } from 'react'
-import { Stack, StackProps, Select, MenuItem, Grid } from '@mui/material'
+import React, {forwardRef, useEffect, useState} from 'react'
+import {Grid, MenuItem, Select, Stack, StackProps} from '@mui/material'
 import TopicCount from './TopicCount'
 import AbnormalTopicCount from './AbnormalTopicCount'
-import { Icons } from '../../../../assets/icons'
+import {Icons} from '../../../../assets/icons'
 import StatsChart from './StatsChart'
-import { grey } from '@mui/material/colors'
+import {grey} from '@mui/material/colors'
 
-import { useAppSelector } from '../../../../store'
-import { fetchTopicStats } from '../../../../service/topics'
-import { TopicStats } from './topic-stats.types'
+import {useAppSelector} from '../../../../store'
+import {fetchTopicStats} from '../../../../service/topics'
+import {TopicStats} from './topic-stats.types'
 
 enum TimeOptionEnum {
   LatestHour = 'LATEST_HOUR'

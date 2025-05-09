@@ -17,7 +17,7 @@
 
 
 import React from 'react'
-import { useRoutes, Navigate } from 'react-router-dom'
+import {Navigate, useRoutes} from 'react-router-dom'
 import Home from './home/Home'
 import ClusterOverView from './cluster/overview/Overview'
 import ClusterTopic from './cluster/topic/Topic'

@@ -86,7 +86,7 @@ public class GroupServiceImpl implements GroupService {
         groupEntity.setClusterId(subscriptionEntity.getClusterId());
         GroupEntity groupEntity1 = groupMapper.selectGroupByUnique(groupEntity);
         //^Obtain the group to which the member belongs
-        groupEntity1.setMembers(subscriptionEntity.getId() + "" + "," + groupEntity1.getMembers());
+        groupEntity1.setMembers(subscriptionEntity.getId() + "," + groupEntity1.getMembers());
         //Concatenate the members of the group
         groupEntity1.setMemberCount(groupEntity1.getMemberCount() + 1);
         groupEntity1.setUpdateTime(LocalDateTime.now());
@@ -103,7 +103,7 @@ public class GroupServiceImpl implements GroupService {
         groupEntity.setClusterId(subscriptionEntity.getClusterId());
         GroupEntity groupEntity1 = groupMapper.selectGroupByUnique(groupEntity);
         //^Obtain the group to which the member belongs
-        groupEntity1.setMembers(groupEntity1.getMembers().replaceAll(subscriptionEntity.getId() + "" + ",", ""));
+        groupEntity1.setMembers(groupEntity1.getMembers().replaceAll(subscriptionEntity.getId() + ",", ""));
         groupEntity1.setMemberCount(groupEntity1.getMemberCount() - 1);
         groupEntity1.setUpdateTime(LocalDateTime.now());
         groupMapper.updateGroup(groupEntity1);

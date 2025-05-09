@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
@@ -43,11 +42,11 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 @SDKMetadata(clusterType = {ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE,
-    ClusterType.STORAGE_ROCKETMQ_NAMESERVER, ClusterType.STORAGE_ROCKETMQ_BROKER_RAFT}, remotingType = RemotingType.ROCKETMQ, sdkTypeEnum = {
-    SDKTypeEnum.ADMIN, SDKTypeEnum.PING})
+    ClusterType.STORAGE_ROCKETMQ_NAMESERVER, ClusterType.STORAGE_ROCKETMQ_BROKER_RAFT}, remotingType = RemotingType.ROCKETMQ,
+    sdkTypeEnum = {SDKTypeEnum.ADMIN, SDKTypeEnum.PING})
 public class RocketMQRemotingSDKOperation extends AbstractSDKOperation<DefaultRemotingClient, CreateRemotingConfig> {
 
-    private RemotingClient remotingClient;
+    private final RemotingClient remotingClient;
 
     {
         // TODO

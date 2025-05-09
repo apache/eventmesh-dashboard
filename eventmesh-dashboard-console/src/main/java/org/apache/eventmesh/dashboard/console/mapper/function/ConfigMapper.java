@@ -58,7 +58,7 @@ public interface ConfigMapper {
 
     @Update("""
         update config set config_value = #{configValue} where id = #{id}
-    """)
+        """)
     Integer updateConfigValueById(ConfigEntity configEntity);
 
     @Insert({
@@ -93,7 +93,6 @@ public interface ConfigMapper {
     @Update("UPDATE config SET config_value=#{configValue} ,already_update=#{alreadyUpdate} WHERE instance_type=#{instanceType} AND"
             + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
     void updateConfig(ConfigEntity configEntity);
-
 
 
 }

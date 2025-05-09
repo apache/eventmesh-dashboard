@@ -22,6 +22,9 @@ import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity
 
 import java.util.List;
 
+/**
+ *
+ */
 public interface ResourcesConfigService {
 
 

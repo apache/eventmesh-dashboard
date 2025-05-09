@@ -19,6 +19,9 @@ package org.apache.eventmesh.dashboard.common.port;
 
 import java.util.List;
 
+/**
+ *
+ */
 public interface PortValidate {
 
 

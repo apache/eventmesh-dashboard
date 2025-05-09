@@ -47,15 +47,15 @@ public class ClusterMetadataDomainTest {
 
     private MetadataAllDO deleteMetadataAllDO;
 
-    private ClusterEntity clusterEntity = new ClusterEntity();
+    private final ClusterEntity clusterEntity = new ClusterEntity();
 
-    private List<ClusterEntity> clusterEntityList = new ArrayList<>();
+    private final List<ClusterEntity> clusterEntityList = new ArrayList<>();
 
-    private List<ClusterRelationshipEntity> clusterRelationshipEntityList = new ArrayList<>();
+    private final List<ClusterRelationshipEntity> clusterRelationshipEntityList = new ArrayList<>();
 
-    private List<RuntimeEntity> runtimeEntityList = new ArrayList<>();
+    private final List<RuntimeEntity> runtimeEntityList = new ArrayList<>();
 
-    private AtomicLong atomicLong = new AtomicLong(1L);
+    private final AtomicLong atomicLong = new AtomicLong(1L);
 
 
     @Before

@@ -24,6 +24,9 @@ import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+/**
+ *
+ */
 @Mapper
 public interface ConfigControllerMapper {
 

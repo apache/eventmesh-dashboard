@@ -213,6 +213,4 @@ public class RocketMQClusterHealthCheckService extends AbstractTopicHealthCheckS
     }
 
 
-    ;
-
 }

@@ -22,8 +22,10 @@ package org.apache.eventmesh.dashboard.console.modle.dto.topic;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class GetTopicListDTO extends ClusterIdDTO {
 
     private String topicName;

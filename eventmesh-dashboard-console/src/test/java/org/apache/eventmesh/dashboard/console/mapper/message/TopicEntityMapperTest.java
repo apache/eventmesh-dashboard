@@ -44,7 +44,7 @@ public class TopicEntityMapperTest {
     @Autowired
     private TopicMapper topicMapper;
 
-    private static AtomicLong nameIndex = new AtomicLong();
+    private static final AtomicLong nameIndex = new AtomicLong();
 
     @Test
     public void test_batch_delete() {

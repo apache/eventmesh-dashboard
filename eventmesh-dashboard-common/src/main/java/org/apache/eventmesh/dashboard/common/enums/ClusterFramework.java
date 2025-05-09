@@ -20,6 +20,9 @@ package org.apache.eventmesh.dashboard.common.enums;
 
 import java.util.Objects;
 
+/**
+ *
+ */
 public enum ClusterFramework {
 
     NOT,

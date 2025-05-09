@@ -51,16 +51,16 @@ public class MetadataSyncManagerTest {
 
     private Map<String, List<MetadataSyncWrapper>> metadataSyncConfigMap;
 
-    private MetadataSyncManage metadataSyncManage = new MetadataSyncManage();
+    private final MetadataSyncManage metadataSyncManage = new MetadataSyncManage();
 
-    private Remoting2Manage remotingManage = Remoting2Manage.getInstance();
+    private final Remoting2Manage remotingManage = Remoting2Manage.getInstance();
 
 
     @Mock
     private MetadataSyncResultHandler defaultMetadataSyncResultHandler;
 
 
-    private BaseSyncBase baseSyncBase = SDKManageTest.createJvm();
+    private final BaseSyncBase baseSyncBase = SDKManageTest.createJvm();
 
     @Before
     public void init() throws Exception {

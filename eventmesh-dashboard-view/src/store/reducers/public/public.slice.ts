@@ -16,9 +16,9 @@
  */
 
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { PublicState } from './public.types'
-import { NavMenuIdEnum } from '../../../routes/navigation/navigation.types'
+import {createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {PublicState} from './public.types'
+import {NavMenuIdEnum} from '../../../routes/navigation/navigation.types'
 
 const initialState = {
   navigation: { activeMenuId: NavMenuIdEnum.Home, pinSubmenuIds: [] }

@@ -24,6 +24,10 @@ import org.apache.eventmesh.dashboard.console.entity.function.MetadataSyncResult
 
 import java.util.List;
 
+
+/**
+ *
+ */
 public interface MetadataSyncResultService {
 
 

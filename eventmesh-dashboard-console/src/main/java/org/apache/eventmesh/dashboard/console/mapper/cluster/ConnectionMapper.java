@@ -59,19 +59,19 @@ public interface ConnectionMapper {
     List<ConnectionEntity> selectToFrontByClusterId(@Param("connectionEntity") ConnectionEntity connectionEntity);
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND source_id = #{sourceId} AND source_type = #{sourceType} AND status=1")
-    public List<ConnectionEntity> selectByClusterIdSourceTypeAndSourceId(ConnectionEntity connectionEntity);
+    List<ConnectionEntity> selectByClusterIdSourceTypeAndSourceId(ConnectionEntity connectionEntity);
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND sink_id = #{sinkId} AND sink_type = #{sinkType}")
-    public List<ConnectionEntity> selectByClusterIdSinkTypeAndSinkId(ConnectionEntity connectionEntity);
+    List<ConnectionEntity> selectByClusterIdSinkTypeAndSinkId(ConnectionEntity connectionEntity);
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND source_id = #{sourceId} AND source_type = #{sourceType} "
         + "AND create_time > #{startTime} AND create_time < #{endTime}")
-    public List<ConnectionEntity> selectByClusterIdSourceTypeAndSourceIdAndCreateTimeRange(ConnectionEntity connectionEntity,
+    List<ConnectionEntity> selectByClusterIdSourceTypeAndSourceIdAndCreateTimeRange(ConnectionEntity connectionEntity,
         @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND sink_id = #{sinkId} AND sink_type = #{sinkType} "
         + "AND create_time > #{startTime} AND create_time < #{endTime}")
-    public List<ConnectionEntity> selectByClusterIdSinkTypeAndSinkIdAndCreateTimeRange(ConnectionEntity connectionEntity,
+    List<ConnectionEntity> selectByClusterIdSinkTypeAndSinkIdAndCreateTimeRange(ConnectionEntity connectionEntity,
         @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")

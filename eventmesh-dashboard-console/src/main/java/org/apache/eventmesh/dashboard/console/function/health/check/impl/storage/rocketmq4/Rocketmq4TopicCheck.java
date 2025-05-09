@@ -66,7 +66,7 @@ public class Rocketmq4TopicCheck extends AbstractHealthCheckService<DefaultRemot
 
     private Long startTime;
 
-    private BlockingQueue<Message> consumedMessages = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Message> consumedMessages = new LinkedBlockingQueue<>();
 
 
     @Override

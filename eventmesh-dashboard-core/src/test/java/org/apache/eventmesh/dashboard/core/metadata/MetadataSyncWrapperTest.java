@@ -46,10 +46,10 @@ public class MetadataSyncWrapperTest {
     private DataMetadataHandler<BaseClusterIdBase> clusterService;
 
 
-    private BaseSyncBase baseSyncBase = SDKManageTest.createJvm();
+    private final BaseSyncBase baseSyncBase = SDKManageTest.createJvm();
 
 
-    private MetadataSyncWrapper metadataSyncWrapper = new MetadataSyncWrapper();
+    private final MetadataSyncWrapper metadataSyncWrapper = new MetadataSyncWrapper();
 
 
     @Before

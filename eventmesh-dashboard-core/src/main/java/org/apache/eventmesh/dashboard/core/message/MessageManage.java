@@ -62,7 +62,7 @@ public class MessageManage {
     }
 
 
-    private Map<Class<?>, Map<String, AbstractMessageOperate>> classMapConcurrentHashMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Map<String, AbstractMessageOperate>> classMapConcurrentHashMap = new ConcurrentHashMap<>();
 
 
     {

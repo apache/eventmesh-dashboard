@@ -23,6 +23,9 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 
 import java.util.List;
 
+/**
+ *
+ */
 public interface BuildMetadata {
 
 

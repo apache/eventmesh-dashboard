@@ -17,10 +17,10 @@
 
 
 import React from 'react'
-import { createTheme, ThemeProvider, CssBaseline } from '@mui/material'
+import {createTheme, CssBaseline, ThemeProvider} from '@mui/material'
 import AppRoutes from './routes/Routes'
 import GlobalStyles from '@mui/material/GlobalStyles'
-import { AppBackgroundColor, AppThemeConfig } from './app.const'
+import {AppBackgroundColor, AppThemeConfig} from './app.const'
 
 
 function App() {

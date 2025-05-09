@@ -24,5 +24,5 @@ public enum RemotingOperate {
 
     UPDATE,
 
-    DELETE;
+    DELETE
 }

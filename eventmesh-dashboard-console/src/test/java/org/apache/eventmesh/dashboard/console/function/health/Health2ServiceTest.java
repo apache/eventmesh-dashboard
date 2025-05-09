@@ -61,7 +61,7 @@ public class Health2ServiceTest {
         return baseSyncBase;
     }
 
-    private Health2Service health2Service = new Health2Service();
+    private final Health2Service health2Service = new Health2Service();
 
 
 
