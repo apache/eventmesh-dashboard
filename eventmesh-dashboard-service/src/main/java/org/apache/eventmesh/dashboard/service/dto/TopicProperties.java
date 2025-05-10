@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.dto;
 
 import lombok.Data;
@@ -24,6 +25,7 @@ import lombok.Data;
  */
 
 @Data
+@Deprecated
 public class TopicProperties {
 
     private String topicName;

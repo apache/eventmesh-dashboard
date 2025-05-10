@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 DELETE
 FROM `eventmesh_dashboard_test`.client
 WHERE TRUE;

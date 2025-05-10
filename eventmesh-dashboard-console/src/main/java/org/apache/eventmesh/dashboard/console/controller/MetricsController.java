@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.controller;
 
-import org.apache.eventmesh.dashboard.common.dto.Result;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.druid.stat.DruidStatManagerFacade;
+import com.alibaba.nacos.api.model.v2.Result;
 
 @RestController
 public class MetricsController {

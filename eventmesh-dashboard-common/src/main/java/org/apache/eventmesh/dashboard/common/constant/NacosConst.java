@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.constant;
 
+@Deprecated
 public class NacosConst {
 
     public static final String LOGIN_API = "/nacos/v1/auth/login";

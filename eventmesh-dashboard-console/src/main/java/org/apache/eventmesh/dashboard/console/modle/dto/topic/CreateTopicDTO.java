@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle.dto.topic;
 
 
+import org.apache.eventmesh.dashboard.console.modle.dto.operation.OperationBaseDTO;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * TODO this class is copied from storage plugin, needs update
  */
 
 @Data
-public class CreateTopicDTO {
-
-    private Long clusterId;
+@EqualsAndHashCode(callSuper = true)
+public class CreateTopicDTO extends OperationBaseDTO {
 
     private String name;
 

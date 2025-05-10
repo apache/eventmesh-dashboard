@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.linkage.log;
 
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
@@ -48,10 +49,10 @@ public class TestOprLog {
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setClusterId(1L);
         groupEntity.setName("logTest");
-        groupEntity.setStatus(1);
+        groupEntity.setStatus(1L);
         groupEntity.setType(0);
-        groupEntity.setState("OS");
-        groupService.insertGroup(groupEntity);
+
+        groupService.addGroup(groupEntity);
         LogEntity logEntity = new LogEntity();
         logEntity.setClusterId(1L);
         logEntity.setOperationType("add");
@@ -59,7 +60,7 @@ public class TestOprLog {
         logEntity.setContent(groupEntity.toString());
         logEntity.setResult(groupEntity.toString());
         logEntity.setId(groupEntity.getId());
-        List<LogEntity> logListByCluster = logService.selectLogListByCluster(new GetLogListDTO());
+        List<LogEntity> logListByCluster = logService.getLogListByCluster(new GetLogListDTO());
         logListByCluster.get(0).setId(null);
         logListByCluster.get(0).setCreateTime(null);
         logListByCluster.get(0).setEndTime(null);

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.wrapper;
 
 import org.apache.eventmesh.client.grpc.consumer.EventMeshGrpcConsumer;
@@ -24,17 +25,14 @@ import org.apache.eventmesh.client.http.producer.EventMeshHttpProducer;
 import org.apache.eventmesh.client.tcp.impl.cloudevent.CloudEventTCPClient;
 import org.apache.eventmesh.client.tcp.impl.eventmeshmessage.EventMeshMessageTCPClient;
 import org.apache.eventmesh.client.tcp.impl.openmessage.OpenMessageTCPClient;
-import org.apache.eventmesh.common.exception.EventMeshException;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Slf4j
 public class RuntimeSDKWrapper {
 
     private CloudEventTCPClient tcpCloudEventClient;
@@ -47,25 +45,21 @@ public class RuntimeSDKWrapper {
     private EventMeshGrpcProducer grpcProducerClient;
     private EventMeshGrpcConsumer grpcConsumerClient;
 
-    public void close() {
-        try {
-            if (tcpCloudEventClient != null) {
-                tcpCloudEventClient.close();
-            } else if (tcpEventMeshClient != null) {
-                tcpEventMeshClient.close();
-            } else if (openMessageTCPClient != null) {
-                openMessageTCPClient.close();
-            } else if (httpProducerClient != null) {
-                httpProducerClient.close();
-            } else if (httpConsumerClient != null) {
-                httpConsumerClient.close();
-            } else if (grpcProducerClient != null) {
-                grpcProducerClient.close();
-            } else if (grpcConsumerClient != null) {
-                grpcConsumerClient.close();
-            }
-        } catch (EventMeshException e) {
-            log.error("runtime client close failed", e);
+    public void close() throws Exception {
+        if (tcpCloudEventClient != null) {
+            tcpCloudEventClient.close();
+        } else if (tcpEventMeshClient != null) {
+            tcpEventMeshClient.close();
+        } else if (openMessageTCPClient != null) {
+            openMessageTCPClient.close();
+        } else if (httpProducerClient != null) {
+            httpProducerClient.close();
+        } else if (httpConsumerClient != null) {
+            httpConsumerClient.close();
+        } else if (grpcProducerClient != null) {
+            grpcProducerClient.close();
+        } else if (grpcConsumerClient != null) {
+            grpcConsumerClient.close();
         }
     }
 }

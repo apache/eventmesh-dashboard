@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import java.sql.Timestamp;
 
@@ -32,8 +32,8 @@ import lombok.EqualsAndHashCode;
  * A Connection is a link from a source to a sink.
  */
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = {"status", "endTime"})
-public class ConnectionEntity extends BaseEntity {
+@EqualsAndHashCode(callSuper = true)
+public class ConnectionEntity extends BaseRuntimeIdEntity {
 
     private static final long serialVersionUID = 6565578252656944905L;
 
@@ -69,9 +69,6 @@ public class ConnectionEntity extends BaseEntity {
 
     private Long runtimeId;
 
-    @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")
-    private Integer status;
-
     private String topic;
 
     private Long groupId;
@@ -80,8 +77,4 @@ public class ConnectionEntity extends BaseEntity {
 
     private String description;
 
-
-    public void setStatusEnum(RecordStatus statusEnum) {
-        this.status = statusEnum.getNumber();
-    }
 }

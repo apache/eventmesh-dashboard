@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.dto;
 
 import lombok.Data;
 
 @Data
+@Deprecated
 public class RocketmqProperties {
 
     private String namesrvAddr;

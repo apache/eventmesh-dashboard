@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.remoting.connector;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ConnectorMetadata;

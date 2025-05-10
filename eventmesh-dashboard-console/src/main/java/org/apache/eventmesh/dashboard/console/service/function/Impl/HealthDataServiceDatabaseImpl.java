@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.function.Impl;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
@@ -48,14 +49,14 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
 
 
     @Override
-    public InstanceLiveProportionVo selectInstanceLiveProportion(Long clusterId, Integer instanceType) {
+    public InstanceLiveProportionVo getInstanceLiveProportion(Long clusterId, Integer instanceType) {
         InstanceLiveProportionVo instanceLiveProportionVo = new InstanceLiveProportionVo();
         switch (instanceType) {
             case 2:
-                instanceLiveProportionVo = this.selectRuntimeLiveProportion(clusterId);
+                instanceLiveProportionVo = this.getRuntimeLiveProportion(clusterId);
                 break;
             case 3:
-                instanceLiveProportionVo = this.selectTopicLiveProportion(clusterId);
+                instanceLiveProportionVo = this.getTopicLiveProportion(clusterId);
                 break;
             default:
                 break;
@@ -63,7 +64,7 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
         return instanceLiveProportionVo;
     }
 
-    public InstanceLiveProportionVo selectTopicLiveProportion(Long clusterId) {
+    public InstanceLiveProportionVo getTopicLiveProportion(Long clusterId) {
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setClusterId(clusterId);
         Integer topicNum = topicMapper.selectTopicNumByCluster(topicEntity);
@@ -74,17 +75,14 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
                 abnormalNum++;
             }
         }
-        InstanceLiveProportionVo instanceLiveProportionVo = new InstanceLiveProportionVo();
-        instanceLiveProportionVo.setAbnormalNum(abnormalNum);
-        instanceLiveProportionVo.setAllNum(topicNum);
-        return instanceLiveProportionVo;
+        return new InstanceLiveProportionVo(abnormalNum, topicNum);
     }
 
 
-    public InstanceLiveProportionVo selectRuntimeLiveProportion(Long clusterId) {
+    public InstanceLiveProportionVo getRuntimeLiveProportion(Long clusterId) {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setClusterId(clusterId);
-        Integer topicNum = runtimeMapper.selectRuntimeNumByCluster(runtimeEntity);
+        Integer topicNum = runtimeMapper.getRuntimeNumByCluster(runtimeEntity);
         List<RuntimeEntity> runtimeEntities = runtimeMapper.selectRuntimeByCluster(runtimeEntity);
         int abnormalNum = 0;
         for (RuntimeEntity n : runtimeEntities) {
@@ -92,15 +90,12 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
                 abnormalNum++;
             }
         }
-        InstanceLiveProportionVo instanceLiveProportionVo = new InstanceLiveProportionVo();
-        instanceLiveProportionVo.setAbnormalNum(abnormalNum);
-        instanceLiveProportionVo.setAllNum(topicNum);
-        return instanceLiveProportionVo;
+        return new InstanceLiveProportionVo(abnormalNum, topicNum);
     }
 
 
     @Override
-    public List<HealthCheckResultEntity> selectInstanceLiveStatusHistory(Integer type, Long instanceId, LocalDateTime startTime) {
+    public List<HealthCheckResultEntity> getInstanceLiveStatusHistory(Integer type, Long instanceId, LocalDateTime startTime) {
         HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity();
         healthCheckResultEntity.setType(type);
         healthCheckResultEntity.setTypeId(instanceId);
@@ -115,19 +110,19 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
     }
 
     @Override
-    public Integer batchInsertHealthCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList) {
+    public void batchInsertHealthCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList) {
         if (healthCheckResultEntityList.isEmpty()) {
-            return 0;
+            return;
         }
-        return healthCheckResultMapper.batchInsert(healthCheckResultEntityList);
+        healthCheckResultMapper.batchInsert(healthCheckResultEntityList);
     }
 
     @Override
-    public Integer batchInsertNewCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList) {
+    public void batchInsertNewCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList) {
         if (healthCheckResultEntityList.isEmpty()) {
-            return 0;
+            return;
         }
-        return healthCheckResultMapper.insertNewChecks(healthCheckResultEntityList);
+        healthCheckResultMapper.insertNewChecks(healthCheckResultEntityList);
     }
 
     @Override
@@ -141,8 +136,8 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
     }
 
     @Override
-    public Integer batchUpdateCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList) {
-        return healthCheckResultMapper.batchUpdate(healthCheckResultEntityList);
+    public void batchUpdateCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList) {
+        healthCheckResultMapper.batchUpdate(healthCheckResultEntityList);
     }
 
     @Override
@@ -150,7 +145,7 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
         if (healthCheckResultEntityList.isEmpty()) {
             return;
         }
-        List<HealthCheckResultEntity> entitiesNeedToBeUpdate = healthCheckResultMapper.selectIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(
+        List<HealthCheckResultEntity> entitiesNeedToBeUpdate = healthCheckResultMapper.getIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(
             healthCheckResultEntityList);
         if (entitiesNeedToBeUpdate.isEmpty()) {
             return;
@@ -159,7 +154,7 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
             healthCheckResultEntityList.forEach(updateEntity -> {
                 if (entity.getClusterId().equals(updateEntity.getClusterId()) && entity.getType().equals(updateEntity.getType())
                     && entity.getTypeId().equals(updateEntity.getTypeId())) {
-                    entity.setState(updateEntity.getState());
+                    entity.setStatus(updateEntity.getStatus());
                     entity.setResultDesc(updateEntity.getResultDesc());
                 }
             });

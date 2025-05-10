@@ -15,122 +15,104 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.metadata;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
-import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-import org.apache.eventmesh.dashboard.core.remoting.RemotingManager;
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+import org.apache.eventmesh.dashboard.common.model.ConvertMetaData;
+import org.apache.eventmesh.dashboard.common.model.DatabaseAndMetadataMapper;
+import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKManageTest;
+import org.apache.eventmesh.dashboard.core.metadata.result.MetadataSyncResultHandler;
+import org.apache.eventmesh.dashboard.core.remoting.Remoting2Manage;
+import org.apache.eventmesh.dashboard.service.remoting.AclRemotingService;
+import org.apache.eventmesh.dashboard.service.remoting.TopicRemotingService;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public class MetadataSyncManagerTest {
 
-    private MetadataSyncManager metadataSyncManager = new MetadataSyncManager();
+    private Map<MetadataType, SyncMetadataCreateFactory> syncMetadataCreateFactoryMap;
 
-    private Map<Class<?>, MetadataSyncManager.MetadataSyncWrapper> metadataSyncWrapperMap;
+
+    private Map<String, List<MetadataSyncWrapper>> metadataSyncConfigMap;
+
+    private MetadataSyncManage metadataSyncManage = new MetadataSyncManage();
+
+    private Remoting2Manage remotingManage = Remoting2Manage.getInstance();
 
 
     @Mock
-    private RemotingManager remotingManager;
+    private MetadataSyncResultHandler defaultMetadataSyncResultHandler;
 
-    @Mock
-    private MetadataHandler dataBasesHandler;
 
-    @Mock
-    private MetadataHandler clusterHandler;
-
-    private List<RuntimeMetadata> databasesList = new ArrayList<>();
-    private List<RuntimeMetadata> clusterList = new ArrayList<>();
+    private BaseSyncBase baseSyncBase = SDKManageTest.createJvm();
 
     @Before
-    public void init() throws IllegalAccessException {
-        MetadataSyncManager.MetadataSyncConfig metadataSyncConfig = new MetadataSyncManager.MetadataSyncConfig();
-        metadataSyncConfig.setDataBasesHandler(dataBasesHandler);
-        metadataSyncConfig.setClusterService(clusterHandler);
-        metadataSyncConfig.setMetadataClass(RuntimeMetadata.class);
-        metadataSyncManager.setRemotingManager(this.remotingManager);
-        metadataSyncManager.register(metadataSyncConfig);
+    public void init() throws Exception {
+        this.syncMetadataCreateFactoryMap =
+            (Map<MetadataType, SyncMetadataCreateFactory>) FieldUtils.readDeclaredField(this.metadataSyncManage, "syncMetadataCreateFactoryMap",
+                true);
 
-        Field metadataSyncWrapperMapField = FieldUtils.getField(MetadataSyncManager.class, "metadataSyncWrapperMap", true);
-        metadataSyncWrapperMap = (Map<Class<?>, MetadataSyncManager.MetadataSyncWrapper>) metadataSyncWrapperMapField.get(metadataSyncManager);
+        this.metadataSyncConfigMap =
+            (Map<String, List<MetadataSyncWrapper>>) FieldUtils.readDeclaredField(this.metadataSyncManage, "metadataSyncConfigMap",
+                true);
+        metadataSyncManage.setMetadataSyncResultHandler(this.defaultMetadataSyncResultHandler);
 
+        List<DataMetadataHandler<Object>> dataMetadataHandlerList = new ArrayList<>();
+        DataMetadataHandler dataMetadataHandler = remotingManage.createDataMetadataHandler(AclRemotingService.class, baseSyncBase);
+
+        dataMetadataHandlerList.add(dataMetadataHandler);
+        metadataSyncManage.setDataMetadataHandlerList(dataMetadataHandlerList);
+
+        Map<Class<?>, DatabaseAndMetadataMapper> databaseAndMetadataMapperMap = new HashMap<>();
+
+        DatabaseAndMetadataMapper databaseAndMetadataMapper =
+            DatabaseAndMetadataMapper.builder().metaType(MetadataType.TOPIC).databaseHandlerClass(dataMetadataHandler.getClass())
+                .metadataHandlerClass(TopicRemotingService.class).convertMetaData(new MockConvertMetaData()).build();
+        databaseAndMetadataMapperMap.put(databaseAndMetadataMapper.getDatabaseHandlerClass(), databaseAndMetadataMapper);
+
+        metadataSyncManage.init(100, 50000, databaseAndMetadataMapperMap);
     }
 
 
     @Test
-    public void test_sync_mock() {
-        //
-        // ClusterTrusteeshipType.FIRE_AND_FORGET_TRUSTEESHIP   3
-        //   databases    cluster
-        // A    5             3      2
-        // B    3             5     -2
-        // C    5(2)          5(2)   2
-        // ClusterTrusteeshipType.TRUSTEESHIP                   3
-        //   databases     cluster
-        // E    5             5     0
-        // F    3             5     -2
-        // G    5             3     2
-
-        this.mock_data(1, 5, 3);
-        this.mock_data(2, 3, 5);
-        this.mock_data(3, 5, 5);
-        this.mock_data(5, 5, 3);
-        this.mock_data(6, 3, 5);
-        this.mock_data(7, 5, 5);
-        MetadataSyncManager.MetadataSyncWrapper metadataSyncWrapper = this.metadataSyncWrapperMap.get(RuntimeMetadata.class);
-        Mockito.when(this.dataBasesHandler.getData()).thenReturn(this.databasesList);
-        Mockito.when(this.clusterHandler.getData()).thenReturn(this.clusterList);
-        Mockito.when(this.remotingManager.isClusterTrusteeshipType(Mockito.anyLong(), Mockito.any())).thenAnswer((invocation) -> {
-            Long clusterId = (Long) invocation.getArgument(0);
-            ClusterTrusteeshipType clusterTrusteeshipType = (ClusterTrusteeshipType) invocation.getArgument(1);
-            if (Objects.equals(clusterTrusteeshipType, ClusterTrusteeshipType.FIRE_AND_FORGET_TRUSTEESHIP) && clusterId < 4) {
-                return true;
-            }
-            if (Objects.equals(clusterTrusteeshipType, ClusterTrusteeshipType.TRUSTEESHIP) && clusterId > 4) {
-                return true;
-            }
-            return false;
-        });
-
-        metadataSyncWrapper.run();
+    public void test() throws InterruptedException {
+        baseSyncBase.setTrusteeshipType(ClusterTrusteeshipType.SELF);
+        baseSyncBase.setFirstToWhom(baseSyncBase.getFirstToWhom());
+        metadataSyncManage.register(baseSyncBase);
+        Thread.sleep(1000000L);
+        System.out.println("test");
     }
 
-    private void mock_data(long clusterId, int databasesCount, int clusterCount) {
-        int index = databasesCount > clusterCount ? databasesCount : clusterCount;
-        for (int i = 0; i < index; i++) {
-            RuntimeMetadata runtimeMetadata = new RuntimeMetadata();
-            runtimeMetadata.setClusterId(clusterId);
-            runtimeMetadata.setPort(i);
-            runtimeMetadata.setHost(clusterId + "." + i + "");
-            if (i < databasesCount) {
-                this.databasesList.add(runtimeMetadata);
-            }
-            if (i < clusterCount) {
-                if (databasesCount == clusterCount) {
-                    if (i == 0 || i == 1) {
-                        runtimeMetadata = new RuntimeMetadata();
-                        runtimeMetadata.setClusterId(clusterId);
-                        runtimeMetadata.setPort(i);
-                        runtimeMetadata.setHost(clusterId + ".." + i + " " + i);
-                    }
-                }
-                this.clusterList.add(runtimeMetadata);
-            }
 
+
+
+    static class MockConvertMetaData implements ConvertMetaData<Object, Object> {
+
+        @Override
+        public Object toEntity(Object meta) {
+            return meta;
+        }
+
+        @Override
+        public Object toMetaData(Object entity) {
+            return entity;
         }
     }
+
 }

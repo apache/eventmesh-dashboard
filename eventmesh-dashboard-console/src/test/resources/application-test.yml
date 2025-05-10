@@ -15,26 +15,13 @@
 # limitations under the License.
 #
 
+
 spring:
   datasource:
-    name: eventmesh-console
-    type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://${DB_ADDRESS:localhost:3306}/eventmesh_dashboard_test?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
-      username: ${DB_USERNAME:root}
-      password: ${DB_PASSWORD:password}
-
-      initial-size: 1
-      max-active: 50
-      min-idle: 5
-      max-wait: 6000
-      validation-query: select 'x'
-      validation-query-timeout: 15
-      test-on-borrow: false
-      test-while-idle: true
-      min-evictable-idle-time-millis: 300000
-
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;TIMEZONE=UTC  # 内存模式，禁止自动关闭
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
 logging:
   level:
     root: INFO

@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
+import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
+import org.apache.eventmesh.dashboard.console.modle.cluster.client.QueryClientByUserFormDTO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -32,23 +35,8 @@ import java.util.List;
  * Mybatis Mapper for the table of client.
  */
 @Mapper
-public interface ClientMapper {
+public interface ClientMapper extends SyncDataHandlerMapper<ClientEntity> {
 
-
-    @Select("SELECT * FROM `client` WHERE `host` = #{host} AND `port` = #{port} AND status = 1")
-    List<ClientEntity> selectByHostPort(ClientEntity clientEntity);
-
-    @Select("SELECT * FROM `client` WHERE `id` = #{id}")
-    ClientEntity selectById(ClientEntity clientEntity);
-
-    @Select("SELECT * FROM `client` WHERE `cluster_id` = #{clusterId}")
-    List<ClientEntity> selectByClusterId(ClientEntity clientEntity);
-
-    @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE id = #{id}")
-    Integer deactivate(ClientEntity clientEntity);
-
-    @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE `host` = #{host} AND `port` = #{port}")
-    Integer deActiveByHostPort(ClientEntity clientEntity);
 
     @Select({
         "<script>",
@@ -60,18 +48,60 @@ public interface ClientMapper {
         " </foreach>",
         "</script>"})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    Integer batchInsert(List<ClientEntity> clientEntityList);
+    void batchInsert(List<ClientEntity> clientEntityList);
+
+
+    @Select({"""
+            <script>
+                select * from client where cluster_id = #{clusterId}
+                <where>
+                    <if text="runtimeId != null and runtimeId != ''">
+                            runtime_id = #{runtimeId}
+                     </if>
+                     <if text="userId != null and userId != ''">
+                            user_id = #{userId}
+                     </if>
+                     <if text="host != null and host != ''">
+                        `host` = #{host}
+                     </if>
+                </where>
+                and status = #{status}
+            </script>
+            """})
+    List<ClientEntity> queryClientByUserForm(QueryClientByUserFormDTO queryClientByUserFormDTO);
+
+    @Select("SELECT * FROM `client` WHERE `host` = #{host} AND `port` = #{port} AND status = 1")
+    List<ClientEntity> selectByHostPort(ClientEntity clientEntity);
+
+    @Select("SELECT * FROM `client` WHERE `id` = #{id}")
+    ClientEntity selectById(ClientEntity clientEntity);
+
+    @Select("SELECT * FROM `client` WHERE `cluster_id` = #{clusterId}")
+    List<ClientEntity> selectByClusterId(ClientEntity clientEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert(
         "INSERT INTO `client` (`cluster_id`, `name`, `platform`,"
-            + "`language`, `pid`, `host`, `port`, `protocol`,"
-            + "`status`, `config_ids`, `description`) "
-            + "VALUES (#{clusterId}, #{name}, #{platform},"
-            + "#{language}, #{pid}, #{host}, #{port}, #{protocol},"
-            + "#{status}, #{configIds}, #{description})"
-            + "ON DUPLICATE KEY UPDATE `status` = 1, `pid` = #{pid}, `config_ids` = #{configIds}, `host` = #{host}, `port` = #{port}")
-    void insert(ClientEntity clientEntity);
+        + "`language`, `pid`, `host`, `port`, `protocol`,"
+        + "`status`, `config_ids`, `description`) "
+        + "VALUES (#{clusterId}, #{name}, #{platform},"
+        + "#{language}, #{pid}, #{host}, #{port}, #{protocol},"
+        + "#{status}, #{configIds}, #{description})"
+        + "ON DUPLICATE KEY UPDATE `status` = 1, `pid` = #{pid}, `config_ids` = #{configIds}, `host` = #{host}, `port` = #{port}")
+    Long insert(ClientEntity clientEntity);
+
+    @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE id = #{id}")
+    void deactivate(ClientEntity clientEntity);
+
+    @Update("UPDATE `client` SET status = 0, end_time = NOW() WHERE `host` = #{host} AND `port` = #{port}")
+    void deActiveByHostPort(ClientEntity clientEntity);
 
 
+    void syncInsert(List<ClientEntity> entityList);
+
+    void syncUpdate(List<ClientEntity> entityList);
+
+    void syncDelete(List<ClientEntity> entityList);
+
+    List<ClientEntity> syncGet(ClientEntity topicEntity);
 }

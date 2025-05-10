@@ -95,3 +95,12 @@ docker run -d --name eventmesh-dashboard -p 8080:8080 yourname/eventmesh-dashboa
    1. 检查命令：license-eye header check
    2. 使用命令：license-eye header fix
    3. 下载地址： https://skywalking.apache.org/downloads/
+
+
+### 提交代码前
+在项目根目录执行下面命令
+```
+license-eye -v info -c .licenserc.yaml header check
+./mvnw -B package -DskipTests --file pom.xml
+./mvnw -B test --file pom.xml
+```

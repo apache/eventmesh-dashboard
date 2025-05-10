@@ -15,28 +15,16 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class CreateRedisConfig implements CreateSDKConfig {
+@EqualsAndHashCode(callSuper = true)
+public class CreateRedisConfig extends AbstractSimpleCreateSDKConfig {
 
-    private String redisUrl;
-
-    private String password;
-
-    @Builder.Default
     private int timeOut = 10;
 
-    @Override
-    public String getUniqueKey() {
-        return redisUrl;
-    }
 }

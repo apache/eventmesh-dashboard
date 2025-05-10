@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapstruct.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.IdDTO;
+import org.apache.eventmesh.dashboard.console.modle.vo.RuntimeIdDTO;
 
 import org.mapstruct.factory.Mappers;
 
@@ -31,7 +32,7 @@ public interface GroupControllerMapper {
     GroupControllerMapper INSTANCE = Mappers.getMapper(GroupControllerMapper.class);
 
 
-    GroupEntity queryGroupListByClusterId(ClusterIdDTO clusterId);
+    GroupEntity queryGroupListByClusterId(RuntimeIdDTO runtimeIdDTO);
 
     GroupEntity deleteGroupById(IdDTO idDTO);
 

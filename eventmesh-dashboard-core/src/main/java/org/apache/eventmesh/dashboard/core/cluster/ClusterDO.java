@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.cluster;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
-import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class ClusterDO {
+@EqualsAndHashCode(callSuper = true)
+public class ClusterDO extends ClusterBaseDO<ClusterMetadata, RuntimeDO, Object, ConfigMetadata> {
 
-    private ClusterMetadata clusterInfo;
-
-    private Map<Long, RuntimeMetadata> runtimeMap = new ConcurrentHashMap<>();
 
 }

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
@@ -73,24 +74,12 @@ public interface ConnectionMapper {
     public List<ConnectionEntity> selectByClusterIdSinkTypeAndSinkIdAndCreateTimeRange(ConnectionEntity connectionEntity,
         @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
 
-    @Update("UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{id}")
-    Integer endConnectionById(ConnectionEntity connectionEntity);
-
-    //batch end
-    @Update({
-        "<script>",
-        "   <foreach collection='list' item='connectionEntity' index='index' separator=';'>",
-        "       UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{connectionEntity.id}",
-        "   </foreach>",
-        "</script>"})
-    Integer batchEndConnectionById(List<ConnectionEntity> connectionEntityList);
-
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO connection (cluster_id, source_type, source_id," + " sink_type, sink_id, runtime_id, status, topic, group_id, description)"
         + " VALUES ( #{clusterId}, #{sourceType}, #{sourceId}, "
         + " #{sinkType}, #{sinkId},  #{runtimeId}, 1, #{topic}, #{groupId}, #{description})"
         + "ON DUPLICATE KEY UPDATE status = 1")
-    void insert(ConnectionEntity connectionEntity);
+    Long insert(ConnectionEntity connectionEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert({
@@ -104,7 +93,18 @@ public interface ConnectionMapper {
         "   </foreach>",
         "ON DUPLICATE KEY UPDATE status = 1",
         "</script>"})
-    Integer batchInsert(List<ConnectionEntity> connectionEntityList);
+    void batchInsert(List<ConnectionEntity> connectionEntityList);
 
+    @Update("UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{id}")
+    void endConnectionById(ConnectionEntity connectionEntity);
+
+    //batch end
+    @Update({
+        "<script>",
+        "   <foreach collection='list' item='connectionEntity' index='index' separator=';'>",
+        "       UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{connectionEntity.id}",
+        "   </foreach>",
+        "</script>"})
+    void batchEndConnectionById(List<ConnectionEntity> connectionEntityList);
 
 }

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.log;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
@@ -35,6 +36,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
@@ -47,7 +49,7 @@ public class OprLog implements Ordered, ApplicationContextAware {
 
     private LogService logService;
 
-    private ApplicationContext applicationContext;
+    private AbstractApplicationContext applicationContext;
 
 
     @Pointcut("within(org.apache.eventmesh.dashboard.console.service..*)")
@@ -57,16 +59,17 @@ public class OprLog implements Ordered, ApplicationContextAware {
 
     @Around("pointCut()")
     public Object logStart(ProceedingJoinPoint joinPoint) throws Throwable {
-        if (Objects.isNull(this.logService)) {
-            this.logService = applicationContext.getBean(LogService.class);
-        }
+
         EmLog declaredAnnotation = this.getTargetEmlog(joinPoint);
         //Get the Emlog annotation on the method
         if (Objects.isNull(declaredAnnotation)) {
             return joinPoint.proceed();
         }
+        if (Objects.isNull(this.logService) && applicationContext.isActive()) {
+            this.logService = applicationContext.getBean(LogService.class);
+        }
         LogEntity logEntity = this.productLoEntity(declaredAnnotation, joinPoint);
-        logService.insertLog(logEntity);
+        logService.addLog(logEntity);
         logEntity.setEndTime(new Timestamp(System.currentTimeMillis()));
         Object proceed = null;
         try {
@@ -119,6 +122,6 @@ public class OprLog implements Ordered, ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+        this.applicationContext = (AbstractApplicationContext) applicationContext;
     }
 }

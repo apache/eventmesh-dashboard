@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle.dto.connection;
 
-import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectionEntity;
-import org.apache.eventmesh.dashboard.console.entity.connection.AddConnectorConfigEntity;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class CreateConnectionDTO {
 
     private Long clusterId;
 
-    private AddConnectionEntity addConnectionEntity;
+    private AddConnectionDTO addConnectionDTO;
 
-    private AddConnectorConfigEntity addConnectorConfigEntity;
+    private AddConnectorConfigDTO addConnectorConfigDTO;
 }

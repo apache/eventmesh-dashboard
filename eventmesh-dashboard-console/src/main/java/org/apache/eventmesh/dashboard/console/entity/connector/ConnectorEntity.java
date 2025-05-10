@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.connector;
 
 import org.apache.eventmesh.dashboard.common.enums.KubernetesPodStatus;
-import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -27,8 +27,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "status")
-public class ConnectorEntity extends BaseEntity {
+@EqualsAndHashCode(callSuper = true)
+public class ConnectorEntity extends BaseRuntimeIdEntity {
 
     private static final long serialVersionUID = -8226303660232951326L;
 
@@ -39,14 +39,6 @@ public class ConnectorEntity extends BaseEntity {
     private String className;
 
     private String type;
-
-    /**
-     * 0: not active, 1: active
-     *
-     * @see RecordStatus
-     */
-    @Schema(name = "status", defaultValue = "0", allowableValues = {"0", "1"}, description = "0:inactive, 1:active")
-    private Integer status;
 
     private String host;
 
@@ -65,9 +57,6 @@ public class ConnectorEntity extends BaseEntity {
      */
     private String configIds;
 
-    public void setStatusEnum(RecordStatus statusEnum) {
-        this.status = statusEnum.getNumber();
-    }
 
     public void setKubernetesPodStatusEnum(KubernetesPodStatus kubernetesPodStatusEnum) {
         this.podState = kubernetesPodStatusEnum.getNumber();

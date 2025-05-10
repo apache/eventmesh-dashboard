@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.meta;
 
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -39,15 +39,7 @@ class NacosConfigCheckTest {
     @BeforeEach
     public void init() {
         try {
-            HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
-                .instanceId(1L)
-                .healthCheckResourceType("meta")
-                .healthCheckResourceSubType("nacos")
-                .clusterId(1L)
-                .connectUrl("127.0.0.1:8848")
-                .requestTimeoutMillis(1000L)
-                .build();
-            nacosCheck = new NacosConfigCheck(config);
+            nacosCheck = new NacosConfigCheck();
         } catch (Exception e) {
             log.error("NacosConfigCheck failed.", e);
         }
@@ -79,6 +71,6 @@ class NacosConfigCheckTest {
 
     @AfterEach
     public void destroy() {
-        nacosCheck.destroy();
+       
     }
 }

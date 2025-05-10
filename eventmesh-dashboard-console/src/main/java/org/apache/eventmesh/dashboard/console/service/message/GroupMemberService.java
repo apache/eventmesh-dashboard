@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
 
 import java.util.List;
 
@@ -27,22 +28,22 @@ import java.util.List;
  */
 public interface GroupMemberService {
 
-    List<GroupMemberEntity> selectAll();
+    List<SubscriptionEntity> selectAll();
 
-    Integer batchInsert(List<GroupMemberEntity> groupMemberEntities);
+    void batchInsert(List<SubscriptionEntity> groupMemberEntities);
 
-    List<GroupMemberEntity> selectGroupMemberByClusterId(GroupMemberEntity groupMemberEntity);
+    List<SubscriptionEntity> getGroupMemberByClusterId(SubscriptionEntity subscriptionEntity);
 
-    void insertGroupMember(GroupMemberEntity groupMemberEntity);
+    void addGroupMember(SubscriptionEntity subscriptionEntity);
 
-    Integer updateGroupMember(GroupMemberEntity groupMemberEntity);
+    void updateGroupMember(SubscriptionEntity subscriptionEntity);
 
-    Integer deleteGroupMember(GroupMemberEntity groupMemberEntity);
+    SubscriptionEntity deleteGroupMember(SubscriptionEntity subscriptionEntity);
 
-    GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
+    SubscriptionEntity selectGroupMemberById(SubscriptionEntity subscriptionEntity);
 
-    List<GroupMemberEntity> selectGroupMemberByGroup(GroupEntity groupEntity);
+    List<SubscriptionEntity> selectGroupMemberByGroup(GroupEntity groupEntity);
 
-    List<GroupMemberEntity> selectAllMemberByTopic(GroupMemberEntity groupMemberEntity);
+    List<SubscriptionEntity> selectAllMemberByTopic(SubscriptionEntity subscriptionEntity);
 
 }

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.runtime;
 
 import static org.apache.eventmesh.dashboard.core.function.SDK.util.RuntimeSDKOperationUtils.buildEventMeshTCPClientConfig;
@@ -22,41 +23,27 @@ import static org.apache.eventmesh.dashboard.core.function.SDK.util.RuntimeSDKOp
 
 import org.apache.eventmesh.client.tcp.conf.EventMeshTCPClientConfig;
 import org.apache.eventmesh.client.tcp.impl.eventmeshmessage.EventMeshMessageTCPClient;
-import org.apache.eventmesh.common.exception.EventMeshException;
 import org.apache.eventmesh.common.protocol.tcp.UserAgent;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRuntimeConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
-
-import java.util.AbstractMap.SimpleEntry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RuntimeTcpEventMeshSDKOperation extends AbstractSDKOperation<EventMeshMessageTCPClient> {
+public class RuntimeTcpEventMeshSDKOperation extends AbstractSDKOperation<EventMeshMessageTCPClient, CreateRuntimeConfig> {
 
     @Override
-    public SimpleEntry<String, EventMeshMessageTCPClient> createClient(CreateSDKConfig clientConfig) {
-        final CreateRuntimeConfig runtimeConfig = (CreateRuntimeConfig) clientConfig;
-        EventMeshMessageTCPClient eventMeshTCPClient = null;
-        try {
-            UserAgent userAgent = buildUserAgent(runtimeConfig.getUserAgent());
-            final EventMeshTCPClientConfig eventMeshTCPClientConfig = buildEventMeshTCPClientConfig(
-                runtimeConfig.getRuntimeServerAddress(), userAgent);
-            eventMeshTCPClient = new EventMeshMessageTCPClient(eventMeshTCPClientConfig);
-            eventMeshTCPClient.init();
-        } catch (EventMeshException e) {
-            log.error("create runtime EventMeshMessage tcp client failed", e);
-        }
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), eventMeshTCPClient);
+    public EventMeshMessageTCPClient createClient(CreateRuntimeConfig runtimeConfig) throws Exception {
+        UserAgent userAgent = buildUserAgent(runtimeConfig.getUserAgent());
+        final EventMeshTCPClientConfig eventMeshTCPClientConfig = buildEventMeshTCPClientConfig(
+            runtimeConfig.getRuntimeServerAddress(), userAgent);
+        EventMeshMessageTCPClient eventMeshTCPClient = new EventMeshMessageTCPClient(eventMeshTCPClientConfig);
+        eventMeshTCPClient.init();
+        return eventMeshTCPClient;
     }
 
     @Override
-    public void close(Object client) {
-        try {
-            castClient(client).close();
-        } catch (Exception e) {
-            log.error("EventMeshMessage client close failed", e);
-        }
+    public void close(EventMeshMessageTCPClient client) throws Exception {
+        client.close();
     }
 }

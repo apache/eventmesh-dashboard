@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapper.connector;
 
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
@@ -45,37 +46,11 @@ public interface ConnectorMapper {
     @Select("SELECT * FROM connector WHERE host = #{host} AND port = #{port} AND status=1")
     List<ConnectorEntity> selectByHostAndPort(ConnectorEntity connectorEntity);
 
-    @Update("UPDATE connector SET status = 1 WHERE id = #{id}")
-    Integer active(ConnectorEntity connectorEntity);
-
-    @Update("UPDATE connector SET status = 0 WHERE id = #{id}")
-    Integer deActive(ConnectorEntity connectorEntity);
-
-    @Update("UPDATE connector SET pod_state = #{podState} WHERE id = #{id}")
-    Integer updatePodState(ConnectorEntity connectorEntity);
-
-    @Update("UPDATE connector SET config_ids = #{configIds} WHERE id = #{id}")
-    Integer updateConfigIds(ConnectorEntity connectorEntity);
-
-    @Update("UPDATE connector SET status = 0 WHERE cluster_id = #{clusterId}")
-    Integer deactivateByClusterId(ConnectorEntity connectorEntity);
-
-    @Update({
-        "<script>",
-        "   update connector set status = 0 ",
-        "   where id in ",
-        "   <foreach collection='list' item='item' index='index' open='(' separator=',' close=')'>",
-        "       #{item.id}",
-        "   </foreach>",
-        "</script>"
-    })
-    Integer batchDeactivate(List<ConnectorEntity> connectorEntities);
-
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO connector (cluster_id,name, class_name, type, status, pod_state, config_ids, host, port) "
         + "VALUES (#{clusterId}, #{name}, #{className}, #{type}, #{status}, #{podState}, #{configIds}, #{host}, #{port})"
         + "ON DUPLICATE KEY UPDATE status = 1, pod_state = #{podState}, config_ids = #{configIds}, host = #{host}, port = #{port}")
-    void insert(ConnectorEntity connectorEntity);
+    Long insert(ConnectorEntity connectorEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert({
@@ -87,6 +62,31 @@ public interface ConnectorMapper {
         "       #{connectorEntity.configIds}, #{connectorEntity.host}, #{connectorEntity.port})",
         "   </foreach>",
         "</script>"})
-    Integer batchInsert(List<ConnectorEntity> connectorEntityList);
+    void batchInsert(List<ConnectorEntity> connectorEntityList);
 
+    @Update("UPDATE connector SET status = 1 WHERE id = #{id}")
+    void active(ConnectorEntity connectorEntity);
+
+    @Update("UPDATE connector SET status = 0 WHERE id = #{id}")
+    void deActive(ConnectorEntity connectorEntity);
+
+    @Update("UPDATE connector SET pod_state = #{podState} WHERE id = #{id}")
+    void updatePodState(ConnectorEntity connectorEntity);
+
+    @Update("UPDATE connector SET config_ids = #{configIds} WHERE id = #{id}")
+    void updateConfigIds(ConnectorEntity connectorEntity);
+
+    @Update("UPDATE connector SET status = 0 WHERE cluster_id = #{clusterId}")
+    void deactivateByClusterId(ConnectorEntity connectorEntity);
+
+    @Update({
+        "<script>",
+        "   update connector set status = 0 ",
+        "   where id in ",
+        "   <foreach collection='list' item='item' index='index' open='(' separator=',' close=')'>",
+        "       #{item.id}",
+        "   </foreach>",
+        "</script>"
+    })
+    void batchDeactivate(List<ConnectorEntity> connectorEntities);
 }

@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
 
 import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
 import org.apache.eventmesh.dashboard.service.remoting.ConfigRemotingService;
 
@@ -37,7 +38,7 @@ public class RocketMQConfigRemotingService extends AbstractRocketMQRemotingServi
     }
 
     @Override
-    public GetTopicsResult getAllTopics(GetTopicsRequest getTopicsRequest) {
+    public GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest) {
         return null;
     }
 }

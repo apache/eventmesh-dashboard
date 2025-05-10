@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
+import org.apache.eventmesh.dashboard.console.modle.cluster.client.QueryClientByUserFormDTO;
 
 import java.util.List;
 
@@ -26,15 +28,9 @@ import java.util.List;
  */
 public interface ClientDataService {
 
-    Integer deActive(ClientEntity clientEntity);
+    List<ClientEntity> queryClientByUserForm(QueryClientByUserFormDTO queryClientByUserFormDTO);
 
-    Integer deActiveByHostPort(ClientEntity clientEntity);
-
-    void insertClient(ClientEntity clientEntity);
-
-    Integer batchInsert(List<ClientEntity> clientEntityList);
-
-    List<ClientEntity> selectByHostPort(ClientEntity clientEntity);
+    void batchInsert(List<ClientEntity> clientEntityList);
 
     List<ClientEntity> selectByClusterId(ClientEntity clientEntity);
 }

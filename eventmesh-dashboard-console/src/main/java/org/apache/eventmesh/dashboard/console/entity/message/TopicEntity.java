@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.message;
 
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -25,30 +26,44 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "status")
-public class TopicEntity extends BaseEntity {
+@EqualsAndHashCode(callSuper = true)
+public class TopicEntity extends BaseRuntimeIdEntity {
 
-    private Long id;
 
-    private Long clusterId;
+    private String topicType;
 
     private String topicName;
 
-    private Long storageId;
+
+    /**
+     *
+     */
+    private Long numQueue;
+
+    /**
+     * 副本个数
+     */
+    private Integer replicationFactor;
+
+    /**
+     * topic 拦截器类型
+     */
+    private String topicFilterType;
+
+    /**
+     * 不确定参数
+     */
+    private String attributes;
+
+    private String order;
 
     @Schema(description = "time to live in milliseconds, -2 unknown, -1 no limit;", example = "1000")
     private Long retentionMs;
 
-    /**
-     * topic type, 0: normal, 1: EventMesh internal;
-     */
-    @Schema(description = "topic type, 0: normal, 1: EventMesh internal;", example = "0")
-    private Integer type;
 
     private String description;
 
-    private Integer status;
 
     private Integer createProgress;
-    
+
 }

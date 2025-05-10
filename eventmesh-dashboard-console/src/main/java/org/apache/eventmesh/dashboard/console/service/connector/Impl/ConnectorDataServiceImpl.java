@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.connector.Impl;
 
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
@@ -33,8 +34,8 @@ public class ConnectorDataServiceImpl implements ConnectorDataService {
     private ConnectorMapper connectorMapper;
 
     @Override
-    public void createConnector(ConnectorEntity connectorEntity) {
-        connectorMapper.insert(connectorEntity);
+    public Long createConnector(ConnectorEntity connectorEntity) {
+        return connectorMapper.insert(connectorEntity);
     }
 
     @Override

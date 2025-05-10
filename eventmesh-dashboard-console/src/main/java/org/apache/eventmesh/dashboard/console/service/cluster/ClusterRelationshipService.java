@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
@@ -28,7 +29,9 @@ import java.util.List;
 public interface ClusterRelationshipService {
 
 
-    void insertClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
+    Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);
+
+    Integer addClusterRelationshipEntry(List<ClusterRelationshipEntity> clusterRelationshipList);
 
     Integer relieveRelationship(ClusterRelationshipEntity clusterRelationshipEntity);
 
@@ -37,6 +40,9 @@ public interface ClusterRelationshipService {
     List<ClusterRelationshipEntity> selectAll();
 
     List<ClusterRelationshipEntity> selectNewlyIncreased(ClusterRelationshipEntity clusterRelationshipEntity);
+
+
+    List<ClusterRelationshipEntity> queryByUpdateTime(ClusterRelationshipEntity clusterRelationshipEntity);
 
 
 }

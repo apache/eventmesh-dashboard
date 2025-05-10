@@ -15,84 +15,37 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage;
 
-import org.apache.eventmesh.dashboard.common.constant.health.HealthCheckTypeConstant;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.health.HealthCheckTypeEnum;
 import org.apache.eventmesh.dashboard.console.function.health.annotation.HealthCheckType;
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.SDKManager;
-import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRedisConfig;
 
-import java.time.Duration;
-import java.util.Objects;
-
-import io.lettuce.core.RedisURI;
-import io.lettuce.core.RedisURI.Builder;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@HealthCheckType(type = HealthCheckTypeConstant.HEALTH_CHECK_TYPE_STORAGE, subType = HealthCheckTypeConstant.HEALTH_CHECK_SUBTYPE_REDIS)
-public class RedisCheck extends AbstractHealthCheckService {
-
-    private CreateRedisConfig sdkConfig;
-
-    public RedisCheck(HealthCheckObjectConfig healthCheckObjectConfig) {
-        super(healthCheckObjectConfig);
-    }
+@HealthCheckType(clusterType = {ClusterType.STORAGE_REDIS_BROKER}, healthType = HealthCheckTypeEnum.PING)
+public class RedisCheck extends AbstractHealthCheckService<StatefulRedisConnection<String, String>> {
 
     @Override
-    public void doCheck(HealthCheckCallback callback) {
-        try {
-            StatefulRedisConnection<String, String> connection = (StatefulRedisConnection<String, String>) SDKManager.getInstance()
-                .getClient(SDKTypeEnum.STORAGE_REDIS, sdkConfig.getUniqueKey());
-            RedisAsyncCommands<String, String> commands = connection.async();
-            commands.ping().thenAccept(result -> {
-                callback.onSuccess();
-            }).exceptionally(e -> {
-                if (e instanceof Exception) {
-                    callback.onFail((Exception) e);
-                } else {
-                    callback.onFail(new RuntimeException("RedisCheck failed."));
-                }
-                return null;
-            });
-        } catch (Exception e) {
-            log.error(e.toString());
-            callback.onFail(e);
-        }
+    public void doCheck(HealthCheckCallback callback) throws Exception {
+        RedisAsyncCommands<String, String> commands = this.getClient().async();
+        commands.ping().thenAccept(result -> {
+            callback.onSuccess();
+        }).exceptionally(e -> {
+            if (e instanceof Exception) {
+                callback.onFail((Exception) e);
+            } else {
+                callback.onFail(new RuntimeException("RedisCheck failed."));
+            }
+            return null;
+        });
     }
 
-    @Override
-    public void init() {
-        String redisUrl;
-        sdkConfig = new CreateRedisConfig();
-        if (Objects.nonNull(getConfig().getConnectUrl()) && !getConfig().getConnectUrl().isEmpty()) {
-            redisUrl = getConfig().getConnectUrl();
-        } else {
-            Builder builder = RedisURI.Builder.redis(getConfig().getHost(), getConfig().getPort());
-            if (Objects.nonNull(getConfig().getUsername()) && Objects.nonNull(getConfig().getPassword())) {
-                builder.withAuthentication(getConfig().getUsername(), getConfig().getPassword());
-            }
-            if (Objects.nonNull(getConfig().getRequestTimeoutMillis())) {
-                builder.withTimeout(Duration.ofMillis(getConfig().getRequestTimeoutMillis()));
-            }
-            if (Objects.nonNull(getConfig().getDatabase())) {
-                builder.withDatabase(Integer.parseInt(getConfig().getDatabase()));
-            }
-            redisUrl = builder.build().toString();
-        }
-        sdkConfig.setRedisUrl(redisUrl);
-        SDKManager.getInstance().createClient(SDKTypeEnum.STORAGE_REDIS, sdkConfig);
-    }
-
-    @Override
-    public void destroy() {
-        SDKManager.getInstance().deleteClient(SDKTypeEnum.STORAGE_REDIS, sdkConfig.getUniqueKey());
-    }
 }

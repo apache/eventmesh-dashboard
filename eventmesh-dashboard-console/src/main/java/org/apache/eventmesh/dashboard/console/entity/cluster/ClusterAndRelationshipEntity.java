@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
@@ -22,8 +23,10 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import java.time.LocalDateTime;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ClusterAndRelationshipEntity extends ClusterEntity {
 
     private LocalDateTime relationshipTime;
@@ -32,6 +35,6 @@ public class ClusterAndRelationshipEntity extends ClusterEntity {
 
     private ClusterType relationshipType;
 
-    private Integer status;
+
 
 }

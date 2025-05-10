@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.function.health.check.impl.storage.rocketmq4;
 
 import org.apache.eventmesh.dashboard.console.function.health.callback.HealthCheckCallback;
-import org.apache.eventmesh.dashboard.console.function.health.check.config.HealthCheckObjectConfig;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -37,12 +37,7 @@ class Rocketmq4BrokerCheckTest {
     @BeforeEach
     public void init() {
         try {
-            HealthCheckObjectConfig config = HealthCheckObjectConfig.builder()
-                .host("127.0.0.1")
-                .port(10911)
-                .requestTimeoutMillis(1000L)
-                .build();
-            rocketmqCheck = new Rocketmq4BrokerCheck(config);
+            rocketmqCheck = new Rocketmq4BrokerCheck();
         } catch (Exception e) {
             log.error("Rocketmq4BrokerCheck failed.", e);
         }

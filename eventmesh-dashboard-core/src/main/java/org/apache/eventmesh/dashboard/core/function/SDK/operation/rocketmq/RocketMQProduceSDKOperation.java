@@ -15,39 +15,35 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.RemotingType;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRocketmqProduceSDKConfig;
 
-import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
-
-import java.util.AbstractMap.SimpleEntry;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RocketMQProduceSDKOperation extends AbstractSDKOperation<DefaultMQProducer> {
+@SDKMetadata(clusterType = ClusterType.RUNTIME_ROCKETMQ_BROKER, remotingType = RemotingType.ROCKETMQ, sdkTypeEnum = SDKTypeEnum.PRODUCER)
+public class RocketMQProduceSDKOperation extends AbstractSDKOperation<DefaultMQProducer, CreateRocketmqProduceSDKConfig> {
 
     @Override
-    public SimpleEntry<String, DefaultMQProducer> createClient(CreateSDKConfig clientConfig) {
-        DefaultMQProducer producer = null;
-        try {
-            CreateRocketmqConfig config = (CreateRocketmqConfig) clientConfig;
-            producer = new DefaultMQProducer(config.getProducerGroup());
-            producer.setNamesrvAddr(config.getNameServerUrl());
-            producer.setCompressMsgBodyOverHowmuch(16);
-            producer.start();
-        } catch (MQClientException e) {
-            log.error("create rocketmq producer failed", e);
-        }
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), producer);
+    public DefaultMQProducer createClient(CreateRocketmqProduceSDKConfig clientConfig) throws Exception {
+        DefaultMQProducer producer = new DefaultMQProducer(clientConfig.getProducerGroup());
+        producer.setNamesrvAddr(clientConfig.doUniqueKey());
+        producer.setCompressMsgBodyOverHowmuch(16);
+        producer.start();
+        return producer;
     }
 
     @Override
-    public void close(Object client) {
-        ((DefaultMQProducer) client).shutdown();
+    public void close(DefaultMQProducer client) {
+        client.shutdown();
     }
 }

@@ -15,4 +15,5 @@
  * limitations under the License.
  */
 
+
 USE `eventmesh_dashboard_test`;

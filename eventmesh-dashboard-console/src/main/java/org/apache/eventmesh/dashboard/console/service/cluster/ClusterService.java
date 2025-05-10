@@ -15,11 +15,15 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
 
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +33,29 @@ import java.util.Map;
 public interface ClusterService {
 
 
+    boolean nameExist(ClusterEntity clusterEntity);
+
+    ClusterEntity queryClusterById(ClusterEntity clusterEntity);
+
+    List<ClusterEntity> queryClusterByOrganizationIdAndType(ClusterEntity clusterEntity);
+
+
+    List<ClusterEntity> queryRelationClusterByClusterIdAndType(ClusterEntity clusterEntity);
+
+    ClusterEntity queryRelationshipClusterByClusterIdAndType(ClusterEntity clusterEntity);
+
+    List<ClusterEntity> queryStorageByClusterId(ClusterEntity clusterEntity);
+
+    List<ClusterEntity> queryAllSubClusterByClusterId(ClusterEntity clusterEntity);
+
     void createCluster(ClusterEntity clusterEntity);
 
-    GetClusterBaseMessageVO selectClusterBaseMessage(Long clusterId);
+    GetClusterBaseMessageVO getClusterBaseMessage(ClusterIdDTO clusterIdDTO);
 
 
-    Map<String, Integer> queryHomeClusterData(Long clusterId);
+    Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO);
 
-    Integer batchInsert(List<ClusterEntity> clusterEntities);
+    Integer batchInsert(List<ClusterEntity> clusterEntities, ClusterEntity clusterEntity);
 
     List<ClusterEntity> selectAll();
 
@@ -44,11 +63,16 @@ public interface ClusterService {
 
     void insertCluster(ClusterEntity cluster);
 
+    void insertClusterAndRelationship(ClusterEntity cluster, ClusterRelationshipEntity clusterRelationshipEntity);
+
     List<ClusterEntity> selectAllCluster();
 
-    ClusterEntity selectClusterById(ClusterEntity cluster);
 
     Integer updateClusterById(ClusterEntity cluster);
 
     Integer deactivate(ClusterEntity cluster);
+
+    List<ClusterEntity> queryByUpdateTime(ClusterEntity clusterEntity);
+
+    Deque<Integer> getIndex(ClusterEntity clusterEntity);
 }

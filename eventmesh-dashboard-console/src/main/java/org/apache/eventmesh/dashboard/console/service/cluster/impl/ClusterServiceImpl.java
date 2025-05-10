@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterMapper;
+import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ConnectionMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
-import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMapper;
+import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
-import org.apache.eventmesh.dashboard.console.modle.function.OverviewType;
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.modle.function.OverviewDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
 import org.apache.eventmesh.dashboard.console.service.OverviewService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,10 +55,13 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     private ClusterMapper clusterMapper;
 
     @Autowired
+    private ClusterRelationshipMapper clusterRelationshipMapper;
+
+    @Autowired
     private RuntimeMapper runtimeMapper;
 
     @Autowired
-    private OprGroupMapper oprGroupMapper;
+    private GroupMapper groupMapper;
 
     @Autowired
     private TopicMapper topicMapper;
@@ -64,42 +73,99 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
-    public GetClusterBaseMessageVO selectClusterBaseMessage(Long clusterId) {
+    public ClusterEntity queryClusterById(ClusterEntity clusterEntity) {
+        return this.clusterMapper.queryByClusterId(clusterEntity);
+    }
+
+    @Override
+    public List<ClusterEntity> queryClusterByOrganizationIdAndType(ClusterEntity clusterEntity) {
+        return this.clusterMapper.queryClusterByOrganizationIdAndType(clusterEntity);
+    }
+
+    @Override
+    public List<ClusterEntity> queryRelationClusterByClusterIdAndType(ClusterEntity clusterEntity) {
+        return this.clusterMapper.queryRelationClusterByClusterIdAndType(clusterEntity);
+    }
+
+    @Override
+    public ClusterEntity queryRelationshipClusterByClusterIdAndType(ClusterEntity clusterEntity) {
+        List<ClusterEntity> queryData = new ArrayList<>();
+        queryData.add(clusterEntity);
+        List<ClusterEntity> clusterEntityList = this.clusterMapper.queryRelationshipClusterByClusterIdAndType(queryData);
+        return clusterEntityList.isEmpty() ? null : clusterEntityList.get(0);
+    }
+
+    @Override
+    public List<ClusterEntity> queryStorageByClusterId(ClusterEntity clusterEntity) {
+        List<ClusterEntity> clusterEntityList = new ArrayList<>();
+        this.clusterMapper.queryRelationshipClusterByClusterIdAndType(clusterEntityList).forEach(entity -> {
+            if (entity.getClusterType().isStorage()) {
+                clusterEntityList.add(entity);
+            }
+        });
+        return clusterEntityList;
+    }
+
+
+    @Override
+    public List<ClusterEntity> queryAllSubClusterByClusterId(ClusterEntity clusterEntity) {
+        return null;
+    }
+
+    @Override
+    public boolean nameExist(ClusterEntity clusterEntity) {
+        return true;
+    }
+
+    @Override
+    public GetClusterBaseMessageVO getClusterBaseMessage(ClusterIdDTO clusterIdDTO) {
+        Long clusterId = clusterIdDTO.getClusterId();
         GetClusterBaseMessageVO getClusterBaseMessageVO = new GetClusterBaseMessageVO();
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setClusterId(clusterId);
         getClusterBaseMessageVO.setTopicNum(topicMapper.selectTopicNumByCluster(topicEntity));
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setClusterId(clusterId);
-        getClusterBaseMessageVO.setConsumerGroupNum(oprGroupMapper.selectConsumerNumByCluster(groupEntity));
+        getClusterBaseMessageVO.setConsumerGroupNum(groupMapper.getConsumerNumByCluster(groupEntity));
         ConnectionEntity connectionEntity = new ConnectionEntity();
         connectionEntity.setClusterId(clusterId);
         getClusterBaseMessageVO.setConnectionNum(connectionMapper.selectConnectionNumByCluster(connectionEntity));
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setClusterId(clusterId);
-        getClusterBaseMessageVO.setRuntimeNum(runtimeMapper.selectRuntimeNumByCluster(runtimeEntity));
+        getClusterBaseMessageVO.setRuntimeNum(runtimeMapper.getRuntimeNumByCluster(runtimeEntity));
         return getClusterBaseMessageVO;
     }
 
     @Override
-    public Map<String, Integer> queryHomeClusterData(Long clusterId) {
+    public Map<String, Integer> queryHomeClusterData(ClusterIdDTO clusterIdDTO) {
         return null;
     }
 
 
     @Override
-    public Integer batchInsert(List<ClusterEntity> clusterEntities) {
-        return clusterMapper.batchInsert(clusterEntities);
+    public Integer batchInsert(List<ClusterEntity> clusterEntities, ClusterEntity clusterEntity) {
+        clusterMapper.batchInsert(clusterEntities);
+        List<ClusterRelationshipEntity> clusterRelationshipEntityList = new ArrayList<>();
+        clusterEntities.forEach(entity -> {
+            ClusterRelationshipEntity clusterRelationshipEntity = new ClusterRelationshipEntity();
+            clusterRelationshipEntityList.add(clusterRelationshipEntity);
+
+            clusterRelationshipEntityList.add(clusterRelationshipEntity);
+            clusterRelationshipEntity.setClusterId(clusterEntity.getId());
+            clusterRelationshipEntity.setClusterType(clusterEntity.getClusterType());
+        });
+        this.clusterRelationshipMapper.batchClusterRelationshipEntry(clusterRelationshipEntityList);
+        return 1;
     }
 
     @Override
     public List<ClusterEntity> selectAll() {
-        return clusterMapper.selectAllCluster();
+        return clusterMapper.queryAllCluster();
     }
 
     @Override
     public List<ClusterEntity> selectNewlyIncreased(ClusterEntity clusterEntity) {
-        return clusterMapper.selectAllCluster();
+        return clusterMapper.queryAllCluster();
     }
 
     @Override
@@ -108,13 +174,14 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
-    public List<ClusterEntity> selectAllCluster() {
-        return clusterMapper.selectAllCluster();
+    public void insertClusterAndRelationship(ClusterEntity cluster, ClusterRelationshipEntity clusterRelationshipEntity) {
+        clusterMapper.insertCluster(cluster);
+        clusterRelationshipMapper.insertClusterRelationshipEntry(clusterRelationshipEntity);
     }
 
     @Override
-    public ClusterEntity selectClusterById(ClusterEntity cluster) {
-        return clusterMapper.selectClusterById(cluster);
+    public List<ClusterEntity> selectAllCluster() {
+        return clusterMapper.queryAllCluster();
     }
 
 
@@ -129,7 +196,23 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
     }
 
     @Override
-    public Object overview(OverviewType overviewtype) {
+    public Object overview(OverviewDTO overviewDTO) {
         return null;
+    }
+
+    @Override
+    public List<ClusterEntity> queryByUpdateTime(ClusterEntity clusterEntity) {
+        return null;
+    }
+
+    @Override
+    public LinkedList<Integer> getIndex(ClusterEntity clusterEntity) {
+        ClusterEntity before = this.clusterMapper.lockByClusterId(clusterEntity);
+        this.clusterMapper.updateNumByClusterId(clusterEntity);
+        LinkedList<Integer> indexList = new LinkedList<>();
+        for (int i = before.getRuntimeIndex(); i <= before.getRuntimeIndex() + clusterEntity.getRuntimeIndex(); i++) {
+            indexList.add(i);
+        }
+        return indexList;
     }
 }

@@ -15,39 +15,41 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.core.function.SDK.operation;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.RemotingType;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
+import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateRedisConfig;
-import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 
 import java.time.Duration;
-import java.util.AbstractMap.SimpleEntry;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 
-public class RedisSDKOperation extends AbstractSDKOperation<StatefulRedisConnection<String, String>> {
+
+@SDKMetadata(clusterType = {
+    ClusterType.STORAGE_REDIS_BROKER}, remotingType = RemotingType.REDIS, sdkTypeEnum = SDKTypeEnum.ALL, config = CreateRedisConfig.class)
+public class RedisSDKOperation extends AbstractSDKOperation<StatefulRedisConnection<String, String>, CreateRedisConfig> {
 
     @Override
-    public SimpleEntry<String, StatefulRedisConnection<String, String>> createClient(CreateSDKConfig clientConfig) {
-        CreateRedisConfig redisConfig = (CreateRedisConfig) clientConfig;
-        String redisUrl = redisConfig.getRedisUrl();
-        String clientHost = redisUrl.split(":")[0];
-        int clientPort = Integer.parseInt(redisUrl.split(":")[1]);
+    public StatefulRedisConnection<String, String> createClient(CreateRedisConfig clientConfig) {
         RedisURI redisURI = RedisURI.builder()
-            .withHost(clientHost)
-            .withPort(clientPort)
-            .withPassword(redisConfig.getPassword() == null ? "" : redisConfig.getPassword())
-            .withTimeout(Duration.ofSeconds(redisConfig.getTimeOut()))
+            .withHost(clientConfig.getNetAddress().getAddress())
+            .withPort(clientConfig.getNetAddress().getPort())
+            .withPassword(clientConfig.getPassword() == null ? "" : clientConfig.getPassword())
+            .withTimeout(Duration.ofSeconds(clientConfig.getTimeOut()))
             .build();
         RedisClient redisClient = RedisClient.create(redisURI);
-        return new SimpleEntry<>(clientConfig.getUniqueKey(), redisClient.connect());
+        return redisClient.connect();
     }
 
     @Override
-    public void close(Object client) {
-        castClient(client).close();
+    public void close(StatefulRedisConnection<String, String> client) {
+        client.close();
     }
 }

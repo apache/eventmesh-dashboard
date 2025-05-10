@@ -16,24 +16,35 @@
  */
 
 
+
 package org.apache.eventmesh.dashboard.console.modle.message.offset;
 
 
+import org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType;
 import org.apache.eventmesh.dashboard.common.enums.ResetOffsetMode;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 
+import java.time.LocalDateTime;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ResetOffsetDTO extends ClusterIdDTO {
 
-    private Long groupId;
+    private OperationRangeType operationRangeType;
 
-    private String groupName;
+    private Long rangeId;
 
-    private Integer partitionId;
+    private Long subscribeId;
+
+    private Integer queueIndex;
 
     private ResetOffsetMode resetOffsetMode;
 
-    private String modeValue;
+    /**
+     *
+     */
+    private LocalDateTime resetTime;
 }

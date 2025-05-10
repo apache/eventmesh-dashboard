@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.entity;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
+@Deprecated
 public class DefaultConfigKey {
 
     private String businessType;
