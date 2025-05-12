@@ -16,6 +16,7 @@
  */
 
 
+
 package org.apache.eventmesh.dashboard.console.controller.function;
 
 
@@ -40,8 +41,9 @@ public class OverviewController {
     private Map<String, OverviewService> overviewServiceMap;
 
     @PostMapping("overview")
-    public Map<String, Integer> overview(@RequestBody @Validated OverviewDTO overviewDTO) {
+    public Object overview(@RequestBody @Validated OverviewDTO overviewDTO) {
+        OverviewService overviewService = overviewServiceMap.get(overviewDTO.getOverviewType().name());
 
-        return null;
+        return overviewService.overview(overviewDTO);
     }
 }

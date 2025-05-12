@@ -17,6 +17,8 @@
 
 server:
   port: 9898
+  servlet:
+    context-path: "/eventmesh/dashboard"
 
 spring:
   servlet:
@@ -32,7 +34,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://${DB_ADDRESS:localhost:3306}/eventmesh_dashboard?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
       username: ${DB_USERNAME:root}
-      password: ${DB_PASSWORD:password}
+      password: ${DB_PASSWORD:Ab123123@}
 
       initial-size: 1
       max-active: 50
@@ -62,17 +64,4 @@ decoration:
 
 
 function:
-  healthCheck:
-    doCheck:
-      initialDelay: 60
-      period: 60
-    updateConfig:
-      initialDelay: 30
-      period: 60
-  sync:
-    enable: true
-    initialDelay: 120
-    period: 60
-    toDb:
-      runtime: true
-
+  enabled: false

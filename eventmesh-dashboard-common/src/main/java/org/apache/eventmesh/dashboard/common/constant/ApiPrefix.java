@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.constant;
 
+@Deprecated
 public class ApiPrefix {
 
     public static final String API_PREFIX = "/eventmesh-dashboard/";

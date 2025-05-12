@@ -15,8 +15,11 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.remoting;
 
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 import org.apache.eventmesh.dashboard.common.model.remoting.user.CreateUserRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.user.DeleterUserRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.user.GetUserRequest;
@@ -27,9 +30,12 @@ import org.apache.eventmesh.dashboard.common.model.remoting.user.GetUserResult;
  */
 public interface UserRemotingService {
 
+    @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
     CreateUserRequest createInstanceUser(CreateUserRequest request);
 
+    @RemotingServiceMethodMapper(RemotingActionType.DELETE)
     DeleterUserRequest deleteInstanceUser(DeleterUserRequest request);
 
+    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
     GetUserResult getInstanceUser(GetUserRequest request);
 }

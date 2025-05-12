@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.mapstruct.cluster;
 
-import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
-import org.apache.eventmesh.dashboard.console.modle.cluster.client.SelectByClusterIdDTO;
+package org.apache.eventmesh.dashboard.console.mapstruct.cluster;
 
 import org.mapstruct.factory.Mappers;
 
@@ -30,6 +28,5 @@ public interface ClientDataControllerMapper {
     ClientDataControllerMapper INSTANCE = Mappers.getMapper(ClientDataControllerMapper.class);
 
 
-    ClientEntity selectByClusterIdDTO(SelectByClusterIdDTO selectByClusterIdDTO);
 
 }

@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
+import org.apache.eventmesh.dashboard.console.modle.deploy.ClusterAllMetadataDO;
 
 import java.util.List;
 
@@ -29,19 +32,27 @@ public interface RuntimeService {
 
     RuntimeEntity queryRuntimeEntityById(RuntimeEntity runtimeEntity);
 
-    List<RuntimeEntity> selectRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity);
+    List<RuntimeEntity> queryRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity);
 
-    Integer batchInsert(List<RuntimeEntity> runtimeEntities);
+    List<RuntimeEntity> queryRuntimeByBigExpandCluster(QueryRuntimeByBigExpandClusterDO data);
+
+    List<RuntimeEntity> queryMetaRuntimeByStorageClusterId(QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO);
+
+    ClusterAllMetadataDO queryAllByClusterId(RuntimeEntity runtimeEntity, boolean isRuntime, boolean isRelationship);
+
+    void batchInsert(List<RuntimeEntity> runtimeEntities);
+
+    Integer batchUpdate(List<RuntimeEntity> runtimeEntities);
 
     List<RuntimeEntity> selectAll();
 
-    List<RuntimeEntity> selectByHostPort(RuntimeEntity runtimeEntity);
+    List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity);
 
     void insertRuntime(RuntimeEntity runtimeEntity);
 
-    Integer updateRuntimeByCluster(RuntimeEntity runtimeEntity);
+    void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    Integer deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
+    void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    Integer deactivate(RuntimeEntity runtimeEntity);
+    void deactivate(RuntimeEntity runtimeEntity);
 }

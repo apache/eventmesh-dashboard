@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service;
 
-import org.apache.eventmesh.dashboard.console.modle.function.OverviewType;
+import org.apache.eventmesh.dashboard.console.modle.function.OverviewDTO;
 
 /**
  *
@@ -25,5 +26,5 @@ import org.apache.eventmesh.dashboard.console.modle.function.OverviewType;
 public interface OverviewService {
 
 
-    Object overview(OverviewType overviewType);
+    Object overview(OverviewDTO overviewDTO);
 }

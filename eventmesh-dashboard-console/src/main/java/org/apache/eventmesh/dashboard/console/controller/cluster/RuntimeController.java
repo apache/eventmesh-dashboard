@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.controller.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
@@ -44,7 +45,7 @@ public class RuntimeController {
     @PostMapping("/queryRuntimeListByClusterId")
     public List<RuntimeEntity> queryRuntimeListByClusterId(@Validated @RequestBody ClusterIdDTO clusterIdDTO) {
         List<RuntimeEntity> runtimeEntityList =
-            runtimeService.selectRuntimeToFrontByClusterId(RuntimeControllerMapper.INSTANCE.queryRuntimeListByClusterId(clusterIdDTO));
+            runtimeService.queryRuntimeToFrontByClusterId(RuntimeControllerMapper.INSTANCE.queryRuntimeListByClusterId(clusterIdDTO));
         runtimeEntityList.forEach(n -> {
             n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", n.getId()));
         });
@@ -56,54 +57,6 @@ public class RuntimeController {
     public RuntimeEntity queryRuntimeListById(@Validated @RequestBody IdDTO idDTO) {
         return this.runtimeService.queryRuntimeEntityById(RuntimeControllerMapper.INSTANCE.queryRuntimeListById(idDTO));
     }
-
-    @PostMapping("/createRuntime")
-    public void crateRuntime(@Validated @RequestBody RuntimeEntity runtimeEntity) {
-        runtimeService.insertRuntime(runtimeEntity);
-    }
-
-    /**
-     * 那些集群可以暂停。被依赖的集群不允许暂停。暂停的含义是什么
-     * 暂停是否释放资源
-     * @return
-     */
-    public Integer pauseCluster() {
-        // 查询集群
-
-        // 判断集群类型
-
-        // 查询依赖
-        return null;
-    }
-
-    /**
-     * 重新开始集群
-     * @return
-     */
-    public Integer resumeCluster() {
-        // 查询集群
-
-        // 判断集群类型
-
-        // 查询依赖
-        return null;
-    }
-
-    /**
-     * 注销集群
-     * @return
-     */
-    public Integer cancelCluster() {
-        // 查询集群
-
-        // 判断集群类型
-
-        // 查询依赖
-
-        // 如果是全程托管，释放k8s 集群
-        return null;
-    }
-
 
 
 }

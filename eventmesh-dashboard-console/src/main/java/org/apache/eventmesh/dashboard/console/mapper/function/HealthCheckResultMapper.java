@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.mapper.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
@@ -54,38 +55,6 @@ public interface HealthCheckResultMapper {
     List<HealthCheckResultEntity> selectByClusterIdAndCreateTimeRange(@Param("clusterId") Long clusterId,
         @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
 
-    @Select({
-        "<script>",
-        "   SELECT * FROM health_check_result",
-        "   <if test='list != null and list.size() > 0'>",
-        "       WHERE (cluster_id, type, type_id) IN",
-        "       <foreach collection='list' item='item' open='(' separator=',' close=')'>",
-        "           (#{item.clusterId}, #{item.type}, #{item.typeId})",
-        "       </foreach>",
-        "       AND (state = 2 OR state = 4)",
-        "   </if>",
-        "   ORDER BY create_time DESC",
-        "</script>"
-    })
-    List<HealthCheckResultEntity> selectIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(List<HealthCheckResultEntity> healthCheckResultEntityList);
-
-    @Update("UPDATE health_check_result SET state = #{state}, result_desc = #{resultDesc} WHERE id = #{id}")
-    Integer update(HealthCheckResultEntity healthCheckResultEntity);
-
-    @Update({
-        "<script>",
-        "   <foreach collection='list' item='healthCheckResultEntity' index='index' separator=';'>",
-        "       UPDATE health_check_result SET state = #{healthCheckResultEntity.state},",
-        "       result_desc = #{healthCheckResultEntity.resultDesc} WHERE id = #{healthCheckResultEntity.id}",
-        "   </foreach>",
-        "</script>"})
-    Integer batchUpdate(List<HealthCheckResultEntity> healthCheckResultEntityList);
-
-    /**
-     * TODO 未同步修改调用方法^
-     * @param healthCheckResultEntity
-     */
-
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("INSERT INTO health_check_result(type,type_id, cluster_id, state,result_desc)"
         + " VALUES( #{type}, #{typeId}, #{clusterId}, #{state}, #{resultDesc})")
@@ -106,7 +75,7 @@ public interface HealthCheckResultMapper {
         "   </if>",
         "</script>"
     })
-    Integer batchInsert(List<HealthCheckResultEntity> healthCheckResultEntityList);
+    void batchInsert(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     @Insert({
         "<script>",
@@ -120,7 +89,33 @@ public interface HealthCheckResultMapper {
         "   </if>",
         "</script>"
     })
-    Integer insertNewChecks(List<HealthCheckResultEntity> healthCheckResultEntityList);
+    void insertNewChecks(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
+    @Update("UPDATE health_check_result SET state = #{state}, result_desc = #{resultDesc} WHERE id = #{id}")
+    void update(HealthCheckResultEntity healthCheckResultEntity);
+
+    @Update({
+        "<script>",
+        "   <foreach collection='list' item='healthCheckResultEntity' index='index' separator=';'>",
+        "       UPDATE health_check_result SET state = #{healthCheckResultEntity.state},",
+        "       result_desc = #{healthCheckResultEntity.resultDesc} WHERE id = #{healthCheckResultEntity.id}",
+        "   </foreach>",
+        "</script>"})
+    void batchUpdate(List<HealthCheckResultEntity> healthCheckResultEntityList);
+
+    @Select({
+        "<script>",
+        "   SELECT * FROM health_check_result",
+        "   <if test='list != null and list.size() > 0'>",
+        "       WHERE (cluster_id, type, type_id) IN",
+        "       <foreach collection='list' item='item' open='(' separator=',' close=')'>",
+        "           (#{item.clusterId}, #{item.type}, #{item.typeId})",
+        "       </foreach>",
+        "       AND (state = 2 OR state = 4)",
+        "   </if>",
+        "   ORDER BY create_time DESC",
+        "</script>"
+    })
+    List<HealthCheckResultEntity> getIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
 }

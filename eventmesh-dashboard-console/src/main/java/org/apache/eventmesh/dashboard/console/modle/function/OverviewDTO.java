@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle.function;
 
 import org.apache.eventmesh.dashboard.console.modle.IdDTO;
@@ -22,8 +23,10 @@ import org.apache.eventmesh.dashboard.console.modle.IdDTO;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class OverviewDTO extends IdDTO {
 
     @NotNull

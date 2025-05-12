@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.service.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
@@ -29,24 +30,24 @@ import java.util.List;
  */
 public interface HealthDataService {
 
-    InstanceLiveProportionVo selectInstanceLiveProportion(Long clusterId, Integer instanceType);
+    InstanceLiveProportionVo getInstanceLiveProportion(Long clusterId, Integer instanceType);
 
-    List<HealthCheckResultEntity> selectInstanceLiveStatusHistory(Integer type, Long clusterId, LocalDateTime startTime);
+    List<HealthCheckResultEntity> getInstanceLiveStatusHistory(Integer type, Long clusterId, LocalDateTime startTime);
 
     HealthCheckResultEntity insertHealthCheckResult(HealthCheckResultEntity healthCheckResultEntity);
 
-    Integer batchInsertHealthCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
+    void batchInsertHealthCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     /**
      * New check results have state 4: SDK client not created or connected
      */
-    Integer batchInsertNewCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
+    void batchInsertNewCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     List<HealthCheckResultEntity> selectAll();
 
     List<HealthCheckResultEntity> queryHealthCheckResultByClusterIdAndTypeAndTypeId(HealthCheckResultEntity entity);
 
-    Integer batchUpdateCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
+    void batchUpdateCheckResult(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     void batchUpdateCheckResultByClusterIdAndTypeAndTypeId(List<HealthCheckResultEntity> healthCheckResultEntityList);
 

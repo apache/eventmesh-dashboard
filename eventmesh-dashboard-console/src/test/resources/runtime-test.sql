@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 DELETE FROM `eventmesh_dashboard_test`.runtime WHERE TRUE;
 ALTER TABLE `eventmesh_dashboard_test`.runtime AUTO_INCREMENT = 1;
 

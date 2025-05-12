@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.metadata;
+
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ClientMetadata extends MetadataConfig {
+public class ClientMetadata extends BaseRuntimeIdBase {
 
     private String name;
 
@@ -47,8 +50,9 @@ public class ClientMetadata extends MetadataConfig {
      */
     private String protocol;
 
+
     @Override
-    public String getUnique() {
-        return host + ":" + port;
+    public String nodeUnique() {
+        return this.host + "-" + this.port;
     }
 }

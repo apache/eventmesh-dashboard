@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.metadata;
+
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,21 +29,22 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ConfigMetadata extends MetadataConfig {
+public class ConfigMetadata extends BaseClusterIdBase {
 
     /**
      * property key
      */
-    private String configKey;
+    private String configName;
 
     private String configValue;
 
-    private Integer instanceType;
+    private MetadataType instanceType;
 
     private Long instanceId;
 
+
     @Override
-    public String getUnique() {
-        return configKey;
+    public String nodeUnique() {
+        return this.configName;
     }
 }

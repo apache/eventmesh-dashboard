@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.controller.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.mapstruct.config.ConfigControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.DetailConfigsVO;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigDTO;
@@ -32,32 +32,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/cluster/config")
 public class ConfigController {
 
     @Autowired
     private ConfigService configService;
 
-    @PostMapping("/updateConfigs")
+    @PostMapping("/cluster/config/updateConfigs")
     public String updateConfigsByTypeAndId(@Validated @RequestBody UpdateConfigDTO updateConfigDTO) {
-        try {
-            configService.updateConfigsByInstanceId(updateConfigDTO.getUsername(), updateConfigDTO.getClusterId(), updateConfigDTO.getInstanceType(),
-                updateConfigDTO.getInstanceId(), updateConfigDTO.getChangeConfigEntities());
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+        
         return "success";
     }
 
 
-    @PostMapping("/getInstanceDetailConfigs")
+    @PostMapping("/cluster/config/getInstanceDetailConfigs")
     public List<DetailConfigsVO> getInstanceDetailConfigs(@Validated @RequestBody GetConfigsListDTO getConfigsListDTO) {
-        List<ConfigEntity> configEntityList = configService.selectToFront(ConfigControllerMapper.INSTANCE.queryEntityByConfig(getConfigsListDTO));
-        Map<String, String> stringStringConcurrentHashMap = configService.selectDefaultConfig(getConfigsListDTO.getBusinessType());
+        List<ConfigEntity> configEntityList = configService.selectToFront(getConfigsListDTO.getInstanceId(),
+            getConfigsListDTO.getInstanceType(), getConfigsListDTO);
+        Map<String, String> stringStringConcurrentHashMap = configService.selectDefaultConfig(getConfigsListDTO.getBusinessType(),
+            getConfigsListDTO.getInstanceId(), getConfigsListDTO.getInstanceType());
         ArrayList<DetailConfigsVO> showDetailConfigsVOS = new ArrayList<>();
         configEntityList.forEach(n -> {
             DetailConfigsVO showDetailConfigsVO = new DetailConfigsVO();

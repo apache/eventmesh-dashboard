@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * when insert data to db from meta service, connection metadata operation should be called after cluster and client in order to fetch information
  * from them.
  */
 @Data
-public class ConnectionMetadata extends MetadataConfig {
+@EqualsAndHashCode(callSuper = true)
+public class ConnectionMetadata extends BaseRuntimeIdBase {
 
 
     /**
@@ -67,8 +72,9 @@ public class ConnectionMetadata extends MetadataConfig {
 
     private String description;
 
+
     @Override
-    public String getUnique() {
+    public String nodeUnique() {
         return getClusterId() + "/" + sourceId + "/" + sinkId + "/" + topic;
     }
 }

@@ -15,13 +15,17 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.console.modle.cluster.runtime;
 
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class QueryRuntimeListByClusterIdDTO extends ClusterIdDTO {
 
     private String host;
