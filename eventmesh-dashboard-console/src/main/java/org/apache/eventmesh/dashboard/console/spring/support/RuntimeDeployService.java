@@ -289,7 +289,7 @@ public class RuntimeDeployService {
 
             if (this.clusterType.isMetaAndRuntime() && Objects.equals(this.runtimeEntity.getDeployStatusType(),
                 DeployStatusType.CREATE_WAIT)) {
-                // 修改数据
+                // 修改数据 nacos
                 this.metaAndRuntimeList.forEach((value) -> {
                     value.setDeployStatusType(DeployStatusType.CREATE_CAP_UPDATE_WAIT);
                     this.updateRuntimeList.add(value);
@@ -311,6 +311,13 @@ public class RuntimeDeployService {
         @Override
         public void run() {
             try {
+                this.updateRuntimeList.add(this.runtimeEntity);
+                try {
+                    runtimeService.batchUpdate(this.updateRuntimeList);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
+
                 this.queryHandlerData();
                 this.buildOperationMetaData();
                 if (Objects.equals(this.runtimeEntity.getDeployStatusType(), DeployStatusType.UNINSTALL)) {
@@ -325,7 +332,6 @@ public class RuntimeDeployService {
                 log.error(e.getMessage(), e);
                 this.runtimeEntity.setDeployStatusType(getFailedType(runtimeEntity.getDeployStatusType()));
             }
-            this.updateRuntimeList.add(this.runtimeEntity);
 
             try {
                 runtimeService.batchUpdate(this.updateRuntimeList);

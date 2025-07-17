@@ -22,7 +22,6 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseClusterIdEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 
@@ -34,7 +33,7 @@ import lombok.Getter;
 
 
 @Component
-public class ClusterAbitityService {
+public class ClusterAbilityService {
 
 
     @Autowired
@@ -56,12 +55,14 @@ public class ClusterAbitityService {
     private boolean forceConsistent = false;
 
 
-    public boolean isCAP(ClusterIdDTO clusterIdDTO) {
-        ClusterEntity clusterEntity = this.clusterService.queryClusterById(ClusterControllerMapper.INSTANCE.toClusterEntity(clusterIdDTO));
-        return this.isCAP(clusterEntity);
+    public boolean isCap(ClusterIdDTO clusterIdDTO) {
+        ClusterEntity clusterEntity = new ClusterEntity();
+        clusterEntity.setId(clusterIdDTO.getClusterId());
+        clusterEntity = this.clusterService.queryClusterById(clusterEntity);
+        return this.isCapByEntity(clusterEntity);
     }
 
-    public boolean isCAP(BaseClusterIdEntity baseClusterIdEntity) {
+    public boolean isCapByEntity(BaseClusterIdEntity baseClusterIdEntity) {
         ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(baseClusterIdEntity.getClusterType());
         return clusterFramework.isCAP();
     }

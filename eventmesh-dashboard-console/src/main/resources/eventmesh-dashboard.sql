@@ -110,26 +110,28 @@ create table `cluster_relationship`
 drop table if exists `config`;
 create table config
 (
-    id              bigint unsigned auto_increment primary key,
-    organization_id bigint unsigned not null comment '组织id',
-    cluster_id      bigint          not null comment '集群id',
-    instance_type   tinyint         not null comment '实例类型 0:runtime,1:storage,2:connector,3:topic',
-    instance_id     bigint          not null default -1 comment '实例id，上面配置对应的(比如runtime)的id，如果是-1，是cluster的配置',
-    config_type     varchar(31)     not null default '' comment '配置类型',
-    config_name     varchar(192)    not null comment '配置名称',
-    config_value    text            not null comment '配置值',
-    start_version   varchar(64)     not null default '' comment '配置开始使用的版本',
-    end_version     varchar(64)     not null default '' comment '配置结束使用的版本',
-    status          int             not null default 1 comment '0 关闭 1 开启 ',
-    is_default      int             not null default 1,
-    diff_type       int             not null default -1 comment '差异类型',
-    description     varchar(1000)   not null default '' comment '备注',
-    edit            int             not null default 1 comment '是否可以编辑 1 不可编辑（程序获取） 2 可编辑',
-    create_time     timestamp       not null default current_timestamp comment '创建时间',
-    update_time     timestamp       not null default current_timestamp on update current_timestamp comment '修改时间',
-    is_modify       int             not null default 0 comment '是否修改元版本数据',
-    already_update  int             not null default 0 comment '0:no,1:yes',
-    is_delete       int             not null default 0 comment '0',
+    id                 bigint unsigned auto_increment primary key,
+    organization_id    bigint unsigned not null comment '组织id',
+    cluster_id         bigint          not null comment '集群id',
+    instance_type      varchar(31)     not null comment '实例类型 0:runtime,1:storage,2:connector,3:topic',
+    instance_id        bigint          not null default -1 comment '实例id，上面配置对应的(比如runtime)的id，如果是-1，是cluster的配置',
+    config_type        varchar(31)     not null default '' comment '配置类型',
+    config_name        varchar(192)    not null comment '配置名称',
+    config_value       text            not null comment '配置值',
+    config_value_type  varchar(16)     not null comment '值类型,number，string,boolean,date,enum',
+    config_value_range varchar(16)     not null comment '',
+    start_version      varchar(64)     not null default '' comment '配置开始使用的版本',
+    end_version        varchar(64)     not null default '' comment '配置结束使用的版本',
+    status             int             not null default 1 comment '0 关闭 1 开启 ',
+    is_default         int             not null default 1,
+    diff_type          int             not null default -1 comment '差异类型',
+    description        varchar(1000)   not null default '' comment '备注',
+    edit               int             not null default 1 comment '是否可以编辑 1 不可编辑（程序获取） 2 可编辑',
+    create_time        timestamp       not null default current_timestamp comment '创建时间',
+    update_time        timestamp       not null default current_timestamp on update current_timestamp comment '修改时间',
+    is_modify          int             not null default 0 comment '是否修改元版本数据',
+    already_update     int             not null default 0 comment '0:no,1:yes',
+    is_delete          int             not null default 0 comment '0',
     unique key uniq_cluster_id_instance_type_instance_id_config_name (instance_id, config_name, instance_type, cluster_id)
 ) comment '配置信息表';
 
@@ -189,6 +191,32 @@ create table group_member
     is_delete       int             not null default 0 comment '0',
     unique key uniq_cluster_topic_group (cluster_id, topic_name, group_name)
 ) comment 'groupmember信息表';
+
+drop table if exists `offset`;
+
+create table offset
+(
+    id                 bigint unsigned primary key auto_increment comment 'id',
+    organization_id    bigint unsigned not null comment '组织id',
+    cluster_id         bigint unsigned not null default -1 comment '集群id',
+    runtime_id         bigint unsigned not null default -1 comment '',
+    offset_record_type varchar(16)     not null default '' comment 'topic or consume',
+    topic_id           bigint unsigned not null default '',
+    topic_name         varchar(128)    not null default '',
+    queue_index        bigint          not null default '',
+    topic_offset       bigint unsigned not null default '',
+    group_id           bigint unsigned not null default '',
+    group_name         varchar(128)    not null default '',
+    consume_offset     bigint unsigned not null default '',
+    consume_rote       bigint unsigned not null default '消费速率，写到这个表？',
+    delay_num          bigint unsigned not null default '延迟数量',
+    create_time        timestamp       not null default current_timestamp comment '创建时间',
+    update_time        timestamp       not null default current_timestamp on update current_timestamp comment '修改时间',
+    status             int             not null default 1,
+    is_delete          int             not null default 0 comment '0',
+    key cluster_topic_group (cluster_id, topic_name, group_name)
+
+);
 
 
 drop table if exists runtime;

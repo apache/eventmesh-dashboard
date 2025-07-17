@@ -121,7 +121,7 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
     @Select("select COUNT(*) from runtime where cluster_id=#{clusterId} AND status=1")
     Integer getRuntimeNumByCluster(RuntimeEntity runtimeEntity);
 
-    @Select("select * from runtime where update_time = #{updateTime} and status=1")
+    @Select("select * from runtime where update_time >= #{updateTime} and status=1")
     List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity);
 
 

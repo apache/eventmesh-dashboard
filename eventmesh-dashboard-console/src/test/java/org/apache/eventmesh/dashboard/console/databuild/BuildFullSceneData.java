@@ -390,6 +390,8 @@ public class BuildFullSceneData {
         private Integer shareNum = 0;
 
         private final Map<ClusterType, List<ClusterEntity>> shareMap = new HashMap<>();
+
+
     }
 
 }

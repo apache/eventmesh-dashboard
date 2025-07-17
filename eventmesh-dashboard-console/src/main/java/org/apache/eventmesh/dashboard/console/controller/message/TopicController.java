@@ -21,7 +21,7 @@ package org.apache.eventmesh.dashboard.console.controller.message;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-import org.apache.eventmesh.dashboard.console.controller.ClusterAbitityService;
+import org.apache.eventmesh.dashboard.console.controller.ClusterAbilityService;
 import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterMetadataDomain;
 import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterOperationHandler;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
@@ -44,8 +44,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+
 @RestController
-@RequestMapping("topic")
+@RequestMapping("/user/topic")
 public class TopicController {
 
     @Autowired
@@ -53,7 +56,7 @@ public class TopicController {
 
 
     @Autowired
-    private ClusterAbitityService clusterAbitityService;
+    private ClusterAbilityService clusterAbilityService;
 
     @Autowired
     private ClusterMetadataDomain clusterMetadataDomain;
@@ -65,17 +68,24 @@ public class TopicController {
     @PostMapping("/queryTopicListByClusterId")
     public List<TopicEntity> queryTopicListByClusterId(@Validated @RequestBody GetTopicListDTO getTopicListDTO) {
         // cap 的直接查询
-        if (this.clusterAbitityService.isCAP(getTopicListDTO)) {
-            topicService.getTopicListToFront(TopicControllerMapper.INSTANCE.queryTopicListByClusterId(getTopicListDTO));
+        Page<?> page = PageHelper.getLocalPage();
+        PageHelper.clearPage();
+        System.out.println(page.getPageNum());
+        boolean isCap = this.clusterAbilityService.isCap(getTopicListDTO);
+        PageHelper.startPage(page.getPageNum(), page.getPageSize()).setOrderBy(page.getOrderBy());
+        if (isCap) {
+            return topicService.getTopicListToFront(TopicControllerMapper.INSTANCE.queryTopicListByClusterId(getTopicListDTO));
         }
         // 非 CAP 另外查询
         return topicService.getTopicListToFront(TopicControllerMapper.INSTANCE.queryTopicListByClusterId(getTopicListDTO));
     }
 
-    @PostMapping("queryTopicListById ")
+
+
+    @PostMapping("queryTopicListById")
     public TopicEntity queryTopicById(@Validated @RequestBody RuntimeIdDTO runtimeIdDTO) {
         TopicEntity topicEntity = topicService.selectTopicById(TopicControllerMapper.INSTANCE.queryTopicListById(runtimeIdDTO));
-        if (this.clusterAbitityService.isCAP(topicEntity)) {
+        if (this.clusterAbilityService.isCapByEntity(topicEntity)) {
             return topicEntity;
         }
         //
@@ -104,8 +114,6 @@ public class TopicController {
             }
         });
 
-
-
         topicService.queryRuntimeByBaseSyncEntity(queryList);
         return null;
     }
@@ -113,7 +121,7 @@ public class TopicController {
     @GetMapping("deleteTopic")
     public Integer deleteTopic(@Validated @RequestBody IdDTO idDTO) {
         TopicEntity topicEntity = this.topicService.selectTopicById(TopicControllerMapper.INSTANCE.deleteTopic(idDTO));
-        if (this.clusterAbitityService.isCAP(topicEntity)) {
+        if (this.clusterAbilityService.isCapByEntity(topicEntity)) {
             return this.topicService.deleteTopicById(topicEntity);
         }
         // 通过 clusterId，runtime id， topic name 删除

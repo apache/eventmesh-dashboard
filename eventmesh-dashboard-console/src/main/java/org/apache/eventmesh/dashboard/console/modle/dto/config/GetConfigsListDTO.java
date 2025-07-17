@@ -18,6 +18,8 @@
 
 package org.apache.eventmesh.dashboard.console.modle.dto.config;
 
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,7 +33,7 @@ public class GetConfigsListDTO {
 
     private Long instanceId;
 
-    private Integer instanceType;
+    private MetadataType instanceType;
 
     private String configName;
 

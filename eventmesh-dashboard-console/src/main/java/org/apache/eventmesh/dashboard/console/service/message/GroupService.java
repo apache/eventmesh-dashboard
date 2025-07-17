@@ -19,7 +19,7 @@
 package org.apache.eventmesh.dashboard.console.service.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 
 import java.util.List;
 
@@ -29,26 +29,15 @@ import java.util.List;
 
 public interface GroupService {
 
-    @Deprecated
-    List<GroupEntity> selectAll();
 
-    void batchInsert(List<GroupEntity> groupEntities);
+    List<GroupEntity> queryGroupListByTopicId(TopicEntity topicEntity);
 
     List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity);
 
-    void addGroup(GroupEntity groupEntity);
+    void batchInsert(List<GroupEntity> groupEntities);
 
-    @Deprecated
-    void updateGroup(GroupEntity groupEntity);
+    void addGroup(GroupEntity groupEntity);
 
     Integer deleteGroup(GroupEntity groupEntity);
 
-    @Deprecated
-    GroupEntity selectGroup(GroupEntity groupEntity);
-
-    @Deprecated
-    Integer insertMemberToGroup(SubscriptionEntity subscriptionEntity);
-
-    @Deprecated
-    Integer deleteMemberFromGroup(SubscriptionEntity subscriptionEntity);
 }

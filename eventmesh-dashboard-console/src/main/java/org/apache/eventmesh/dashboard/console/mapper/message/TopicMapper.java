@@ -88,10 +88,12 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
 
     @Insert("""
         <script>
-        insert into topic (cluster_id, topic_name, retention_ms, topic_type, description, create_progress)
+        insert into topic (cluster_id,runtime_id,topic_name,topic_type, read_queue_num, write_queue_num, replication_factor, 
+                           `order` , description, create_progress,retention_ms)
            values
                <foreach collection='list' item='c' index='index' separator=','>
-                   (#{c.clusterId},#{c.topicName},#{c.retentionMs},#{c.topicType},#{c.description},#{c.createProgress})
+                        (#{c.clusterId},#{c.runtimeId},#{c.topicName},#{c.topicType},#{c.readQueueNum},#{c.writeQueueNum},#{c.replicationFactor}
+                            ,#{c.order},#{c.description},#{c.createProgress},#{c.retentionMs})
                </foreach>
         </script>
         """)
@@ -99,8 +101,10 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     void batchInsert(List<TopicEntity> topicEntities);
 
     @Insert("""
-        insert into topic (cluster_id   , topic_name , retention_ms , topic_type   , description, create_progress)
-                   values (#{clusterId} ,#{topicName},#{retentionMs},#{topicType},#{description},#{createProgress})
+        insert into topic (cluster_id,runtime_id,topic_name,topic_type, read_queue_num, write_queue_num, replication_factor, 
+                           `order` , description, create_progress,retention_ms)
+                   values (#{clusterId},#{runtimeId},#{topicName},#{topicType},#{readQueueNum},#{writeQueueNum},#{replicationFactor}
+                            ,#{order},#{description},#{createProgress},#{retentionMs})
         on duplicate key update status = 1
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")

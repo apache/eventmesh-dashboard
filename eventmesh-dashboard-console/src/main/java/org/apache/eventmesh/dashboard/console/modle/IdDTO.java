@@ -18,10 +18,13 @@
 
 package org.apache.eventmesh.dashboard.console.modle;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 
 @Data
 public class IdDTO {
 
+    @NotNull
     private Long id;
 }

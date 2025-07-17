@@ -29,10 +29,8 @@ public class GroupEntity extends BaseRuntimeIdEntity {
 
     private String name;
 
-    private Integer memberCount;
-
-    private String members;
-
     private Integer type;
+
+    private String ownType;
 
 }

@@ -103,6 +103,7 @@ public class RuntimeDeployServiceTest {
         FieldUtils.writeField(runtimeDeployService, "configService", configService, true);
         FieldUtils.writeField(runtimeDeployService, "portService", portService, true);
 
+
         sdkManageMockedStatic = Mockito.mockStatic(SDKManage.class);
         sdkManageMockedStatic.when(SDKManage::getInstance).thenReturn(sdkManageMock);
 

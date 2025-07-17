@@ -18,9 +18,10 @@
 
 package org.apache.eventmesh.dashboard.console.entity.function;
 
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
 
-public class ConfigGatherEntity extends BaseEntity {
+import org.apache.eventmesh.dashboard.console.entity.base.BaseIdEntity;
+
+public class ConfigGatherEntity extends BaseIdEntity {
 
 
     private String name;

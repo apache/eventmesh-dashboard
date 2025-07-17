@@ -91,11 +91,12 @@ public class TopicEntityMapperTest {
         topicEntity.setRuntimeId(2L);
         topicEntity.setTopicName("test-" + nameIndex.getAndIncrement());
         topicEntity.setTopicType("topicType");
-        topicEntity.setNumQueue(8L);
+        topicEntity.setWriteQueueNum(8);
+        topicEntity.setReadQueueNum(8);
         topicEntity.setReplicationFactor(2);
         topicEntity.setTopicFilterType("topicFilterType");
         topicEntity.setAttributes("1");
-        topicEntity.setOrder("desc");
+        topicEntity.setOrder(1);
         topicEntity.setRetentionMs(1L);
         topicEntity.setDescription("desc");
         topicEntity.setCreateProgress(1);

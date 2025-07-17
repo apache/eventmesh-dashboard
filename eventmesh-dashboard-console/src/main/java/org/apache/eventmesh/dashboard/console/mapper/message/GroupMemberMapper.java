@@ -34,7 +34,7 @@ import java.util.List;
  **/
 
 @Mapper
-public interface OprGroupMemberMapper {
+public interface GroupMemberMapper {
 
 
     @Deprecated
@@ -92,20 +92,24 @@ public interface OprGroupMemberMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     SubscriptionEntity deleteGroupMember(SubscriptionEntity subscriptionEntity);
 
-    @Insert({
-        "<script>",
-        "   insert into group_member (cluster_id, topic_name, group_name, eventmesh_user, state) values ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "(#{c.clusterId},#{c.topicName},#{c.groupName},#{c.eventMeshUser},#{c.state})",
-        "   </foreach>",
-        "</script>"})
+    @Insert("""
+        <script>
+           insert into group_member (organization_id,cluster_id, topic_name, group_name, eventmesh_user) values
+           <foreach collection='list' item='c' index='index' separator=','>
+                (#{c.organizationId},#{c.clusterId},#{c.topicName},#{c.groupName},#{c.eventMeshUser})
+           </foreach>
+        </script>
+        """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void batchInsert(List<SubscriptionEntity> groupMemberEntities);
 
 
-    @Insert("insert into group_member (cluster_id, topic_name, group_name, eventmesh_user,state)"
-            + " values (#{clusterId},#{topicName},#{groupName},#{eventMeshUser},#{state})"
-            + "ON DUPLICATE KEY UPDATE status=0")
+    @Insert("""
+        insert into
+           group_member (organization_id , cluster_id, topic_name, group_name, eventmesh_user)
+           values (#{organizationId},#{clusterId},#{topicName},#{groupName},#{eventMeshUser})
+           on duplicate  key update status=0
+        """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroupMember(SubscriptionEntity subscriptionEntity);
 

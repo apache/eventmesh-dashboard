@@ -29,4 +29,6 @@ public class RuntimeIdDTO extends ClusterIdDTO {
 
     private Long runtimeId;
 
+    private String runtimeName;
+
 }

@@ -18,14 +18,14 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import org.apache.eventmesh.dashboard.console.entity.BaseEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseIdEntity;;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "status")
-public class AclEntity extends BaseEntity {
+public class AclEntity extends BaseIdEntity {
 
     private static final long serialVersionUID = 6057071983428111947L;
 
@@ -47,6 +47,5 @@ public class AclEntity extends BaseEntity {
 
     private Integer patternType;
 
-    private Integer status;
 
 }

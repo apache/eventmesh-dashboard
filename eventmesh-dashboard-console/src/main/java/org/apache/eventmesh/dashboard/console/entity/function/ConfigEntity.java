@@ -29,6 +29,7 @@ import lombok.EqualsAndHashCode;
 public class ConfigEntity extends BaseClusterIdEntity {
 
 
+
     private String businessType;
 
     private Long retrospectId;
@@ -45,6 +46,10 @@ public class ConfigEntity extends BaseClusterIdEntity {
     private String configName;
 
     private String configValue;
+
+    private String configValueType;
+
+    private String configValueRange;
 
     private String startVersion;
 

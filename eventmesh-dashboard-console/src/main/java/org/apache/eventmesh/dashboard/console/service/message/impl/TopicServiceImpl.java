@@ -28,7 +28,7 @@ import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
-import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMemberMapper;
+import org.apache.eventmesh.dashboard.console.mapper.message.GroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
 import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
@@ -47,7 +47,7 @@ public class TopicServiceImpl implements TopicService {
     TopicMapper topicMapper;
 
     @Autowired
-    OprGroupMemberMapper oprGroupMemberMapper;
+    GroupMemberMapper groupMemberMapper;
 
     @Autowired
     HealthCheckResultMapper healthCheckResultMapper;
@@ -70,20 +70,20 @@ public class TopicServiceImpl implements TopicService {
         SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
         subscriptionEntity.setClusterId(topicEntity.getClusterId());
         subscriptionEntity.setTopicName(topicEntity.getTopicName());
-        List<String> groupNamelist = oprGroupMemberMapper.selectGroupNameByTopicName(subscriptionEntity);
+        List<String> groupNamelist = groupMemberMapper.selectGroupNameByTopicName(subscriptionEntity);
         ArrayList<TopicDetailGroupVO> topicDetailGroupVOList = new ArrayList<>();
         TopicEntity finalTopicEntity = topicEntity;
         groupNamelist.forEach(n -> {
             TopicDetailGroupVO topicDetailGroupVO = new TopicDetailGroupVO();
             topicDetailGroupVO.setGroupName(n);
             subscriptionEntity.setGroupName(n);
-            List<String> list = oprGroupMemberMapper.selectTopicsByGroupNameAndClusterId(subscriptionEntity);
+            List<String> list = groupMemberMapper.selectTopicsByGroupNameAndClusterId(subscriptionEntity);
             topicDetailGroupVO.setTopics(list);
             GroupEntity groupEntity = new GroupEntity();
             groupEntity.setClusterId(finalTopicEntity.getClusterId());
             groupEntity.setName(n);
             GroupEntity group = groupMapper.selectGroupByNameAndClusterId(groupEntity);
-            topicDetailGroupVO.setMemberNum(group.getMemberCount());
+            //topicDetailGroupVO.setMemberNum(group.getMemberCount());
 
             topicDetailGroupVOList.add(topicDetailGroupVO);
         });
@@ -119,7 +119,7 @@ public class TopicServiceImpl implements TopicService {
     public void addTopic(TopicEntity topicEntity) {
         SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
         subscriptionEntity.setTopicName(topicEntity.getTopicName());
-        oprGroupMemberMapper.updateMemberByTopic(subscriptionEntity);
+        groupMemberMapper.updateMemberByTopic(subscriptionEntity);
         topicMapper.insertTopic(topicEntity);
     }
 
@@ -157,8 +157,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public List<TopicEntity> getTopicListToFront(TopicEntity topicEntity) {
-        List<TopicEntity> topicEntityList = topicMapper.queryTopicsToFrontByClusterId(topicEntity);
-        return topicEntityList;
+        return topicMapper.queryTopicsToFrontByClusterId(topicEntity);
     }
 
 

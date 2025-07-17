@@ -52,6 +52,8 @@ public class ClasspathScanner {
 
     private Set<Class<?>> interfaceSet;
 
+    private Set<Class<?>> annotationSet;
+
     private String designation;
 
 
@@ -71,9 +73,16 @@ public class ClasspathScanner {
             if (Modifier.isAbstract(clazz.getModifiers())) {
                 continue;
             }
+            if(Objects.isNull(this.interfaceSet)){
+                resourcesList.add(clazz);
+                continue;
+            }
+
             if (this.includeInterface(clazz)) {
                 resourcesList.add(clazz);
+                continue;
             }
+
             Class<?>[] innerClass = clazz.getDeclaredClasses();
             if (ArrayUtils.isEmpty(innerClass)) {
                 continue;
@@ -88,7 +97,7 @@ public class ClasspathScanner {
     }
 
     private boolean excludeTest(Resource resource) throws IOException {
-        return resource.getFile().getPath().indexOf("/target/test-classes/") != -1;
+        return resource.getFile().getPath().contains("/target/test-classes/");
     }
 
     private Class<?> createClass(Resource resource) throws IOException, ClassNotFoundException {

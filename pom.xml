@@ -87,6 +87,7 @@
         <module>eventmesh-dashboard-service</module>
         <module>eventmesh-dashboard-core</module>
         <module>eventmesh-dashboard-observe</module>
+        <module>eventmesh-dashboard-agent</module>
     </modules>
 
     <dependencyManagement>
@@ -221,7 +222,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.3</version>
                     <configuration>
-                        <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+                        <argLine>-Xmx1024m </argLine>
                         <testFailureIgnore>true</testFailureIgnore>
                         <includes>
                             <include>**/*Test*.java</include>

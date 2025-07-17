@@ -24,11 +24,13 @@ import org.apache.eventmesh.dashboard.console.modle.dto.topic.CreateTopicDTO;
 import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
 import org.apache.eventmesh.dashboard.console.modle.vo.RuntimeIdDTO;
 
+import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 /**
  *
  */
+@Mapper
 public interface TopicControllerMapper {
 
     TopicControllerMapper INSTANCE = Mappers.getMapper(TopicControllerMapper.class);

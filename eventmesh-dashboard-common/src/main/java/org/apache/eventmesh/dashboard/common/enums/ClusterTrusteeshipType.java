@@ -124,6 +124,7 @@ public enum ClusterTrusteeshipType {
 
     ClusterTrusteeshipType(String type, List<ClusterType> clusterTypeList) {
         this.type = type;
+        this.clusterTypeList = clusterTypeList;
     }
 
 

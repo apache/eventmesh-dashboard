@@ -21,7 +21,7 @@ package org.apache.eventmesh.dashboard.console.service.message.impl;
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
-import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMemberMapper;
+import org.apache.eventmesh.dashboard.console.mapper.message.GroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.service.message.GroupMemberService;
 
 import java.util.List;
@@ -33,43 +33,43 @@ import org.springframework.stereotype.Service;
 public class GroupMemberServiceImp implements GroupMemberService {
 
     @Autowired
-    OprGroupMemberMapper oprGroupMemberMapper;
+    GroupMemberMapper groupMemberMapper;
 
     @Override
     public List<SubscriptionEntity> selectAll() {
-        return oprGroupMemberMapper.selectAll();
+        return groupMemberMapper.selectAll();
     }
 
     @Override
     public void batchInsert(List<SubscriptionEntity> groupMemberEntities) {
-        oprGroupMemberMapper.batchInsert(groupMemberEntities);
+        groupMemberMapper.batchInsert(groupMemberEntities);
     }
 
     @Override
     @EmLog(OprType = "View", OprTarget = "GroupMember")
     public List<SubscriptionEntity> getGroupMemberByClusterId(SubscriptionEntity subscriptionEntity) {
-        return oprGroupMemberMapper.getGroupByClusterId(subscriptionEntity);
+        return groupMemberMapper.getGroupByClusterId(subscriptionEntity);
     }
 
     @Override
     @EmLog(OprType = "add", OprTarget = "GroupMember")
     public void addGroupMember(SubscriptionEntity subscriptionEntity) {
-        oprGroupMemberMapper.addGroupMember(subscriptionEntity);
+        groupMemberMapper.addGroupMember(subscriptionEntity);
     }
 
     @Override
     public void updateGroupMember(SubscriptionEntity subscriptionEntity) {
-        oprGroupMemberMapper.updateGroupMember(subscriptionEntity);
+        groupMemberMapper.updateGroupMember(subscriptionEntity);
     }
 
     @Override
     public SubscriptionEntity deleteGroupMember(SubscriptionEntity subscriptionEntity) {
-        return oprGroupMemberMapper.deleteGroupMember(subscriptionEntity);
+        return groupMemberMapper.deleteGroupMember(subscriptionEntity);
     }
 
     @Override
     public SubscriptionEntity selectGroupMemberById(SubscriptionEntity subscriptionEntity) {
-        return oprGroupMemberMapper.selectGroupMemberById(subscriptionEntity);
+        return groupMemberMapper.selectGroupMemberById(subscriptionEntity);
     }
 
     @Override
@@ -78,12 +78,12 @@ public class GroupMemberServiceImp implements GroupMemberService {
         subscriptionEntity.setGroupName(groupEntity.getName());
         subscriptionEntity.setClusterId(groupEntity.getClusterId());
         //Obtain a member who meets the conditions of a group
-        return oprGroupMemberMapper.selectMember(subscriptionEntity);
+        return groupMemberMapper.selectMember(subscriptionEntity);
     }
 
     @Override
     public List<SubscriptionEntity> selectAllMemberByTopic(SubscriptionEntity subscriptionEntity) {
-        List<SubscriptionEntity> groupMemberEntities = oprGroupMemberMapper.selectMember(subscriptionEntity);
+        List<SubscriptionEntity> groupMemberEntities = groupMemberMapper.selectMember(subscriptionEntity);
         return groupMemberEntities;
     }
 

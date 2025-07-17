@@ -19,6 +19,7 @@
 package org.apache.eventmesh.dashboard.console.mapper.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
 import org.apache.ibatis.annotations.Insert;
@@ -34,6 +35,16 @@ import java.util.List;
  **/
 @Mapper
 public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
+
+
+    @Select("""
+        select *  from `group` where name in(
+            select group_name from group_member where topic_name  = (
+                select topic.topic_name from topic where id=#{id}
+            )
+        )
+    """)
+    List<GroupEntity> queryGroupListByTopicId(TopicEntity topicEntity);
 
     @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND type=0 ")
     GroupEntity selectGroupByNameAndClusterId(GroupEntity groupEntity);
@@ -77,19 +88,24 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
     List<GroupEntity> selectGroup(GroupEntity groupEntity);
 
 
-    @Insert({
-        "<script>",
-        "   INSERT INTO `group` (cluster_id, name, member_count, members, type, state) VALUES ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "   (#{c.clusterId},#{c.name},#{c.memberCount},#{c.members},#{c.type},#{c.state})",
-        "   </foreach>",
-        "</script>"})
+    @Insert("""
+        <script>
+           insert into `group` (organization_id,cluster_id, name, type,own_type)
+            values
+               <foreach collection='list' item='c' index='index' separator=','>
+                (#{c.organizationId},#{c.clusterId},#{c.name},#{c.type},#{c.ownType})
+               </foreach>
+        </script>
+        """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void batchInsert(List<GroupEntity> groupEntities);
 
-    @Insert("INSERT INTO `group` (cluster_id, name, member_count, members, type, state)"
-            + "VALUE (#{clusterId},#{name},#{memberCount},#{members},#{type},#{state}) "
-            + "ON DUPLICATE KEY UPDATE status=1")
+    @Insert("""
+        <script>
+           insert into `group` (organization_id,cluster_id, name, type,own_type)
+            values (#{c.organizationId},#{clusterId},#{name},#{type},#{ownType}) on duplicate key update  status=1
+        </script>
+        """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroup(GroupEntity groupEntity);
 
