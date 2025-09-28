@@ -22,6 +22,7 @@ package org.apache.eventmesh.dashboard.core.metadata.difference;
 import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BodyDataDifference extends AbstractBufferDifference {
 
@@ -29,7 +30,7 @@ public class BodyDataDifference extends AbstractBufferDifference {
     @Override
     void doDifference() {
         List<BaseClusterIdBase> objectList = sourceHandler.getData();
-        if (objectList.isEmpty()) {
+        if (Objects.isNull(objectList) || objectList.isEmpty()) {
             return;
         }
         objectList.forEach((value) -> {

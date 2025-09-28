@@ -17,6 +17,25 @@
 
 package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 
-public class RocketmqGroupGetLatency {
+
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.SubscribeId.FloatValue;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_group_get_latency",
+    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_group_get_latency",
+    comment = "Consumer latency on some topic for one queueConsumer latency on some topic for one queue ")
+public class RocketmqGroupGetLatency extends FloatValue {
+
+
+    private String queueId;
+
+
 
 }

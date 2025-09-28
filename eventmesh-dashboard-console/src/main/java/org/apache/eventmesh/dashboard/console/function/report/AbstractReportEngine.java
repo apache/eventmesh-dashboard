@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.function.report;
 
 import org.apache.eventmesh.dashboard.console.function.report.annotation.AbstractReportMetaHandler;
-import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData;
 import org.apache.eventmesh.dashboard.console.function.report.model.SingleGeneralReportDO;
 
 import org.apache.ibatis.mapping.BoundSql;
@@ -95,12 +95,14 @@ public abstract class AbstractReportEngine implements ReportEngine {
     }
 
     @Override
-    public void createReportHandler(ReportMeta reportMeta, List<Field> fieldList) {
-        AbstractReportMetaHandler abstractReportMetaHandler = this.doCreateReportHandler(reportMeta, fieldList);
-        this.reportMetaHandlerMap.put(reportMeta.reportName(), abstractReportMetaHandler);
+    public void createReportHandler(ReportMetaData reportMetaData, List<Field> fieldList) {
+        AbstractReportMetaHandler abstractReportMetaHandler = this.doCreateReportHandler(reportMetaData, fieldList);
+        abstractReportMetaHandler.setReportMeta(reportMetaData);
+        abstractReportMetaHandler.setFieldList(fieldList);
+        this.reportMetaHandlerMap.put(reportMetaData.getReportName(), abstractReportMetaHandler);
     }
 
-    protected abstract AbstractReportMetaHandler doCreateReportHandler(ReportMeta reportMeta, List<Field> fieldList);
+    protected abstract AbstractReportMetaHandler doCreateReportHandler(ReportMetaData reportMetaData, List<Field> fieldList);
 
     protected String buildSql(String reportName, String type, Object value) {
         SqlSource sqlSource = this.buildSqlSource(reportName, type);

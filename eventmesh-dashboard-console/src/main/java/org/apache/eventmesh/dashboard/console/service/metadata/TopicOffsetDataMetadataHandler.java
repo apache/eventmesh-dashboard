@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.service.metadata;
 
 import org.apache.eventmesh.dashboard.console.entity.message.TopicOffsetEntity;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -31,9 +32,9 @@ public class TopicOffsetDataMetadataHandler extends AbstractDBDataMetadataHandle
 
 
     @Override
-    public void handleAll(List<TopicOffsetEntity> addData, List<TopicOffsetEntity> updateData, List<TopicOffsetEntity> deleteData) {
+    public void handleAll(Collection<TopicOffsetEntity> allData, List<TopicOffsetEntity> addData, List<TopicOffsetEntity> updateData, List<TopicOffsetEntity> deleteData) {
 
-
+        System.out.println("TopicOffsetDataMetadataHandler handleAll");
     }
 
 

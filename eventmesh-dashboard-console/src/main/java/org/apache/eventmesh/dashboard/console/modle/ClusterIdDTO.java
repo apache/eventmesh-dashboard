@@ -18,6 +18,8 @@
 
 package org.apache.eventmesh.dashboard.console.modle;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -29,6 +31,8 @@ public class ClusterIdDTO extends OrganizationIdDTO {
 
     @NotNull
     private Long clusterId;
+
+    private ClusterType clusterType;
 
 
 

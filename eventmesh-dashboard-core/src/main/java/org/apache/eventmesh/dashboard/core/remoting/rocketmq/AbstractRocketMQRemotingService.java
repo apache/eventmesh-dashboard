@@ -18,6 +18,8 @@
 
 package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
 
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMapper;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.core.remoting.AbstractRemotingService;
 
 import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
@@ -25,6 +27,7 @@ import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
 /**
  * rocketmq 其他不同的是。 以nameservier 为主。那么可以多集群。一个eventmesh 可以操作多个集群
  */
+@RemotingServiceMapper(clusterType = ClusterType.STORAGE_ROCKETMQ)
 public abstract class AbstractRocketMQRemotingService extends AbstractRemotingService<DefaultMQAdminExt> {
 
 

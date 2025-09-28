@@ -140,26 +140,13 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
         healthCheckResultMapper.batchUpdate(healthCheckResultEntityList);
     }
 
+    @Deprecated
     @Override
     public void batchUpdateCheckResultByClusterIdAndTypeAndTypeId(List<HealthCheckResultEntity> healthCheckResultEntityList) {
         if (healthCheckResultEntityList.isEmpty()) {
             return;
         }
-        List<HealthCheckResultEntity> entitiesNeedToBeUpdate = healthCheckResultMapper.getIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(
-            healthCheckResultEntityList);
-        if (entitiesNeedToBeUpdate.isEmpty()) {
-            return;
-        }
-        entitiesNeedToBeUpdate.forEach(entity -> {
-            healthCheckResultEntityList.forEach(updateEntity -> {
-                if (entity.getClusterId().equals(updateEntity.getClusterId()) && entity.getType().equals(updateEntity.getType())
-                    && entity.getTypeId().equals(updateEntity.getTypeId())) {
-                    entity.setStatus(updateEntity.getStatus());
-                    entity.setResultDesc(updateEntity.getResultDesc());
-                }
-            });
-        });
-        healthCheckResultMapper.batchUpdate(entitiesNeedToBeUpdate);
+        healthCheckResultMapper.batchUpdate(null);
     }
 
 

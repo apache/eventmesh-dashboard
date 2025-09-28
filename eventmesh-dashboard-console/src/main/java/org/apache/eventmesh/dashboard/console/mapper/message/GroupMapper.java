@@ -46,6 +46,24 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
     """)
     List<GroupEntity> queryGroupListByTopicId(TopicEntity topicEntity);
 
+    @Select("""
+        <script>
+            select * from group where
+                <if test='clusterId!=null'>
+                    cluster_id =#{clusterId}
+                </if>
+                <if test='runtimeId != null'>
+                    and runtime_id = #{runtimeId}
+                </if>
+                <if test='topicName != null'>
+                    and topic_name like concat('%' , #{topicName},'%')
+                </if>
+        </script>
+        """)
+    List<GroupEntity> queryClusterOrRuntimeGroupByClusterId(TopicEntity topicEntity);
+
+
+
     @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND type=0 ")
     GroupEntity selectGroupByNameAndClusterId(GroupEntity groupEntity);
 

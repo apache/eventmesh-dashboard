@@ -120,7 +120,7 @@ public class DefaultMetadataSyncResultHandler implements MetadataSyncResultHandl
     }
 
     /**
-     * 分为正常同步，校验校验 ruguo
+     * 分为正常同步，校验校验
      *
      * @param metadataSyncResult
      */

@@ -24,17 +24,22 @@ import org.apache.eventmesh.dashboard.console.service.metadata.ClientDataMetadat
 import org.apache.eventmesh.dashboard.console.service.metadata.ConfigDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.ConsumeOffsetDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.GroupDataMetadataHandler;
+import org.apache.eventmesh.dashboard.console.service.metadata.GroupMemberDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.RuntimeDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.TopicDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.TopicOffsetDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ConfigConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ConsumeOffsetConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.GroupConvertMetaData;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.GroupMemberConvertMetaData;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.NetConnectionMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.RuntimeConvertMetaData;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.TopicConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.TopicOffsetConvertMetaData;
 import org.apache.eventmesh.dashboard.service.remoting.ClientRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.ConfigRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.ConsumeOffsetRemotingService;
+import org.apache.eventmesh.dashboard.service.remoting.GroupMemberRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.GroupRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.MetaRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.TopicOffsetRemotingService;
@@ -49,7 +54,7 @@ public enum DatabaseAndMetadataType {
         .metadataHandlerClass(MetaRemotingService.class).convertMetaData(RuntimeConvertMetaData.INSTANCE).build()),
 
     TOPIC(DatabaseAndMetadataMapper.builder().metaType(MetadataType.TOPIC).databaseHandlerClass(TopicDataMetadataHandler.class)
-        .metadataHandlerClass(TopicRemotingService.class).convertMetaData(RuntimeConvertMetaData.INSTANCE).build()),
+        .metadataHandlerClass(TopicRemotingService.class).convertMetaData(TopicConvertMetaData.INSTANCE).build()),
 
 
     TOPIC_OFFSET(DatabaseAndMetadataMapper.builder().metaType(MetadataType.TOPIC_OFFSET).databaseHandlerClass(TopicOffsetDataMetadataHandler.class)
@@ -62,11 +67,18 @@ public enum DatabaseAndMetadataType {
     GROUP(DatabaseAndMetadataMapper.builder().metaType(MetadataType.GROUP).databaseHandlerClass(GroupDataMetadataHandler.class)
         .metadataHandlerClass(GroupRemotingService.class).convertMetaData(GroupConvertMetaData.INSTANCE).build()),
 
+    GROUP_MEMBER(DatabaseAndMetadataMapper.builder().metaType(MetadataType.GROUP_MEMBER).databaseHandlerClass(GroupMemberDataMetadataHandler.class)
+        .metadataHandlerClass(GroupMemberRemotingService.class).convertMetaData(GroupMemberConvertMetaData.INSTANCE).build()),
+
     CONFIG(DatabaseAndMetadataMapper.builder().metaType(MetadataType.CONFIG).databaseHandlerClass(ConfigDataMetadataHandler.class)
         .metadataHandlerClass(ConfigRemotingService.class).convertMetaData(ConfigConvertMetaData.INSTANCE).build()),
 
     CLIENT(DatabaseAndMetadataMapper.builder().metaType(MetadataType.CLIENT).databaseHandlerClass(ClientDataMetadataHandler.class)
         .metadataHandlerClass(ClientRemotingService.class).convertMetaData(ConfigConvertMetaData.INSTANCE).build()),
+
+    NET_CONNECT(DatabaseAndMetadataMapper.builder().metaType(MetadataType.NET_CONNECT).databaseHandlerClass(ClientDataMetadataHandler.class)
+        .metadataHandlerClass(ClientRemotingService.class).convertMetaData(NetConnectionMetaData.INSTANCE).build()),
+
     ;
 
 

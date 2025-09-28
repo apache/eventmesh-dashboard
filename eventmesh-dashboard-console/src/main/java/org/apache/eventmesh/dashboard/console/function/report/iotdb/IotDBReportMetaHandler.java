@@ -33,7 +33,7 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
     public String insert() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("insert into ");
-        stringBuilder.append(this.reportMeta.tableName());
+        stringBuilder.append(this.reportMeta.getTableName());
         stringBuilder.append(" (");
         this.fieldList.forEach(field -> {
             String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, field.getName());
@@ -54,6 +54,7 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
         return stringBuilder.toString();
     }
 
+    @Override
     public String query(String type) {
         Map<String, Field> map = new HashMap<>();
         this.fieldList.forEach(field -> {
@@ -91,7 +92,7 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
             }
         });
         stringBuilder.append("\r\n  </trim>");
-        stringBuilder.append("\r\nfrom ").append(this.reportMeta.tableName()).append("\r\n where \r\n")
+        stringBuilder.append("\r\nfrom ").append(this.reportMeta.getTableName()).append("\r\n where \r\n")
             .append(" time &gt; ${startTime} and time &lt; ${endTime}  \r\n");
         this.fieldList.forEach(field -> {
             String filedName = field.getName();
@@ -107,7 +108,7 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
             String filedName = field.getName();
             String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
             if (filedName.endsWith("Id")) {
-                stringBuilder.append("\r\n    ");
+                stringBuilder.append(AbstractReportMetaHandler.lineAndTabString);
                 stringBuilder.append("<if test='_parameter.").append(filedName).append("!=null'>,")
                     .append(key).append(" , ").append(key.replace("id", "name"));
                 String typeField = filedName.replace("Id","Type");
@@ -124,7 +125,7 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
     public String createTable() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("create table ");
-        stringBuilder.append(this.reportMeta.tableName());
+        stringBuilder.append(this.reportMeta.getTableName());
         stringBuilder.append(" (\r\n    ");
         this.fieldList.forEach(field -> {
             String filedName = field.getName();
@@ -153,7 +154,7 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
             stringBuilder.append("\r\n    ");
         });
         stringBuilder.deleteCharAt(stringBuilder.length() - 7);
-        stringBuilder.append(")comment ' ").append(reportMeta.comment()).append("'");
+        stringBuilder.append(")comment ' ").append(reportMeta.getComment()).append("'");
         return stringBuilder.toString();
     }
 }

@@ -24,6 +24,7 @@ import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConnectionMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConsumeOffsetMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.GroupMemberMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
@@ -43,16 +44,20 @@ public enum MetadataType {
 
     TOPIC(TopicMetadata.class),
 
-    GROUP(GroupMetadata.class),
+    GROUP(GroupMetadata.class,true),
 
+    @Deprecated
     TOPIC_OFFSET(TopicOffsetMetadata.class, true),
 
+    @Deprecated
     CONSUME_OFFSET(ConsumeOffsetMetadata.class, true),
 
-    SUBSCRIBER(GroupMetadata.class),
+    GROUP_MEMBER(GroupMemberMetadata.class,true),
 
+    @Deprecated
     CLIENT(ClientMetadata.class, true),
 
+    @Deprecated
     NET_CONNECT(ConnectionMetadata.class, true),
 
     USER(ConnectionMetadata.class),

@@ -22,11 +22,14 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.common.enums.SyncErrorType;
+import org.apache.eventmesh.dashboard.common.enums.SyncType;
 import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
 
 import lombok.Data;
 
-
+/**
+ * cluster or runtime 每次同步行为记录
+ */
 @Data
 public class MetadataSyncResult {
 
@@ -41,6 +44,8 @@ public class MetadataSyncResult {
     private SyncErrorType syncErrorType;
 
     private FirstToWhom firstToWhom = FirstToWhom.NOT;
+
+    private SyncType syncType;
 
     private boolean success = false;
 

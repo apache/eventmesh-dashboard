@@ -25,6 +25,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public enum HealthCheckTypeEnum {
+
     UNKNOWN(0, HealthCheckTypeConstant.HEALTH_CHECK_TYPE_UNKNOWN),
 
     PROCESS(0, "检查进场"),
@@ -37,7 +38,7 @@ public enum HealthCheckTypeEnum {
     TOPIC(3, HealthCheckTypeConstant.HEALTH_CHECK_TYPE_TOPIC),
 
 
-    CLUSTER(1, HealthCheckTypeConstant.HEALTH_CHECK_TYPE_CLUSTER),
+    CLUSTER(5, HealthCheckTypeConstant.HEALTH_CHECK_TYPE_CLUSTER),
 
     RUNTIME(2, HealthCheckTypeConstant.HEALTH_CHECK_TYPE_RUNTIME),
 
@@ -46,6 +47,7 @@ public enum HealthCheckTypeEnum {
 
     @Getter
     private final Integer number;
+
     @Getter
     private final String name;
 

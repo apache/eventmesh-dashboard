@@ -23,5 +23,5 @@ import lombok.Data;
 @Data
 public class OrganizationIdDTO {
 
-    private String organizationId;
+    private Long organizationId;
 }

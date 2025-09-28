@@ -25,7 +25,9 @@ import org.apache.eventmesh.dashboard.console.function.health.callback.HealthChe
 import org.apache.eventmesh.dashboard.console.function.health.check.AbstractHealthCheckService;
 import org.apache.eventmesh.dashboard.core.function.SDK.wrapper.NacosSDKWrapper;
 
-@HealthCheckType(clusterType = {ClusterType.STORAGE_JVM_BROKER}, healthType = HealthCheckTypeEnum.PING)
+@HealthCheckType(clusterType = {ClusterType.STORAGE_JVM_BROKER,ClusterType.STORAGE_JVM_META,
+    ClusterType.EVENTMESH_JVM_META,ClusterType.EVENTMESH_JVM_RUNTIME},
+    healthType = HealthCheckTypeEnum.PING)
 public class JVMCheck extends AbstractHealthCheckService<NacosSDKWrapper> {
 
     @Override

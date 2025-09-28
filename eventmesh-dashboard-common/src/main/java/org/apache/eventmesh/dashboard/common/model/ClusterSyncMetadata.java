@@ -50,11 +50,11 @@ public class ClusterSyncMetadata {
 
         META.add(MetadataType.RUNTIME);
 
-        STORAGE.add(MetadataType.CONFIG);
+        //STORAGE.add(MetadataType.CONFIG);
         STORAGE.add(MetadataType.TOPIC);
-        STORAGE.add(MetadataType.GROUP);
-        STORAGE.add(MetadataType.NET_CONNECT);
-        STORAGE.add(MetadataType.SUBSCRIBER);
+        //STORAGE.add(MetadataType.GROUP);
+        //STORAGE.add(MetadataType.NET_CONNECT);
+        //STORAGE.add(MetadataType.GROUP_MEMBER);
 
         AUTH.add(MetadataType.USER);
         AUTH.add(MetadataType.ACL);

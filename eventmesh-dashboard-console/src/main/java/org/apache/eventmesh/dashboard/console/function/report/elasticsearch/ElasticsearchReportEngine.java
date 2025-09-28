@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.report.elasticsearch;
 
 import org.apache.eventmesh.dashboard.console.function.report.AbstractReportEngine;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.AbstractReportMetaHandler;
-import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData;
 import org.apache.eventmesh.dashboard.console.function.report.model.SingleGeneralReportDO;
 
 import java.lang.reflect.Field;
@@ -36,7 +36,7 @@ public class ElasticsearchReportEngine extends AbstractReportEngine {
     }
 
     @Override
-    protected AbstractReportMetaHandler doCreateReportHandler(ReportMeta reportMeta, List<Field> fieldList) {
+    protected AbstractReportMetaHandler doCreateReportHandler(ReportMetaData reportMetaData, List<Field> fieldList) {
         return null;
     }
 

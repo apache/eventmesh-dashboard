@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.domain;
 
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.modle.DO.domain.clusterAndRuntimeDomain.ClusterAndRuntimeOfRelationshipDO;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public interface ClusterAndRuntimeDomain {
 
 
 
+    ClusterAndRuntimeOfRelationshipDO getAllClusterAndRuntimeByCluster(ClusterEntity clusterEntity);
 
 
 }

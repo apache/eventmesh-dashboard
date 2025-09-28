@@ -21,6 +21,7 @@ package org.apache.eventmesh.dashboard.console.service.metadata;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class TopicDataMetadataHandler extends AbstractDBDataMetadataHandler<Topi
     private TopicMapper topicMapper;
 
     @Override
-    public void handleAll(List<TopicEntity> addData, List<TopicEntity> updateData, List<TopicEntity> deleteData) {
+    public void handleAll(Collection<TopicEntity> allData, List<TopicEntity> addData, List<TopicEntity> updateData, List<TopicEntity> deleteData) {
         topicMapper.batchInsert(addData);
 
     }
@@ -43,7 +44,6 @@ public class TopicDataMetadataHandler extends AbstractDBDataMetadataHandler<Topi
 
     @Override
     List<TopicEntity> doGetData() {
-        TopicEntity topicEntity = this.getEntity();
-        return List.of();
+        return syncDataHandlerMapper.syncGet(this.getEntity());
     }
 }

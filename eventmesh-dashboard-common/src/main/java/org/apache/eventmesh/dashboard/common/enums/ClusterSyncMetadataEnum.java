@@ -41,6 +41,12 @@ public enum ClusterSyncMetadataEnum {
 
     EVENTMESH_META_NACOS(ClusterSyncMetadata.builder().clusterFramework(ClusterFramework.AP).metadataTypeList(ClusterSyncMetadata.META).build()),
 
+    EVENTMESH_JVM_RUNTIME(EVENTMESH_RUNTIME),
+
+    EVENTMESH_JVM_META(EVENTMESH_META_NACOS),
+
+
+
     STORAGE_ROCKETMQ_NAMESERVER(
         ClusterSyncMetadata.builder().clusterFramework(ClusterFramework.AP).metadataTypeList(ClusterSyncMetadata.META).build()),
 
@@ -59,8 +65,14 @@ public enum ClusterSyncMetadataEnum {
             .metadataTypeList(ListWrapper.build().add(ClusterSyncMetadata.STORAGE).add(ClusterSyncMetadata.AUTH).list)
             .replicationDimension(ReplicationDimension.TOPIC).build()),
 
+
+    STORAGE_JVM_META(EVENTMESH_META_NACOS),
+
     STORAGE_JVM_BROKER(
         ClusterSyncMetadata.builder().clusterFramework(ClusterFramework.MAIN_SLAVE).metadataTypeList(ClusterSyncMetadata.TEST_ONE).build()),
+
+
+    STORAGE_JVM_CAP_META(STORAGE_KAFKA_ZK),
 
     STORAGE_JVM_CAP_BROKER(
         ClusterSyncMetadata.builder().clusterFramework(ClusterFramework.CAP).metadataTypeList(ClusterSyncMetadata.STORAGE)
@@ -109,5 +121,7 @@ public enum ClusterSyncMetadataEnum {
         this.clusterSyncMetadata = clusterSyncMetadata;
     }
 
-
+    ClusterSyncMetadataEnum(ClusterSyncMetadataEnum clusterSyncMetadataEnum) {
+        this.clusterSyncMetadata = clusterSyncMetadataEnum.clusterSyncMetadata;
+    }
 }

@@ -18,14 +18,15 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
-import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
+import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GetTopics2Request extends Global2Request {
+public class GetTopics2Request extends AbstractGlobal2Request<TopicMetadata> {
 
     private String runtimeHost;
 

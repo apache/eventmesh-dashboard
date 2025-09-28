@@ -37,15 +37,13 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "HealthCheckResultEntity", description = "Health check result entity")
 public class HealthCheckResultEntity extends BaseRuntimeIdEntity {
 
-    private static final long serialVersionUID = -7350585209577598040L;
-
     private ClusterType clusterType;
 
     private String protocol;
 
-    private String interfaces;
+    private String address;
 
-    private HealthCheckTypeEnum healthCheckTypeEnum;
+    private HealthCheckTypeEnum healthCheckType;
 
     private HealthCheckStatus result;
 

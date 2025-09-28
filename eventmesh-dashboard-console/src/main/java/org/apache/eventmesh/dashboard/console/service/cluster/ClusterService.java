@@ -20,8 +20,12 @@ package org.apache.eventmesh.dashboard.console.service.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.modle.QO.cluster.QueryRelationClusterByClusterIdListAndType;
 import org.apache.eventmesh.dashboard.console.modle.vo.cluster.GetClusterBaseMessageVO;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Deque;
 import java.util.List;
@@ -37,10 +41,17 @@ public interface ClusterService {
 
     ClusterEntity queryClusterById(ClusterEntity clusterEntity);
 
+    List<ClusterEntity> queryClusterListByClusterList(List<ClusterEntity> clusterEntityList);
+
     List<ClusterEntity> queryClusterByOrganizationIdAndType(ClusterEntity clusterEntity);
 
 
     List<ClusterEntity> queryRelationClusterByClusterIdAndType(ClusterEntity clusterEntity);
+
+    List<ClusterEntity> queryRelationClusterByClusterIdListAndType(
+        QueryRelationClusterByClusterIdListAndType queryRelationClusterByClusterIdListAndType);
+
+    List<ClusterEntity> queryStorageClusterByEventMeshId(ClusterEntity clusterEntity);
 
     ClusterEntity queryRelationshipClusterByClusterIdAndType(ClusterEntity clusterEntity);
 
@@ -64,6 +75,12 @@ public interface ClusterService {
     void insertCluster(ClusterEntity cluster);
 
     void insertClusterAndRelationship(ClusterEntity cluster, ClusterRelationshipEntity clusterRelationshipEntity);
+
+    void createTheEntireCluster(ClusterEntity clusterEntity, ClusterRelationshipEntity clusterRelationshipEntity,List<RuntimeEntity> runtimeEntityList);
+
+
+    Long createTheEventCluster(List<ClusterEntity> clusterEntityList,List<Pair<ClusterEntity,ClusterEntity>> clusterListRelationshipList,
+        List<Pair<ClusterEntity,List<RuntimeEntity>>> clusterAndRuntimeList );
 
     List<ClusterEntity> selectAllCluster();
 

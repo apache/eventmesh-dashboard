@@ -22,9 +22,13 @@ import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.HashMap;
 import java.util.List;
 
-public class BothDifference extends AbstractBothDifference {
+/**
+ * 双方直接求差
+ */
+public class BothNotCacheDifference extends AbstractBothDifference {
 
     @Override
     void doDifference() {
@@ -38,13 +42,22 @@ public class BothDifference extends AbstractBothDifference {
              *
              */
             this.deleteData.addAll(targetList);
-        } else if (targetList.isEmpty()) {
+            return;
+        }
+        if (targetList.isEmpty()) {
             // TODO 全量加入缓存
             this.insertData.addAll(sourcetList);
             targetList.forEach((value) -> {
                 this.allData.put(value.nodeUnique(), value);
             });
+            return;
         }
-        this.allData = this.difference(sourcetList, targetList);
+        sourcetList.forEach(value -> {
+            this.allData.put(value.nodeUnique(), value);
+        });
+        if (CollectionUtils.isEmpty(sourcetList)) {
+            return;
+        }
+        this.basedOnSourceDifference(sourcetList, new HashMap<>(this.allData));
     }
 }

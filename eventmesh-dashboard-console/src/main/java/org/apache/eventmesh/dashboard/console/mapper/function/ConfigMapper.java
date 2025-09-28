@@ -57,7 +57,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
     @Select("SELECT * FROM config WHERE status=1 AND is_default=0")
     List<ConfigEntity> selectAll();
 
-    @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId}")
+    @Select("select * from config where instance_type=#{instanceType} and instance_id=#{instanceId}")
     List<ConfigEntity> selectConfigsByInstance(ConfigEntity configEntity);
 
     @Insert("""
@@ -67,7 +67,13 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
                                start_version,end_version, description, edit, is_default)
            values
            <foreach collection='list' item='c' index='index' separator=','>
-               (#{c.organizationId},#{c.clusterId}, #{c.instanceType}, #{c.instanceId},
+               (#{c.organizationId},#{c.clusterId}, #{c.instanceType},
+                <if test='c.instanceId !=null'>
+                    #{c.instanceId},
+                </if>
+                <if test='c.instanceId ==null'>
+                    0,
+                </if>
                 #{c.configType},#{c.configName},#{c.configValue},#{c.configValueType},#{c.configValueRange},
                 #{c.startVersion},#{c.endVersion},#{c.description},#{c.edit},#{c.isDefault})
            </foreach>

@@ -29,6 +29,8 @@ mybatis:
   configuration:
     useGeneratedKeys: true
     mapUnderscoreToCamelCase: true
+    localCacheScope: STATEMENT  # 关闭一级缓存
+    cacheEnabled: false         # 关闭二级缓存
 
 
 pagehelper:

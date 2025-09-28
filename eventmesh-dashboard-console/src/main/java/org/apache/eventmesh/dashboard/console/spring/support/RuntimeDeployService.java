@@ -59,7 +59,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -159,7 +158,7 @@ public class RuntimeDeployService {
         });
 
 
-    @Scheduled(initialDelay = 100, fixedDelay = 100)
+    //@Scheduled(initialDelay = 100, fixedDelay = 100)
     public void deploy() {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setUpdateTime(LocalDateTime.now().minusMinutes(500));
@@ -184,7 +183,7 @@ public class RuntimeDeployService {
             case PAUSE_ING, PAUSE_FULL_WAIT -> {
                 return new RuntimePauseDeploy();
             }
-            case UNINSTALL -> {
+            case UNINSTALL,UNINSTALL_ING -> {
                 return new RuntimeUninstallDeploy();
             }
             default -> {

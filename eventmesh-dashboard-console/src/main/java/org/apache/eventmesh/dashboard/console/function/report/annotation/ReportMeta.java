@@ -20,8 +20,11 @@ package org.apache.eventmesh.dashboard.console.function.report.annotation;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *  id 为 tag
@@ -30,7 +33,9 @@ import java.lang.annotation.RetentionPolicy;
  *
  *
  */
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface ReportMeta {
 
     ClusterType clusterType();
@@ -41,8 +46,10 @@ public @interface ReportMeta {
 
     ReportViewType[] reportViewTypes() default {};
 
-    String tableName();
+    String tableName() default  "";
 
     String comment();
+
+    String[] alias() default {};
 
 }

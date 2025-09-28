@@ -28,6 +28,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseRuntimeIdEntit
 
     private T baseRuntimeIdBase;
 
-    private SyncDataHandlerMapper<T> syncDataHandlerMapper;
+    protected SyncDataHandlerMapper<T> syncDataHandlerMapper;
 
     /**
      * TODO
@@ -95,6 +96,7 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseRuntimeIdEntit
 
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = (AbstractApplicationContext) applicationContext;
     }
@@ -103,10 +105,12 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseRuntimeIdEntit
         return this.baseRuntimeIdBase;
     }
 
-    public void handleAll(List<T> addData, List<T> updateData, List<T> deleteData) {
+    @Override
+    public void handleAll(Collection<T> allData, List<T> addData, List<T> updateData, List<T> deleteData) {
 
     }
 
+    @Override
     public List<T> getData() {
         LocalDateTime date = LocalDateTime.now();
         try {

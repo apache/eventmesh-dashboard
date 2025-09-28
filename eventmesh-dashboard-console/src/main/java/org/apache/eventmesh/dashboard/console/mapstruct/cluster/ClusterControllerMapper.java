@@ -23,6 +23,7 @@ import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.modle.cluster.CreateClusterBySimpleDataDTO;
 import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.QueryClusterByOrganizationIdAndTypeDTO;
 import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.QueryRelationClusterByClusterIdAndTypeDTO;
+import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateClusterDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -43,5 +44,7 @@ public interface ClusterControllerMapper {
     ClusterEntity createCluster(CreateClusterBySimpleDataDTO createClusterBySimpleDataDTO);
 
     ClusterEntity toClusterEntity(ClusterIdDTO clusterIdDTO);
+
+    ClusterEntity createClusterDTO(CreateClusterDTO createClusterDTO);
 
 }

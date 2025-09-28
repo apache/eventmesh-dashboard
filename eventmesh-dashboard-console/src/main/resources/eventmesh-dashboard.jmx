@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.1.1 r1855137">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="测试计划" enabled="true">
-      <stringProp name="TestPlan.comments"></stringProp>
-      <boolProp name="TestPlan.functional_mode">false</boolProp>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="测试计划">
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
-      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
-      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
-      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
     </TestPlan>
     <hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="线程组" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="线程组">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="循环控制器" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="循环控制器">
           <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
@@ -58,9 +54,15 @@
           </collectionProp>
         </HeaderManager>
         <hashTree/>
-        <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Runtime " enabled="true"/>
+        <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Runtime " enabled="false"/>
         <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="通过 clusterId 查询runtime" enabled="false">
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">${path}/runtime/queryRuntimeListByClusterId</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
@@ -73,53 +75,39 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">${path}/runtime/queryRuntimeListByClusterId</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="通过 runtimeId 查询runtime" enabled="true">
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">${path}/runtime/queryRuntimeListById</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-&#xd;
+1&#xd;
 }</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">${path}/runtime/queryRuntimeListById</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree/>
         </hashTree>
         <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="cluster" enabled="false"/>
         <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="查询组织下 某个 cluster type 的 cluster" enabled="true">
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">${path}/user/cluster/createEventMeshClusterByOnlyData</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
@@ -133,22 +121,15 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">${path}/user/cluster/createEventMeshClusterByOnlyData</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="查询组织下 某个 cluster type 的 cluster" enabled="true">
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">${path}/user/cluster/queryClusterByOrganizationIdAndType</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
@@ -162,25 +143,18 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">${path}/user/cluster/queryClusterByOrganizationIdAndType</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree/>
         </hashTree>
         <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="clusterCycle" enabled="false"/>
         <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="创建 eventmesh 集群" enabled="true">
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">${path}/organization/clusterCycleDeploy/createEventMeshClusterByOnlyData</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
@@ -194,23 +168,33 @@
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="HTTPSampler.domain">${host}</stringProp>
-            <stringProp name="HTTPSampler.port">${port}</stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">${path}/organization/clusterCycleDeploy/createEventMeshClusterByOnlyData</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree/>
         </hashTree>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="察看结果树" enabled="true">
+        <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="active" enabled="true"/>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="创建 eventmesh 空间">
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">${path}/organization/activeCreate/createTheEventCluster</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;eventClusterList&quot;:{&quot;brokerClusterList&quot;:{&quot;createClusterDTO&quot;:{&quot;clusterType&quot;:&quot;EVENTMESH_JVM_RUNTIME&quot;,&quot;description&quot;:&quot;event-cluster&quot;,&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-137575045884800&quot;,&quot;trusteeshipArrangeType&quot;:&quot;TRUSTEESHIP&quot;},&quot;createRuntimeDTOList&quot;:[{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.0&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-0-137575048249801&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.1&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-1-137575051468104&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.2&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-2-137575051477618&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.3&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-3-137575051485038&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.4&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-4-137575051492158&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.5&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-5-137575051499035&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.6&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-6-137575051505757&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.7&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-7-137575051535047&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.8&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-8-137575051542058&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.9&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-9-137575051548698&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.10&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_RUNTIME-10-137575051555483&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;}]},&quot;createClusterDTO&quot;:{&quot;clusterType&quot;:&quot;EVENTMESH_JVM_CLUSTER&quot;,&quot;description&quot;:&quot;event-cluster&quot;,&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_CLUSTER-137575042584323&quot;,&quot;trusteeshipArrangeType&quot;:&quot;TRUSTEESHIP&quot;},&quot;metaClusterList&quot;:{&quot;createClusterDTO&quot;:{&quot;clusterType&quot;:&quot;EVENTMESH_JVM_META&quot;,&quot;description&quot;:&quot;event-cluster&quot;,&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-137575051578421&quot;,&quot;trusteeshipArrangeType&quot;:&quot;TRUSTEESHIP&quot;},&quot;createRuntimeDTOList&quot;:[{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.0&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-0-137575051588875&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.1&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-1-137575051595971&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.2&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-2-137575051602588&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.3&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-3-137575051609174&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.4&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-4-137575051615627&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.5&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-5-137575051623030&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.6&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-6-137575051629664&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.7&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-7-137575051636170&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.8&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-8-137575051642697&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.9&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-9-137575051649157&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.10&quot;,&quot;name&quot;:&quot;EVENTMESH_JVM_META-10-137575051655875&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;}]}},&quot;eventSpace&quot;:{&quot;clusterType&quot;:&quot;EVENTMESH&quot;,&quot;description&quot;:&quot;event-space&quot;,&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;name&quot;:&quot;event-space-137575040073503&quot;,&quot;organizationId&quot;:1,&quot;trusteeshipArrangeType&quot;:&quot;NOT&quot;},&quot;monomerStorageClusters&quot;:{&quot;brokerClusterList&quot;:{&quot;createClusterDTO&quot;:{&quot;clusterType&quot;:&quot;STORAGE_JVM_BROKER&quot;,&quot;description&quot;:&quot;event-cluster&quot;,&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-137575057533044&quot;,&quot;trusteeshipArrangeType&quot;:&quot;TRUSTEESHIP&quot;},&quot;createRuntimeDTOList&quot;:[{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.0&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-0-137575057548000&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.1&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-1-137575057559813&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.2&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-2-137575057566975&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.3&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-3-137575057573438&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.4&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-4-137575057579674&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.5&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-5-137575057585939&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.6&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-6-137575057591990&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.7&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-7-137575057598090&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.8&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-8-137575057604031&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.9&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-9-137575057618428&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.10&quot;,&quot;name&quot;:&quot;STORAGE_JVM_BROKER-10-137575057625529&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;}]},&quot;createClusterDTO&quot;:{&quot;clusterType&quot;:&quot;STORAGE_JVM_CLUSTER&quot;,&quot;description&quot;:&quot;event-cluster&quot;,&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;name&quot;:&quot;STORAGE_JVM_CLUSTER-137575057491617&quot;,&quot;trusteeshipArrangeType&quot;:&quot;TRUSTEESHIP&quot;},&quot;metaClusterList&quot;:{&quot;createClusterDTO&quot;:{&quot;clusterType&quot;:&quot;STORAGE_JVM_META&quot;,&quot;description&quot;:&quot;event-cluster&quot;,&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-137575057634046&quot;,&quot;trusteeshipArrangeType&quot;:&quot;TRUSTEESHIP&quot;},&quot;createRuntimeDTOList&quot;:[{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.0&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-0-137575057640598&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.1&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-1-137575057650703&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.2&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-2-137575057657306&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.3&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-3-137575057663745&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.4&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-4-137575057669912&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.5&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-5-137575057676090&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.6&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-6-137575057682335&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.7&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-7-137575057688831&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.8&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-8-137575057695014&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.9&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-9-137575057701952&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;},{&quot;firstToWhom&quot;:&quot;DASHBOARD&quot;,&quot;host&quot;:&quot;127.0.0.10&quot;,&quot;name&quot;:&quot;STORAGE_JVM_META-10-137575057708191&quot;,&quot;port&quot;:8080,&quot;rack&quot;:&quot;&quot;,&quot;replicationType&quot;:&quot;NOT&quot;,&quot;trusteeshipArrangeType&quot;:&quot;RUNTIME&quot;}]}},&quot;organizationId&quot;:1}&#xd;
+</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="查看结果树" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>

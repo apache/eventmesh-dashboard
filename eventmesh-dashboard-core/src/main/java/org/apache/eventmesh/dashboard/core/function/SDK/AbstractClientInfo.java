@@ -44,11 +44,11 @@ public abstract class AbstractClientInfo<T> {
     }
 
     public CreateSDKConfig getCreateSDKConfig() {
-        return this.getCreateSDKConfig();
+        return this.clientWrapper.getConfig();
     }
 
     public BaseSyncBase getBaseSyncBase() {
-        return this.getBaseSyncBase();
+        return this.clientWrapper.getBaseSyncBase();
     }
 
 

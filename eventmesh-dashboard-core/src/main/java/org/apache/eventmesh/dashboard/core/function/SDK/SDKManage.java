@@ -144,7 +144,11 @@ public class SDKManage {
     }
 
     /**
-     * Create SDK client through (SDKTypeEnum) clientTypeEnum, (CreateSDKConfig) config.
+     *  cluster 模式下，有问题？
+     *  TODO 去重。 如果去重
+     *       1. 只识别 地址？
+     *       2. 识别 整个 CreateSDKConfig
+     *
      */
     public <T> T createClient(SDKTypeEnum sdkTypeEnum, BaseSyncBase baseSyncBase, CreateSDKConfig config, ClusterType clusterType) {
 

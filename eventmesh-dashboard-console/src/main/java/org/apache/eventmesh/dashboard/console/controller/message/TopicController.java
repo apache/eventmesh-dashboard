@@ -61,10 +61,6 @@ public class TopicController {
     @Autowired
     private ClusterMetadataDomain clusterMetadataDomain;
 
-    /**
-     * @param getTopicListDTO
-     * @return
-     */
     @PostMapping("/queryTopicListByClusterId")
     public List<TopicEntity> queryTopicListByClusterId(@Validated @RequestBody GetTopicListDTO getTopicListDTO) {
         // cap 的直接查询
@@ -177,12 +173,7 @@ public class TopicController {
         this.topicService.batchInsert(createTopicList);
     }
 
-    /**
-     * TODO delete
-     *
-     * @param topicId
-     * @return
-     */
+    @Deprecated
     @GetMapping("/cluster/topic/getTopicDetailGroups")
     public List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId) {
         return topicService.getTopicDetailGroups(topicId);

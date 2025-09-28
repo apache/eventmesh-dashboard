@@ -19,6 +19,7 @@
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
 
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
@@ -125,6 +126,11 @@ public class RuntimeServiceImpl implements RuntimeService {
 
 
     @Override
+    public List<RuntimeEntity> queryRuntimeToFrontByClusterIdList(List<ClusterEntity> clusterEntityList) {
+        return this.runtimeMapper.queryRuntimeToFrontByClusterIdList(clusterEntityList);
+    }
+
+    @Override
     public void batchInsert(List<RuntimeEntity> runtimeEntities) {
         runtimeMapper.batchInsert(runtimeEntities);
     }
@@ -133,6 +139,17 @@ public class RuntimeServiceImpl implements RuntimeService {
     public Integer batchUpdate(List<RuntimeEntity> runtimeEntities) {
         return 0;
     }
+
+    @Override
+    public void batchUpdateDeployStatusType(List<RuntimeEntity> runtimeEntitieList) {
+        this.runtimeMapper.batchUpdateDeployStatusType(runtimeEntitieList);
+    }
+
+    @Override
+    public void batchUpdateDeployStatusType(List<RuntimeEntity> runtimeEntitieList, DeployStatusType deployStatusType) {
+        this.runtimeMapper.batchUpdateDeployStatusType(runtimeEntitieList, deployStatusType);
+    }
+
 
     @Override
     public List<RuntimeEntity> selectAll() {
@@ -144,6 +161,11 @@ public class RuntimeServiceImpl implements RuntimeService {
         return runtimeMapper.queryByUpdateTime(runtimeEntity);
     }
 
+    @Override
+    public void insertRuntimeByClusterData(RuntimeEntity runtimeEntity) {
+        this.runtimeMapper.insertRuntime(runtimeEntity);
+        // copy config ， rocketmq 集群 copy topic
+    }
 
     @Override
     public void insertRuntime(RuntimeEntity runtimeEntity) {

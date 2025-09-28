@@ -65,9 +65,7 @@ public class PauseCluster implements UpdateHandler<ClusterEntity> {
      */
     @Override
     public void handler(ClusterEntity clusterEntity) {
-
         clusterEntity = this.clusterService.queryClusterById(clusterEntity);
-
         if (clusterEntity.getClusterType().isMeta()) {
             // 检查  meta 集群 是否被关联，如何被关联，就禁止删除
             ClusterRelationshipEntity clusterRelationshipEntity = new ClusterRelationshipEntity();

@@ -20,10 +20,16 @@ package org.apache.eventmesh.dashboard.common.enums;
 
 public enum DeployStatusType {
 
+    SETTLE,
 
     RESOURCE_APPLY,
 
     RESOURCE_APPLY_FAILED,
+
+    /**
+     *  是不是需要这个状态的检查
+     */
+    CREATE_DATA_ING,
 
     CREATE_WAIT,
 

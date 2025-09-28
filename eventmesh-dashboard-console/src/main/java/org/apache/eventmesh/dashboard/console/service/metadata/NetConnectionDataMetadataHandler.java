@@ -21,6 +21,7 @@ package org.apache.eventmesh.dashboard.console.service.metadata;
 import org.apache.eventmesh.dashboard.console.entity.cluster.NetConnectionEntity;
 import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class NetConnectionDataMetadataHandler implements DataMetadataHandler<NetConnectionEntity> {
 
     @Override
-    public void handleAll(List<NetConnectionEntity> addData, List<NetConnectionEntity> updateData, List<NetConnectionEntity> deleteData) {
+    public void handleAll(Collection<NetConnectionEntity> allData, List<NetConnectionEntity> addData, List<NetConnectionEntity> updateData, List<NetConnectionEntity> deleteData) {
 
     }
 

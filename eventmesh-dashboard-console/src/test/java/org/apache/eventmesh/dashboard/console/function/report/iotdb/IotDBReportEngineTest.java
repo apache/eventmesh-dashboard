@@ -100,6 +100,8 @@ public class IotDBReportEngineTest {
     @Test
     public void test_createReport() {
 
+        //iotDBReportEngine.createReport("rocketmq_message_size");
+
         iotDBReportEngine.createReport("rocketmq_consumer_queueing_latency");
 
         //iotDBReportEngine.createReport("rocketmq_consumer_group_create_execution_time");
@@ -111,14 +113,15 @@ public class IotDBReportEngineTest {
         singleGeneralReportDO.setReportName("rocketmq_consumer_group_create_execution_time");
         singleGeneralReportDO.setReportType(ReportViewType.COUNTER.getName());
         singleGeneralReportDO.setOrganizationId(1L);
-        singleGeneralReportDO.setClustersId(2L);
+        singleGeneralReportDO.setClustersId(1L);
         singleGeneralReportDO.setRuntimeId(3L);
         LocalDateTime endTime = LocalDateTime.now();
         singleGeneralReportDO.setStartTime(endTime.minusDays(1L));
         singleGeneralReportDO.setEndTime(endTime);
         singleGeneralReportDO.setInterval("15m");
         CompletableFuture<List<Map<String, Object>>> query = iotDBReportEngine.query(singleGeneralReportDO);
-        query.get();
+        List<Map<String, Object>> object = query.get();
+        System.out.println(object);
     }
 
 }

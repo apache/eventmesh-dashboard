@@ -19,9 +19,18 @@
 package org.apache.eventmesh.dashboard.console.controller.deploy.uninstall;
 
 import org.apache.eventmesh.dashboard.console.controller.deploy.handler.UpdateHandler;
+import org.apache.eventmesh.dashboard.console.domain.ClusterAndRuntimeDomain;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.modle.DO.domain.clusterAndRuntimeDomain.ClusterAndRuntimeOfRelationshipDO;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class UninstallClusterHandler implements UpdateHandler<ClusterEntity> {
+
+    @Autowired
+    private ClusterAndRuntimeDomain clusterAndRuntimeDomain;
 
     @Override
     public void init() {
@@ -31,5 +40,8 @@ public class UninstallClusterHandler implements UpdateHandler<ClusterEntity> {
     @Override
     public void handler(ClusterEntity clusterEntity) {
 
+        // 查询所有 cluster 标记 状态
+        ClusterAndRuntimeOfRelationshipDO clusterAndRuntimeOfRelationshipDO = clusterAndRuntimeDomain.getAllClusterAndRuntimeByCluster(clusterEntity);
+        // 查询 所有 runtime 标记 ing
     }
 }

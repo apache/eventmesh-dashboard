@@ -25,7 +25,10 @@ import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateJvmConfig;
 
-@SDKMetadata(clusterType = ClusterType.STORAGE_JVM_BROKER, remotingType = RemotingType.JVM, sdkTypeEnum = SDKTypeEnum.ALL)
+@SDKMetadata(clusterType = {ClusterType.STORAGE_JVM_BROKER,ClusterType.STORAGE_JVM_META,
+    ClusterType.STORAGE_JVM_CAP_BROKER,ClusterType.STORAGE_JVM_CAP_META,
+    ClusterType.EVENTMESH_JVM_RUNTIME,ClusterType.EVENTMESH_JVM_META},
+    remotingType = RemotingType.JVM, sdkTypeEnum = SDKTypeEnum.ALL)
 public class JvmAdmin extends AbstractSDKOperation<Object, CreateJvmConfig> {
 
     @Override

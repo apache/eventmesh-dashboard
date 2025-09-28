@@ -19,7 +19,8 @@
 package org.apache.eventmesh.dashboard.console.mapper.message;
 
 
-import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
+import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -34,29 +35,8 @@ import java.util.List;
  **/
 
 @Mapper
-public interface GroupMemberMapper {
+public interface GroupMemberMapper extends SyncDataHandlerMapper<GroupMemberEntity> {
 
-
-    @Deprecated
-    @Select("select topic_name from group_member where cluster_id=#{clusterId} and group_name=#{groupName}")
-    List<String> selectTopicsByGroupNameAndClusterId(SubscriptionEntity subscriptionEntity);
-
-    @Deprecated
-    @Select("select DISTINCT (group_name) from group_member where cluster_id=#{clusterId} and topic_name=#{topicName}")
-    List<String> selectGroupNameByTopicName(SubscriptionEntity subscriptionEntity);
-
-    @Select("select * from group_member where status=1")
-    List<SubscriptionEntity> selectAll();
-
-
-    @Deprecated
-    @Select("select * from group_member where cluster_id=#{clusterId} and status=1")
-    List<SubscriptionEntity> getGroupByClusterId(SubscriptionEntity subscriptionEntity);
-
-
-    @Deprecated
-    @Select("select * from group_member where cluster_id=#{clusterId} and group_name=#{groupName} and topic_name=#{topicName} and status=1")
-    SubscriptionEntity selectGroupMemberByUnique(SubscriptionEntity subscriptionEntity);
 
     @Select("""
         <script>
@@ -74,23 +54,20 @@ public interface GroupMemberMapper {
                 and status=1
         </script>
         """)
-    List<SubscriptionEntity> selectMember(SubscriptionEntity subscriptionEntity);
+    List<GroupMemberEntity> selectMember(GroupMemberEntity groupMemberEntity);
 
 
     @Select("select * from group_member where id=#{id} and status=1")
-    SubscriptionEntity selectGroupMemberById(SubscriptionEntity subscriptionEntity);
+    GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 
     @Update("UPDATE group_member SET state=#{state} where id=#{id}")
-    void updateGroupMember(SubscriptionEntity subscriptionEntity);
+    void updateGroupMember(GroupMemberEntity groupMemberEntity);
 
-    @Deprecated
-    @Update("UPDATE group_member SET state=#{state} where topic_name=#{topicName}")
-    void updateMemberByTopic(SubscriptionEntity subscriptionEntity);
 
 
     @Update("UPDATE group_member SET status=0 where id=#{id} ")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    SubscriptionEntity deleteGroupMember(SubscriptionEntity subscriptionEntity);
+    GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
 
     @Insert("""
         <script>
@@ -101,7 +78,7 @@ public interface GroupMemberMapper {
         </script>
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void batchInsert(List<SubscriptionEntity> groupMemberEntities);
+    void batchInsert(List<GroupMemberEntity> groupMemberEntities);
 
 
     @Insert("""
@@ -111,7 +88,7 @@ public interface GroupMemberMapper {
            on duplicate  key update status=0
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    void addGroupMember(SubscriptionEntity subscriptionEntity);
+    void addGroupMember(GroupMemberEntity groupMemberEntity);
 
 
 }

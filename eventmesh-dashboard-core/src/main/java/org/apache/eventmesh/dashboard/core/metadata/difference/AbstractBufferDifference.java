@@ -22,22 +22,19 @@ import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
 import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@Setter
+@Getter
 public abstract class AbstractBufferDifference extends AbstractDifference implements DataMetadataHandler<BaseClusterIdBase> {
 
-    @Getter
-    @Setter
-    protected Map<String, BaseClusterIdBase> allData = new HashMap<>();
-
-
-    public void handleAll(List<BaseClusterIdBase> addData, List<BaseClusterIdBase> updateData, List<BaseClusterIdBase> deleteData) {
-        this.targetHandler.handleAll(addData, updateData, deleteData);
+    @Override
+    public void handleAll(Collection<BaseClusterIdBase> allData, List<BaseClusterIdBase> addData, List<BaseClusterIdBase> updateData, List<BaseClusterIdBase> deleteData) {
+        this.targetHandler.handleAll(null, addData, updateData, deleteData);
     }
 
     /**
@@ -45,6 +42,7 @@ public abstract class AbstractBufferDifference extends AbstractDifference implem
      *
      * @return
      */
+    @Override
     public List<BaseClusterIdBase> getData() {
         return new ArrayList<>(allData.values());
     }

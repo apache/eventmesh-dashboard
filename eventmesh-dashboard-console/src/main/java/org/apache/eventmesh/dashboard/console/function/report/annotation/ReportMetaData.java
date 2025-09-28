@@ -20,6 +20,11 @@ package org.apache.eventmesh.dashboard.console.function.report.annotation;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import lombok.Data;
 
 
@@ -47,14 +52,39 @@ public class ReportMetaData {
 
     private String tableName;
 
+    private String comment;
+
     /**
      * counter histogram gauge
      */
     private ReportViewType reportViewType;
 
 
-    private ReportViewType reportViewTypes;
+    private List<ReportViewType> reportViewTypes;
 
 
+    private Set<String> alias;
+
+
+    private String valueType;
+
+
+    private boolean aggregation = false;
+
+
+    private Map<String,AggregationClass> aggregationClasses;
+
+
+    private List<Field> fieldList;
+
+
+    @Data
+    public static class AggregationClass{
+
+        private String alias;
+
+        private Field field;
+
+    }
 
 }

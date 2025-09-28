@@ -17,6 +17,26 @@
 
 package org.apache.eventmesh.dashboard.console.function.report.model.base;
 
+import java.time.LocalDateTime;
+
 public class Query {
+
+    private String reportName;
+
+    private LocalDateTime startTime;
+
+    private LocalDateTime endTime;
+
+    private String interval;
+
+    private String selectFun;
+
+    private String orderBy;
+
+    private boolean asc;
+
+    private String limit;
+
+    private String offset;
 
 }

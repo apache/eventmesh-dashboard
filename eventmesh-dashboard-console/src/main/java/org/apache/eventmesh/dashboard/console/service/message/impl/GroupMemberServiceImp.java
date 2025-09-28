@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.service.message.impl;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.service.message.GroupMemberService;
 
@@ -36,54 +36,54 @@ public class GroupMemberServiceImp implements GroupMemberService {
     GroupMemberMapper groupMemberMapper;
 
     @Override
-    public List<SubscriptionEntity> selectAll() {
-        return groupMemberMapper.selectAll();
+    public List<GroupMemberEntity> selectAll() {
+        return null;
     }
 
     @Override
-    public void batchInsert(List<SubscriptionEntity> groupMemberEntities) {
+    public void batchInsert(List<GroupMemberEntity> groupMemberEntities) {
         groupMemberMapper.batchInsert(groupMemberEntities);
     }
 
     @Override
     @EmLog(OprType = "View", OprTarget = "GroupMember")
-    public List<SubscriptionEntity> getGroupMemberByClusterId(SubscriptionEntity subscriptionEntity) {
-        return groupMemberMapper.getGroupByClusterId(subscriptionEntity);
+    public List<GroupMemberEntity> getGroupMemberByClusterId(GroupMemberEntity groupMemberEntity) {
+        return null;//groupMemberMapper.getGroupByClusterId(groupMemberEntity);
     }
 
     @Override
     @EmLog(OprType = "add", OprTarget = "GroupMember")
-    public void addGroupMember(SubscriptionEntity subscriptionEntity) {
-        groupMemberMapper.addGroupMember(subscriptionEntity);
+    public void addGroupMember(GroupMemberEntity groupMemberEntity) {
+        groupMemberMapper.addGroupMember(groupMemberEntity);
     }
 
     @Override
-    public void updateGroupMember(SubscriptionEntity subscriptionEntity) {
-        groupMemberMapper.updateGroupMember(subscriptionEntity);
+    public void updateGroupMember(GroupMemberEntity groupMemberEntity) {
+        groupMemberMapper.updateGroupMember(groupMemberEntity);
     }
 
     @Override
-    public SubscriptionEntity deleteGroupMember(SubscriptionEntity subscriptionEntity) {
-        return groupMemberMapper.deleteGroupMember(subscriptionEntity);
+    public GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity) {
+        return groupMemberMapper.deleteGroupMember(groupMemberEntity);
     }
 
     @Override
-    public SubscriptionEntity selectGroupMemberById(SubscriptionEntity subscriptionEntity) {
-        return groupMemberMapper.selectGroupMemberById(subscriptionEntity);
+    public GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity) {
+        return groupMemberMapper.selectGroupMemberById(groupMemberEntity);
     }
 
     @Override
-    public List<SubscriptionEntity> selectGroupMemberByGroup(GroupEntity groupEntity) {
-        SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
-        subscriptionEntity.setGroupName(groupEntity.getName());
-        subscriptionEntity.setClusterId(groupEntity.getClusterId());
+    public List<GroupMemberEntity> selectGroupMemberByGroup(GroupEntity groupEntity) {
+        GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
+        groupMemberEntity.setGroupName(groupEntity.getName());
+        groupMemberEntity.setClusterId(groupEntity.getClusterId());
         //Obtain a member who meets the conditions of a group
-        return groupMemberMapper.selectMember(subscriptionEntity);
+        return groupMemberMapper.selectMember(groupMemberEntity);
     }
 
     @Override
-    public List<SubscriptionEntity> selectAllMemberByTopic(SubscriptionEntity subscriptionEntity) {
-        List<SubscriptionEntity> groupMemberEntities = groupMemberMapper.selectMember(subscriptionEntity);
+    public List<GroupMemberEntity> selectAllMemberByTopic(GroupMemberEntity groupMemberEntity) {
+        List<GroupMemberEntity> groupMemberEntities = groupMemberMapper.selectMember(groupMemberEntity);
         return groupMemberEntities;
     }
 

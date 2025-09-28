@@ -33,6 +33,26 @@ create table `case`
     key object_type_id (object_type, object_id)
 ) comment ='';
 
+drop table if exists `deploy_script`;
+
+create table `deploy_script`
+(
+    id                    bigint unsigned primary key auto_increment comment 'id',
+    organization_id       bigint unsigned not null comment '组织id',
+    name                  varchar(128)    not null comment '脚本名字',
+    version               varchar(128)    not null comment '脚本版本',
+    cluster_type          varchar(128)    not null comment '脚本类型',
+    content               varchar(8192)   not null comment '脚本内容',
+    start_runtime_version varchar(16)     not null comment '支持的版本',
+    end_runtime_version   varchar(16)     not null comment '支持的版本',
+    description           varchar(1024)   not null comment '说明',
+    status                int             not null default 1 comment '',
+    create_time           timestamp       not null default current_timestamp comment '接入时间',
+    update_time           timestamp       not null default current_timestamp on update current_timestamp comment '修改时间',
+    is_delete             int             not null default 0 comment '数据逻辑标记',
+    key organization_id_index (organization_id)
+);
+
 drop table if exists `resources_config`;
 
 create table `resources_config`
@@ -113,6 +133,7 @@ create table config
     id                 bigint unsigned auto_increment primary key,
     organization_id    bigint unsigned not null comment '组织id',
     cluster_id         bigint          not null comment '集群id',
+    cluster_type       varchar(32)     not null comment '',
     instance_type      varchar(31)     not null comment '实例类型 0:runtime,1:storage,2:connector,3:topic',
     instance_id        bigint          not null default -1 comment '实例id，上面配置对应的(比如runtime)的id，如果是-1，是cluster的配置',
     config_type        varchar(31)     not null default '' comment '配置类型',
@@ -140,6 +161,7 @@ create table `topic`
 (
     `id`               bigint unsigned primary key auto_increment comment 'id',
     `cluster_id`       bigint          not null default '-1' comment '集群id',
+    cluster_type       varchar(32)     not null comment '',
     runtime_id         bigint unsigned not null default 0 comment 'kafka 没有runtime',
     `topic_name`       varchar(192)    not null default '' comment 'topic名称',
     topic_type         varchar(16)     not null default '' comment 'topic 类型。用户，broker，console，console',
@@ -163,6 +185,7 @@ create table `group`
     id              bigint unsigned primary key auto_increment comment 'id',
     organization_id bigint unsigned not null comment '组织id',
     cluster_id      bigint          not null comment '集群id',
+    cluster_type    varchar(32)     not null comment '',
     name            varchar(192)    not null comment 'group名称',
     type            tinyint         not null comment 'group类型 0：consumer 1：producer',
     own_type        varchar(16)     not null default '' comment 'topic 类型。用户，broker，console，console',
@@ -381,16 +404,20 @@ create table `connector`
 drop table if exists `health_check_result`;
 create table `health_check_result`
 (
-    `id`          bigint unsigned primary key auto_increment comment '自增id',
-    `type`        tinyint(4)      not null default '0' comment '检查维度(0:未知, 1:cluster, 2:runtime, 3:topic)',
-    `type_id`     bigint unsigned not null comment '对应检查维度的实例id',
-    `cluster_id`  bigint          not null default '0' comment '集群id',
-    `state`       tinyint(4)      not null default '0' comment '检查状态(0:未通过，1:通过,2:正在检查,3:超时)',
-    `result_desc` varchar(1024)   not null default '' comment '检查结果描述',
-    `create_time` timestamp       not null default current_timestamp comment '创建时间',
-    `update_time` timestamp       not null default current_timestamp on update current_timestamp comment '更新时间',
-    index `idx_cluster_id` (`cluster_id`),
-    index `idx_type` (`type`)
+    `id`                bigint unsigned primary key auto_increment comment '自增id',
+    `cluster_type`      varchar(64)     not null comment '集群类型',
+    `cluster_id`        bigint          not null default '0' comment '集群id',
+    `protocol`          varchar(64)     not null comment '协议',
+    `type`              tinyint(4)      not null default '0' comment '检查维度(0:未知, 1:cluster, 2:runtime, 3:topic)',
+    `type_id`           bigint unsigned not null comment '对应检查维度的实例id',
+    `address`           varchar(64)     not null comment '地址',
+    `health_check_type` varchar(64)     not null comment '心跳类型',
+    `result`            varchar(64)     not null comment '心跳结果',
+    `result_desc`       varchar(1024)   not null default '' comment '检查结果描述',
+    `begin_time`        timestamp       not null comment '创建时间',
+    `finish_time`       timestamp       not null default current_timestamp on update current_timestamp comment '更新时间',
+    unique `uni_type_id_begin_time_type` (`type_id`, `type`, `begin_time`),
+    index `idx_cluster_id` (`cluster_id`)
 ) comment ='健康检查结果';
 
 

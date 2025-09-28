@@ -83,10 +83,19 @@ public class FunctionManage {
 
     private final ClusterMetadataDomain clusterMetadataDomain = new ClusterMetadataDomain();
 
+    /**
+     * 定时任务查询对象
+     */
     private final RuntimeEntity runtimeEntity = new RuntimeEntity();
 
+    /**
+     * 定时任务查询对象
+     */
     private final ClusterEntity clusterEntity = new ClusterEntity();
 
+    /**
+     * 定时任务查询对象
+     */
     private final ClusterRelationshipEntity clusterRelationshipEntity = new ClusterRelationshipEntity();
 
     @Value("${function.enabled:false}")
@@ -97,16 +106,18 @@ public class FunctionManage {
         if (!this.enabled) {
             return;
         }
-        clusterMetadataDomain.rootClusterDHO();
+        this.clusterMetadataDomain.rootClusterDHO();
         this.initQueueData();
         this.createHandler();
         this.buildMetadataSyncManage();
+
+        healthService.setDataService(dataService);
     }
 
     private void initQueueData() {
         LocalDateTime date = LocalDateTime.of(2000, 1, 1, 0, 0, 0, 0);
         runtimeEntity.setUpdateTime(date);
-        clusterEntity.setCreateTime(date);
+        clusterEntity.setUpdateTime(date);
         clusterRelationshipEntity.setUpdateTime(date);
     }
 
@@ -117,8 +128,9 @@ public class FunctionManage {
         }
         this.metadataSyncManage.setMetadataSyncResultHandler(this.defaultMetadataSyncResultHandler);
         this.metadataSyncManage.setDataMetadataHandlerList((List<DataMetadataHandler<Object>>) ((Object) this.dataMetadataHandlerList));
+        this.metadataSyncManage.setColonyDO(this.clusterMetadataDomain.getColonyDO());
 
-        this.metadataSyncManage.init(5000, 100, databaseAndMetadataMapperList);
+        this.metadataSyncManage.init(1000, 50, databaseAndMetadataMapperList);
     }
 
     /**
@@ -141,7 +153,7 @@ public class FunctionManage {
      * <p>
      * 然后 然后日常
      */
-    @Scheduled(fixedRate = 5000)
+    //@Scheduled(initialDelay = 1500, fixedDelay = 5000)
     public void initFunctionManager() {
         if (!this.enabled) {
             return;
@@ -150,7 +162,7 @@ public class FunctionManage {
 
     }
 
-    @Scheduled(initialDelay = 500L, fixedDelay = 100)
+    @Scheduled(initialDelay = 500L, fixedDelay = 100000)
     public void sync() {
         if (!this.enabled) {
             return;
@@ -162,6 +174,7 @@ public class FunctionManage {
             this.clusterRelationshipService.queryByUpdateTime(clusterRelationshipEntity);
         if (runtimeEntityList.isEmpty() && clusterEntityList.isEmpty() && clusterRelationshipEntityList.isEmpty()) {
             log.info("No runtime entities found");
+            return;
         }
         runtimeEntity.setUpdateTime(date);
         clusterEntity.setUpdateTime(date);

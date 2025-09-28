@@ -19,6 +19,7 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.Aggregation;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
 
@@ -36,6 +37,7 @@ public class RocketmqTopicCreateExecutionTime extends RuntimeId {
 
     private boolean isSystem;
 
+    @Aggregation("")
     private Long valueLe10ms;
 
     private Long valueLe100ms;

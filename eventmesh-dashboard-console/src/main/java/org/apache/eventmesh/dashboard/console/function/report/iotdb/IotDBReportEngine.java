@@ -20,19 +20,23 @@ package org.apache.eventmesh.dashboard.console.function.report.iotdb;
 import org.apache.eventmesh.dashboard.console.function.report.AbstractReportEngine;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.AbstractReportMetaHandler;
-import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData;
 import org.apache.eventmesh.dashboard.console.function.report.model.SingleGeneralReportDO;
 
-import org.apache.iotdb.isession.ITableSession;
-import org.apache.iotdb.isession.SessionDataSet;
 import org.apache.iotdb.isession.pool.ITableSessionPool;
 import org.apache.iotdb.session.pool.TableSessionPoolBuilder;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -53,7 +57,7 @@ public class IotDBReportEngine extends AbstractReportEngine {
      *
      */
     @Getter
-    private String sql = """
+    private final String sql = """
         select
            <trim prefix=" " suffixOverrides=",">
                 <if test="organizationId != null and organizationId != 0">
@@ -191,52 +195,60 @@ public class IotDBReportEngine extends AbstractReportEngine {
     }
 
     @Override
-    protected AbstractReportMetaHandler doCreateReportHandler(ReportMeta reportMeta, List<Field> fieldList) {
-        IotDBReportMetaHandler iotDBReportMetaHandler = new IotDBReportMetaHandler();
-        iotDBReportMetaHandler.setReportMeta(reportMeta);
-        iotDBReportMetaHandler.setFieldList(fieldList);
-        return iotDBReportMetaHandler;
+    protected AbstractReportMetaHandler doCreateReportHandler(ReportMetaData reportMetaData, List<Field> fieldList) {
+        return new IotDBReportMetaHandler();
     }
 
     @Override
     public CompletableFuture<List<Map<String, Object>>> query(SingleGeneralReportDO singleGeneralReportDO) {
         return CompletableFuture.supplyAsync(() -> {
-            try (ITableSession session = this.iTableSessionPool.getSession()) {
-                String sql = this.buildSql(singleGeneralReportDO.getReportName(), singleGeneralReportDO.getReportType(), singleGeneralReportDO);
-
-                try (SessionDataSet sds = session.executeQueryStatement(sql, 3000)) {
-                    sds.getColumnNames();
+            String sql = this.buildSql(singleGeneralReportDO.getReportName(), singleGeneralReportDO.getReportType(), singleGeneralReportDO);
+            try (Connection connection = this.dataSource.getConnection()) {
+                PreparedStatement ps = connection.prepareStatement(sql);
+                try(ResultSet rs = ps.executeQuery()) {
+                    List<Map<String, Object>> list = new ArrayList<>();
+                    ResultSetMetaData metaData = rs.getMetaData();
+                    int columnCount = metaData.getColumnCount();
+                    while (rs.next()) {
+                        Map<String, Object> row = new HashMap<>();
+                        for (int i = 1; i <= columnCount; i++) {
+                            row.put(metaData.getColumnName(i), rs.getObject(i));
+                        }
+                        list.add(row);
+                    }
+                    return list;
+                }catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            return null;
         });
 
     }
 
     @Override
     public void createReport(String tableName) {
-        if(Objects.equals(tableName , "*")){
-            this.getReportMetaHandlerMap().keySet().forEach(key -> {
-                String sql = this.buildSql(key, ReportViewType.CREATE_TABLE.getName(), null);
-                try (ITableSession session = this.iTableSessionPool.getSession()) {
-                    Connection connection = this.dataSource.getConnection();
-                    connection.setAutoCommit(true);
-                    connection.createStatement().execute(sql);
-                    //session.executeNonQueryStatement(sql);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            return;
+        if(Objects.equals(tableName , "*")) {
+            try (Connection connection = this.dataSource.getConnection()) {
+                this.getReportMetaHandlerMap().keySet().forEach(key -> {
+                    String sql = this.buildSql(key, ReportViewType.CREATE_TABLE.getName(), null);
+                        try {
+                            connection.setAutoCommit(true);
+                            connection.createStatement().execute(sql);
+                        }catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                });
+                return;
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
         }
         String sql = this.buildSql(tableName, ReportViewType.CREATE_TABLE.getName(), null);
-        try (ITableSession session = this.iTableSessionPool.getSession()) {
-            Connection connection = this.dataSource.getConnection();
+        try (Connection connection = this.dataSource.getConnection()) {
             connection.setAutoCommit(true);
             connection.createStatement().execute(sql);
-            //session.executeNonQueryStatement(sql);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -245,11 +257,37 @@ public class IotDBReportEngine extends AbstractReportEngine {
     @Override
     public void batchInsert(String tableName, List<Object> data) {
         String sql = this.buildSql(tableName, ReportViewType.INSERT.getName(), (Object) data);
-        try (ITableSession session = this.iTableSessionPool.getSession()) {
-            Connection connection = this.dataSource.getConnection();
+        try (Connection connection = this.dataSource.getConnection()) {
             connection.setAutoCommit(true);
             connection.prepareStatement(sql).execute();
-            //session.executeNonQueryStatement(sql);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void batchInsert(Map<String, List<Object>> data) {
+        StringBuilder sb = new StringBuilder();
+        List<String> sqlList = new ArrayList<>();
+        int count = 5000;
+        for(Entry<String, List<Object>> entry : data.entrySet()) {
+            String sql = this.buildSql(entry.getKey(), ReportViewType.INSERT.getName(), (Object) entry.getValue());
+            count = count - entry.getValue().size();
+            sb.append(sql);
+            if(count < 0) {
+                count = 5000;
+                sqlList.add(sb.toString());
+                sb.delete(0, sb.length());
+            }
+        }
+        if(!sb.isEmpty()) {
+            sqlList.add(sb.toString());
+        }
+        try (Connection connection = this.dataSource.getConnection()) {
+            connection.setAutoCommit(true);
+            for(String sql : sqlList) {
+                connection.prepareStatement(sql).execute();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

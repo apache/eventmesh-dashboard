@@ -30,4 +30,5 @@ public class BaseOrganizationEntity extends BaseIdEntity {
     private Long organizationId;
 
 
+
 }

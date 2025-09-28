@@ -44,6 +44,10 @@ public enum ClusterFramework {
     ZK,
     ;
 
+    public boolean isIndependence() {
+        return this == ClusterFramework.INDEPENDENCE;
+    }
+
     public boolean isAP() {
         return Objects.equals(this, AP);
     }

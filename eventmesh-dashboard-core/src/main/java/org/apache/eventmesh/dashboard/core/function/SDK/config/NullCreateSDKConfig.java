@@ -26,7 +26,7 @@ public class NullCreateSDKConfig extends AbstractCreateSDKConfig {
     }
 
     @Override
-    String doUniqueKey() {
+    public String doUniqueKey() {
         return "";
     }
 }

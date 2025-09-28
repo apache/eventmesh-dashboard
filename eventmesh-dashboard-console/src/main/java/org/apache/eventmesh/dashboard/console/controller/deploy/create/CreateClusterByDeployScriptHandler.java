@@ -79,6 +79,10 @@ public class CreateClusterByDeployScriptHandler implements UpdateHandler<CreateC
         this.clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterEntity.getClusterType());
     }
 
+    /**
+     *
+     * @param createClusterByDeployScriptDO
+     */
     @Override
     public void handler(CreateClusterByDeployScriptDO createClusterByDeployScriptDO) {
         this.clusterEntity = ClusterCycleControllerMapper.INSTANCE.createClusterByDeployScript(createClusterByDeployScriptDO);

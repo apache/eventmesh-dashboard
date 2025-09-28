@@ -47,7 +47,7 @@ public class ClusterMetadata extends BaseSyncBase {
 
     private String regProperties;
 
-    private Integer authType;
+    private String authType;
 
     private Integer runState;
 

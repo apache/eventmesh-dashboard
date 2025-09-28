@@ -23,6 +23,7 @@ import org.apache.eventmesh.dashboard.console.function.report.model.SingleGenera
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,23 +37,22 @@ public class ReportController {
     private ReportHandlerManage reportHandlerManage;
 
     @RequestMapping("reportByHome")
-    public void reportByHome(@RequestBody MultiGeneralReportDO multiGeneralReportDO) {
+    public Map<String, List<Map<String, Object>>> reportByHome(@RequestBody MultiGeneralReportDO multiGeneralReportDO) {
         //
         List<SingleGeneralReportDO> singleGeneralReportDOList = new ArrayList<>();
         multiGeneralReportDO.getReportNameList().forEach(reportName -> {
             SingleGeneralReportDO singleGeneralReportDO = new SingleGeneralReportDO();
             singleGeneralReportDOList.add(singleGeneralReportDO);
-
-
         });
+        return reportHandlerManage.queryResultIsMap(singleGeneralReportDOList);
 
-        singleGeneralReportDOList.forEach(singleGeneralReportDO -> {
-
-        });
     }
 
-    public void reportBySingle(@RequestBody SingleGeneralReportDO singleGeneralReportDO) {
+    @RequestMapping("reportBySingle")
+    public List<Map<String, Object>> reportBySingle(@RequestBody SingleGeneralReportDO singleGeneralReportDO) {
 
+        Map<String, List<Map<String, Object>>> data =  reportHandlerManage.queryResultIsMap(List.of(singleGeneralReportDO));
+        return data.get(singleGeneralReportDO.getReportName());
     }
 
     public void reportByMulti() {

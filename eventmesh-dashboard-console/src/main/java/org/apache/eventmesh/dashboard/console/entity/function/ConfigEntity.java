@@ -19,14 +19,14 @@
 package org.apache.eventmesh.dashboard.console.entity.function;
 
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
-import org.apache.eventmesh.dashboard.console.entity.base.BaseClusterIdEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ConfigEntity extends BaseClusterIdEntity {
+public class ConfigEntity extends BaseRuntimeIdEntity {
 
 
 

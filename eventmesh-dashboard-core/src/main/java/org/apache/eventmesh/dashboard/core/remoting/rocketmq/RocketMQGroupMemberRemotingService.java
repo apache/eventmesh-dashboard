@@ -16,26 +16,16 @@
  */
 
 
-package org.apache.eventmesh.dashboard.console.modle.deploy.create;
+package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
 
-import org.apache.eventmesh.dashboard.console.modle.OrganizationIdDTO;
+import org.apache.eventmesh.dashboard.common.model.remoting.subscription.GetSubscriptionRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.subscription.GetSubscriptionResult;
+import org.apache.eventmesh.dashboard.service.remoting.GroupMemberRemotingService;
 
-import javax.validation.constraints.NotNull;
+public class RocketMQGroupMemberRemotingService extends AbstractRocketMQRemotingService implements GroupMemberRemotingService {
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class CreateClusterByEventMesh extends OrganizationIdDTO {
-
-    @NotNull
-    private String name;
-
-
-    @NotNull
-    private String description;
-
-
-
+    @Override
+    public GetSubscriptionResult getSubscription(GetSubscriptionRequest request) {
+        return null;
+    }
 }

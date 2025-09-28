@@ -60,21 +60,26 @@ public interface HealthCheckResultMapper {
         + " VALUES( #{type}, #{typeId}, #{clusterId}, #{state}, #{resultDesc})")
     void insert(HealthCheckResultEntity healthCheckResultEntity);
 
-    @Insert({
-        "<script>",
-        "   <if test='list.size() > 0'>",
-        "   INSERT INTO health_check_result(type, type_id, cluster_id, state, result_desc)",
-        "       VALUES ",
-        "       <foreach collection='list' item='healthCheckResultEntity' index='index' separator=','>",
-        "           (#{healthCheckResultEntity.type}, #{healthCheckResultEntity.typeId}, #{healthCheckResultEntity.clusterId},",
-        "           #{healthCheckResultEntity.state}, #{healthCheckResultEntity.resultDesc})",
-        "       </foreach>",
-        "       ON DUPLICATE KEY UPDATE",
-        "       state = VALUES(state),",
-        "       result_desc = VALUES(result_desc)",
-        "   </if>",
-        "</script>"
-    })
+    @Insert("""
+        <script>
+           insert into health_check_result(
+                    cluster_type, cluster_id, protocol, 
+                    type, type_id,address,health_check_type,
+                    result,result_desc,
+                    begin_time)
+           values 
+               <foreach collection='list' item='item' index='index' separator=','>
+                   (
+                    #{item.clusterType}   , #{item.clusterId}, #{item.protocol},
+                    #{item.type}   ,        #{item.typeId},    #{item.address},
+                    #{item.healthCheckType}, #{item.result},   #{item.resultDesc},
+                    #{item.beginTime}
+                   )
+               </foreach>
+               on duplicate key update
+               result = values(result), result_desc = values(result_desc)
+        </script>
+    """)
     void batchInsert(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     @Insert({
@@ -116,6 +121,7 @@ public interface HealthCheckResultMapper {
         "   ORDER BY create_time DESC",
         "</script>"
     })
+    @Deprecated
     List<HealthCheckResultEntity> getIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
 }

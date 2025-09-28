@@ -25,9 +25,19 @@ import lombok.Setter;
 @Setter
 public abstract class AbstractReportMetaHandler {
 
-    protected ReportMeta reportMeta;
+    protected ReportMetaData reportMeta;
 
     protected List<Field> fieldList;
+
+
+    public static String line = "\r\n";
+
+    public static String tabString = "  ";
+
+    public static String lineAndTabString = tabString + line;
+
+    public static String tabAndLineString = tabString + line;
+
 
 
     public abstract String insert();

@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.function.report;
 
-import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData;
 import org.apache.eventmesh.dashboard.console.function.report.model.SingleGeneralReportDO;
 
 import java.lang.reflect.Field;
@@ -28,14 +28,17 @@ import java.util.concurrent.CompletableFuture;
 
 public interface ReportEngine {
 
-    CompletableFuture<List<Map<String,Object>>> query(SingleGeneralReportDO singleGeneralReportDO);
-
+    CompletableFuture<List<Map<String, Object>>> query(SingleGeneralReportDO singleGeneralReportDO);
 
 
     void createReport(String tableName);
 
-    void batchInsert(String tableName , List<Object> data);
+    void batchInsert(String tableName, List<Object> data);
 
 
-    void createReportHandler(ReportMeta reportMeta, List<Field> fieldList);
+    default void batchInsert(Map<String, List<Object>> data) {
+        data.forEach(this::batchInsert);
+    }
+
+    void createReportHandler(ReportMetaData reportMetaData, List<Field> fieldList);
 }

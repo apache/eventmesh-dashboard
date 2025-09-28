@@ -88,11 +88,20 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
 
     @Insert("""
         <script>
-        insert into topic (cluster_id,runtime_id,topic_name,topic_type, read_queue_num, write_queue_num, replication_factor, 
+        insert into topic (cluster_id,
+                          runtime_id,
+                          topic_name,topic_type, read_queue_num, write_queue_num, replication_factor, 
                            `order` , description, create_progress,retention_ms)
            values
                <foreach collection='list' item='c' index='index' separator=','>
-                        (#{c.clusterId},#{c.runtimeId},#{c.topicName},#{c.topicType},#{c.readQueueNum},#{c.writeQueueNum},#{c.replicationFactor}
+                        (#{c.clusterId},
+                        <if test='c.runtimeId !=null'>
+                            #{c.runtimeId},
+                        </if>
+                        <if test='c.runtimeId ==null'>
+                            0,
+                        </if>
+                        #{c.topicName},#{c.topicType},#{c.readQueueNum},#{c.writeQueueNum},#{c.replicationFactor}
                             ,#{c.order},#{c.description},#{c.createProgress},#{c.retentionMs})
                </foreach>
         </script>
@@ -117,10 +126,14 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     @Override
     void syncUpdate(List<TopicEntity> entityList);
 
+
     @Override
     void syncDelete(List<TopicEntity> entityList);
 
     @Override
+    @Select("""
+            select * from topic where update_time >= #{updateTime} and status != 0
+        """)
     List<TopicEntity> syncGet(TopicEntity topicEntity);
 
 }

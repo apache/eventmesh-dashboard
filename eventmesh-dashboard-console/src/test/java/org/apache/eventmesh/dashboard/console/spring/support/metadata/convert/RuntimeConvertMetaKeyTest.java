@@ -24,7 +24,7 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 
 import org.junit.Test;
 
-public class RuntimeConvertMetaDataTest {
+public class RuntimeConvertMetaKeyTest {
 
 
     @Test

@@ -32,6 +32,6 @@ import java.lang.annotation.Target;
 public @interface RemotingServiceMapper {
 
 
-    ClusterType clusterType();
+    ClusterType[] clusterType();
 
 }

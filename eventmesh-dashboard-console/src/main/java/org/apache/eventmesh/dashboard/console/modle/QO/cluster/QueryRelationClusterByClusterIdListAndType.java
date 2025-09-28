@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,37 +15,20 @@
  * limitations under the License.
  */
 
+package org.apache.eventmesh.dashboard.console.modle.QO.cluster;
 
-package org.apache.eventmesh.dashboard.console.modle.cluster.runtime;
-
-import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class CreateRuntimeDTO extends ClusterIdDTO {
+public class QueryRelationClusterByClusterIdListAndType {
 
-    private String name;
+    private List<ClusterType> clusterTypeList;
 
-    private String host;
+    private List<ClusterEntity> clusterEntityList;
 
-    private Integer port;
-
-    private Integer jmxPort;
-
-    private LocalDateTime startTimestamp = LocalDateTime.now();
-
-    private String rack = "";
-
-    private String endpointMap;
-
-    private FirstToWhom firstToWhom = FirstToWhom.DASHBOARD;
-
-    private ClusterType trusteeshipArrangeType = ClusterType.RUNTIME;
 }

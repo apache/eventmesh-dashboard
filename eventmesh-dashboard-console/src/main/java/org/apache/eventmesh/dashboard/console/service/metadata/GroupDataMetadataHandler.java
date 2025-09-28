@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.service.metadata;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class GroupDataMetadataHandler extends AbstractDBDataMetadataHandler<Grou
 
 
     @Override
-    public void handleAll(List<GroupEntity> addData, List<GroupEntity> updateData, List<GroupEntity> deleteData) {
+    public void handleAll(Collection<GroupEntity> allData, List<GroupEntity> addData, List<GroupEntity> updateData, List<GroupEntity> deleteData) {
 
 
     }
