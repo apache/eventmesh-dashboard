@@ -22,15 +22,17 @@ package org.apache.eventmesh.dashboard.console.controller.message;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.console.controller.ClusterAbilityService;
+import org.apache.eventmesh.dashboard.console.domain.ClusterAndRuntimeDomain;
 import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterMetadataDomain;
 import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterOperationHandler;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.message.TopicControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.IdDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.topic.CreateTopicDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
-import org.apache.eventmesh.dashboard.console.modle.vo.RuntimeIdDTO;
-import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryClusterInSyncDO;
+import org.apache.eventmesh.dashboard.console.model.IdDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.topic.CreateTopicDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.topic.GetTopicListDTO;
+import org.apache.eventmesh.dashboard.console.model.vo.RuntimeIdDTO;
+import org.apache.eventmesh.dashboard.console.model.vo.topic.TopicDetailGroupVO;
 import org.apache.eventmesh.dashboard.console.service.message.TopicService;
 
 import java.util.ArrayList;
@@ -61,6 +63,9 @@ public class TopicController {
     @Autowired
     private ClusterMetadataDomain clusterMetadataDomain;
 
+    @Autowired
+    private ClusterAndRuntimeDomain clusterAndRuntimeDomain;
+
     @PostMapping("/queryTopicListByClusterId")
     public List<TopicEntity> queryTopicListByClusterId(@Validated @RequestBody GetTopicListDTO getTopicListDTO) {
         // cap 的直接查询
@@ -77,40 +82,18 @@ public class TopicController {
     }
 
 
-
     @PostMapping("queryTopicListById")
     public TopicEntity queryTopicById(@Validated @RequestBody RuntimeIdDTO runtimeIdDTO) {
         TopicEntity topicEntity = topicService.selectTopicById(TopicControllerMapper.INSTANCE.queryTopicListById(runtimeIdDTO));
         if (this.clusterAbilityService.isCapByEntity(topicEntity)) {
             return topicEntity;
         }
-        //
-        List<TopicEntity> queryList = new ArrayList<>();
-        // 如果 是 eventmesh 集群。 得到 eventmesh 所有 runtime ， 所有存储
-        clusterMetadataDomain.operation(topicEntity.getClusterId(), new ClusterOperationHandler() {
-
-            @Override
-            public void handler(RuntimeMetadata baseSyncBase) {
-                TopicEntity topicEntity = new TopicEntity();
-                queryList.add(topicEntity);
-                topicEntity.setClusterId(baseSyncBase.getClusterId());
-                topicEntity.setClusterType(baseSyncBase.getClusterType());
-                topicEntity.setRuntimeId(baseSyncBase.getId());
-                topicEntity.setTopicName(topicEntity.getTopicName());
-            }
-
-            @Override
-            public void handler(ClusterMetadata clusterDO) {
-                TopicEntity topicEntity = new TopicEntity();
-                queryList.add(topicEntity);
-                topicEntity.setClusterId(clusterDO.getClusterId());
-                topicEntity.setClusterType(clusterDO.getClusterType());
-                topicEntity.setRuntimeId(clusterDO.getClusterId());
-                topicEntity.setTopicName(topicEntity.getTopicName());
-            }
-        });
-
-        topicService.queryRuntimeByBaseSyncEntity(queryList);
+        topicService.queryRuntimeByBaseSyncEntity(
+            this.clusterAndRuntimeDomain.queryClusterInSync(QueryClusterInSyncDO.create(topicEntity.getClusterId(), () -> {
+                TopicEntity entity = new TopicEntity();
+                entity.setTopicName(topicEntity.getTopicName());
+                return entity;
+            })));
         return null;
     }
 
@@ -120,30 +103,13 @@ public class TopicController {
         if (this.clusterAbilityService.isCapByEntity(topicEntity)) {
             return this.topicService.deleteTopicById(topicEntity);
         }
-        // 通过 clusterId，runtime id， topic name 删除
 
-        List<TopicEntity> deleteList = new ArrayList<>();
-        // 如果 是 eventmesh 集群。 得到 eventmesh 所有 runtime ， 所有存储
-        clusterMetadataDomain.operation(topicEntity.getClusterId(), new ClusterOperationHandler() {
-
-            @Override
-            public void handler(RuntimeMetadata baseSyncBase) {
-                TopicEntity topicEntity = new TopicEntity();
-                deleteList.add(topicEntity);
-                topicEntity.setClusterId(baseSyncBase.getClusterId());
-                topicEntity.setClusterType(baseSyncBase.getClusterType());
-                topicEntity.setRuntimeId(baseSyncBase.getId());
-            }
-
-            @Override
-            public void handler(ClusterMetadata clusterDO) {
-                TopicEntity topicEntity = new TopicEntity();
-                deleteList.add(topicEntity);
-                topicEntity.setClusterId(clusterDO.getClusterId());
-                topicEntity.setClusterType(clusterDO.getClusterType());
-            }
-        });
-        return topicService.deleteTopicByRuntimeIdAndTopicName(deleteList);
+        return topicService.deleteTopicByRuntimeIdAndTopicName(
+            this.clusterAndRuntimeDomain.queryClusterInSync(QueryClusterInSyncDO.create(topicEntity.getClusterId(), () -> {
+                TopicEntity entity = new TopicEntity();
+                entity.setTopicName(topicEntity.getTopicName());
+                return entity;
+            })));
     }
 
     @PostMapping("createTopic")

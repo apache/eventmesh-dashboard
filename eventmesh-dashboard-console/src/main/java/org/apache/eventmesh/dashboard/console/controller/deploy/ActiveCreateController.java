@@ -26,11 +26,11 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.deploy.ActiveCreateControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateClusterDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateEventMeshSpaceDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateRuntimeDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateTheEntireClusterDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateTheEventClusterDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateClusterDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateEventMeshSpaceDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateRuntimeDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateTheEntireClusterDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateTheEventClusterDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 

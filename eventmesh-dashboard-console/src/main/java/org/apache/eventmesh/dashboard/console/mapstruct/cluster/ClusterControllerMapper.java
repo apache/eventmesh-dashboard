@@ -19,11 +19,17 @@
 package org.apache.eventmesh.dashboard.console.mapstruct.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
-import org.apache.eventmesh.dashboard.console.modle.cluster.CreateClusterBySimpleDataDTO;
-import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.QueryClusterByOrganizationIdAndTypeDTO;
-import org.apache.eventmesh.dashboard.console.modle.cluster.cluster.QueryRelationClusterByClusterIdAndTypeDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateClusterDTO;
+import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryClusterTreeDO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.CreateClusterBySimpleDataDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.BatchCreateClusterDataDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.QueryClusterByOrganizationIdAndTypeDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.QueryRelationClusterByClusterIdAndTypeDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.QueryTreeByClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.SimpleCreateClusterDataDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateClusterDTO;
+
+import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -37,6 +43,8 @@ public interface ClusterControllerMapper {
     ClusterControllerMapper INSTANCE = Mappers.getMapper(ClusterControllerMapper.class);
 
 
+    QueryClusterTreeDO queryTreeByClusterId(QueryTreeByClusterIdDTO data);
+
     ClusterEntity queryClusterByOrganizationIdAndType(QueryClusterByOrganizationIdAndTypeDTO dto);
 
     ClusterEntity queryRelationClusterByClusterIdAndType(QueryRelationClusterByClusterIdAndTypeDTO dto);
@@ -46,5 +54,11 @@ public interface ClusterControllerMapper {
     ClusterEntity toClusterEntity(ClusterIdDTO clusterIdDTO);
 
     ClusterEntity createClusterDTO(CreateClusterDTO createClusterDTO);
+
+    ClusterEntity toClusterEntity(SimpleCreateClusterDataDTO data);
+
+    ClusterEntity toClusterEntity(BatchCreateClusterDataDTO data);
+
+    List<ClusterEntity> simpleCreateClusterDataToClusterEntity(List<SimpleCreateClusterDataDTO> data);
 
 }

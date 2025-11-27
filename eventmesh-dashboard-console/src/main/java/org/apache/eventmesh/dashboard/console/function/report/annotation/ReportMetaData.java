@@ -77,6 +77,8 @@ public class ReportMetaData {
 
     private List<Field> fieldList;
 
+    private Map<String,Field> aggregationFieldMap;
+
 
     @Data
     public static class AggregationClass{

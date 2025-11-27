@@ -87,6 +87,8 @@ public enum ClusterTrusteeshipType {
 
         NOT_EXECUTED,
 
+        ERROR_ING,
+
         FAIL,
 
         ;

@@ -124,8 +124,8 @@ public class CollectManage {
         CollectExporter collectExporter = new CollectExporter();
         collectExporter.setUrl(url);
         collectExporter.setClusterMetadata(clusterMetadata);
-        collectExporter.setClassMap(this.reportHandlerManage.getReportMetaDataMap());
-        clusterMetadata.getClusterType();
+        collectExporter.setReportMetaDataMap(this.reportHandlerManage.getReportMetaDataMap());
+        collectExporter.setAggregationMetaDataMap(this.reportHandlerManage.getAggregationMetaDataMap());
         collectExporter.init();
         collectExporterMap.put(clusterMetadata.getClusterId(), collectExporter);
 
@@ -184,8 +184,8 @@ public class CollectManage {
                    collectCacheMap.remove(clusterMetadata.getId());
                    collectExecuteMap.remove(clusterMetadata.getId());
                    clusterMetadataMap.remove(clusterMetadata.getId());
-
                    collectExporterMap.remove(clusterMetadata.getId());
+                   return;
                }
                 clusterMetadataMap.put(clusterMetadata.getId(), clusterMetadata);
             });

@@ -18,7 +18,7 @@
 
 package org.apache.eventmesh.dashboard.console.controller.deploy.handler;
 
-import org.apache.eventmesh.dashboard.console.controller.deploy.DeployBeforeCheck;
+import org.apache.eventmesh.dashboard.console.controller.deploy.base.DeployBeforeCheck;
 
 /**
  *

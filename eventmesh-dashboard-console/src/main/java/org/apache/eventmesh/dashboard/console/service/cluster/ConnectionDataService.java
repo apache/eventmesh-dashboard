@@ -21,9 +21,9 @@ package org.apache.eventmesh.dashboard.console.service.cluster;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.connector.ConnectorEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.dto.connection.CreateConnectionDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.connection.GetConnectionListDTO;
-import org.apache.eventmesh.dashboard.console.modle.vo.connection.ConnectionListVO;
+import org.apache.eventmesh.dashboard.console.model.dto.connection.CreateConnectionDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.connection.GetConnectionListDTO;
+import org.apache.eventmesh.dashboard.console.model.vo.connection.ConnectionListVO;
 
 import java.util.List;
 

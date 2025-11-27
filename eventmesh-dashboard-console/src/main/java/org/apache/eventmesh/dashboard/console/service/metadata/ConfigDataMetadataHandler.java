@@ -20,9 +20,6 @@ package org.apache.eventmesh.dashboard.console.service.metadata;
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,14 +27,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ConfigDataMetadataHandler extends AbstractDBDataMetadataHandler<ConfigEntity> {
 
-    @Override
-    public void handleAll(Collection<ConfigEntity> allData, List<ConfigEntity> addData, List<ConfigEntity> updateData, List<ConfigEntity> deleteData) {
-
-    }
-
-
-    @Override
-    public List<ConfigEntity> doGetData() {
-        return List.of();
-    }
 }

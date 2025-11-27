@@ -18,30 +18,28 @@
 
 package org.apache.eventmesh.dashboard.console.controller.deploy.uninstall;
 
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
+import org.apache.eventmesh.dashboard.console.controller.deploy.base.AbstractUpdateHandler;
 import org.apache.eventmesh.dashboard.console.controller.deploy.handler.UpdateHandler;
-import org.apache.eventmesh.dashboard.console.domain.ClusterAndRuntimeDomain;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.modle.DO.domain.clusterAndRuntimeDomain.ClusterAndRuntimeOfRelationshipDO;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UninstallClusterHandler implements UpdateHandler<ClusterEntity> {
+public class UninstallClusterHandler extends AbstractUpdateHandler implements UpdateHandler<ClusterEntity> {
 
-    @Autowired
-    private ClusterAndRuntimeDomain clusterAndRuntimeDomain;
 
     @Override
     public void init() {
 
     }
 
+    /**
+     *  只需要 修改状态，通知删除 容器就行了
+     */
     @Override
     public void handler(ClusterEntity clusterEntity) {
+        this.updateDeployStatus(clusterEntity, DeployStatusType.UNINSTALL);
 
-        // 查询所有 cluster 标记 状态
-        ClusterAndRuntimeOfRelationshipDO clusterAndRuntimeOfRelationshipDO = clusterAndRuntimeDomain.getAllClusterAndRuntimeByCluster(clusterEntity);
-        // 查询 所有 runtime 标记 ing
     }
 }

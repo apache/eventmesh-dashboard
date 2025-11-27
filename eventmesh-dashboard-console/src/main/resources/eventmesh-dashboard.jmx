@@ -99,9 +99,9 @@
           </HTTPSamplerProxy>
           <hashTree/>
         </hashTree>
-        <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="cluster" enabled="false"/>
+        <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="cluster"/>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="查询组织下 某个 cluster type 的 cluster" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="查询组织下 某个 cluster type 的 cluster" enabled="false">
             <stringProp name="HTTPSampler.domain">${host}</stringProp>
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.path">${path}/user/cluster/createEventMeshClusterByOnlyData</stringProp>
@@ -123,7 +123,7 @@
             </elementProp>
           </HTTPSamplerProxy>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="查询组织下 某个 cluster type 的 cluster" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="查询组织下 某个 cluster type 的 cluster" enabled="false">
             <stringProp name="HTTPSampler.domain">${host}</stringProp>
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.path">${path}/user/cluster/queryClusterByOrganizationIdAndType</stringProp>
@@ -139,6 +139,26 @@
   &quot;clusterId&quot;:1,&#xd;
   &quot;clusterType&quot;: &quot;EVENTMESH_CLUSTER&quot;&#xd;
 }</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP请求">
+            <stringProp name="HTTPSampler.domain">${host}</stringProp>
+            <stringProp name="HTTPSampler.port">${port}</stringProp>
+            <stringProp name="HTTPSampler.path">${path}/user/cluster/createClusterByBachAddress</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;clusterType&quot;:&quot;STORAGE_JVM_CLUSTER&quot;,&quot;description&quot;:&quot;mock_describe1760760956300&quot;,&quot;mainClusterId&quot;:82,&quot;name&quot;:&quot;mock_rocketmq1760760956294&quot;,&quot;organizationId&quot;:1,&quot;simpleCreateClusterDataList&quot;:[{&quot;address&quot;:&quot;127.0.0.11,127.0.0.12,127.0.0.13:9999&quot;,&quot;clusterTrusteeshipType&quot;:&quot;TRUSTEESHIP_FIND_REVERSE&quot;,&quot;clusterType&quot;:&quot;STORAGE_JVM_META&quot;,&quot;description&quot;:&quot;mock_describe1760760956302&quot;,&quot;firstToWhom&quot;:&quot;RUNTIME&quot;,&quot;name&quot;:&quot;storage-meta1760760956300&quot;,&quot;version&quot;:&quot;1.0.0&quot;}],&quot;version&quot;:&quot;1.0.0&quot;}&#xd;
+i</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
               </collectionProp>
@@ -171,7 +191,7 @@
           </HTTPSamplerProxy>
           <hashTree/>
         </hashTree>
-        <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="active" enabled="true"/>
+        <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="active" enabled="false"/>
         <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="创建 eventmesh 空间">
             <stringProp name="HTTPSampler.domain">${host}</stringProp>
@@ -194,7 +214,7 @@
           </HTTPSamplerProxy>
           <hashTree/>
         </hashTree>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="查看结果树" enabled="true">
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="查看结果树">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>

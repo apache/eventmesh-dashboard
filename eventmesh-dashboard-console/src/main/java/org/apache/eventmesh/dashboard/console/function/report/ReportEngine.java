@@ -40,5 +40,7 @@ public interface ReportEngine {
         data.forEach(this::batchInsert);
     }
 
+    void deleteData();
+
     void createReportHandler(ReportMetaData reportMetaData, List<Field> fieldList);
 }

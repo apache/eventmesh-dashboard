@@ -23,12 +23,12 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.ReplicationType;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateClusterDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateRuntimeDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateTheEntireClusterDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateTheEventClusterDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateTheEventClusterDTO.CreateCapStorageClusterDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateTheEventClusterDTO.RuntimeClusterDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateClusterDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateRuntimeDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateTheEntireClusterDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateTheEventClusterDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateTheEventClusterDTO.CreateCapStorageClusterDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateTheEventClusterDTO.RuntimeClusterDTO;
 
 import java.util.ArrayList;
 import java.util.List;

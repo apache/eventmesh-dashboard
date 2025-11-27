@@ -20,8 +20,8 @@ package org.apache.eventmesh.dashboard.console.controller.message;
 
 
 import org.apache.eventmesh.dashboard.console.domain.OperationRangeDomain;
-import org.apache.eventmesh.dashboard.console.modle.message.offset.QueryOffsetByMessageMetadataDTO;
-import org.apache.eventmesh.dashboard.console.modle.message.offset.ResetOffsetDTO;
+import org.apache.eventmesh.dashboard.console.model.message.offset.QueryOffsetByMessageMetadataDTO;
+import org.apache.eventmesh.dashboard.console.model.message.offset.ResetOffsetDTO;
 import org.apache.eventmesh.dashboard.service.remoting.OffsetRemotingService;
 
 import org.springframework.beans.factory.annotation.Autowired;

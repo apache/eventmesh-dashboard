@@ -52,6 +52,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Nullable;
+
 import lombok.Data;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -86,6 +88,7 @@ public class Health2Service {
             Objects.equals(checkType.healthType(), HealthCheckTypeEnum.PING) ? HEALTH_PING_CHECK_CLASS_CACHE : HEALTH_TOPIC_CHECK_CLASS_CACHE;
 
         for (ClusterType clusterType : checkType.clusterType()) {
+            log.info("cluster type:{}  health class name is {}", clusterType, clazz.getSimpleName());
             map.put(clusterType, clazz);
         }
     }
@@ -102,7 +105,7 @@ public class Health2Service {
             final AtomicInteger counter = new AtomicInteger(0);
 
             @Override
-            public Thread newThread(Runnable r) {
+            public Thread newThread(@Nullable Runnable r) {
                 return new Thread(r, "health-manager-" + counter.incrementAndGet());
             }
         });
@@ -113,15 +116,17 @@ public class Health2Service {
     private LocalDateTime beginTime = LocalDateTime.now();
 
 
+    @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
     public void register(BaseSyncBase baseSyncBase) {
         try {
             HealthCheckWrapper healthCheckWrapper = this.createHealthCheckWrapper(baseSyncBase, HealthCheckTypeEnum.PING);
             if (baseSyncBase.getClusterType().isHealthTopic()) {
                 this.createHealthCheckWrapper(baseSyncBase, HealthCheckTypeEnum.TOPIC);
             }
-            if(log.isDebugEnabled()){
-                AbstractCreateSDKConfig abstractCreateSDKConfig = (AbstractCreateSDKConfig)healthCheckWrapper.getCheckService().getCreateSDKConfig();
-                log.debug("register health check service for {} , {} ,{}", baseSyncBase.getClusterType(),baseSyncBase.getId(),
+            if (log.isDebugEnabled()) {
+                AbstractCreateSDKConfig abstractCreateSDKConfig = (AbstractCreateSDKConfig) healthCheckWrapper.getCheckService().getCreateSDKConfig();
+                log.debug("register health check service for {} , metadata type {} , {} ,{}", baseSyncBase.getClusterType(),
+                    baseSyncBase.getClass().getSimpleName(), baseSyncBase.getId(),
                     abstractCreateSDKConfig.getUniqueKey());
             }
         } catch (Exception e) {
@@ -137,9 +142,9 @@ public class Health2Service {
         }
         this.checkServiceMap.remove(getKey(baseSyncBase, HealthCheckTypeEnum.PING));
         this.checkServiceMap.remove(getKey(baseSyncBase, HealthCheckTypeEnum.TOPIC));
-        if(log.isDebugEnabled()){
-            RuntimeMetadata runtimeMetadata = (RuntimeMetadata)baseSyncBase;
-            log.debug("unRegister health check service for {} , {} ,{},{}", baseSyncBase.getClusterType(),baseSyncBase.getId(),
+        if (log.isDebugEnabled()) {
+            RuntimeMetadata runtimeMetadata = (RuntimeMetadata) baseSyncBase;
+            log.debug("unRegister health check service for {} , {} ,{},{}", baseSyncBase.getClusterType(), baseSyncBase.getId(),
                 runtimeMetadata.getHost(), runtimeMetadata.getPort());
         }
     }
@@ -175,7 +180,16 @@ public class Health2Service {
     }
 
     public void executeAll() {
-        if(checkServiceMap.isEmpty()){
+        try{
+            this.doExecuteAll();
+        }catch (Exception e){
+            log.error(e.getMessage(), e);
+        }
+    }
+
+
+    public void doExecuteAll(){
+        if (checkServiceMap.isEmpty()) {
             log.info("check service is empty");
             return;
         }
@@ -188,12 +202,13 @@ public class Health2Service {
             DefaultHealthCheckCallback healthExecutor = new DefaultHealthCheckCallback();
             healthExecutor.healthCheckWrapper = wrapper;
             healthExecutor.countDownLatch = countDownLatch;
-            if(wrapper.isCap()){
-                healthCheckResultEntityList.add(wrapper.createHealthCheckResultEntity());
-                healthExecutor.healthCheckResultEntity = wrapper.getHealthCheckResultEntity();
-            }else{
+            //
+            if (wrapper.isCap()) {
                 healthExecutor.healthCheckResultEntityMap = wrapper.createHealthCheckResultEntityMap();
                 healthCheckResultEntityList.addAll(healthExecutor.healthCheckResultEntityMap.values());
+            } else {
+                healthCheckResultEntityList.add(wrapper.createHealthCheckResultEntity());
+                healthExecutor.healthCheckResultEntity = wrapper.getHealthCheckResultEntity();
             }
 
             threadPoolExecutor.execute(() -> {
@@ -204,21 +219,21 @@ public class Health2Service {
                 }
             });
         });
-//        try {
-//            dataService.batchInsertHealthCheckResult(healthCheckResultEntityList);
-//        } catch (Exception e) {
-//            log.error("batchInsertHealthCheckResult failed", e);
-//        }
+        try {
+            dataService.batchInsertHealthCheckResult(healthCheckResultEntityList);
+        } catch (Exception e) {
+            log.error("batchInsertHealthCheckResult failed", e);
+        }
         try {
             boolean await = countDownLatch.await(3, TimeUnit.SECONDS);
-            log.info("await ia {} downLatch count {}, startup cost {} ms", await, countDownLatch.getCount(),System.currentTimeMillis() - startTime);
+            log.info("await ia {} downLatch count {}, startup cost {} ms", await, countDownLatch.getCount(), System.currentTimeMillis() - startTime);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         } finally {
             try {
                 LocalDateTime endTime = LocalDateTime.now();
                 healthCheckResultEntityList.forEach(healthCheckResultEntity -> {
-                    if(healthCheckResultEntity.getResult() == HealthCheckStatus.ING){
+                    if (healthCheckResultEntity.getResult() == HealthCheckStatus.ING) {
                         healthCheckResultEntity.setResult(HealthCheckStatus.TIMEOUT);
                         healthCheckResultEntity.setFinishTime(endTime);
                     }
@@ -243,7 +258,7 @@ public class Health2Service {
 
         private HealthCheckResultEntity healthCheckResultEntity;
 
-        private Map<String,HealthCheckResultEntity> healthCheckResultEntityMap;
+        private Map<String, HealthCheckResultEntity> healthCheckResultEntityMap;
 
         @Override
         public void onSuccess() {
@@ -277,8 +292,8 @@ public class Health2Service {
 
 
         private HealthCheckResultEntity createHealthCheckResultEntity() {
-            if(Objects.isNull(this.address)){
-                this.address = ((AbstractCreateSDKConfig)checkService.getCreateSDKConfig()).doUniqueKey();
+            if (Objects.isNull(this.address)) {
+                this.address = ((AbstractCreateSDKConfig) checkService.getCreateSDKConfig()).doUniqueKey();
             }
             return this.createHealthCheckResultEntity(this.address);
         }
@@ -299,19 +314,19 @@ public class Health2Service {
             return healthCheckResultEntity;
         }
 
-        public Map<String,HealthCheckResultEntity> createHealthCheckResultEntityMap() {
-            Map<String,HealthCheckResultEntity> healthCheckResultEntityMap = new HashMap<>();
-            AbstractMultiCreateSDKConfig abstractMultiCreateSDKConfig = (AbstractMultiCreateSDKConfig)this.checkService.getCreateSDKConfig();
-            for(String address : abstractMultiCreateSDKConfig.getNetAddresses()){
-                healthCheckResultEntityMap.put(address,createHealthCheckResultEntity(address));
+        @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
+        public Map<String, HealthCheckResultEntity> createHealthCheckResultEntityMap() {
+            Map<String, HealthCheckResultEntity> healthCheckResultEntityMap = new HashMap<>();
+            AbstractMultiCreateSDKConfig abstractMultiCreateSDKConfig = (AbstractMultiCreateSDKConfig) this.checkService.getCreateSDKConfig();
+            for (String address : abstractMultiCreateSDKConfig.getNetAddresses()) {
+                healthCheckResultEntityMap.put(address, createHealthCheckResultEntity(address));
             }
             return healthCheckResultEntityMap;
         }
 
         @Override
         public boolean equals(Object object) {
-            if (object instanceof HealthCheckWrapper) {
-                HealthCheckWrapper wrapper = (HealthCheckWrapper) object;
+            if (object instanceof HealthCheckWrapper wrapper) {
                 return this.baseSyncBase.getId().equals(wrapper.getBaseSyncBase().getId()) && this.baseSyncBase.getClusterType()
                     .equals(wrapper.getBaseSyncBase().getClusterType());
             }
@@ -323,7 +338,7 @@ public class Health2Service {
             return Health2Service.this.getKey(this.baseSyncBase, this.healthCheckTypeEnum);
         }
 
-        public boolean isCap(){
+        public boolean isCap() {
             return ClusterSyncMetadataEnum.getClusterFramework(this.baseSyncBase.getClusterType()).isCAP();
         }
 

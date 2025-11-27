@@ -26,50 +26,83 @@ import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopicRes
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.DeleteTopicRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.DeleteTopicResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResponse;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
 import org.apache.eventmesh.dashboard.service.remoting.TopicRemotingService;
 
+import org.apache.rocketmq.common.TopicFilterType;
+import org.apache.rocketmq.common.attribute.AttributeParser;
+import org.apache.rocketmq.common.constant.PermName;
+import org.apache.rocketmq.remoting.protocol.RequestCode;
 import org.apache.rocketmq.remoting.protocol.body.TopicConfigSerializeWrapper;
+import org.apache.rocketmq.remoting.protocol.header.CreateTopicRequestHeader;
+import org.apache.rocketmq.remoting.protocol.header.DeleteTopicRequestHeader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import javax.annotation.Resource;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 
 
 public class RocketMQTopicRemotingService extends AbstractRocketMQRemotingService implements TopicRemotingService {
 
-    @Resource
+    private static final TypeReference<Map<String, String>> ATTRIBUTES_TYPE_REFERENCE = new TypeReference<Map<String, String>>() {
+    };
+
+
     @Override
     @RemotingAction(support = false, substitution = RemotingType.STORAGE)
-    public CreateTopicResult createTopic(CreateTopic2Request createTopicRequest) {
-        CreateTopicResult createTopicResult = new CreateTopicResult();
-        //this.defaultMQAdminExt.createAndUpdateTopicConfig(master, topicConfig);
-        return null;
-    }
+    public CreateTopicResult createTopic(CreateTopic2Request createTopicRequest) throws Exception {
+        TopicMetadata topicMetadata = createTopicRequest.getMetaData();
 
-    @Override
-    public DeleteTopicResult deleteTopic(DeleteTopicRequest deleteTopicRequest) {
-        DeleteTopicResult deleteTopicResult = new DeleteTopicResult();
-        //this.defaultMQAdminExt.deleteTopic(deleteTopicRequest.getTopicMetadata().getTopicName(), null);
-        return null;
-    }
+        CreateTopicRequestHeader requestHeader = new CreateTopicRequestHeader();
+        requestHeader.setTopic(topicMetadata.getTopicName());
+        requestHeader.setDefaultTopic(topicMetadata.getTopicName());
+        requestHeader.setReadQueueNums(topicMetadata.getReadQueueNum());
+        requestHeader.setWriteQueueNums(topicMetadata.getWriteQueueNum());
+        // 下面的参数是否定义到 数据库表里面
+        requestHeader.setPerm(PermName.PERM_READ | PermName.PERM_WRITE);
 
-    @Override
-    public GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest)
-        throws Exception {
-        GetTopicsResult getTopicsResult = new GetTopicsResult();
-        GetTopicsResponse getTopicsResponse = new GetTopicsResponse();
-        List<TopicMetadata> list = new ArrayList<>();
-        getTopicsResult.setData(getTopicsResponse);
-        TopicConfigSerializeWrapper topicConfigSerializeWrapper = this.getClient().getAllTopicConfig(null, 3000);
-        if (!topicConfigSerializeWrapper.getTopicConfigTable().isEmpty()) {
-            topicConfigSerializeWrapper.getTopicConfigTable().forEach((k, v) -> {
-                TopicMetadata topicMetadata = new TopicMetadata();
-                //topicMetadata.setClusterId();
-            });
+        TopicFilterType topicFilterType = Objects.isNull(topicMetadata.getTopicFilterType()) ? TopicFilterType.SINGLE_TAG
+            : TopicFilterType.valueOf(topicMetadata.getTopicFilterType());
+        requestHeader.setTopicFilterType(topicFilterType.name());
+        requestHeader.setTopicSysFlag(0);
+        requestHeader.setOrder(!Objects.isNull(topicMetadata.getOrder()) && topicMetadata.getOrder() == 1);
+        if(Objects.nonNull(topicMetadata.getTopicConfig())){
+            Map<String, String> configMap = JSON.parseObject(topicMetadata.getTopicConfig(), ATTRIBUTES_TYPE_REFERENCE);
+            requestHeader.setAttributes(AttributeParser.parseToString(configMap));
         }
-        return null;
+        return this.invokeSync(RequestCode.UPDATE_AND_CREATE_TOPIC, requestHeader, new CreateTopicResult());
+    }
+
+    @Override
+    public DeleteTopicResult deleteTopic(DeleteTopicRequest deleteTopicRequest) throws Exception {
+        TopicMetadata topicMetadata = deleteTopicRequest.getMetaData();
+        DeleteTopicRequestHeader requestHeader = new DeleteTopicRequestHeader();
+        requestHeader.setTopic(topicMetadata.getTopicName());
+        return this.invokeSync(RequestCode.DELETE_TOPIC_IN_BROKER, requestHeader, new CreateTopicResult());
+    }
+
+    @Override
+    public GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest) throws Exception {
+        RocketMQFunction<TopicConfigSerializeWrapper> handlerFunction = o -> {
+            List<TopicMetadata> topicMetadataList = new ArrayList<>();
+            o.getTopicConfigTable().forEach((key, value) -> {
+                TopicMetadata topicMetadata = new TopicMetadata();
+                topicMetadata.setTopicName(value.getTopicName());
+                topicMetadata.setReadQueueNum(value.getReadQueueNums());
+                topicMetadata.setWriteQueueNum(value.getWriteQueueNums());
+                topicMetadata.setTopicFilterType(value.getTopicFilterType().name());
+                topicMetadata.setOrder(value.isOrder()?1:0);
+                topicMetadata.setTopicConfig(JSON.toJSONString(value.getAttributes()));
+                topicMetadataList.add(topicMetadata);
+            });
+            return topicMetadataList;
+        };
+        RequestHandler requestHandler = RequestHandler.builder().code(RequestCode.GET_ALL_TOPIC_CONFIG).resultClass(GetTopicsResult.class)
+            .resultDataClass(TopicConfigSerializeWrapper.class).handlerFunction(handlerFunction).build();
+        return this.invokeSync(requestHandler);
     }
 }

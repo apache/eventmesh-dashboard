@@ -73,7 +73,7 @@ public class SyncMetadataCreateFactory {
     private ColonyDO<ClusterDO> colonyDO;
 
     /**
-     *  初次加载量非常大，设置一个一个变量识别初次加载
+     * 初次加载量非常大，设置一个一个变量识别初次加载
      */
     private boolean printIntiGetData = false;
 
@@ -87,6 +87,7 @@ public class SyncMetadataCreateFactory {
 
     private List<Object> deleteData = new ArrayList<>();
 
+
     public void loadData() {
         // TODO 加载的时候， 目前永远不会加载 Runtime
         if (metadataType.isReadOnly()) {
@@ -97,6 +98,9 @@ public class SyncMetadataCreateFactory {
                 第一次查询需要过滤果无效 cluster 与 runtime 的数据
          */
         List<Object> dataList = dataMetadataHandler.getData();
+        if (log.isTraceEnabled()) {
+            log.trace("$sync metadata type {} load data: {}",dataMetadataHandler.getClass().getSimpleName(), dataList.size());
+        }
         dataList.forEach(data -> {
             BaseRuntimeIdBase baseRuntimeIdBase = (BaseRuntimeIdBase) this.convertMetaData.toMetaData(data);
             ClusterType clusterType = baseRuntimeIdBase.getClusterType();
@@ -110,12 +114,12 @@ public class SyncMetadataCreateFactory {
             }
             ClusterFramework clusterFramework =
                 ClusterSyncMetadataEnum.getClusterFramework(clusterType);
-            if(this.printIntiGetData){
+            if (this.printIntiGetData) {
                 this.printIntiGetData = false;
 
-            }else{
+            } else {
                 log.info("$sync from database load , cluster is {} runtime is {} u is {}",
-                    baseRuntimeIdBase.getClusterId(),baseRuntimeIdBase.getRuntimeId(),baseRuntimeIdBase.getId());
+                    baseRuntimeIdBase.getClusterId(), baseRuntimeIdBase.getRuntimeId(), baseRuntimeIdBase.getId());
             }
             if (clusterFramework.isCAP()) {
                 this.clusterMetadataMap.computeIfAbsent(baseRuntimeIdBase.getClusterId(), (value) -> new ArrayList<>()).add(baseRuntimeIdBase);
@@ -128,28 +132,34 @@ public class SyncMetadataCreateFactory {
 
     public void persistence() {
         if (this.deleteData.isEmpty() && this.updateData.isEmpty() && this.clusterMetadataMap.isEmpty()) {
-            if (log.isDebugEnabled()) {
-                log.debug("persistence {} metadata is empty", metadataType);
+            if (log.isTraceEnabled()) {
+                log.trace("#sync persistence {} metadata is empty", metadataType);
             }
             return;
         }
-        this.dataMetadataHandler.handleAll(null, this.addData, this.updateData, this.deleteData);
-        this.addData = new ArrayList<>();
-        this.updateData = new ArrayList<>();
-        this.deleteData = new ArrayList<>();
+
+        List<Object> addData, updateData, deleteData;
+        synchronized (this) {
+            addData = this.addData;
+            updateData = this.updateData;
+            deleteData = this.deleteData;
+            this.addData = new ArrayList<>();
+            this.updateData = new ArrayList<>();
+            this.deleteData = new ArrayList<>();
+        }
+        this.dataMetadataHandler.handleAll(null, addData, updateData, deleteData);
     }
 
     /**
      * 需要记录 这里可以记录id， 第一次全量加载，之后查询创建的 id 的
-     *
      */
     public MetadataHandler<BaseClusterIdBase> createDataMetadataHandler(BaseSyncBase baseSyncBase) {
         Map<Long, List<BaseClusterIdBase>> mapetadataMap =
             Objects.equals(baseSyncBase.getClass(), RuntimeMetadata.class) ? this.runtimeMetadataMap : this.clusterMetadataMap;
         Global2Request global2Request = new Global2Request();
-        if(Objects.equals(baseSyncBase.getClass(), RuntimeMetadata.class)){
+        if (Objects.equals(baseSyncBase.getClass(), RuntimeMetadata.class)) {
             global2Request.setRuntimeId(baseSyncBase.getId());
-        }else{
+        } else {
             global2Request.setClusterId(baseSyncBase.getClusterId());
         }
 
@@ -183,15 +193,17 @@ public class SyncMetadataCreateFactory {
             }
 
             private void addAll(List<Object> persistenceData, List<BaseClusterIdBase> handleData) {
-                handleData.forEach(data -> {
-                    persistenceData.add(SyncMetadataCreateFactory.this.convertMetaData.toEntity(data));
-                });
+                List<Object> newHandleData = handleData.stream().map(SyncMetadataCreateFactory.this.convertMetaData::toEntity).toList();
+                synchronized (SyncMetadataCreateFactory.this) {
+                    persistenceData.addAll(newHandleData);
+                }
             }
 
             /**
              * 这里 如果 baseSyncBase 第一次调用次方法，如何没有 没有数据可以直接通过 id加载 </p>
              * 防止有延迟，第一次没有数据。可以延迟 10次 或则 5秒
              */
+            @SuppressWarnings("unchecked")
             @Override
             public List<BaseClusterIdBase> getData() {
                 List<BaseClusterIdBase> baseClusterIdBases = mapetadataMap.remove(baseSyncBase.getId());
@@ -202,6 +214,12 @@ public class SyncMetadataCreateFactory {
                     }
                 }
                 return baseClusterIdBases;
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public List<BaseClusterIdBase> getData(Global2Request request) {
+                return (List<BaseClusterIdBase>) ((List) dataMetadataHandler.getData(global2Request));
             }
 
         };

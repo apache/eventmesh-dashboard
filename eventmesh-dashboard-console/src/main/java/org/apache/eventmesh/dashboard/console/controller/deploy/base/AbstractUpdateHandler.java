@@ -17,18 +17,56 @@
 
 package org.apache.eventmesh.dashboard.console.controller.deploy.base;
 
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
+import org.apache.eventmesh.dashboard.console.domain.ClusterAndRuntimeDomain;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.ClusterAndRuntimeOfRelationshipDO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
+import org.apache.eventmesh.dashboard.console.service.deploy.DeployService;
 import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
+import org.apache.eventmesh.dashboard.console.service.message.TopicService;
+import org.apache.eventmesh.dashboard.console.spring.support.KubernetesManage;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractUpdateHandler {
 
-    private ClusterService clusterService;
+    @Autowired
+    protected DeployService deployService;
 
-    private ConfigService configService;
+    @Autowired
+    protected ClusterService clusterService;
 
-    private RuntimeService runtimeService;
+    @Autowired
+    protected RuntimeService runtimeService;
 
-    private ClusterRelationshipService clusterRelationshipService;
+    @Autowired
+    protected TopicService topicService;
+
+    @Autowired
+    protected ConfigService configService;
+
+    @Autowired
+    protected ClusterRelationshipService clusterRelationshipService;
+
+    @Autowired
+    protected ClusterAndRuntimeDomain clusterAndRuntimeDomain;
+
+    @Autowired
+    protected KubernetesManage kubernetesManage;
+    
+    
+    protected void updateDeployStatus(ClusterEntity clusterEntity, DeployStatusType deployStatus) {
+        ClusterAndRuntimeOfRelationshipDO data =
+            this.clusterAndRuntimeDomain.getAllClusterAndRuntimeByCluster(clusterEntity, deployStatus);
+
+        data.getRuntimeEntityList().forEach(runtime -> {
+           runtime.setDeployStatusType(deployStatus);
+        });
+        this.runtimeService.batchUpdateDeployStatusType(data.getRuntimeEntityList(), deployStatus);
+    }
+
+
 }

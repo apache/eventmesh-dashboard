@@ -28,9 +28,9 @@ import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
-import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
-import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.ClusterAllMetadataDO;
+import org.apache.eventmesh.dashboard.console.model.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
+import org.apache.eventmesh.dashboard.console.model.DO.runtime.QueryRuntimeByBigExpandClusterDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.ClusterAllMetadataDO;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
 import java.util.ArrayList;
@@ -142,12 +142,12 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     @Override
     public void batchUpdateDeployStatusType(List<RuntimeEntity> runtimeEntitieList) {
-        this.runtimeMapper.batchUpdateDeployStatusType(runtimeEntitieList);
+        this.runtimeMapper.batchUpdateDeployStatusTypeByList(runtimeEntitieList);
     }
 
     @Override
     public void batchUpdateDeployStatusType(List<RuntimeEntity> runtimeEntitieList, DeployStatusType deployStatusType) {
-        this.runtimeMapper.batchUpdateDeployStatusType(runtimeEntitieList, deployStatusType);
+        this.runtimeMapper.batchUpdateDeployStatusTypeByListAndType(runtimeEntitieList, deployStatusType);
     }
 
 

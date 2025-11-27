@@ -110,6 +110,9 @@ public class MetadataSyncManage {
     private ColonyDO<ClusterDO> colonyDO;
 
 
+    private Integer period;
+
+
     public void init(Integer initialDelay, Integer period, List<DatabaseAndMetadataMapper> databaseAndMetadataMapperList) {
 
         Map<Class<?>, DatabaseAndMetadataMapper> databaseAndMetadataMapperMap = new HashMap<>();
@@ -145,8 +148,13 @@ public class MetadataSyncManage {
             syncMetadataCreateFactory.setDatabaseAndMetadataMapper(databaseAndMetadataMapper);
             syncMetadataCreateFactory.setColonyDO(colonyDO);
 
+            log.info("#sync type {} , isReadOnly {} databaseAndMetadataMapper class:{}",
+                databaseAndMetadataMapper.getMetaType(),
+                databaseAndMetadataMapper.getMetaType().isReadOnly(),
+                databaseAndMetadataMapper.getDatabaseHandlerClass().getSimpleName());
             syncMetadataCreateFactoryMap.put(databaseAndMetadataMapper.getMetaType(), syncMetadataCreateFactory);
         });
+        this.period = period;
         // TODO 测试时候，可以关闭
         scheduledExecutorService.scheduleAtFixedRate(this::run, initialDelay, period, TimeUnit.MILLISECONDS);
     }
@@ -154,8 +162,8 @@ public class MetadataSyncManage {
     public void run() {
         final long startTime = System.currentTimeMillis();
         int index = atomicInteger.incrementAndGet();
-        if (log.isDebugEnabled()) {
-            log.debug("{} run , index {}", this.getClass().getSimpleName(), index);
+        if (log.isTraceEnabled()) {
+            log.trace("{} run , index {}", this.getClass().getSimpleName(), index);
         }
         // 先把 数据持久化到 databases
         // 然后从 databases 加载数据
@@ -169,8 +177,8 @@ public class MetadataSyncManage {
                     log.error(e.getMessage(), e);
                 } finally {
                     countDownLatch.countDown();
-                    if (log.isDebugEnabled()) {
-                        log.debug("metadata {} index {} sync time {} ", value.getMetadataType(), index, (System.currentTimeMillis() - startTime));
+                    if (log.isTraceEnabled()) {
+                        log.trace("metadata {} index {} sync time {} ", value.getMetadataType(), index, (System.currentTimeMillis() - startTime));
                     }
                 }
             });
@@ -182,7 +190,9 @@ public class MetadataSyncManage {
         } catch (InterruptedException e) {
             log.error(e.getMessage(), e);
         }
-        log.info("sync db and result data persistence complete. time:{}", (System.currentTimeMillis() - startTime));
+        if (log.isTraceEnabled()) {
+            log.trace("sync db and result data persistence complete. time:{}", (System.currentTimeMillis() - startTime));
+        }
         // 执行同步行为
         metadataSyncConfigMap.forEach((key, value) -> {
             value.forEach(threadPoolExecutor::execute);
@@ -190,22 +200,26 @@ public class MetadataSyncManage {
     }
 
 
-    private void persistence(){
+    private void persistence() {
         long startTime = System.currentTimeMillis();
         try {
             this.metadataSyncResultHandler.persistence();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-        }finally {
-            if (log.isDebugEnabled()) {
-                log.debug("complete persistence, time {} ", (System.currentTimeMillis() - startTime));
+        } finally {
+            if (log.isTraceEnabled()) {
+                log.trace("complete persistence, time {} ", (System.currentTimeMillis() - startTime));
             }
         }
     }
 
 
     public void register(BaseSyncBase baseSyncBase) {
-        if (Objects.equals(baseSyncBase.getTrusteeshipType(), ClusterTrusteeshipType.NO_TRUSTEESHIP)) {
+        if (Objects.equals(baseSyncBase.getTrusteeshipType(), ClusterTrusteeshipType.NO_TRUSTEESHIP) ||
+            Objects.equals(baseSyncBase.getTrusteeshipType(), ClusterTrusteeshipType.NOT)
+        ) {
+            log.info("type {} , is {} not sync , ClusterTrusteeshipType {}", baseSyncBase.getId(), baseSyncBase.getClusterType(),
+                baseSyncBase.getTrusteeshipType());
             return;
         }
         List<MetadataSyncWrapper> metadataSyncWrappers = new ArrayList<>();
@@ -215,11 +229,11 @@ public class MetadataSyncManage {
         List<MetadataType> metadataTypeList = clusterSyncMetadata.getMetadataTypeList();
         metadataTypeList.forEach((value -> {
             // build MetadataSyncResult
-            MetadataSyncResult metadataSyncResult = createMetadataSyncResult(metadataSyncResultList,value,baseSyncBase);
+            MetadataSyncResult metadataSyncResult = createMetadataSyncResult(metadataSyncResultList, value, baseSyncBase);
             // build MetadataSyncConfig 是 io out 组织配置类
             MetadataSyncConfig metadataSyncConfig = createMetadataSyncConfig(value, metadataSyncResult, baseSyncBase);
             // build MetadataSyncWrapper , MetadataSyncWrapper 是同步执行对象
-            createMetadataSyncWrapper(metadataSyncWrappers,metadataSyncConfig);
+            createMetadataSyncWrapper(metadataSyncWrappers, metadataSyncConfig);
 
         }));
         this.metadataSyncConfigMap.put(baseSyncBase.getUnique(), metadataSyncWrappers);
@@ -232,7 +246,8 @@ public class MetadataSyncManage {
         this.metadataSyncResultHandler.unregister(baseSyncBase);
     }
 
-    public MetadataSyncResult  createMetadataSyncResult(List<MetadataSyncResult> metadataSyncResultList,MetadataType metadataType ,BaseSyncBase baseSyncBase) {
+    public MetadataSyncResult createMetadataSyncResult(List<MetadataSyncResult> metadataSyncResultList, MetadataType metadataType,
+        BaseSyncBase baseSyncBase) {
         MetadataSyncResult metadataSyncResult = new MetadataSyncResult();
         metadataSyncResult.setMetadataType(metadataType);
         metadataSyncResult.setKey(baseSyncBase.getUnique());
@@ -241,15 +256,25 @@ public class MetadataSyncManage {
         return metadataSyncResult;
     }
 
-    private void createMetadataSyncWrapper(List<MetadataSyncWrapper> metadataSyncWrappers , MetadataSyncConfig metadataSyncConfig) {
+    private void createMetadataSyncWrapper(List<MetadataSyncWrapper> metadataSyncWrappers, MetadataSyncConfig metadataSyncConfig) {
         MetadataSyncWrapper metadataSyncWrapper = new MetadataSyncWrapper();
         metadataSyncWrapper.setMetadataSyncConfig(metadataSyncConfig);
         metadataSyncWrapper.setMetadataSyncResultHandler(metadataSyncResultHandler);
+        metadataSyncWrapper.setPeriod(this.period);
         metadataSyncWrapper.createDifference();
+        if (log.isDebugEnabled()) {
+            log.debug("#sync metadata type {} , source type {} , source id {}, cluster type {}",
+                metadataSyncConfig.getMetadataType(),
+                metadataSyncConfig.getBaseSyncBase().getClass().getSimpleName(),
+                metadataSyncConfig.getBaseSyncBase().getId(),
+                metadataSyncConfig.getBaseSyncBase().getClusterType()
+            );
+        }
         metadataSyncWrappers.add(metadataSyncWrapper);
+
     }
 
-    private MetadataSyncConfig createMetadataSyncConfig(MetadataType metadataType ,MetadataSyncResult metadataSyncResult,BaseSyncBase baseSyncBase){
+    private MetadataSyncConfig createMetadataSyncConfig(MetadataType metadataType, MetadataSyncResult metadataSyncResult, BaseSyncBase baseSyncBase) {
         SyncMetadataCreateFactory syncMetadataCreateFactory = syncMetadataCreateFactoryMap.get(metadataType);
         // build MetadataSyncConfig 是 io out 组织配置类
         MetadataSyncConfig metadataSyncConfig = new MetadataSyncConfig();
@@ -265,7 +290,6 @@ public class MetadataSyncManage {
         metadataSyncConfig.setMetadataType(metadataType);
         return metadataSyncConfig;
     }
-
 
 
     @Data

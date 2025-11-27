@@ -25,8 +25,8 @@ import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseSyncEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.modle.deploy.ClusterAllMetadataDO;
-import org.apache.eventmesh.dashboard.console.modle.dto.operation.OperationBaseDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.ClusterAllMetadataDO;
+import org.apache.eventmesh.dashboard.console.model.dto.operation.OperationBaseDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
@@ -43,8 +43,11 @@ import org.springframework.stereotype.Component;
 
 /**
  * 可以得到返回的数据为两种： 1. 写入数据的 2. 直接请求其他组件
+ * TODO  可能需要会被作废 与 ClusterAndRuntimeDomainImpl 冲突
+ *       等于 又又重构一次..... 浪费两个星期
  */
 @Component
+@Deprecated
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OperationRangeDomain {
 

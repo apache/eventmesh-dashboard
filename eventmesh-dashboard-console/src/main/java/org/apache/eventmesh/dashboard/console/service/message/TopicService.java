@@ -18,9 +18,10 @@
 
 package org.apache.eventmesh.dashboard.console.service.message;
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
-import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
+import org.apache.eventmesh.dashboard.console.model.vo.topic.TopicDetailGroupVO;
 
 import java.util.List;
 
@@ -28,6 +29,9 @@ import java.util.List;
  * Service about Topic
  */
 public interface TopicService {
+
+
+    List<TopicEntity> queryByClusterIdList(List<ClusterEntity> topicEntityList);
 
     List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId);
 

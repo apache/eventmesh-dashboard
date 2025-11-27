@@ -38,8 +38,4 @@ public class TopicOffsetDataMetadataHandler extends AbstractDBDataMetadataHandle
     }
 
 
-    @Override
-    List<TopicOffsetEntity> doGetData() {
-        return List.of();
-    }
 }

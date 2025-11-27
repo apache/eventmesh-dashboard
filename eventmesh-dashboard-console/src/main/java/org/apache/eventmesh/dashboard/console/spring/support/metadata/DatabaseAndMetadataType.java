@@ -41,7 +41,7 @@ import org.apache.eventmesh.dashboard.service.remoting.ConfigRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.ConsumeOffsetRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.GroupMemberRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.GroupRemotingService;
-import org.apache.eventmesh.dashboard.service.remoting.MetaRemotingService;
+import org.apache.eventmesh.dashboard.service.remoting.MetaRuntimeRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.TopicOffsetRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.TopicRemotingService;
 
@@ -51,7 +51,7 @@ import lombok.Getter;
 public enum DatabaseAndMetadataType {
 
     RUNTIME(DatabaseAndMetadataMapper.builder().metaType(MetadataType.RUNTIME).databaseHandlerClass(RuntimeDataMetadataHandler.class)
-        .metadataHandlerClass(MetaRemotingService.class).convertMetaData(RuntimeConvertMetaData.INSTANCE).build()),
+        .metadataHandlerClass(MetaRuntimeRemotingService.class).convertMetaData(RuntimeConvertMetaData.INSTANCE).build()),
 
     TOPIC(DatabaseAndMetadataMapper.builder().metaType(MetadataType.TOPIC).databaseHandlerClass(TopicDataMetadataHandler.class)
         .metadataHandlerClass(TopicRemotingService.class).convertMetaData(TopicConvertMetaData.INSTANCE).build()),

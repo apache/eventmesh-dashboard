@@ -19,8 +19,10 @@
 package org.apache.eventmesh.dashboard.console.service.function;
 
 
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.ChangeConfigDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.config.ChangeConfigDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,10 @@ import java.util.Map;
  * config data service
  */
 public interface ConfigService {
+
+    List<ConfigEntity> queryByClusterIdList(List<ClusterEntity> clusterConfigEntityList);
+
+    List<ConfigEntity> queryByInstanceIdList(List<ConfigEntity> configEntityList, MetadataType metadataType);
 
     List<ConfigEntity> queryByClusterAndInstanceId(ConfigEntity configEntity);
 

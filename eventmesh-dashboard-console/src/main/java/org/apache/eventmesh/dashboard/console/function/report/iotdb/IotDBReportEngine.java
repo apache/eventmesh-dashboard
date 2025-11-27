@@ -23,35 +23,42 @@ import org.apache.eventmesh.dashboard.console.function.report.annotation.Abstrac
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData;
 import org.apache.eventmesh.dashboard.console.function.report.model.SingleGeneralReportDO;
 
-import org.apache.iotdb.isession.pool.ITableSessionPool;
-import org.apache.iotdb.session.pool.TableSessionPoolBuilder;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 组件类型，report名，数据类型，类名（因为采集模块），表名，默认展示类型，可以展示类型，
  */
+@SuppressWarnings("SqlSourceToSinkFlow")
+@Slf4j
 public class IotDBReportEngine extends AbstractReportEngine {
 
-    private ITableSessionPool iTableSessionPool;
-
     private DruidDataSource dataSource;
+
+    private boolean isBatch = false;
 
     /**
      *
@@ -165,33 +172,43 @@ public class IotDBReportEngine extends AbstractReportEngine {
 
     @Override
     protected void doInit() {
-        TableSessionPoolBuilder tableSessionPoolBuilder = new TableSessionPoolBuilder();
-        tableSessionPoolBuilder.nodeUrls(Arrays.stream(this.reportConfig.getEngineAddress().split(";")).toList());
-        tableSessionPoolBuilder.maxSize(100);
-        tableSessionPoolBuilder.user("root");
-        tableSessionPoolBuilder.password("root");
-        tableSessionPoolBuilder.database("eventmesh_dashboard");
-
-        this.iTableSessionPool = tableSessionPoolBuilder.build();
-
-
-        try{
-            DruidDataSource dataSource = new DruidDataSource();
-            dataSource.setUrl("jdbc:iotdb://127.0.0.1:6667/eventmesh_dashboard?sql_dialect=table");
-            dataSource.setDriverClassName("org.apache.iotdb.jdbc.IoTDBDriver");
-            dataSource.setUsername("root");
-            dataSource.setPassword("root");
-            dataSource.setMaxActive(200);
-            dataSource.setInitialSize(50);
-            dataSource.setMaxWait(1000*60*60*24);
-            dataSource.init();
-            this.dataSource = dataSource;
-        }catch (Exception e) {
-            if(this.dataSource != null) {
+        try {
+            this.initDatabase();
+            this.dataSource =
+                this.createDataSource("jdbc:iotdb://" + this.reportEngineConfig.getEngineAddress() + "/eventmesh_dashboard?sql_dialect=table");
+        } catch (Exception e) {
+            if (this.dataSource != null) {
                 this.dataSource.close();
             }
             throw new RuntimeException(e);
         }
+    }
+
+    public void initDatabase() throws SQLException {
+        try (DruidDataSource dataSource = this.createDataSource(
+            "jdbc:iotdb://" + this.reportEngineConfig.getEngineAddress() + "/?sql_dialect=table")) {
+            try (Connection connection = dataSource.getConnection()) {
+                String sql = """
+                        create database if not exists eventmesh_dashboard with(TTL=31536000000)
+                    """;
+                connection.setAutoCommit(true);
+                connection.createStatement().execute(sql);
+            }
+        }
+    }
+
+
+    private DruidDataSource createDataSource(String url) throws SQLException {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setUrl(url);
+        dataSource.setDriverClassName("org.apache.iotdb.jdbc.IoTDBDriver");
+        dataSource.setUsername("root");
+        dataSource.setPassword("root");
+        dataSource.setMaxActive(200);
+        dataSource.setInitialSize(50);
+        dataSource.setMaxWait(1000 * 60 * 60 * 24);
+        dataSource.init();
+        return dataSource;
     }
 
     @Override
@@ -203,9 +220,10 @@ public class IotDBReportEngine extends AbstractReportEngine {
     public CompletableFuture<List<Map<String, Object>>> query(SingleGeneralReportDO singleGeneralReportDO) {
         return CompletableFuture.supplyAsync(() -> {
             String sql = this.buildSql(singleGeneralReportDO.getReportName(), singleGeneralReportDO.getReportType(), singleGeneralReportDO);
-            try (Connection connection = this.dataSource.getConnection()) {
-                PreparedStatement ps = connection.prepareStatement(sql);
-                try(ResultSet rs = ps.executeQuery()) {
+            try (Connection connection = this.dataSource.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql)) {
+                connection.isReadOnly();
+                try (ResultSet rs = ps.executeQuery()) {
                     List<Map<String, Object>> list = new ArrayList<>();
                     ResultSetMetaData metaData = rs.getMetaData();
                     int columnCount = metaData.getColumnCount();
@@ -217,7 +235,7 @@ public class IotDBReportEngine extends AbstractReportEngine {
                         list.add(row);
                     }
                     return list;
-                }catch (Exception e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             } catch (Exception e) {
@@ -229,40 +247,22 @@ public class IotDBReportEngine extends AbstractReportEngine {
 
     @Override
     public void createReport(String tableName) {
-        if(Objects.equals(tableName , "*")) {
-            try (Connection connection = this.dataSource.getConnection()) {
-                this.getReportMetaHandlerMap().keySet().forEach(key -> {
-                    String sql = this.buildSql(key, ReportViewType.CREATE_TABLE.getName(), null);
-                        try {
-                            connection.setAutoCommit(true);
-                            connection.createStatement().execute(sql);
-                        }catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                });
+        String sql;
+        if (Objects.equals(tableName, "*")) {
+            sql = this.getCreateTableSql();
+            if (StringUtils.isEmpty(sql)) {
                 return;
-            }catch(Exception e){
-                throw new RuntimeException(e);
             }
+        } else {
+            sql = this.buildSql(tableName, ReportViewType.CREATE_TABLE.getName(), null);
         }
-        String sql = this.buildSql(tableName, ReportViewType.CREATE_TABLE.getName(), null);
-        try (Connection connection = this.dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            connection.createStatement().execute(sql);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this.execute(sql);
     }
 
     @Override
     public void batchInsert(String tableName, List<Object> data) {
         String sql = this.buildSql(tableName, ReportViewType.INSERT.getName(), (Object) data);
-        try (Connection connection = this.dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            connection.prepareStatement(sql).execute();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this.execute(sql);
     }
 
     @Override
@@ -270,25 +270,90 @@ public class IotDBReportEngine extends AbstractReportEngine {
         StringBuilder sb = new StringBuilder();
         List<String> sqlList = new ArrayList<>();
         int count = 5000;
-        for(Entry<String, List<Object>> entry : data.entrySet()) {
-            String sql = this.buildSql(entry.getKey(), ReportViewType.INSERT.getName(), (Object) entry.getValue());
+        for (Entry<String, List<Object>> entry : data.entrySet()) {
+            String sql = this.buildSql(entry.getKey(), ReportViewType.INSERT.getName(), entry.getValue());
             count = count - entry.getValue().size();
             sb.append(sql);
-            if(count < 0) {
+            if (count < 0) {
                 count = 5000;
                 sqlList.add(sb.toString());
                 sb.delete(0, sb.length());
             }
         }
-        if(!sb.isEmpty()) {
+        if (!sb.isEmpty()) {
             sqlList.add(sb.toString());
         }
-        try (Connection connection = this.dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            for(String sql : sqlList) {
-                connection.prepareStatement(sql).execute();
+        this.execute(sqlList);
+    }
+
+    /**
+     * 创建 表时，可以直接定义数据存储时间。字段是： TLL
+     */
+    @Override
+    public void deleteData() {
+
+    }
+
+
+    public String getCreateTableSql() {
+        StringBuilder stringBuilder = new StringBuilder();
+        Set<String> tableNameSet = new HashSet<>();
+        String showTablesSql = " show tables";
+        this.executeQuery(showTablesSql, (rs) -> {
+            try {
+                while (rs.next()) {
+                    tableNameSet.add(rs.getString("TableName"));
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-        } catch (Exception e) {
+        });
+        this.getReportMetaHandlerMap().keySet().forEach(key -> {
+            if (!tableNameSet.contains(key)) {
+                String sql = this.buildSql(key, ReportViewType.CREATE_TABLE.getName(), null);
+                if (this.isBatch) {
+                    stringBuilder.append(sql).append("\r\nwith \r\n");
+                } else {
+                    this.execute(sql);
+                }
+            }
+        });
+        String sql = stringBuilder.toString();
+        return sql.substring(0, sql.length() - 9);
+    }
+
+
+    public void execute(String sql) {
+        try (Connection conn = this.dataSource.getConnection();
+            Statement statement = conn.createStatement()) {
+            statement.execute(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(sql,e);
+        }
+    }
+
+    public void execute(List<String> sql) {
+        sql.forEach(this::execute);
+    }
+
+    public void executeQuery(String sql, Consumer<ResultSet> consumer) {
+        this.executeQuery(sql, null, consumer);
+    }
+
+    public void executeQuery(String sql, List<Object> pList, Consumer<ResultSet> consumer) {
+        try (Connection conn = this.dataSource.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (CollectionUtils.isNotEmpty(pList)) {
+                for (int i = 0; i < pList.size(); i++) {
+                    ps.setObject(i, pList.get(i));
+                }
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                consumer.accept(rs);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }

@@ -25,7 +25,7 @@ import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
-import org.apache.eventmesh.dashboard.console.modle.vo.health.InstanceLiveProportionVo;
+import org.apache.eventmesh.dashboard.console.model.vo.health.InstanceLiveProportionVo;
 import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
 
 import java.sql.Timestamp;

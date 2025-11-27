@@ -19,7 +19,7 @@
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
-import org.apache.eventmesh.dashboard.console.modle.cluster.client.QueryClientByUserFormDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.client.QueryClientByUserFormDTO;
 
 import java.util.List;
 

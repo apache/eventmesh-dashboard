@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.service.message.impl;
 
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
@@ -30,8 +31,8 @@ import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultM
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
-import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
-import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
+import org.apache.eventmesh.dashboard.console.model.dto.topic.GetTopicListDTO;
+import org.apache.eventmesh.dashboard.console.model.vo.topic.TopicDetailGroupVO;
 import org.apache.eventmesh.dashboard.console.service.message.TopicService;
 
 import java.util.ArrayList;
@@ -61,6 +62,11 @@ public class TopicServiceImpl implements TopicService {
     @Autowired
     GroupMapper groupMapper;
 
+
+    @Override
+    public List<TopicEntity> queryByClusterIdList(List<ClusterEntity> topicEntityList) {
+        return this.topicMapper.queryByClusterIdList(topicEntityList);
+    }
 
     @Override
     public List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId) {

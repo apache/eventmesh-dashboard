@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
-import org.apache.eventmesh.dashboard.console.modle.cluster.client.QueryClientByUserFormDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.client.QueryClientByUserFormDTO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;

@@ -37,6 +37,8 @@ public enum ClusterSyncMetadataEnum {
     EVENTMESH_RUNTIME(
         ClusterSyncMetadata.builder().clusterFramework(ClusterFramework.INDEPENDENCE).metadataTypeList(ClusterSyncMetadata.STORAGE).build()),
 
+    EVENTMESH_JVM_CLUSTER(EVENTMESH_RUNTIME),
+
     EVENTMESH_META_ETCD(ClusterSyncMetadata.builder().clusterFramework(ClusterFramework.RAFT).metadataTypeList(ClusterSyncMetadata.META).build()),
 
     EVENTMESH_META_NACOS(ClusterSyncMetadata.builder().clusterFramework(ClusterFramework.AP).metadataTypeList(ClusterSyncMetadata.META).build()),
@@ -44,7 +46,6 @@ public enum ClusterSyncMetadataEnum {
     EVENTMESH_JVM_RUNTIME(EVENTMESH_RUNTIME),
 
     EVENTMESH_JVM_META(EVENTMESH_META_NACOS),
-
 
 
     STORAGE_ROCKETMQ_NAMESERVER(
@@ -83,16 +84,17 @@ public enum ClusterSyncMetadataEnum {
 
     public static ClusterSyncMetadata getClusterSyncMetadata(ClusterType clusterType) {
         ClusterSyncMetadata clusterSyncMetadata = SYNC_METADATA_CONCURRENT_HASH_MAP.get(clusterType);
-        try {
-            if (Objects.isNull(clusterSyncMetadata)) {
-                ClusterSyncMetadataEnum clusterSyncMetadataEnum = ClusterSyncMetadataEnum.valueOf(clusterType.toString());
-                SYNC_METADATA_CONCURRENT_HASH_MAP.put(clusterType, clusterSyncMetadataEnum.getClusterSyncMetadata());
-                clusterSyncMetadata = clusterSyncMetadataEnum.getClusterSyncMetadata();
-            }
-        } catch (Exception e) {
-            clusterSyncMetadata = ClusterSyncMetadata.EMPTY_OBJECT;
-            SYNC_METADATA_CONCURRENT_HASH_MAP.put(clusterType, clusterSyncMetadata);
+        if (Objects.nonNull(clusterSyncMetadata)) {
+            return clusterSyncMetadata;
         }
+        try {
+            ClusterSyncMetadataEnum clusterSyncMetadataEnum = ClusterSyncMetadataEnum.valueOf(clusterType.toString());
+            clusterSyncMetadata = clusterSyncMetadataEnum.getClusterSyncMetadata();
+        } catch (Exception e) {
+
+            clusterSyncMetadata = ClusterSyncMetadata.EMPTY_OBJECT;
+        }
+        SYNC_METADATA_CONCURRENT_HASH_MAP.put(clusterType, clusterSyncMetadata);
         return clusterSyncMetadata;
     }
 
@@ -106,10 +108,10 @@ public enum ClusterSyncMetadataEnum {
             return new ListWrapper();
         }
 
-        private List<MetadataType> list = new ArrayList<>();
+        private final List<MetadataType> list = new ArrayList<>();
 
         ListWrapper add(List<MetadataType> list) {
-            list.addAll(list);
+            this.list.addAll(list);
             return this;
         }
     }

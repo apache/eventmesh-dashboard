@@ -18,6 +18,8 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.function;
 
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
@@ -35,6 +37,30 @@ import java.util.List;
  */
 @Mapper
 public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
+
+
+
+
+    @Select("""
+         select * from config where cluster_id
+             <foreach item='item' index='index' open='in(' separator=',' close=')'>
+                #{item.id}
+             </foreach>
+             and status = 1
+    """)
+    List<ConfigEntity> queryByClusterIdList(List<ClusterEntity> clusterConfigEntityList);
+
+
+
+    @Select("""
+        select * from config where instance_id
+             <foreach item='item' index='index' open='in(' separator=',' close=')'>
+                #{item.id}
+             </foreach>
+             and instance_type = #{instanceType}
+             and status = 1
+        """)
+    List<ConfigEntity> queryByInstanceIdList(List<ConfigEntity> configEntityList, MetadataType metadataType);
 
     @Select("""
         <script>
@@ -115,11 +141,19 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
             + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
     ConfigEntity selectByUnique(ConfigEntity configEntity);
 
+    @Override
     void syncInsert(List<ConfigEntity> entityList);
 
+    @Override
     void syncUpdate(List<ConfigEntity> entityList);
 
+    @Override
     void syncDelete(List<ConfigEntity> entityList);
 
+
+    @Override
+    @Select("""
+            select * from config where update_time >= #{updateTime} and status != 0
+        """)
     List<ConfigEntity> syncGet(ConfigEntity topicEntity);
 }

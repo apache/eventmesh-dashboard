@@ -21,8 +21,8 @@ package org.apache.eventmesh.dashboard.console.controller.deploy;
 
 import org.apache.eventmesh.dashboard.console.entity.cases.CaseEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.deploy.CaseControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.IdDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.cases.QueryCaseByObjectTypeDTO;
+import org.apache.eventmesh.dashboard.console.model.IdDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.cases.QueryCaseByObjectTypeDTO;
 
 import java.util.List;
 

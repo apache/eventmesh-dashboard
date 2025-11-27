@@ -19,9 +19,9 @@ package org.apache.eventmesh.dashboard.console.mapstruct.deploy;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateClusterDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateEventMeshSpaceDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.active.CreateRuntimeDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateClusterDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateEventMeshSpaceDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateRuntimeDTO;
 
 import java.util.List;
 

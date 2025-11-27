@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
-import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
+import org.apache.eventmesh.dashboard.console.model.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -75,13 +75,13 @@ public interface ClusterRelationshipMapper {
 
     @Select("""
         <script>
-            select *  from cluster_relationship where cluster_id = #{clusterId}
+            select *  from cluster_relationship where cluster_id
                 <foreach collection='clusterIdList' item='item' index='index' open='in(' separator=',' close=')'>
                     #{item}
                 </foreach>
                 <if test = "clusterTypeList != null">
-                     and relationship_type in
-                     <foreach item='item' index='index' collection='relationshipTypeList'  open="(" separator=',' close=")">
+                     and relationship_type
+                     <foreach item='item' index='index' collection='clusterTypeList'  open="in(" separator=',' close=")">
                         #{item}
                     </foreach>
                 </if>

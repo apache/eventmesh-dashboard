@@ -25,6 +25,7 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.function.health.Health2Service;
+import org.apache.eventmesh.dashboard.console.function.report.ReportHandlerManage;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
@@ -55,6 +56,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class FunctionManage {
 
+    @Autowired
+    private FunctionConfig functionConfig;
 
     @Autowired
     private RuntimeService runtimeService;
@@ -100,6 +103,14 @@ public class FunctionManage {
 
     @Value("${function.enabled:false}")
     private boolean enabled;
+
+    @Bean
+    public ReportHandlerManage buildReportHandlerManage(){
+        ReportHandlerManage reportHandlerManage = new ReportHandlerManage();
+        reportHandlerManage.setReportConfig(functionConfig.getReportConfig());
+        reportHandlerManage.init();
+        return reportHandlerManage;
+    }
 
     @PostConstruct
     private void init() {
@@ -153,8 +164,8 @@ public class FunctionManage {
      * <p>
      * 然后 然后日常
      */
-    //@Scheduled(initialDelay = 1500, fixedDelay = 5000)
-    public void initFunctionManager() {
+    @Scheduled(initialDelay = 1500, fixedDelay = 5000)
+    public void health() {
         if (!this.enabled) {
             return;
         }
@@ -162,6 +173,9 @@ public class FunctionManage {
 
     }
 
+    /**
+     * 需要一个日志打印管理模块
+     */
     @Scheduled(initialDelay = 500L, fixedDelay = 100000)
     public void sync() {
         if (!this.enabled) {
@@ -173,7 +187,7 @@ public class FunctionManage {
         List<ClusterRelationshipEntity> clusterRelationshipEntityList =
             this.clusterRelationshipService.queryByUpdateTime(clusterRelationshipEntity);
         if (runtimeEntityList.isEmpty() && clusterEntityList.isEmpty() && clusterRelationshipEntityList.isEmpty()) {
-            log.info("No runtime entities found");
+            //log.info("No runtime entities found");
             return;
         }
         runtimeEntity.setUpdateTime(date);

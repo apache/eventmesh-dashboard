@@ -24,12 +24,14 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.base.CaseFormat;
 
 public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
 
 
+    @Override
     public String insert() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("insert into ");
@@ -77,18 +79,19 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
             } else if (key.endsWith("_id")) {
                 stringBuilder.append("\r\n    ");
                 stringBuilder.append("<if test='_parameter.").append(filedName).append("!=null'>  ,")
-                    .append(key).append(',').append(key.replace("id", "name"));
+                    .append(key).append(',');
                 String typeField = filedName.replace("Id","Type");
                 if(map.containsKey(typeField)){
                     stringBuilder.append(",").append(key.replace("id", "type"));
                 }
-                stringBuilder.append("  </if>");
-            }else {
-                if (key.endsWith("_name")) {
-                    return;
+                String nameField = filedName.replace("Id","Name");
+                if(map.containsKey(nameField)){
+                    //  last_by 函数可以解决 attribute类型字段 必须 与 group by 保持一致的问题
+                    stringBuilder.append(",")
+                        .append("last_by(").append(key.replace("id", "name"))
+                        .append(")").append(",");
                 }
-//                stringBuilder.append("\r\n    ,");
-//                stringBuilder.append(key);
+                stringBuilder.append("  </if>");
             }
         });
         stringBuilder.append("\r\n  </trim>");
@@ -110,11 +113,12 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
             if (filedName.endsWith("Id")) {
                 stringBuilder.append(AbstractReportMetaHandler.lineAndTabString);
                 stringBuilder.append("<if test='_parameter.").append(filedName).append("!=null'>,")
-                    .append(key).append(" , ").append(key.replace("id", "name"));
-                String typeField = filedName.replace("Id","Type");
-                if(map.containsKey(typeField)){
-                    stringBuilder.append(",").append(key.replace("id", "type"));
-                }
+                    .append(key).append(" , ");
+//                stringBuilder.append(key.replace("id", "name"));
+//                String typeField = filedName.replace("Id","Type");
+//                if(map.containsKey(typeField)){
+//                    stringBuilder.append(",").append(key.replace("id", "type"));
+//                }
                 stringBuilder.append("  </if>");
             }
         });
@@ -122,39 +126,48 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
         return stringBuilder.toString();
     }
 
+    @Override
     public String createTable() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("create table ");
+        stringBuilder.append("create table if not exists ");
         stringBuilder.append(this.reportMeta.getTableName());
         stringBuilder.append(" (\r\n    ");
+        AtomicInteger num = new AtomicInteger(this.fieldList.size());
         this.fieldList.forEach(field -> {
             String filedName = field.getName();
             String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
             stringBuilder.append(key);
-            if (field.getType() == long.class || field.getType() == Long.class) {
+            Class<?> type = field.getType();
+            if (type == long.class || type == Long.class ||
+                type == int.class || type == Integer.class
+            ) {
                 stringBuilder.append(key.endsWith("_id") ? " string " : " int64 ");
-            } else if (field.getType() == float.class || field.getType() == Float.class) {
+            } else if (type == float.class || type == Float.class) {
                 stringBuilder.append(" float ");
-            } else if (field.getType() == String.class) {
+            } else if (type == String.class) {
                 stringBuilder.append(" string ");
-            } else if (field.getType() == LocalDateTime.class) {
+            } else if (type == LocalDateTime.class) {
                 stringBuilder.append(" timestamp ");
             }
 
             if (Objects.equals(filedName, "time")) {
-                stringBuilder.append(" time,");
+                stringBuilder.append(" time");
             } else if (filedName.endsWith("Id")) {
-                stringBuilder.append(" tag,");
-            } else if (filedName.startsWith("value")) {
-                stringBuilder.append(" field,");
+                stringBuilder.append(" tag");
+            } else if (filedName.startsWith("value") || field.getDeclaringClass() == this.reportMeta.getClazz()) {
+                stringBuilder.append(" field");
 
             } else {
-                stringBuilder.append(" attribute,");
+                stringBuilder.append(" attribute");
             }
-            stringBuilder.append("\r\n    ");
+            if(num.decrementAndGet() != 0){
+                stringBuilder.append(",");
+                stringBuilder.append(lineAndTabString);
+            }
         });
-        stringBuilder.deleteCharAt(stringBuilder.length() - 7);
-        stringBuilder.append(")comment ' ").append(reportMeta.getComment()).append("'");
+        stringBuilder.append("\r\n)comment ' ").append(reportMeta.getComment()).append("'");
         return stringBuilder.toString();
     }
+
+
 }

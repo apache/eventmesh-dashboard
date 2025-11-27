@@ -40,7 +40,7 @@ public @interface ReportMeta {
 
     ClusterType clusterType();
 
-    String reportName();
+    String reportName() default "";
 
     ReportViewType defaultViewType();
 

@@ -40,11 +40,11 @@ public enum MetadataType {
 
     CONFIG(ConfigMetadata.class),
 
-    RUNTIME(RuntimeMetadata.class),
+    RUNTIME(RuntimeMetadata.class, true),
 
     TOPIC(TopicMetadata.class),
 
-    GROUP(GroupMetadata.class,true),
+    GROUP(GroupMetadata.class, true),
 
     @Deprecated
     TOPIC_OFFSET(TopicOffsetMetadata.class, true),
@@ -52,7 +52,7 @@ public enum MetadataType {
     @Deprecated
     CONSUME_OFFSET(ConsumeOffsetMetadata.class, true),
 
-    GROUP_MEMBER(GroupMemberMetadata.class,true),
+    GROUP_MEMBER(GroupMemberMetadata.class, true),
 
     @Deprecated
     CLIENT(ClientMetadata.class, true),

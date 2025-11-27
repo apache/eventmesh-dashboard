@@ -55,6 +55,11 @@ public class ElasticsearchReportEngine extends AbstractReportEngine {
 
     }
 
+    @Override
+    public void deleteData() {
+
+    }
+
 //    private ElasticsearchClient esClient;
 //
 //

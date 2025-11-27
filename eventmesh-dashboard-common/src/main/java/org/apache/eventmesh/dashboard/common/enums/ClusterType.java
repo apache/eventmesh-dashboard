@@ -239,6 +239,8 @@ public enum ClusterType {
     private int code;
 
 
+    private ClusterType higherType;
+
     private List<ClusterType> mainClusterType;
 
     private List<ClusterType> metaClusterType;
@@ -358,6 +360,33 @@ public enum ClusterType {
 
     public List<ClusterType> getRuntimeClusterType() {
         return this.getThisClusterType(RUNTIME, this.runtimeClusterType, "runtimeClusterType");
+    }
+
+    /**
+     *
+     */
+    public ClusterType getHigher(){
+        if(Objects.isNull(this.higherType)){
+            for (ClusterType allClusterType : ClusterType.values()){
+                if(!Objects.equals(allClusterType.eventmeshNodeType, this.eventmeshNodeType) ||
+                   !Objects.equals(allClusterType.assemblyName, this.assemblyName)){
+                    continue;
+                }
+                if(!Objects.equals(allClusterType.assemblyNodeType, CLUSTER)){
+                    continue;
+                }
+                if(!Objects.equals(allClusterType.assemblyBusiness, DEFINITION)){
+                    continue;
+                }
+                this.higherType = allClusterType;
+                break;
+            }
+            if(Objects.isNull(this.higherType)){
+                throw new RuntimeException("higher type is null, current type:" + this);
+            }
+        }
+
+        return this.higherType;
     }
 
 

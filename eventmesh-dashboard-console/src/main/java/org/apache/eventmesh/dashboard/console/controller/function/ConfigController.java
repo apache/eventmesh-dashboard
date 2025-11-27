@@ -20,8 +20,8 @@ package org.apache.eventmesh.dashboard.console.controller.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.message.ConfigControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigDTO;
-import org.apache.eventmesh.dashboard.console.modle.function.config.QueryByInstanceIdDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.config.UpdateConfigDTO;
+import org.apache.eventmesh.dashboard.console.model.function.config.QueryByInstanceIdDTO;
 import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
 
 import java.util.List;

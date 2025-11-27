@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.function.report.iotdb;
 
 import org.apache.eventmesh.dashboard.console.function.report.ReportConfig;
+import org.apache.eventmesh.dashboard.console.function.report.ReportConfig.ReportEngineConfig;
 import org.apache.eventmesh.dashboard.console.function.report.ReportHandlerManage;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.model.SingleGeneralReportDO;
@@ -40,15 +41,19 @@ public class IotDBReportEngineTest {
 
     private ReportHandlerManage reportHandlerManage = new ReportHandlerManage();
 
-    private ReportConfig reportConfig = new ReportConfig();
+    private ReportEngineConfig reportEngineConfig = new ReportEngineConfig();
 
     @Before
     public void init() {
         reportHandlerManage.setReportEngine(iotDBReportEngine);
+        ReportConfig reportConfig = new ReportConfig();
+        ReportEngineConfig reportEngineConfig = new ReportEngineConfig();
+        reportEngineConfig.setEngineAddress("127.0.0.1:6667");
+        //reportConfig.setDefaultConfig(reportEngineConfig);
+        reportHandlerManage.setReportConfig(reportConfig);
         reportHandlerManage.init();
-
-        reportConfig.setEngineAddress("127.0.0.1:6667");
-        iotDBReportEngine.setReportConfig(reportConfig);
+        reportEngineConfig.setEngineAddress("127.0.0.1:6667");
+        iotDBReportEngine.setReportEngineConfig(reportEngineConfig);
         iotDBReportEngine.doInit();
     }
 
@@ -98,13 +103,18 @@ public class IotDBReportEngineTest {
     }
 
     @Test
+    public void test_all_tables() {
+        iotDBReportEngine.createReport("*");
+    }
+
+    @Test
     public void test_createReport() {
 
         //iotDBReportEngine.createReport("rocketmq_message_size");
 
-        iotDBReportEngine.createReport("rocketmq_consumer_queueing_latency");
+        //iotDBReportEngine.createReport("rocketmq_consumer_queueing_latency");
 
-        //iotDBReportEngine.createReport("rocketmq_consumer_group_create_execution_time");
+        iotDBReportEngine.createReport("rocketmq_consumer_group_create_execution_time");
     }
 
     @Test

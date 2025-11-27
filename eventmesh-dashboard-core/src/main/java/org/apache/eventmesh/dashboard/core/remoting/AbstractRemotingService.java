@@ -18,6 +18,7 @@
 
 package org.apache.eventmesh.dashboard.core.remoting;
 
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.core.function.SDK.AbstractClientInfo;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 
@@ -30,6 +31,16 @@ public abstract class AbstractRemotingService<T> extends AbstractClientInfo<T> {
     @Override
     protected SDKTypeEnum getSDKTypeEnum() {
         return SDKTypeEnum.ADMIN;
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+    protected <D>D createSuccessGlobalResult(Object data){
+        GlobalResult<D> globalResult = new GlobalResult<>();
+        globalResult.setCode(200);
+        globalResult.setData((D)data);
+        return (D)globalResult;
     }
 
 }

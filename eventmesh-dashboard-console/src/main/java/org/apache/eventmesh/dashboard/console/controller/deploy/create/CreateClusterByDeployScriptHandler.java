@@ -29,7 +29,7 @@ import org.apache.eventmesh.dashboard.console.controller.deploy.handler.UpdateHa
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.deploy.ClusterCycleControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateClusterByDeployScriptDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByDeployScriptDO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
@@ -81,7 +81,9 @@ public class CreateClusterByDeployScriptHandler implements UpdateHandler<CreateC
 
     /**
      *
-     * @param createClusterByDeployScriptDO
+     * 只支持 runtime 与 meta 集群的创建，不支持 集群空间的创建 </p>
+     * 如何支持 eventmesh space create， script 模式不适合。
+     *
      */
     @Override
     public void handler(CreateClusterByDeployScriptDO createClusterByDeployScriptDO) {

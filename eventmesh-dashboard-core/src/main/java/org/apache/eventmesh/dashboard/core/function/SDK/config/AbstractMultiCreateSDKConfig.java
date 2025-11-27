@@ -35,8 +35,6 @@ public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
     private String[] netAddresses;
 
     /**
-     * TODO
-     * TODO
      * TODO 有意义？
      *  设定次字段的时候，是为了解决 kafka 老版本操作的时候是 需要操作zk。 目前还没解决这个问题
      */

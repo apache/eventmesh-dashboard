@@ -18,7 +18,7 @@
 
 package org.apache.eventmesh.dashboard.console.service.deploy;
 
-import org.apache.eventmesh.dashboard.console.modle.deploy.GetPortsDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.GetPortsDO;
 
 import java.util.List;
 

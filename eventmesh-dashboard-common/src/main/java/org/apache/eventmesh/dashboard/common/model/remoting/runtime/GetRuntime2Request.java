@@ -18,14 +18,15 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.runtime;
 
-import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
+import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GetRuntime2Request extends Global2Request {
+public class GetRuntime2Request extends AbstractGlobal2Request<RuntimeMetadata> {
 
     private String registryAddress;
 }

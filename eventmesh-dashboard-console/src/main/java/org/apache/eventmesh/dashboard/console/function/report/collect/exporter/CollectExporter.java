@@ -27,7 +27,14 @@ import org.apache.eventmesh.dashboard.console.function.report.model.base.Time;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -48,7 +55,9 @@ import lombok.extern.slf4j.Slf4j;
 public class CollectExporter {
 
 
-    private Map<String, ReportMetaData> classMap = new HashMap<>();
+    private Map<String, ReportMetaData> reportMetaDataMap = new HashMap<>();
+
+    private Map<String, ReportMetaData> aggregationMetaDataMap = new HashMap<>();
 
     private Map<String, AggregationWrapper> aggregationWrapperMap = new HashMap<>();
 
@@ -65,11 +74,13 @@ public class CollectExporter {
 
     private Map<String, Map<String, Field>> objectFieldMapper = new HashMap<>();
 
+    private HttpClient client = HttpClient.newHttpClient();
+
     @Setter
     private String url;
 
     public void init() {
-        classMap.forEach((clusterMetadata, reportMetaData) -> {
+        reportMetaDataMap.forEach((clusterMetadata, reportMetaData) -> {
             if (!reportMetaData.isAggregation()) {
                 return;
             }
@@ -80,6 +91,14 @@ public class CollectExporter {
 
             reportMetaData.getAggregationClasses().forEach((key, value) -> {
                 this.aggregationWrapperMap.put(key, aggregationWrapper);
+            });
+        });
+        this.aggregationMetaDataMap.forEach((reportMetaName, reportMetaData) -> {
+            this.aggregationWrapperMap.computeIfAbsent(reportMetaData.getReportName(), (k) -> {
+                AggregationWrapper aggregationWrapper = new AggregationWrapper();
+                aggregationWrapper.setReportMetaData(reportMetaData);
+                aggregationWrapper.setName(reportMetaData.getReportName());
+                return aggregationWrapper;
             });
         });
     }
@@ -96,19 +115,28 @@ public class CollectExporter {
     }
 
     public void request() {
-        this.aggregationWrapperMap.values().forEach(aggregationWrapper -> {
-            aggregationWrapper.organization = null;
-        });
-        String data = "";
-        String[] datas = StringUtils.split(data, (char) 10);
-        for (String data1 : datas) {
-            if (data1.startsWith("#")) {
-                continue;
+        try {
+            this.aggregationWrapperMap.values().forEach(aggregationWrapper -> {
+                aggregationWrapper.organization = null;
+            });
+            String data = this.exporterRequest();
+            for (String data1 : StringUtils.split(data, (char) 10)) {
+                if (data1.startsWith("#")) {
+                    continue;
+                }
+                this.handler(data1);
             }
-            this.handler(data1);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
 
 
+    }
+
+    public String exporterRequest() throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(this.url)).build();
+        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+        return response.body();
     }
 
     public void handler(String data) {
@@ -120,18 +148,18 @@ public class CollectExporter {
         JSONObject jsonObject = null;
         if (data1.indexOf(123) > -1) {
             key = data1.substring(0, data1.indexOf(123));
-            final JSONObject finalJsonObject  = new JSONObject();
+            final JSONObject finalJsonObject = new JSONObject();
             String metaDataString = data1.substring(data1.indexOf(123) + 1, data1.length() - 1);
             List.of(StringUtils.split(metaDataString, ',')).forEach((value) -> {
                 String newValue = value.trim();
-                if(Objects.equals(newValue,",")){
+                if (Objects.equals(newValue, ",")) {
                     return;
                 }
                 int stringIndex = newValue.indexOf("=");
-                if(stringIndex == -1){
+                if (stringIndex == -1) {
                     return;
                 }
-                finalJsonObject.put(newValue.substring(0,stringIndex).trim(),newValue.substring(stringIndex+1).trim());
+                finalJsonObject.put(newValue.substring(0, stringIndex).trim(), newValue.substring(stringIndex + 1).trim());
             });
             jsonObject = finalJsonObject;
         } else {
@@ -145,73 +173,84 @@ public class CollectExporter {
         if (Objects.isNull(object)) {
             return;
         }
+        this.times.add(object);
 
     }
 
 
     public ClusterId buildObject(String key, JSONObject jsonObject, String value, LocalDateTime time) {
-        ReportMetaData reportMetaData = this.classMap.get(key);
+        ReportMetaData reportMetaData = this.reportMetaDataMap.get(key);
 
-        if (Objects.isNull(reportMetaData)) {
-            log.error("reportMetaData does not exist。 key:{},value:{},time:{}", key, value, time);
-            return null;
-        }
         try {
-
-            Map<String, Field> stringFieldMapper = this.objectFieldMapper.get(key);
-            if (Objects.isNull(stringFieldMapper)) {
-                stringFieldMapper = new HashMap<>();
-                this.objectFieldMapper.put(key, stringFieldMapper);
-                Map<String, Field> finalStringFieldMapper = stringFieldMapper;
-                reportMetaData.getFieldList().forEach(field -> {
-                    field.setAccessible(true);
-                    String fieldKey = this.fieldMapper.get(field.getName());
-                    if (Objects.isNull(fieldKey)) {
-                        finalStringFieldMapper.put(field.getName(), field);
-                    } else {
-                        finalStringFieldMapper.put(fieldKey, field);
-                    }
-
-                });
-            }
-            AggregationWrapper aggregationWrapper = aggregationWrapperMap.get(key);
-            if (Objects.nonNull(aggregationWrapper) && Objects.nonNull(aggregationWrapper.organization)) {
-
-                return null;
-            } else {
-                Class<?> clazz = reportMetaData.getClazz();
-                ClusterId object = (ClusterId) clazz.getDeclaredConstructor().newInstance();
-                object.setOrganizationId(this.clusterMetadata.getOrganizationId());
-                object.setClustersId(this.clusterMetadata.getClusterId());
-                object.setClustersName(this.clusterMetadata.getClusterName());
-                object.setTime(time);
-                stringFieldMapper.forEach((fieldName, field) -> {
-                    String fieldValue = jsonObject.getString(fieldName);
-                    if (Objects.isNull(fieldValue)) {
-                        return;
-                    }
-                    try {
-                        field.set(object, fieldValue);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                if (Objects.nonNull(aggregationWrapper)) {
-
-                } else {
-                    Object valueObject = Objects.equals(reportMetaData.getValueType(), "Long") ? Long.parseLong(value) : Float.parseFloat(value);
-                    stringFieldMapper.get("value").set(object, valueObject);
+            AggregationWrapper aggregationWrapper = null;
+            if (Objects.isNull(reportMetaData)) {
+                aggregationWrapper = this.aggregationWrapperMap.get(key);
+                if (Objects.isNull(aggregationWrapper)) {
+                    log.error("reportMetaData does not exist。 key:{},value:{},time:{}", key, value, time);
+                    return null;
                 }
-                return object;
+                if (Objects.nonNull(aggregationWrapper.getOrganization())) {
+                    Field field = aggregationWrapper.getReportMetaData().getAggregationFieldMap().get(key);
+                    field.set(aggregationWrapper.getOrganization(), value);
+                    return null;
+                }
             }
 
+            Map<String, Field> stringFieldMapper = this.createStringFieldMapper(reportMetaData);
 
-        } catch (Exception e) {
-            log.error("key is " + key + e.getMessage(), e);
+            ClusterId object = this.createObject(stringFieldMapper,reportMetaData,time,jsonObject);
+            if (Objects.nonNull(aggregationWrapper)) {
+                aggregationWrapper.organization = object;
+            }
+            return object;
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
             return null;
         }
 
     }
+
+    private ClusterId createObject(Map<String, Field> stringFieldMapper , ReportMetaData reportMetaData,LocalDateTime time,JSONObject jsonObject)
+        throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Class<?> clazz = reportMetaData.getClazz();
+        ClusterId object = (ClusterId) clazz.getDeclaredConstructor().newInstance();
+        object.setOrganizationId(this.clusterMetadata.getOrganizationId());
+        object.setClustersId(this.clusterMetadata.getClusterId());
+        object.setClustersName(this.clusterMetadata.getClusterName());
+        object.setTime(time);
+        stringFieldMapper.forEach((fieldName, field) -> {
+            String fieldValue = jsonObject.getString(fieldName);
+            if (Objects.isNull(fieldValue)) {
+                return;
+            }
+            try {
+                field.set(object, fieldValue);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return object;
+    }
+
+    private Map<String, Field> createStringFieldMapper(ReportMetaData reportMetaData){
+        Map<String, Field> stringFieldMapper = this.objectFieldMapper.get(reportMetaData.getReportName());
+        if (Objects.isNull(stringFieldMapper)) {
+            stringFieldMapper = new HashMap<>();
+            this.objectFieldMapper.put(reportMetaData.getReportName(), stringFieldMapper);
+            Map<String, Field> finalStringFieldMapper = stringFieldMapper;
+            reportMetaData.getFieldList().forEach(field -> {
+                field.setAccessible(true);
+                String fieldKey = this.fieldMapper.get(field.getName());
+                if (Objects.isNull(fieldKey)) {
+                    finalStringFieldMapper.put(field.getName(), field);
+                } else {
+                    finalStringFieldMapper.put(fieldKey, field);
+                }
+            });
+        }
+        return stringFieldMapper;
+    }
+
 
 
     public static LocalDateTime millisToLocalDateTime(long millis) {

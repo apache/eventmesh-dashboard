@@ -17,13 +17,29 @@
 
 package org.apache.eventmesh.dashboard.console.function.report;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
 public class ReportConfig {
 
-    private String engineType;
+    private boolean initAllTables = false;
 
-    private String engineAddress;
+    private ReportEngineConfig defaultConfig;
+
+    private List<ReportEngineConfig> reportEngineConfigList;
+
+
+    @Data
+    public static class ReportEngineConfig{
+
+        private String name;
+
+        private String engineType;
+
+        private String engineAddress;
+
+    }
 
 }

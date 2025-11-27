@@ -19,8 +19,8 @@
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
-import org.apache.eventmesh.dashboard.console.modle.QO.cluster.QueryRelationClusterByClusterIdListAndType;
+import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.model.QO.cluster.QueryRelationClusterByClusterIdListAndType;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -44,7 +44,7 @@ public interface ClusterMapper {
     @Select("""
         <script>
             select *  from cluster where id
-            <foreach item='item' index='index' open='in(' separator=',' close=')'>
+            <foreach collection='list' item='item'  index='index' open='in(' separator=',' close=')'>
                 #{item.id}
             </foreach>
         </script>
@@ -63,7 +63,7 @@ public interface ClusterMapper {
             select relationship_id from cluster_relationship where cluster_id=#{id}
                <if test="clusterType != null and clusterType != ''">
                  and cluster_type = #{clusterType}
-               </if> 
+               </if>
             )
         </script>
         """)
@@ -73,7 +73,7 @@ public interface ClusterMapper {
         <script>
         select * from cluster where id in(
             select relationship_id from cluster_relationship where cluster_id in
-                <foreach item='item' index='index' separator=',' open='(' separator=',' close=')'>
+                <foreach item='item' index='index' open='(' separator=',' close=')'>
                             #{item.id}
                 </foreach>
             )
@@ -113,7 +113,7 @@ public interface ClusterMapper {
     @Select("select * from cluster where status=1")
     List<ClusterEntity> queryAllCluster();
 
-    @Select("SELECT * FROM cluster where update_time >  #{updateTime}")
+    @Select("SELECT * FROM cluster where update_time >  #{updateTime} and is_delete != 1")
     List<ClusterEntity> queryClusterByUpdate(ClusterEntity clusterEntity);
 
 

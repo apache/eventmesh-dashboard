@@ -21,7 +21,7 @@ package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper;
-import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
+import org.apache.eventmesh.dashboard.console.model.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 
 import java.util.List;

@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.service.deploy.impl;
 
 import org.apache.eventmesh.dashboard.console.entity.cases.PortEntity;
 import org.apache.eventmesh.dashboard.console.mapper.deploy.PortMapper;
-import org.apache.eventmesh.dashboard.console.modle.deploy.GetPortsDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.GetPortsDO;
 import org.apache.eventmesh.dashboard.console.service.deploy.PortService;
 
 import java.util.ArrayList;

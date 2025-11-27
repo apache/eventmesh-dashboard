@@ -67,7 +67,7 @@ public class RocketMQRemotingSDKOperation extends AbstractSDKOperation<DefaultRe
     public DefaultRemotingClient createClient(CreateRemotingConfig clientConfig) {
         DefaultRemotingClient defaultRemotingClient = new DefaultRemotingClient();
         defaultRemotingClient.remotingClient = this.remotingClient;
-        defaultRemotingClient.addr = clientConfig.getNetAddress().getAddress();
+        defaultRemotingClient.addr = clientConfig.getNetAddress().doUniqueKey();
         return defaultRemotingClient;
     }
 

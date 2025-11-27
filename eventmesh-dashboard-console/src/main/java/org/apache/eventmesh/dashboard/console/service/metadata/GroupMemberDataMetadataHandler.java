@@ -19,9 +19,6 @@ package org.apache.eventmesh.dashboard.console.service.metadata;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,13 +26,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class GroupMemberDataMetadataHandler extends AbstractDBDataMetadataHandler<GroupMemberEntity>{
 
-    @Override
-    public void handleAll(Collection<GroupMemberEntity> allData, List<GroupMemberEntity> addData, List<GroupMemberEntity> updateData, List<GroupMemberEntity> deleteData) {
-
-    }
-
-    @Override
-    List<GroupMemberEntity> doGetData() {
-        return List.of();
-    }
 }

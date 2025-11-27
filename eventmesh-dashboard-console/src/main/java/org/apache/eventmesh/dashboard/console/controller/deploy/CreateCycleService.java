@@ -29,8 +29,8 @@ import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterMetadataDom
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.cluster.CreateClusterByCompleteDataDTO;
-import org.apache.eventmesh.dashboard.console.modle.cluster.CreateClusterBySimpleDataDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.CreateClusterByCompleteDataDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.CreateClusterBySimpleDataDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;

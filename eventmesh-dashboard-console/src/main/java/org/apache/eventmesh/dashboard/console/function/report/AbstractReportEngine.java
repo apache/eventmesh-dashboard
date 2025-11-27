@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.function.report;
 
+import org.apache.eventmesh.dashboard.console.function.report.ReportConfig.ReportEngineConfig;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.AbstractReportMetaHandler;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData;
 import org.apache.eventmesh.dashboard.console.function.report.model.SingleGeneralReportDO;
@@ -47,7 +48,7 @@ import lombok.Setter;
 public abstract class AbstractReportEngine implements ReportEngine {
 
 
-    protected ReportConfig reportConfig;
+    protected ReportEngineConfig reportEngineConfig;
 
     private VelocityEngine velocityEngine;
 
@@ -74,6 +75,7 @@ public abstract class AbstractReportEngine implements ReportEngine {
 
     protected abstract void doInit();
 
+    @Deprecated
     private void createVelocity() {
         VelocityEngine velocityEngine = new VelocityEngine();
         velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "report");
@@ -114,12 +116,8 @@ public abstract class AbstractReportEngine implements ReportEngine {
         Map<String, SqlSource> sourceMap = this.stringSqlSourceMap.computeIfAbsent(reportName, k -> new ConcurrentHashMap<>());
         return sourceMap.computeIfAbsent(type, (k) -> {
             String sql = this.createSql(reportName, type);
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("<script>\r\n  ");
-            stringBuilder.append(sql);
-            stringBuilder.append("\r\n</script>");
-
-            return this.xmlLanguageDriver.createSqlSource(configuration, stringBuilder.toString(), null);
+            String stringBuilder = "<script>\r\n  " + sql + "\r\n</script>";
+            return this.xmlLanguageDriver.createSqlSource(configuration, stringBuilder, null);
         });
     }
 

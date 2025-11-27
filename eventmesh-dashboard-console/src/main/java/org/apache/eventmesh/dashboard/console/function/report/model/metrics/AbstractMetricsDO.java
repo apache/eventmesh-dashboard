@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.function.report.model.metrics;
 
-import org.apache.eventmesh.dashboard.console.modle.vo.RuntimeIdDTO;
+import org.apache.eventmesh.dashboard.console.model.vo.RuntimeIdDTO;
 
 import java.time.LocalDateTime;
 

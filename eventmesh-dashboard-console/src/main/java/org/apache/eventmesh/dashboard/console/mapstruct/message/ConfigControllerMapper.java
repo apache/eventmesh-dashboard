@@ -18,7 +18,7 @@
 package org.apache.eventmesh.dashboard.console.mapstruct.message;
 
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.function.config.QueryByInstanceIdDTO;
+import org.apache.eventmesh.dashboard.console.model.function.config.QueryByInstanceIdDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

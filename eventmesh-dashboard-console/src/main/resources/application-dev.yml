@@ -64,4 +64,8 @@ decoration:
 
 
 function:
-  enabled: false
+  enabled: true
+  reportConfig:
+    defaultConfig:
+      engineType: iotdb
+      engineAddress: 127.0.0.1:6667

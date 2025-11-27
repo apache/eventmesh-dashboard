@@ -20,9 +20,9 @@ package org.apache.eventmesh.dashboard.console.mapstruct.deploy;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateClusterByDeployScriptDO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateRuntimeByDeployScriptDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateRuntimeByOnlyDataDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByDeployScriptDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateRuntimeByDeployScriptDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateRuntimeByOnlyDataDO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

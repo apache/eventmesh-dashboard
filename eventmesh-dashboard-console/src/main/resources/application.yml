@@ -20,6 +20,11 @@ spring:
     name: eventmesh-dashboard
   profiles:
     active: dev
+  devtools:
+    restart:
+      exclude: static/&zwnj;**,public/**&zwnj
+      enabled: true
+      additional-paths: src/main/java
 
 logging:
   config: classpath:logback.xml
@@ -38,3 +43,6 @@ pagehelper:
   reasonable: true
   supportMethodsArguments: true
   params: count=countSql
+
+
+

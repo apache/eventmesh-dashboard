@@ -17,21 +17,41 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum SyncType {
 
-    NOT,
+    NOT("NOT","没命中"),
 
-    READONLY,
+    READONLY("READONLY","只读"),
 
-    FIRSTTOWHOM,
+    FIRSTTOWHOM("FIRSTTOWHOM","第一次同步"),
 
-    INIT,
+    INIT("INIT","初始化"),
 
-    CHECK,
+    CHECK("CHECK","检查"),
 
-    TIMINGSYNC,
+    TIMINGSYNC("TIMINGSYNC","定时同步"),
 
     ;
 
+    private final String name;
 
+    private final String description;
+
+
+    SyncType(String name , String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+
+    @Override
+    public String toString() {
+        return "SyncType{" +
+               "name='" + name + '\'' +
+               ", description='" + description + '\'' +
+               '}';
+    }
 }

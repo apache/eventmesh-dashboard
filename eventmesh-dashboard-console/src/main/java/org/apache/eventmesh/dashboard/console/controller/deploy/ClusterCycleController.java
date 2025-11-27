@@ -18,13 +18,21 @@
 
 package org.apache.eventmesh.dashboard.console.controller.deploy;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateClusterByCopyHandler;
 import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateClusterByDeployScriptHandler;
+import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateClusterByFullMetadataHandler;
 import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateRuntimeByDeployScriptHandler;
-import org.apache.eventmesh.dashboard.console.modle.cluster.VerifyNameDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateClusterByDeployScriptDO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateRuntimeByDeployScriptDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.VerifyNameDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByCopyDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByDeployScriptDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByFullMetadataDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByServiceAddressDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateRuntimeByDeployScriptDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
+
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -84,6 +92,12 @@ public class ClusterCycleController {
     @Autowired
     private CreateClusterByDeployScriptHandler createClusterByDeployScriptHandler;
 
+    @Autowired
+    private CreateClusterByCopyHandler createClusterByCopyHandler;
+
+    @Autowired
+    private CreateClusterByFullMetadataHandler createClusterByFullMetadataHandler;
+
 
     /**
      * @param verifyNameDTO
@@ -95,10 +109,36 @@ public class ClusterCycleController {
     }
 
 
-
     @PostMapping("createRuntimeByDeployScript")
     public void createRuntimeByDeployScript(@RequestBody @Validated CreateRuntimeByDeployScriptDTO createRuntimeByDeployScriptDTO) {
         this.createRuntimeByDeployScriptHandler.handler(createRuntimeByDeployScriptDTO);
+    }
+
+    /**
+     *
+     */
+    @PostMapping("createClusterByServiceAddress")
+    public void createClusterByServiceAddress(CreateClusterByServiceAddressDTO dto){
+
+        if(Objects.equals(dto.getClusterType(), ClusterType.STORAGE_ROCKETMQ_CLUSTER)){
+
+
+        }
+
+    }
+
+
+    public void createClusterByFullAddress(){
+
+    }
+
+    public void createClusterByMetaAddress(){
+
+
+    }
+
+    public void createClusterByRuntimeAddress(){
+
     }
 
     @PostMapping("createClusterByDeployScript")
@@ -106,5 +146,13 @@ public class ClusterCycleController {
         this.createClusterByDeployScriptHandler.handler(createClusterByDeployScriptDO);
     }
 
+    @PostMapping("createClusterByCopy")
+    public void createClusterByCopy(@RequestBody @Validated CreateClusterByCopyDTO dto) {
+        this.createClusterByCopyHandler.handler(dto);
+    }
 
+    @PostMapping("createClusterByFullMetadata")
+    public void createClusterByFullMetadata(@RequestBody @Validated CreateClusterByFullMetadataDTO dto) {
+        this.createClusterByFullMetadataHandler.handler(dto);
+    }
 }

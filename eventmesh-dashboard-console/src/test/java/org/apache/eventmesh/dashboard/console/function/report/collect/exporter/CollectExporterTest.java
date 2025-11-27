@@ -70,4 +70,11 @@ public class CollectExporterTest {
         this.collectExporter.handler(data);
     }
 
+
+    @Test
+    public void test_rocketmq_exporter(){
+        collectExporter.setUrl("http://127.0.0.1:5557/metrics");
+        collectExporter.request();
+    }
+
 }

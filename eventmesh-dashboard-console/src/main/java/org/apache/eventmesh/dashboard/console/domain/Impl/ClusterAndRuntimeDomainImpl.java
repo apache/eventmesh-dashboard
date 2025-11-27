@@ -21,17 +21,24 @@ package org.apache.eventmesh.dashboard.console.domain.Impl;
 import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
 import org.apache.eventmesh.dashboard.console.domain.ClusterAndRuntimeDomain;
+import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
-import org.apache.eventmesh.dashboard.console.modle.DO.domain.clusterAndRuntimeDomain.ClusterAndRuntimeOfRelationshipDO;
-import org.apache.eventmesh.dashboard.console.modle.DO.domain.clusterAndRuntimeDomain.GetClusterInSyncReturnDO;
-import org.apache.eventmesh.dashboard.console.modle.QO.cluster.QueryRelationClusterByClusterIdListAndType;
+import org.apache.eventmesh.dashboard.console.mapstruct.model.entity.ClusterEntityMapstruct;
+import org.apache.eventmesh.dashboard.console.mapstruct.model.entity.RuntimeEntityMapstruct;
+import org.apache.eventmesh.dashboard.console.model.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.ClusterAndRuntimeOfRelationshipDO;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.GetClusterInSyncReturnDO;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryClusterTreeDO;
+import org.apache.eventmesh.dashboard.console.model.QO.cluster.QueryRelationClusterByClusterIdListAndType;
+import org.apache.eventmesh.dashboard.console.model.vo.cluster.ClusterTreeVO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
+import org.apache.eventmesh.dashboard.console.service.connector.ResourcesConfigService;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -39,19 +46,14 @@ import org.apache.commons.lang3.tuple.Triple;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.stereotype.Component;
-
-import net.sf.jsqlparser.statement.ExplainStatement.OptionType;
 
 import lombok.Setter;
 
@@ -82,7 +84,7 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
     private ClusterRelationshipService clusterRelationshipService;
 
     @Autowired
-    private CacheProperties cacheProperties;
+    private ResourcesConfigService resourcesConfigService;
 
 
     @Override
@@ -90,13 +92,49 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
         return Collections.emptyList();
     }
 
-
-    public void getClusterTree(ClusterEntity clusterEntity) {
-
+    @Override
+    public List<ClusterTreeVO> queryClusterTree(QueryClusterTreeDO data) {
+        GetSyncObjectHandler getSyncObjectHandler = new GetSyncObjectHandler();
+        ClusterEntity clusterEntity = new ClusterEntity();
+        clusterEntity.setId(data.getClusterId());
+        getSyncObjectHandler.setClusterEntity(clusterEntity);
+        if (Objects.nonNull(data.getDeployStatusType())) {
+            getSyncObjectHandler.setDeployStatusType(data.getDeployStatusType().get(0));
+        }
+        return this.queryClusterTree(getSyncObjectHandler.queryClusterAndRuntime());
     }
 
     /**
-     * 运维操作使用列表啊：</p>
+     * 这个方法是否放到 controller 层
+     */
+    public List<ClusterTreeVO> queryClusterTree(ClusterAndRuntimeOfRelationshipDO data) {
+        Map<Long, ClusterTreeVO> clusterIdMap = data.getClusterEntityList().stream().collect(Collectors.toMap(ClusterEntity::getId,
+            ClusterEntityMapstruct.INSTANCE::toClusterTreeVO));
+
+        Map<Long, List<ClusterTreeVO>> runtimeListByClusterIdGroupMap =
+            data.getRuntimeEntityList().stream()
+                .collect(Collectors.groupingBy(RuntimeEntity::getClusterId,
+                    Collectors.mapping(RuntimeEntityMapstruct.INSTANCE::toClusterTreeVO,
+                        Collectors.toList())));
+
+        Map<Long, List<ClusterTreeVO>> clusterRelationshipListByClusterIdGroupMap =
+            data.getClusterRelationshipEntityList().stream().collect(Collectors.groupingBy(ClusterRelationshipEntity::getClusterId,
+                Collectors.mapping(value -> clusterIdMap.get(value.getRelationshipId()), Collectors.toList())
+            ));
+
+        clusterIdMap.forEach((key, value) -> {
+            value.setChildren(runtimeListByClusterIdGroupMap.get(key));
+            List<ClusterTreeVO> clusterTreeVOList = clusterRelationshipListByClusterIdGroupMap.get(key);
+            if (Objects.nonNull(clusterTreeVOList)) {
+                value.setChildren(clusterTreeVOList);
+            }
+        });
+
+        return clusterRelationshipListByClusterIdGroupMap.get(data.getClusterEntity().getId());
+    }
+
+    /**
+     * 运维操作使用列表：</p>
      * <p>
      * 部署操作使用列表：</p>
      *
@@ -107,21 +145,19 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
      * @see org.apache.eventmesh.dashboard.console.controller.deploy.pause.PauseCluster
      */
     @Override
-    public ClusterAndRuntimeOfRelationshipDO getAllClusterAndRuntimeByCluster(ClusterEntity clusterEntity) {
+    public ClusterAndRuntimeOfRelationshipDO getAllClusterAndRuntimeByCluster(ClusterEntity clusterEntity, DeployStatusType deployStatusType) {
         GetSyncObjectHandler getSyncObjectHandler = new GetSyncObjectHandler();
         getSyncObjectHandler.setClusterEntity(clusterEntity);
+        getSyncObjectHandler.setDeployStatusType(deployStatusType);
         return getSyncObjectHandler.deploy();
     }
 
-    public GetClusterInSyncReturnDO getClusterInSync(ClusterEntity clusterEntity, OptionType optionType) {
-
-        return null;
-    }
 
     /**
      * 修改配置只能在一个维度的进行操作 topic 需要对 eventmesh 与 存储同时进行操作， acl 需要多维度操作，还是？ offset 的操作 按照具体 offset，只能操作 队列 级别 按照 最大或则最小 和 时间，可以 是 大集群 或则 全域操作 定义操作域
      */
-    public GetClusterInSyncReturnDO getClusterInSync(ClusterEntity clusterEntity, List<ClusterType> syncClusterTypeList) {
+    @Override
+    public GetClusterInSyncReturnDO queryClusterInSync(ClusterEntity clusterEntity, List<ClusterType> syncClusterTypeList) {
         GetSyncObjectHandler getSyncObjectHandler = new GetSyncObjectHandler();
         getSyncObjectHandler.setClusterEntity(clusterEntity);
         getSyncObjectHandler.setSyncClusterTypeList(syncClusterTypeList);
@@ -129,18 +165,19 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
         return getSyncObjectHandler.sync();
     }
 
-    public void getClusterInSyncByEventmesh() {
-
-    }
-
-
     class GetSyncObjectHandler {
 
         @Setter
         private ClusterEntity clusterEntity;
 
+        @Setter
+        private DeployStatusType deployStatusType;
+
         private ClusterType clusterType;
 
+        /**
+         * 修改 eventmesh 空间下 所有 存储集群
+         */
         @Setter
         private List<ClusterType> syncClusterTypeList;
 
@@ -150,7 +187,7 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
 
         private List<ClusterEntity> clusterEntityList = new ArrayList<>();
 
-        private final List<ClusterEntity> capClusterList = new ArrayList<>();
+        private List<ClusterEntity> capClusterList = new ArrayList<>();
 
         private List<RuntimeEntity> runtimeList;
 
@@ -158,7 +195,7 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
             this.clusterEntity = clusterService.queryClusterById(clusterEntity);
             this.clusterType = clusterEntity.getClusterType();
             ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterEntity.getClusterType());
-            if(clusterFramework.isCAP() && isSync){
+            if (clusterFramework.isCAP() && isSync) {
                 return;
             }
             if (this.clusterType.isRuntime()) {
@@ -169,12 +206,28 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
             this.queryClusterByRelationship();
         }
 
+
+        private ClusterAndRuntimeOfRelationshipDO createClusterAndRuntimeOfRelationshipDO() {
+            ClusterAndRuntimeOfRelationshipDO clusterAndRuntimeOfRelationshipDO = new ClusterAndRuntimeOfRelationshipDO();
+            clusterAndRuntimeOfRelationshipDO.setClusterEntity(this.clusterEntity);
+            clusterAndRuntimeOfRelationshipDO.setClusterEntityList(this.clusterEntityList);
+            clusterAndRuntimeOfRelationshipDO.setRuntimeEntityList(this.runtimeList);
+            clusterAndRuntimeOfRelationshipDO.setClusterRelationshipEntityList(this.clusterRelationshipEntityList);
+            return clusterAndRuntimeOfRelationshipDO;
+        }
+
+
+        public ClusterAndRuntimeOfRelationshipDO queryClusterAndRuntime() {
+            this.base(false);
+            this.queryRuntimeByClusterList();
+            return this.createClusterAndRuntimeOfRelationshipDO();
+        }
+
+
         public ClusterAndRuntimeOfRelationshipDO deploy() {
             this.base(false);
-            if(this.clusterType.isRuntime()) {
-                ClusterAndRuntimeOfRelationshipDO clusterAndRuntimeOfRelationshipDO = new ClusterAndRuntimeOfRelationshipDO();
-                clusterAndRuntimeOfRelationshipDO.setClusterEntityList(List.of(this.clusterEntity));
-                clusterAndRuntimeOfRelationshipDO.setRuntimeEntityList(this.runtimeList);
+            if (this.clusterType.isRuntime()) {
+                ClusterAndRuntimeOfRelationshipDO clusterAndRuntimeOfRelationshipDO = this.createClusterAndRuntimeOfRelationshipDO();
                 clusterAndRuntimeOfRelationshipDO.getRuntimeEntityPairList().add(Pair.of(this.clusterEntity, this.runtimeList));
                 return clusterAndRuntimeOfRelationshipDO;
             }
@@ -186,25 +239,28 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
 
         public GetClusterInSyncReturnDO sync() {
             this.base(true);
-            if(this.clusterType.isRuntime()){
+            if (this.clusterType.isRuntime()) {
                 ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterEntity.getClusterType());
-                if(clusterFramework.isCAP()){
-                    this.independenceClusterList = List.of(this.clusterEntity);
+                if (clusterFramework.isCAP()) {
+                    this.capClusterList = List.of(this.clusterEntity);
                 }
-            }else{
+            } else {
                 this.filerSyncObject();
                 this.queryRuntimeByIndependenceClusterList();
             }
             GetClusterInSyncReturnDO syncReturnDO = new GetClusterInSyncReturnDO();
-            syncReturnDO.setClusterEntityList(this.independenceClusterList);
+            syncReturnDO.setClusterEntityList(this.capClusterList);
             syncReturnDO.setRuntimeEntityList(this.runtimeList);
             return syncReturnDO;
         }
 
         private ClusterAndRuntimeOfRelationshipDO structureRelationship() {
+            ClusterAndRuntimeOfRelationshipDO clusterAndRuntimeOfRelationshipDO = this.createClusterAndRuntimeOfRelationshipDO();
+            if (this.deployStatusType != DeployStatusType.CREATE) {
+                return clusterAndRuntimeOfRelationshipDO;
+            }
             Map<Long, ClusterEntity> clusterEntityMap =
                 this.clusterEntityList.stream().collect(Collectors.toMap(ClusterEntity::getId, Function.identity()));
-            ClusterAndRuntimeOfRelationshipDO clusterAndRuntimeOfRelationshipDO = new ClusterAndRuntimeOfRelationshipDO();
 
             Map<Long, List<RuntimeEntity>> runtimeListByClusterIdMap = new HashMap<>();
             Map<Long, List<ClusterEntity>> clusterListByClusterIdMap = new HashMap<>();
@@ -223,7 +279,7 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
                         return runtimeEntityList;
                     });
                 }
-                clusterListByClusterIdMap.computeIfAbsent(mainClusterEntity.getClusterId(), k->{
+                clusterListByClusterIdMap.computeIfAbsent(mainClusterEntity.getClusterId(), k -> {
                     List<ClusterEntity> clusterEntityList = new ArrayList<>();
                     clusterAndRuntimeOfRelationshipDO.getClusterEntityPairleList().add(Pair.of(mainClusterEntity, clusterEntityList));
                     return clusterEntityList;
@@ -232,22 +288,54 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
 
             this.clusterEntityList.forEach(clusterEntity -> {
                 List<ClusterEntity> list = clusterListByClusterIdMap.get(clusterEntity.getId());
-                if(Objects.nonNull(list)){
+                if (Objects.nonNull(list)) {
                     list.add(clusterEntity);
                 }
             });
 
             this.runtimeList.forEach(runtimeEntity -> {
                 List<RuntimeEntity> list = runtimeListByClusterIdMap.get(runtimeEntity.getId());
-                if(Objects.nonNull(list)){
+                if (Objects.nonNull(list)) {
                     list.add(runtimeEntity);
                 }
             });
+
+            if (Objects.equals(deployStatusType, DeployStatusType.CREATE_COPY)) {
+                this.copy(clusterAndRuntimeOfRelationshipDO);
+            }
+
             return clusterAndRuntimeOfRelationshipDO;
         }
 
+        private void copy(ClusterAndRuntimeOfRelationshipDO clusterAndRuntimeOfRelationshipDO) {
+            if (!Objects.equals(deployStatusType, DeployStatusType.CREATE_COPY)) {
+                return;
+            }
+            List<ResourcesConfigEntity> resourcesConfigEntityList =
+                resourcesConfigService.queryByRuntimeList(this.runtimeList);
+
+            Map<Long, ResourcesConfigEntity> resourcesConfigEntityMap = new HashMap<>();
+            resourcesConfigEntityList.forEach(resourcesConfigEntity -> {
+                resourcesConfigEntityMap.put(resourcesConfigEntity.getId(), resourcesConfigEntity);
+            });
+
+            clusterAndRuntimeOfRelationshipDO.setResourceData(new ArrayList<>());
+            clusterAndRuntimeOfRelationshipDO.setClusterResourcesList(new ArrayList<>());
+            Map<Long, List<Pair<RuntimeEntity, ResourcesConfigEntity>>> longPairMap = new HashMap<>();
+            Map<Long, List<ResourcesConfigEntity>> clusterIdAndResourcesMap = new HashMap<>();
+            this.runtimeList.forEach(runtimeEntity -> {
+                Pair<RuntimeEntity, ResourcesConfigEntity> pair =
+                    Pair.of(runtimeEntity, resourcesConfigEntityMap.get(runtimeEntity.getResourcesConfigId()));
+                longPairMap.computeIfAbsent(runtimeEntity.getClusterId(), k -> new ArrayList<>()).add(pair);
+
+                clusterIdAndResourcesMap.computeIfAbsent(runtimeEntity.getClusterId(), k -> new ArrayList<>())
+                    .add(resourcesConfigEntityMap.get(runtimeEntity.getResourcesConfigId()));
+            });
+
+        }
+
         public void getEventSpace() {
-                        /*
+            /*
                 查询 eventmesh 集群 里面 eventmesh 相关集群
                 storage 有一份，那么 eventmesh 也要有一份。至于 eventmesh 的是否执行，另外说。
                 TODO 这里需要有一个任务，对比 eventmesh  与 storage 的相关配置是否一样，不一样就补充
@@ -306,7 +394,7 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
             });
         }
 
-        private void queryRuntimeByClusterId(){
+        private void queryRuntimeByClusterId() {
             RuntimeEntity runtimeEntity = new RuntimeEntity();
             runtimeEntity.setClusterId(clusterEntity.getId());
             this.runtimeList = runtimeService.queryRuntimeToFrontByClusterId(runtimeEntity);
@@ -324,6 +412,7 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
             }
         }
 
+
         private void queryClusterByRelationship() {
             List<ClusterEntity> clsuterEnttiyList = this.clusterRelationshipEntityList.stream().map(value -> {
                 ClusterEntity entity = new ClusterEntity();
@@ -334,11 +423,14 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
         }
 
         private void queryClusterRelationship() {
-            List<Long> clusterId = new ArrayList<>();
-            Queue<ClusterRelationshipEntity> clusterRelationshipEntityQueue = new LinkedList<>();
             QueryListByClusterIdAndTypeDO queryListByClusterIdAndTypeDO = new QueryListByClusterIdAndTypeDO();
             queryListByClusterIdAndTypeDO.setClusterId(this.clusterEntity.getId());
             queryListByClusterIdAndTypeDO.setClusterTypeList(this.syncClusterTypeList);
+
+            /*
+             *  TODO 只能通过 代码 过滤需要的 clusterType， 除非 能从 syncClusterTypeList 得到 DEFINITION 与 目标类型
+             *       前端如何操作，
+             */
             List<ClusterRelationshipEntity> relationshipEntityList =
                 clusterRelationshipService.queryListByClusterIdAndType(queryListByClusterIdAndTypeDO);
             this.clusterRelationshipEntityList.addAll(relationshipEntityList);

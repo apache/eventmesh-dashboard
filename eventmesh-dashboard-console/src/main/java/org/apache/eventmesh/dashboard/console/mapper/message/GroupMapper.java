@@ -121,7 +121,7 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
     @Insert("""
         <script>
            insert into `group` (organization_id,cluster_id, name, type,own_type)
-            values (#{c.organizationId},#{clusterId},#{name},#{type},#{ownType}) on duplicate key update  status=1
+            values (#{organizationId},#{clusterId},#{name},#{type},#{ownType}) on duplicate key update  status=1
         </script>
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
@@ -138,5 +138,8 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
     void syncDelete(List<GroupEntity> entityList);
 
     @Override
+    @Select("""
+            select * from group where update_time >= #{updateTime} and status != 0
+        """)
     List<GroupEntity> syncGet(GroupEntity topicEntity);
 }

@@ -43,6 +43,9 @@ public class MetadataSyncResult {
 
     private SyncErrorType syncErrorType;
 
+    /**
+     * 同步结果
+     */
     private FirstToWhom firstToWhom = FirstToWhom.NOT;
 
     private SyncType syncType;

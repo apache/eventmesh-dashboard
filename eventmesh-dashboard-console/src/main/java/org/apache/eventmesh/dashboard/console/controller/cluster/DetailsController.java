@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.controller.cluster;
 
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

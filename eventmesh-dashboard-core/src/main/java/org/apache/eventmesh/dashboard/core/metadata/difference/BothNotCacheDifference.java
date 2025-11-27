@@ -34,6 +34,9 @@ public class BothNotCacheDifference extends AbstractBothDifference {
     void doDifference() {
         List<BaseClusterIdBase> sourcetList = sourceHandler.getData();
         List<BaseClusterIdBase> targetList = targetHandler.getData();
+        if(CollectionUtils.isEmpty(sourcetList) && CollectionUtils.isEmpty(targetList)){
+            return;
+        }
         if (CollectionUtils.isEmpty(sourcetList)) {
             /**
              *   TODO
@@ -55,9 +58,9 @@ public class BothNotCacheDifference extends AbstractBothDifference {
         sourcetList.forEach(value -> {
             this.allData.put(value.nodeUnique(), value);
         });
-        if (CollectionUtils.isEmpty(sourcetList)) {
+        if (CollectionUtils.isEmpty(targetList)) {
             return;
         }
-        this.basedOnSourceDifference(sourcetList, new HashMap<>(this.allData));
+        this.basedOnSourceDifference(targetList, new HashMap<>(this.allData));
     }
 }

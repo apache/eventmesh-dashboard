@@ -22,7 +22,7 @@ import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
-import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
+import org.apache.eventmesh.dashboard.console.model.DO.runtime.QueryRuntimeByBigExpandClusterDO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -53,8 +53,8 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
     @Select("""
         <script>
             select * from runtime where cluster_id
-                <foreach item='item' index='index'  open='in(' separator=',' close=')'>
-                    item.id
+                <foreach collection='list' item='item' index='index'  open='in(' separator=',' close=')'>
+                    #{item.id}
                 </foreach>
         </script>
         """
@@ -131,10 +131,10 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
     List<RuntimeEntity> selectRuntimeByCluster(RuntimeEntity runtimeEntity);
 
 
-    @Select("select COUNT(*) from runtime where cluster_id=#{clusterId} AND status=1")
+    @Select("select COUNT(*) from runtime where cluster_id=#{clusterId} AND status=1 and is_delete = 0")
     Integer getRuntimeNumByCluster(RuntimeEntity runtimeEntity);
 
-    @Select("select * from runtime where update_time >= #{updateTime} and status=1")
+    @Select("select * from runtime where update_time >= #{updateTime} and status=1 and is_delete = 0")
     List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity);
 
 
@@ -151,7 +151,7 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
              </foreach>
         </script>
         """)
-    void batchUpdateDeployStatusType(List<RuntimeEntity> runtimeEntities);
+    void batchUpdateDeployStatusTypeByList(List<RuntimeEntity> runtimeEntities);
 
     @Update("""
         <script>
@@ -161,7 +161,7 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
                </foreach>
         </script>
         """)
-    void batchUpdateDeployStatusType(@Param("list") List<RuntimeEntity> runtimeEntities, @Param("deployStatusType") DeployStatusType deployStatusType);
+    void batchUpdateDeployStatusTypeByListAndType(@Param("list") List<RuntimeEntity> runtimeEntities, @Param("deployStatusType") DeployStatusType deployStatusType);
 
 
     @Update("UPDATE runtime SET port=#{port} ,jmx_port=#{jmxPort} ,status=#{status} where cluster_id=#{clusterId} AND status=1")

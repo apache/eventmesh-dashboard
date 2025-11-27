@@ -19,6 +19,7 @@
 package org.apache.eventmesh.dashboard.console.mapper.message;
 
 
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
@@ -38,19 +39,29 @@ import java.util.List;
 public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
 
 
+    @Select("""
+        <script>
+            select * from topic where cluster_id
+                <foreach item='item' index='index' open='in(' separator=',' close=')'>
+                        #{item.id}
+                </foreach>
+        </script>
+    """)
+    List<TopicEntity> queryByClusterIdList(List<ClusterEntity> topicEntityList);
+
+
     @Select("SELECT count(*) FROM topic WHERE cluster_id=#{clusterId} AND status=1")
     Integer selectTopicNumByCluster(TopicEntity topicEntity);
 
-    @Select({
-        "<script>",
-        "SELECT * FROM topic",
-        "<where>",
-        "cluster_id =#{topicEntity.clusterId} And status=1",
-        "<if test='topicEntity.topicName!=null'>",
-        "and topic_name like CONCAT('%',#{topicEntity.topicName},'%')",
-        "</if>",
-        "</where>",
-        "</script>"})
+    @Select("""
+        <script>
+            select * from topic where cluster_id =#{topicEntity.clusterId} and status=1
+                <if test='topicEntity.topicName!=null'>
+                    and topic_name like concat('%',#{topicEntity.topicName},'%')
+                </if>
+                and status=1
+        </script>
+        """)
     List<TopicEntity> queryTopicsToFrontByClusterId(@Param("topicEntity") TopicEntity topicEntity);
 
 

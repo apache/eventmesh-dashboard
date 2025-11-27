@@ -53,22 +53,20 @@ public abstract class AbstractBuildMetadata implements BuildMetadata {
         }
     }
 
-    public String standardRuntime(ScriptBuildData data, RuntimeEntity target, List<RuntimeEntity> runtimeEntityList) {
+    public void standardRuntime(ScriptBuildData data, RuntimeEntity target, List<RuntimeEntity> runtimeEntityList) {
         StringBuffer nameService = new StringBuffer();
         runtimeEntityList.forEach(runtimeEntity -> {
             nameService.append(this.buildRuntime(target, runtimeEntity));
         });
         data.put("metaService", nameService.toString());
-        return nameService.toString();
     }
 
-    public String generatePropertiesConfig(ScriptBuildData data) {
+    public void generatePropertiesConfig(ScriptBuildData data) {
         StringBuffer config = new StringBuffer();
         data.getConfigEntityList().forEach(configEntity -> {
             config.append(configEntity.getConfigName()).append("=").append(configEntity.getConfigValue()).append(System.lineSeparator());
         });
         String runtimeConfig = config.toString();
         data.put("runtimeConfig", runtimeConfig);
-        return runtimeConfig;
     }
 }
