@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -80,22 +80,22 @@ public class DifferenceTest {
 
 
     @Test
-    public void test_BufferDifference(){
+    public void test_BufferDifference() {
         AtomicInteger atomicInteger = new AtomicInteger();
         BufferDifference difference = new BufferDifference();
         difference.setSourceHandler(new TestDataMetadataHandler() {
             @Override
             public List<BaseClusterIdBase> getData() {
-                return atomicInteger.get() == 0? baseClusterIdBases : baseClusterIdBaseList;
+                return atomicInteger.get() == 0 ? baseClusterIdBases : baseClusterIdBaseList;
             }
         });
         difference.setTargetHandler(new TestDataMetadataHandler() {
             @Override
             public void handleAll(Collection<BaseClusterIdBase> allData, List<BaseClusterIdBase> addData, List<BaseClusterIdBase> updateData,
                 List<BaseClusterIdBase> deleteData) {
-                if(atomicInteger.get() == 0) {
+                if (atomicInteger.get() == 0) {
                     Assert.assertEquals(baseClusterIdBases, addData);
-                }else{
+                } else {
                     Assert.assertEquals(2, deleteData.size());
                 }
             }
@@ -106,8 +106,7 @@ public class DifferenceTest {
     }
 
 
-
-    static class TestDataMetadataHandler implements DataMetadataHandler<BaseClusterIdBase>{
+    static class TestDataMetadataHandler implements DataMetadataHandler<BaseClusterIdBase> {
 
         @Override
         public void handleAll(Collection<BaseClusterIdBase> allData, List<BaseClusterIdBase> addData, List<BaseClusterIdBase> updateData,

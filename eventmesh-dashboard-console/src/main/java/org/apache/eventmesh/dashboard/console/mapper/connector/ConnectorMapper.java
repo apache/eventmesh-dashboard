@@ -48,8 +48,8 @@ public interface ConnectorMapper {
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO connector (cluster_id,name, class_name, type, status, pod_state, config_ids, host, port) "
-        + "VALUES (#{clusterId}, #{name}, #{className}, #{type}, #{status}, #{podState}, #{configIds}, #{host}, #{port})"
-        + "ON DUPLICATE KEY UPDATE status = 1, pod_state = #{podState}, config_ids = #{configIds}, host = #{host}, port = #{port}")
+            + "VALUES (#{clusterId}, #{name}, #{className}, #{type}, #{status}, #{podState}, #{configIds}, #{host}, #{port})"
+            + "ON DUPLICATE KEY UPDATE status = 1, pod_state = #{podState}, config_ids = #{configIds}, host = #{host}, port = #{port}")
     Long insert(ConnectorEntity connectorEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,17 +40,17 @@ package org.apache.eventmesh.dashboard.console.function.report.collect;
  *         eventmesh -> broker -> client  2
  *         client -> eventmesh  1  还可以压缩
  *     1s 5s 感知快
- *
- *     消息挤压，kubernetes，授权我帮他扩容
- *
- *
+ * <p>
+ * 消息挤压，kubernetes，授权我帮他扩容
+ * <p>
+ * <p>
  * TODO  OK
  *     普罗米修斯 ，
  *     如果  一个meta，一个broker， 一个 普罗米修斯， 没有
  *     如果  两个meta  被 多个broker 共享，一个 普罗米修斯  没有问题，不要控制
  *     如果  两个meta  被 多个broker 共享， 多个普罗米修斯  就有问题，会采集重复数据
  *     一个 collect 是对应 meta cluster ，还是 main cluster
- *
+ * <p>
  * TODO  OK
  *     meta 数据是否放到 ectd 里面。1 到 5 同步
  */

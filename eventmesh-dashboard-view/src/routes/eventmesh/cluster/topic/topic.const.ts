@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { TopicCreationStatusEnum, TopicHealthStatusEnum } from './topic.types'
+import {TopicCreationStatusEnum, TopicHealthStatusEnum} from './topic.types'
 
 export const TopicHealthStatusText = {
   [TopicHealthStatusEnum.Failed]: '失败',

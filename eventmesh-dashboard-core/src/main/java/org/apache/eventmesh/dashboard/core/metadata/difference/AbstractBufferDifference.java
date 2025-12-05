@@ -33,7 +33,8 @@ import lombok.Setter;
 public abstract class AbstractBufferDifference extends AbstractDifference implements DataMetadataHandler<BaseClusterIdBase> {
 
     @Override
-    public void handleAll(Collection<BaseClusterIdBase> allData, List<BaseClusterIdBase> addData, List<BaseClusterIdBase> updateData, List<BaseClusterIdBase> deleteData) {
+    public void handleAll(Collection<BaseClusterIdBase> allData, List<BaseClusterIdBase> addData, List<BaseClusterIdBase> updateData,
+        List<BaseClusterIdBase> deleteData) {
         this.targetHandler.handleAll(null, addData, updateData, deleteData);
     }
 

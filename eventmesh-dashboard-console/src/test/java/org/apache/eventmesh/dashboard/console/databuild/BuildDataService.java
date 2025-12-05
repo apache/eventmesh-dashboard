@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,31 +54,22 @@ import lombok.Getter;
 @Component
 public class BuildDataService {
 
-    @Autowired
-    private ClusterMapper clusterMapper;
-
-    @Autowired
-    private RuntimeMapper runtimeMapper;
-
-    @Autowired
-    private TopicMapper topicMapper;
-
-    @Autowired
-    private GroupMapper groupMapper;
-
-    @Autowired
-    private GroupMemberMapper groupMemberMapper;
-
-    @Autowired
-    private ConfigMapper configMapper;
-
     @Getter
     private final BuildCompleteData buildCompleteData = new BuildCompleteData();
-
     private final List<BuildMetadataOperation> buildMetadataOperationList = new ArrayList<>();
-
     private final Map<Long, BuildMetadataOperation> clusterBuildMetadataOperation = new HashMap<>();
-
+    @Autowired
+    private ClusterMapper clusterMapper;
+    @Autowired
+    private RuntimeMapper runtimeMapper;
+    @Autowired
+    private TopicMapper topicMapper;
+    @Autowired
+    private GroupMapper groupMapper;
+    @Autowired
+    private GroupMemberMapper groupMemberMapper;
+    @Autowired
+    private ConfigMapper configMapper;
 
     public void runtimeCopyByCluster(RuntimeEntity runtimeEntity) {
         runtimeEntity = this.runtimeMapper.queryRuntimeEntityById(runtimeEntity);
@@ -164,6 +155,18 @@ public class BuildDataService {
         this.configMapper.batchInsert(this.buildCompleteData.getConfigEntityList());
     }
 
+    @Data
+    public static class BuildCompleteData {
+
+        private final List<ConfigEntity> configEntityList = new ArrayList<>();
+
+        private final List<TopicEntity> topicEntityList = new ArrayList<>();
+
+        private final List<GroupEntity> groupEntityList = new ArrayList<>();
+
+        private final List<GroupMemberEntity> groupMemberEntityList = new ArrayList<>();
+
+    }
 
     public class CopyMetadata {
 
@@ -213,20 +216,6 @@ public class BuildDataService {
             });
         }
     }
-
-    @Data
-    public static class BuildCompleteData {
-
-        private final List<ConfigEntity> configEntityList = new ArrayList<>();
-
-        private final List<TopicEntity> topicEntityList = new ArrayList<>();
-
-        private final List<GroupEntity> groupEntityList = new ArrayList<>();
-
-        private final List<GroupMemberEntity> groupMemberEntityList = new ArrayList<>();
-
-    }
-
 
     public class BuildMetadataOperation {
 

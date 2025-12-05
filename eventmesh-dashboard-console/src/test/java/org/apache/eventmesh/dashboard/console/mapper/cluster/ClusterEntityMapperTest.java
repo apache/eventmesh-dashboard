@@ -50,26 +50,15 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class ClusterEntityMapperTest {
 
 
+    private static final AtomicLong nameIndex = new AtomicLong();
     @Autowired
     private ClusterMapper clusterMapper;
-
-
     @Autowired
     private ClusterRelationshipMapper clusterRelationshipMapper;
-
     private BuildFullSceneData buildFullSceneData = new BuildFullSceneData();
-
-    private static final AtomicLong nameIndex = new AtomicLong();
-
     private ClusterEntity clusterEntity = new ClusterEntity();
 
-    @Before
-    public void init() {
-        this.clusterEntity = createClusterEntity();
-        //this.clusterMapper.insertCluster(clusterEntity);
-    }
-
-    public static ClusterEntity createClusterEntity(){
+    public static ClusterEntity createClusterEntity() {
         return createClusterEntity(ClusterType.EVENTMESH_CLUSTER);
     }
 
@@ -95,6 +84,11 @@ public class ClusterEntityMapperTest {
         return clusterEntity;
     }
 
+    @Before
+    public void init() {
+        this.clusterEntity = createClusterEntity();
+        //this.clusterMapper.insertCluster(clusterEntity);
+    }
 
     @Test
     public void test_queryRelationClusterByClusterIdAndType() {

@@ -17,22 +17,14 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import {
-  Stack,
-  StackProps,
-  Fade,
-  Typography,
-  Button,
-  Breadcrumbs,
-  Link,
-  SxProps
-} from '@mui/material'
-import { Icons } from '../../../../assets/icons'
-import { styled } from '@mui/material/styles'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, {forwardRef} from 'react'
+import {Breadcrumbs, Button, Link, Stack, StackProps, Typography} from '@mui/material'
+import {Icons} from '../../../../assets/icons'
+import {styled} from '@mui/material/styles'
+import {useNavigate, useParams} from 'react-router-dom'
 
-interface ClusterMenuProps extends StackProps {}
+interface ClusterMenuProps extends StackProps {
+}
 
 const PageMenuButton = styled(Button)({
   boxShadow: 'none',
@@ -53,54 +45,54 @@ const PageMenuButton = styled(Button)({
 })
 
 const ClusterMenu = forwardRef<typeof Stack, ClusterMenuProps>(
-  ({ ...props }, ref) => {
-    const navigate = useNavigate()
-    const { clusterId } = useParams()
+    ({...props}, ref) => {
+      const navigate = useNavigate()
+      const {clusterId} = useParams()
 
-    return (
-      <Stack
-        spacing={2}
-        direction="row"
-        alignItems="center"
-        justifyContent={'space-between'}
-        sx={{ bgcolor: '#fafafa', pl: 1, pr: 1 }}>
-        <Breadcrumbs>
-          <Link
-            underline="hover"
-            color="inherit"
-            href="/eventmesh-cluster/list">
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Icons.List fontSize="small" color="inherit"></Icons.List>
-              <Typography fontSize="inherit">Cluster List</Typography>
+      return (
+          <Stack
+              spacing={2}
+              direction="row"
+              alignItems="center"
+              justifyContent={'space-between'}
+              sx={{bgcolor: '#fafafa', pl: 1, pr: 1}}>
+            <Breadcrumbs>
+              <Link
+                  underline="hover"
+                  color="inherit"
+                  href="/eventmesh-cluster/list">
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Icons.List fontSize="small" color="inherit"></Icons.List>
+                  <Typography fontSize="inherit">Cluster List</Typography>
+                </Stack>
+              </Link>
+              <Typography color="text.primary">1</Typography>
+            </Breadcrumbs>
+
+            <Stack direction={'row'} spacing={1}>
+              <PageMenuButton
+                  className="active"
+                  onClick={() => navigate(`${clusterId}/overview`)}>
+                Overview
+              </PageMenuButton>
+              <PageMenuButton
+                  onClick={() => {
+                    navigate(`${clusterId}/topic`)
+                  }}>
+                Topic
+              </PageMenuButton>
+              <PageMenuButton>Message</PageMenuButton>
+              <PageMenuButton>Meta</PageMenuButton>
+              <PageMenuButton>Runtime</PageMenuButton>
+              <PageMenuButton>Storage</PageMenuButton>
+              <PageMenuButton>User</PageMenuButton>
+              <PageMenuButton>Log</PageMenuButton>
+              <PageMenuButton>Setting</PageMenuButton>
+              <PageMenuButton>Config</PageMenuButton>
             </Stack>
-          </Link>
-          <Typography color="text.primary">1</Typography>
-        </Breadcrumbs>
-
-        <Stack direction={'row'} spacing={1}>
-          <PageMenuButton
-            className="active"
-            onClick={() => navigate(`${clusterId}/overview`)}>
-            Overview
-          </PageMenuButton>
-          <PageMenuButton
-            onClick={() => {
-              navigate(`${clusterId}/topic`)
-            }}>
-            Topic
-          </PageMenuButton>
-          <PageMenuButton>Message</PageMenuButton>
-          <PageMenuButton>Meta</PageMenuButton>
-          <PageMenuButton>Runtime</PageMenuButton>
-          <PageMenuButton>Storage</PageMenuButton>
-          <PageMenuButton>User</PageMenuButton>
-          <PageMenuButton>Log</PageMenuButton>
-          <PageMenuButton>Setting</PageMenuButton>
-          <PageMenuButton>Config</PageMenuButton>
-        </Stack>
-      </Stack>
-    )
-  }
+          </Stack>
+      )
+    }
 )
 
 ClusterMenu.displayName = 'ClusterMenu'

@@ -64,7 +64,6 @@ public interface GroupMemberMapper extends SyncDataHandlerMapper<GroupMemberEnti
     void updateGroupMember(GroupMemberEntity groupMemberEntity);
 
 
-
     @Update("UPDATE group_member SET status=0 where id=#{id} ")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);

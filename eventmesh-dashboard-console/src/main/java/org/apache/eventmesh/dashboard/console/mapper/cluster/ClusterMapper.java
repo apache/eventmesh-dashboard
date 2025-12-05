@@ -117,8 +117,6 @@ public interface ClusterMapper {
     List<ClusterEntity> queryClusterByUpdate(ClusterEntity clusterEntity);
 
 
-
-
     @Select("""
         <script>
         </script>

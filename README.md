@@ -4,9 +4,11 @@
 
 ## Introduction
 
-The EventMesh Dashboard is under development and will support functionalities such as Connection management, cluster health checks, etc. Feel free to reach out to the [EventMesh Assistant](https://github.com/apache/eventmesh?tab=readme-ov-file#community) to contribute.
+The EventMesh Dashboard is under development and will support functionalities such as Connection management, cluster health checks, etc. Feel free to
+reach out to the [EventMesh Assistant](https://github.com/apache/eventmesh?tab=readme-ov-file#community) to contribute.
 
-The Dashboard for EventMesh, maintained during v1.8.0 ~ v1.10.0, is a pure frontend project located at the [Next.js Dashboard branch](https://github.com/apache/eventmesh-dashboard/tree/nextjs-dashboard).
+The Dashboard for EventMesh, maintained during v1.8.0 ~ v1.10.0, is a pure frontend project located at
+the [Next.js Dashboard branch](https://github.com/apache/eventmesh-dashboard/tree/nextjs-dashboard).
 
 Weekly development meeting documents for EventMesh Dashboard: https://docs.qq.com/doc/DQmhVbklUdGNNWGZi
 
@@ -67,7 +69,7 @@ cd eventmesh-dashboard
 ./mvnw clean package
 ```
 
->TODO download mysql-connector-j manually
+> TODO download mysql-connector-j manually
 
 ```
 java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar
@@ -75,7 +77,7 @@ java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSW
 
 ### Build and Run with Docker
 
->To be updated
+> To be updated
 
 ```
 cd eventmesh-dashboard

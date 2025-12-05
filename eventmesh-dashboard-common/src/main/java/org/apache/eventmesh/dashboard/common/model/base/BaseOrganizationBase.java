@@ -113,14 +113,15 @@ public abstract class BaseOrganizationBase {
     }
 
     public String getUnique() {
-        if(Objects.isNull(this.unique)) {
+        if (Objects.isNull(this.unique)) {
             this.unique = this.getClass().getSimpleName() + "-" + this.id.toString();
         }
         return this.unique;
     }
 
     /**
-     *  主要用于 database 数据 与  节点数据 对比用。这个数据在node的唯一
+     * 主要用于 database 数据 与  节点数据 对比用。这个数据在node的唯一
+     *
      * @return
      */
     public abstract String nodeUnique();

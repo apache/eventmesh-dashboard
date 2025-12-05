@@ -16,7 +16,6 @@
  */
 
 
-
 package org.apache.eventmesh.dashboard.console.model.message.offset;
 
 

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { NavMenuIdEnum } from '../../../routes/navigation/navigation.types'
+import {NavMenuIdEnum} from '../../../routes/navigation/navigation.types'
 
 export interface PublicState {
   navigation: { activeMenuId: NavMenuIdEnum; pinSubmenuIds: NavMenuIdEnum[] }

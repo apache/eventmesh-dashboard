@@ -144,8 +144,8 @@ public class ColonyDO<C extends ClusterBaseDO> {
         ColonyDO<C> mainColony = this.allColonyDO.get(mainId);
 
         ColonyDO<C> colonyDO = this.allColonyDO.get(clusterId);
-        if(Objects.isNull(colonyDO)) {
-            log.error("clusterId to colonyDO is null, main is is {}, cluster id {}", mainId , clusterId);
+        if (Objects.isNull(colonyDO)) {
+            log.error("clusterId to colonyDO is null, main is is {}, cluster id {}", mainId, clusterId);
             return;
         }
         colonyDO.setSuperiorId(mainId);

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
  *  实现这个 handler 需要 对 ClusterAndRuntimeDomainImpl GetSyncObjectHandler 的 数据读取 与 数据整理 进行 解耦。</p>
  *  一个是 db read ， 一个 get read
  *  issue Full metadata 创建 create cluster 以及 GetSyncObjectHandler 数据读取与数据操作解耦，支持 db read 与 get read
- *
  */
 @Component
 public class CreateClusterByFullMetadataHandler implements UpdateHandler<CreateClusterByFullMetadataDTO> {

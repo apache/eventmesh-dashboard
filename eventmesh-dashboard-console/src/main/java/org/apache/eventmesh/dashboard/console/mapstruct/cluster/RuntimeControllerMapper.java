@@ -39,6 +39,4 @@ public interface RuntimeControllerMapper {
     RuntimeEntity queryRuntimeListById(IdDTO idDTO);
 
 
-
-
 }

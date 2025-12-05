@@ -35,5 +35,4 @@ public class ClusterIdDTO extends OrganizationIdDTO {
     private ClusterType clusterType;
 
 
-
 }

@@ -37,7 +37,7 @@ public class ClientWrapper {
 
 
     @SuppressWarnings("unchecked")
-    public <T>T  getClient(SDKTypeEnum type) {
+    public <T> T getClient(SDKTypeEnum type) {
         return (T) clientMap.get(type);
     }
 

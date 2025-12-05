@@ -31,7 +31,7 @@ public interface UpdateHandler<T> extends DeployBeforeCheck<T> {
 
 
     @Override
-    default boolean check(T t){
+    default boolean check(T t) {
         return true;
     }
 }

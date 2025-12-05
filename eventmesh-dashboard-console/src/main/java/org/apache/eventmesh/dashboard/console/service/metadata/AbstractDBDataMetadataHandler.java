@@ -50,15 +50,10 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractDBDataMetadataHandler<T extends BaseClusterIdEntity> implements DataMetadataHandler<T>, ApplicationContextAware {
 
     private static final Map<Type, Object> CLASS_SYNC_DATA_HANDLER_MAPPER_MAP = new HashMap<>();
-
-    private AbstractApplicationContext applicationContext;
-
-    private T baseRuntimeIdBase;
-
-    private  List<T> dataList = new ArrayList<>(1);
-
     protected SyncDataHandlerMapper<T> syncDataHandlerMapper;
-
+    private AbstractApplicationContext applicationContext;
+    private T baseRuntimeIdBase;
+    private List<T> dataList = new ArrayList<>(1);
 
     /**
      * TODO
@@ -114,7 +109,7 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseClusterIdEntit
 
     @Override
     public void handleAll(Collection<T> allData, List<T> addData, List<T> updateData, List<T> deleteData) {
-        if(CollectionUtils.isNotEmpty(addData)) {
+        if (CollectionUtils.isNotEmpty(addData)) {
             this.syncDataHandlerMapper.syncInsert(addData);
         }
         if (CollectionUtils.isNotEmpty(updateData)) {
@@ -131,7 +126,7 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseClusterIdEntit
         LocalDateTime date = LocalDateTime.now();
         try {
             List<T> list = this.doGetData();
-            if(this.dataList == list) {
+            if (this.dataList == list) {
                 return this.syncDataHandlerMapper.syncGet(this.baseRuntimeIdBase);
             }
             return list;
@@ -140,7 +135,7 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseClusterIdEntit
         }
     }
 
-    List<T> doGetData(){
+    List<T> doGetData() {
         return this.dataList;
     }
 

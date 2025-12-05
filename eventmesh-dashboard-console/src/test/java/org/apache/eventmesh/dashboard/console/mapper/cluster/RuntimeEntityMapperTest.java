@@ -56,19 +56,26 @@ import org.springframework.test.context.junit4.SpringRunner;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class RuntimeEntityMapperTest {
 
+    private static final Map<Long, AtomicLong> aliasIndex = new HashMap<>();
+    private final BuildFullSceneData buildFullSceneData = new BuildFullSceneData();
     @Autowired
     private ClusterMapper clusterMapper;
-
     @Autowired
     private RuntimeMapper runtimeMapper;
-
     @Autowired
     private ClusterRelationshipMapper clusterRelationshipMapper;
 
-    private final BuildFullSceneData buildFullSceneData = new BuildFullSceneData();
-
-    private static final Map<Long,AtomicLong> aliasIndex = new HashMap<>();
-
+    public static RuntimeEntity createRuntimeEntity(ClusterEntity clusterEntity) {
+        AtomicLong nameIndex = aliasIndex.computeIfAbsent(clusterEntity.getId(), k -> new AtomicLong(2));
+        RuntimeEntity runtimeEntity = ClusterDataMapperTest.INSTANCE.toRuntimeEntity(clusterEntity);
+        runtimeEntity.setClusterId(clusterEntity.getId());
+        runtimeEntity.setName(nameIndex.incrementAndGet() + "-----runtime");
+        runtimeEntity.setHost(nameIndex.incrementAndGet() + "");
+        runtimeEntity.setPort((int) nameIndex.get());
+        runtimeEntity.setJmxPort((int) nameIndex.get());
+        runtimeEntity.setKubernetesClusterId(nameIndex.get());
+        return runtimeEntity;
+    }
 
     @Test
     public void mock_jvm() {
@@ -155,7 +162,6 @@ public class RuntimeEntityMapperTest {
 
     }
 
-
     @Test
     public void test_queryRuntimeByClusterId() {
         buildFullSceneData.build(ClusterType.EVENTMESH_CLUSTER);
@@ -178,7 +184,6 @@ public class RuntimeEntityMapperTest {
         });
         Assert.assertEquals(list.size(), runtimeEntityList.size());
     }
-
 
     @Test
     public void test_batch() {
@@ -208,18 +213,6 @@ public class RuntimeEntityMapperTest {
         RuntimeEntity newRuntimeEntity = this.runtimeMapper.queryRuntimeEntityById(runtimeEntity);
         // TODO h2 不支持 MySQL ON DUPLICATE KEY UPDATE
         //Assert.assertNotEquals(runtimeEntity.getOnlineTimestamp(), newRuntimeEntity.getOnlineTimestamp());
-    }
-
-    public static RuntimeEntity createRuntimeEntity(ClusterEntity clusterEntity) {
-        AtomicLong nameIndex = aliasIndex.computeIfAbsent(clusterEntity.getId(), k -> new AtomicLong(2));
-        RuntimeEntity runtimeEntity = ClusterDataMapperTest.INSTANCE.toRuntimeEntity(clusterEntity);
-        runtimeEntity.setClusterId(clusterEntity.getId());
-        runtimeEntity.setName(nameIndex.incrementAndGet() + "-----runtime");
-        runtimeEntity.setHost(nameIndex.incrementAndGet() + "");
-        runtimeEntity.setPort((int) nameIndex.get());
-        runtimeEntity.setJmxPort((int) nameIndex.get());
-        runtimeEntity.setKubernetesClusterId(nameIndex.get());
-        return runtimeEntity;
     }
 
 }

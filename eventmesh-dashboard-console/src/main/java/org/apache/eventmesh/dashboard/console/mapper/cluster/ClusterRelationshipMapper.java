@@ -104,7 +104,6 @@ public interface ClusterRelationshipMapper {
     List<ClusterAndRelationshipEntity> queryClusterAndRelationshipEntityListByClusterId(ClusterRelationshipEntity clusterRelationshipEntity);
 
 
-
     @Select(" select * from cluster_relationship where update_time > #{updateTime} and status in(1, 2 ,3)")
     List<ClusterRelationshipEntity> queryNewlyIncreased(ClusterRelationshipEntity clusterRelationshipEntity);
 

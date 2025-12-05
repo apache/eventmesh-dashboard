@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,14 +45,11 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class KubernetesManage {
 
+    private final Map<Long, ResourcesDataWrapper> resourcesConfigEntityMap = new ConcurrentHashMap<>();
     @Autowired
     private ClusterService clusterService;
-
     @Setter
     private boolean useIntelligent = false;
-
-    private final Map<Long, ResourcesDataWrapper> resourcesConfigEntityMap = new ConcurrentHashMap<>();
-
 
     public void register(BaseSyncBase baseSyncBase) {
         ResourcesDataWrapper resourcesDataWrapper = new ResourcesDataWrapper();
@@ -132,11 +129,11 @@ public class KubernetesManage {
         ResourcesConfigEntity allocatableEntity = this.total(allocatable);
         ResourcesConfigEntity applyEntity = this.total(apply);
         log.info("allocatable : {} , apply : {} ", allocatableEntity, applyEntity);
-        if(allocatableEntity.getCpuNum() > applyEntity.getCpuNum() &&
-           allocatableEntity.getMemNum() > applyEntity.getMemNum() &&
-           allocatableEntity.getDiskNum() < applyEntity.getDiskNum()){
+        if (allocatableEntity.getCpuNum() > applyEntity.getCpuNum()
+            && allocatableEntity.getMemNum() > applyEntity.getMemNum()
+            && allocatableEntity.getDiskNum() < applyEntity.getDiskNum()) {
             return true;
-        }else{
+        } else {
             log.error("check fail");
             return false;
         }
@@ -161,18 +158,13 @@ public class KubernetesManage {
     @Data
     private static class ResourcesDataWrapper {
 
+        private final Object lock = new Object();
         /**
          * 如果
          */
         private volatile List<ResourcesConfigEntity> nodeResourcesConfigEntityList = new ArrayList<>();
-
-
         private volatile List<ResourcesConfigEntity> remainingConfigEntityList = new ArrayList<>();
-
         private ClientWrapper clientWrapper;
-
-        private final Object lock = new Object();
-
         private BaseSyncBase baseSyncBase;
     }
 

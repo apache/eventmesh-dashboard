@@ -17,35 +17,36 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, Stack, StackProps } from '@mui/material'
-
-interface EventMeshProps extends StackProps {}
+import React, {forwardRef} from 'react'
+import {Stack, StackProps} from '@mui/material'
 import RootLayout from '../../components/page/RootLayout'
 import Page from '../../components/page/Layout'
-import { Outlet, matchPath, useLocation } from 'react-router-dom'
+import {matchPath, Outlet, useLocation} from 'react-router-dom'
 import ClusterMenu from './cluster/cluster-menu/ClusterMenu'
 
+interface EventMeshProps extends StackProps {
+}
+
 const Eventmesh = forwardRef<typeof Stack, EventMeshProps>(
-  ({ children, ...props }, ref) => {
-    const { pathname } = useLocation()
+    ({children, ...props}, ref) => {
+      const {pathname} = useLocation()
 
-    const isEventmeshClusterPath =
-      !!matchPath('/eventmesh-cluster/*', pathname) &&
-      !['/eventmesh-cluster/list', '/eventmesh-cluster/list/'].includes(
-        pathname
+      const isEventmeshClusterPath =
+          !!matchPath('/eventmesh-cluster/*', pathname) &&
+          !['/eventmesh-cluster/list', '/eventmesh-cluster/list/'].includes(
+              pathname
+          )
+
+      return (
+          <RootLayout>
+            <Page
+                sx={{height: 1, p: 2, display: 'flex', flexDirection: 'column'}}>
+              {isEventmeshClusterPath && <ClusterMenu/>}
+              <Outlet/>
+            </Page>
+          </RootLayout>
       )
-
-    return (
-      <RootLayout>
-        <Page
-          sx={{ height: 1, p: 2, display: 'flex', flexDirection: 'column' }}>
-          {isEventmeshClusterPath && <ClusterMenu />}
-          <Outlet />
-        </Page>
-      </RootLayout>
-    )
-  }
+    }
 )
 
 Eventmesh.displayName = 'Eventmesh'

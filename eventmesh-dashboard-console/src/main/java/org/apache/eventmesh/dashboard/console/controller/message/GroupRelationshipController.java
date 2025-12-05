@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupRelationshipController {
 
 
-
     public List<TopicEntity> queryTopicByGroupId(@RequestBody @Validated IdDTO idDTO) {
 
         return null;

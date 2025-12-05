@@ -56,56 +56,40 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class FunctionManage {
 
-    @Autowired
-    private FunctionConfig functionConfig;
-
-    @Autowired
-    private RuntimeService runtimeService;
-
-
-    @Autowired
-    private ClusterService clusterService;
-
-    @Autowired
-    private ClusterRelationshipService clusterRelationshipService;
-
-
-    @Autowired
-    private DefaultMetadataSyncResultHandler defaultMetadataSyncResultHandler;
-
-    @Autowired
-    private HealthDataService dataService;
-
-    @Autowired
-    private List<DataMetadataHandler> dataMetadataHandlerList;
-
-
     private final MetadataSyncManage metadataSyncManage = new MetadataSyncManage();
-
     private final Health2Service healthService = new Health2Service();
-
     private final ClusterMetadataDomain clusterMetadataDomain = new ClusterMetadataDomain();
-
     /**
      * 定时任务查询对象
      */
     private final RuntimeEntity runtimeEntity = new RuntimeEntity();
-
     /**
      * 定时任务查询对象
      */
     private final ClusterEntity clusterEntity = new ClusterEntity();
-
     /**
      * 定时任务查询对象
      */
     private final ClusterRelationshipEntity clusterRelationshipEntity = new ClusterRelationshipEntity();
-
+    @Autowired
+    private FunctionConfig functionConfig;
+    @Autowired
+    private RuntimeService runtimeService;
+    @Autowired
+    private ClusterService clusterService;
+    @Autowired
+    private ClusterRelationshipService clusterRelationshipService;
+    @Autowired
+    private DefaultMetadataSyncResultHandler defaultMetadataSyncResultHandler;
+    @Autowired
+    private HealthDataService dataService;
+    @Autowired
+    private List<DataMetadataHandler> dataMetadataHandlerList;
     @Value("${function.enabled:false}")
     private boolean enabled;
 
     @Bean
-    public ReportHandlerManage buildReportHandlerManage(){
+    public ReportHandlerManage buildReportHandlerManage() {
         ReportHandlerManage reportHandlerManage = new ReportHandlerManage();
         reportHandlerManage.setReportConfig(functionConfig.getReportConfig());
         reportHandlerManage.init();

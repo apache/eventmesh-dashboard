@@ -78,6 +78,21 @@ public class Health2Service {
         }
     }
 
+    private final Map<String, HealthCheckWrapper> checkServiceMap = new ConcurrentHashMap<>();
+    @Deprecated
+    private final Map<Long, ClusterHealthCheckService> clusterHealthCheckServiceMap = new ConcurrentHashMap<>();
+    private final ThreadPoolExecutor threadPoolExecutor =
+        new ThreadPoolExecutor(32, 32, 5, TimeUnit.SECONDS, new LinkedBlockingDeque<>(), new ThreadFactory() {
+            final AtomicInteger counter = new AtomicInteger(0);
+
+            @Override
+            public Thread newThread(@Nullable Runnable r) {
+                return new Thread(r, "health-manager-" + counter.incrementAndGet());
+            }
+        });
+    @Setter
+    private HealthDataService dataService;
+    private LocalDateTime beginTime = LocalDateTime.now();
 
     private static void setClassCache(Class<?> clazz) {
         HealthCheckType checkType = clazz.getAnnotation(HealthCheckType.class);
@@ -92,29 +107,6 @@ public class Health2Service {
             map.put(clusterType, clazz);
         }
     }
-
-
-    private final Map<String, HealthCheckWrapper> checkServiceMap = new ConcurrentHashMap<>();
-
-    @Deprecated
-    private final Map<Long, ClusterHealthCheckService> clusterHealthCheckServiceMap = new ConcurrentHashMap<>();
-
-
-    private final ThreadPoolExecutor threadPoolExecutor =
-        new ThreadPoolExecutor(32, 32, 5, TimeUnit.SECONDS, new LinkedBlockingDeque<>(), new ThreadFactory() {
-            final AtomicInteger counter = new AtomicInteger(0);
-
-            @Override
-            public Thread newThread(@Nullable Runnable r) {
-                return new Thread(r, "health-manager-" + counter.incrementAndGet());
-            }
-        });
-
-    @Setter
-    private HealthDataService dataService;
-
-    private LocalDateTime beginTime = LocalDateTime.now();
-
 
     @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
     public void register(BaseSyncBase baseSyncBase) {
@@ -180,15 +172,15 @@ public class Health2Service {
     }
 
     public void executeAll() {
-        try{
+        try {
             this.doExecuteAll();
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
 
 
-    public void doExecuteAll(){
+    public void doExecuteAll() {
         if (checkServiceMap.isEmpty()) {
             log.info("check service is empty");
             return;

@@ -31,6 +31,4 @@ public class BaseConifgDO {
     private List<ConfigEntity> configList;
 
 
-
-
 }

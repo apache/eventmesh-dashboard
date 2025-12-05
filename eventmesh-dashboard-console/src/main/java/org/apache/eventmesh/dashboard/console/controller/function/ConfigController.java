@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(("/user/config"))
 public class ConfigController {
 
-    private static final  ConfigControllerMapper INSTANCE = ConfigControllerMapper.INSTANCE;
+    private static final ConfigControllerMapper INSTANCE = ConfigControllerMapper.INSTANCE;
 
     @Autowired
     private ConfigService configService;

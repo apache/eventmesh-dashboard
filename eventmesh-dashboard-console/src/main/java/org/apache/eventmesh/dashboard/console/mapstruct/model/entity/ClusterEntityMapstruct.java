@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,20 +27,23 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
+/**
+ *
+ */
 @Mapper(uses = ClusterMapstructCustomize.class)
 public interface ClusterEntityMapstruct {
 
     ClusterEntityMapstruct INSTANCE = Mappers.getMapper(ClusterEntityMapstruct.class);
 
 
-    @Mapping(source = "clusterType",target = "nodeType", qualifiedByName = "clusterTreeInNodeType")
+    @Mapping(source = "clusterType", target = "nodeType", qualifiedByName = "clusterTreeInNodeType")
     ClusterTreeVO toClusterTreeVO(ClusterEntity clusterEntity);
 
 
-    class ClusterMapstructCustomize{
+    class ClusterMapstructCustomize {
 
         @Named("clusterTreeInNodeType")
-        public static ClusterType clusterTreeInNodeType(ClusterType  clusterType){
+        public static ClusterType clusterTreeInNodeType(ClusterType clusterType) {
             return ClusterType.CLUSTER;
         }
 

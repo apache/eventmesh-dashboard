@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,16 +37,9 @@ import lombok.extern.slf4j.Slf4j;
 public class AgentController {
 
 
-    public static void main(String[] args) {
-        AgentController agentController = new AgentController();
-        agentController.start();
-    }
-
     private final ConfigHandlerManage configHandlerManage = new ConfigHandlerManage();
-
-    private AgentActionClient agentActionClient;
-
     private final List<Long> waitTime = new ArrayList<>();
+    private AgentActionClient agentActionClient;
 
     {
         for (int i = 1; i < 4; i++) {
@@ -58,6 +51,11 @@ public class AgentController {
         }
         Collections.sort(waitTime);
 
+    }
+
+    public static void main(String[] args) {
+        AgentController agentController = new AgentController();
+        agentController.start();
     }
 
     public void start() {
@@ -89,7 +87,7 @@ public class AgentController {
             return;
         }
 
-        Map<String,String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>();
         data.put("clusterId", clusterId);
         data.put("runtimeId", runtimeId);
         AgentStartActionVO agentStartActionVO = agentActionClient.agentStartAction(data);
@@ -120,7 +118,7 @@ public class AgentController {
 
             try {
                 AgentCheckRuntimeVO vo = agentActionClient.agentCheckRuntime(data);
-                if(vo.isSuccess()) {
+                if (vo.isSuccess()) {
                     success.set(true);
                     log.info("agentCheckRuntime success time {}", waitTime);
                     return;

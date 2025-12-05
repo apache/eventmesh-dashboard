@@ -53,7 +53,7 @@ public abstract class BaseClusterIdBase extends BaseOrganizationBase {
     }
 
     public boolean isInsert() {
-        return Objects.equals(this.getUpdateTime() , this.getCreateTime());
+        return Objects.equals(this.getUpdateTime(), this.getCreateTime());
     }
 
 }

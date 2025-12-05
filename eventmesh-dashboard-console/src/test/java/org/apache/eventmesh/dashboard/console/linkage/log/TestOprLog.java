@@ -19,11 +19,11 @@
 package org.apache.eventmesh.dashboard.console.linkage.log;
 
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
-import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
 import org.apache.eventmesh.dashboard.console.model.dto.log.GetLogListDTO;
-import org.apache.eventmesh.dashboard.console.service.message.GroupService;
 import org.apache.eventmesh.dashboard.console.service.function.LogService;
+import org.apache.eventmesh.dashboard.console.service.message.GroupService;
 
 import java.util.List;
 

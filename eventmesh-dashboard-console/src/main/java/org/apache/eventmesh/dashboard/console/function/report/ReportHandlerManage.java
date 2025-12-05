@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -93,25 +93,16 @@ public class ReportHandlerManage {
     }
 
     private final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(10);
-
+    private final Map<Class<?>, String> clazzToTableName = new HashMap<>();
+    private final CollectManage collectManage = new CollectManage();
+    private final MetadataDataManage metadataDataManage = new MetadataDataManage();
     private Map<String, ReportEngine> reportEngineMap = new HashMap<>();
-
     @Setter
     private ReportEngine reportEngine;
-
     @Getter
     private Map<String, ReportMetaData> reportMetaDataMap = new HashMap<>();
-
     @Getter
-    private Map<String,ReportMetaData> aggregationMetaDataMap = new HashMap<>();
-
-    private final Map<Class<?>, String> clazzToTableName = new HashMap<>();
-
-    private final CollectManage collectManage = new CollectManage();
-
-    private final MetadataDataManage metadataDataManage = new MetadataDataManage();
-
-
+    private Map<String, ReportMetaData> aggregationMetaDataMap = new HashMap<>();
     @Setter
     private ReportConfig reportConfig;
 
@@ -169,9 +160,6 @@ public class ReportHandlerManage {
             return null;
         }
         Class<?> clazz = engineClasses.get(reportEngineConfig.getEngineType());
-        if (Objects.isNull(clazz)) {
-
-        }
         try {
             AbstractReportEngine reportEngine = (AbstractReportEngine) clazz.newInstance();
             reportEngine.setReportEngineConfig(reportEngineConfig);
@@ -234,31 +222,17 @@ public class ReportHandlerManage {
         }
         reportMetaData.setValueType(clazz.getSimpleName().contains("Long") ? "Long" : "Float");
         Aggregation[] aggregationArrays = clazz.getAnnotationsByType(Aggregation.class);
-        if(ArrayUtils.isNotEmpty(aggregationArrays)) {
-            Map<String,Field> aggregationFieldMap = new HashMap<>(aggregationArrays.length);
+        if (ArrayUtils.isNotEmpty(aggregationArrays)) {
+            Map<String, Field> aggregationFieldMap = new HashMap<>(aggregationArrays.length);
             Arrays.stream(aggregationArrays).forEach(aggregation -> {
                 Field field = aggregationFieldMap.get(aggregation.fieldName());
                 field.setAccessible(true);
-                aggregationFieldMap.put(aggregation.reportName(),field);
+                aggregationFieldMap.put(aggregation.reportName(), field);
                 this.aggregationMetaDataMap.put(aggregation.reportName(), reportMetaData);
 
             });
             reportMetaData.setAggregationFieldMap(aggregationFieldMap);
         }
-//        List<Field> aggregationList = FieldUtils.getFieldsListWithAnnotation(clazz, Aggregation.class);
-//        if (!aggregationList.isEmpty()) {
-//            reportMetaData.setAggregation(true);
-//            Map<String, AggregationClass> aggregationClassMap = new HashMap<>();
-//            reportMetaData.setAggregationClasses(aggregationClassMap);
-//            aggregationList.forEach(aggregation -> {
-//                Aggregation aggregationAnnotation = aggregation.getAnnotation(Aggregation.class);
-//
-//                AggregationClass aggregationClass = new AggregationClass();
-//                aggregationClass.setAlias(aggregationAnnotation.value());
-//                aggregationClass.setField(aggregation);
-//                aggregationClassMap.put(aggregationClass.getAlias(), aggregationClass);
-//            });
-//        }
 
         List<Field> list = new ArrayList<>(FieldUtils.getAllFieldsList(clazz));
         Collections.reverse(list);
@@ -269,9 +243,6 @@ public class ReportHandlerManage {
         this.clazzToTableName.put(clazz, reportMetaData.getTableName());
     }
 
-    /**
-     * @return Map<String viewName, List < Map < String, Object>>> dataList  Map<String, Object> data
-     */
     public Map<String, List<Map<String, Object>>> queryResultIsMap(List<SingleGeneralReportDO> singleGeneralReportDOList) {
         Map<String, CompletableFuture<List<Map<String, Object>>>> completableFutures = new HashMap<>(singleGeneralReportDOList.size());
         singleGeneralReportDOList.forEach(reportDO -> {

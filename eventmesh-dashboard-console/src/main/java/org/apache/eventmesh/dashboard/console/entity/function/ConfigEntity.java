@@ -29,7 +29,6 @@ import lombok.EqualsAndHashCode;
 public class ConfigEntity extends BaseRuntimeIdEntity {
 
 
-
     private String businessType;
 
     private Long retrospectId;

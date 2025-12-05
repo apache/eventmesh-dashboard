@@ -17,22 +17,23 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, Stack, StackProps } from '@mui/material'
-
-interface ClustersProps extends StackProps {}
+import React, {forwardRef} from 'react'
+import {Stack, StackProps} from '@mui/material'
 import ClusterList from './ClusterList'
 import ClusterStat from './ClusterStat'
 
+interface ClustersProps extends StackProps {
+}
+
 const Clusters = forwardRef<typeof Stack, ClustersProps>(
-  ({ children, ...props }, ref) => {
-    return (
-      <Stack sx={{ height: 1 }} spacing={2}>
-        <ClusterStat />
-        <ClusterList />
-      </Stack>
-    )
-  }
+    ({children, ...props}, ref) => {
+      return (
+          <Stack sx={{height: 1}} spacing={2}>
+            <ClusterStat/>
+            <ClusterList/>
+          </Stack>
+      )
+    }
 )
 
 Clusters.displayName = 'Clusters'

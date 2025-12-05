@@ -35,7 +35,6 @@ spring:
       url: jdbc:mysql://${DB_ADDRESS:localhost:3306}/eventmesh_dashboard?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
       username: ${DB_USERNAME:root}
       password: ${DB_PASSWORD:Ab123123@}
-
       initial-size: 1
       max-active: 500
       min-idle: 5

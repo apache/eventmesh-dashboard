@@ -23,12 +23,12 @@ import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateClu
 import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateClusterByDeployScriptHandler;
 import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateClusterByFullMetadataHandler;
 import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateRuntimeByDeployScriptHandler;
-import org.apache.eventmesh.dashboard.console.model.dto.cluster.VerifyNameDTO;
 import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByCopyDTO;
 import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByDeployScriptDO;
 import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByFullMetadataDTO;
 import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByServiceAddressDTO;
 import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateRuntimeByDeployScriptDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.VerifyNameDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
@@ -118,26 +118,24 @@ public class ClusterCycleController {
      *
      */
     @PostMapping("createClusterByServiceAddress")
-    public void createClusterByServiceAddress(CreateClusterByServiceAddressDTO dto){
+    public void createClusterByServiceAddress(CreateClusterByServiceAddressDTO dto) {
 
-        if(Objects.equals(dto.getClusterType(), ClusterType.STORAGE_ROCKETMQ_CLUSTER)){
-
-
+        if (Objects.equals(dto.getClusterType(), ClusterType.STORAGE_ROCKETMQ_CLUSTER)) {
+            dto.setClusterType(null);
         }
 
     }
 
 
-    public void createClusterByFullAddress(){
+    public void createClusterByFullAddress() {
 
     }
 
-    public void createClusterByMetaAddress(){
-
+    public void createClusterByMetaAddress() {
 
     }
 
-    public void createClusterByRuntimeAddress(){
+    public void createClusterByRuntimeAddress() {
 
     }
 
@@ -151,6 +149,9 @@ public class ClusterCycleController {
         this.createClusterByCopyHandler.handler(dto);
     }
 
+    /**
+     * 这里应该上传一个文件
+     */
     @PostMapping("createClusterByFullMetadata")
     public void createClusterByFullMetadata(@RequestBody @Validated CreateClusterByFullMetadataDTO dto) {
         this.createClusterByFullMetadataHandler.handler(dto);

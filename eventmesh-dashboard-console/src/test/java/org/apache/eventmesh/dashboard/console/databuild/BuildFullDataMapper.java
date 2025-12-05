@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,8 +57,7 @@ import com.alibaba.fastjson2.JSON;
 
 
 /**
- *  这个类的功能，要慢慢搬到 BuildDataController 里面 </p>
- *  main 目录下需要一个 基于 db 的操作
+ * 这个类的功能，要慢慢搬到 BuildDataController 里面 </p> main 目录下需要一个 基于 db 的操作
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {EventMeshDashboardApplication.class})
@@ -66,31 +65,22 @@ import com.alibaba.fastjson2.JSON;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class BuildFullDataMapper {
 
+    private final BuildMessageData buildMessageData = new BuildMessageData();
+    private final Map<Long, BaseSyncEntity> clusterEntityMap = new HashMap<>();
     @Autowired
     private ClusterMapper clusterMapper;
-
-
     @Autowired
     private RuntimeMapper runtimeMapper;
-
     @Autowired
     private TopicMapper topicMapper;
-
     @Autowired
     private GroupMapper groupMapper;
-
     @Autowired
     private GroupMemberMapper groupMemberMapper;
-
     @Autowired
     private ConfigMapper configMapper;
-
     @Autowired
     private BuildDataService buildDataService;
-
-    private final BuildMessageData buildMessageData = new BuildMessageData();
-
-    private final Map<Long, BaseSyncEntity> clusterEntityMap = new HashMap<>();
 
     @Test
     public void buildClusterData() {
@@ -108,12 +98,11 @@ public class BuildFullDataMapper {
     }
 
     /**
-     * 把 集群 初始化数据 同步到 新的 runtime 节点中
-     *  不急，重构。只需要同步 Topic， runtime config。所有没必要重构？
+     * 把 集群 初始化数据 同步到 新的 runtime 节点中 不急，重构。只需要同步 Topic， runtime config。所有没必要重构？
      */
     @Test
     @Deprecated
-    public void buildRuntimeData(){
+    public void buildRuntimeData() {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setId(0L);
         runtimeEntity = this.runtimeMapper.queryRuntimeEntityById(runtimeEntity);
@@ -126,10 +115,10 @@ public class BuildFullDataMapper {
         configEntity.setClusterId(clusterId);
         configEntity.setInstanceId(instanceId);
         List<ConfigEntity> configEntityList = this.configMapper.selectConfigsByInstance(configEntity);
-        if(CollectionUtils.isEmpty(configEntityList)){
-            throw  new RuntimeException(" config is empty");
+        if (CollectionUtils.isEmpty(configEntityList)) {
+            throw new RuntimeException(" config is empty");
         }
-        List<ConfigEntity>  newConfigEntityList = JSON.parseArray(JSON.toJSONString(configEntityList), ConfigEntity.class);
+        List<ConfigEntity> newConfigEntityList = JSON.parseArray(JSON.toJSONString(configEntityList), ConfigEntity.class);
         RuntimeEntity finalRuntimeEntity = runtimeEntity;
         newConfigEntityList.forEach(configEntity1 -> {
             configEntity1.setInstanceType(MetadataType.RUNTIME);
@@ -139,18 +128,18 @@ public class BuildFullDataMapper {
 
         ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(runtimeEntity.getClusterType());
         // eventmesh runtime ， meta 的 runtime 是否要同步 cluster 的信息
-        if(clusterFramework.isCAP()) {
+        if (clusterFramework.isCAP()) {
             return;
         }
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setClusterId(clusterId);
         topicEntity.setRuntimeId(0L);
         List<TopicEntity> topicList = this.topicMapper.queryTopicsToFrontByClusterId(topicEntity);
-        if(CollectionUtils.isEmpty(topicList)){
-            throw  new RuntimeException(" topic is empty");
+        if (CollectionUtils.isEmpty(topicList)) {
+            throw new RuntimeException(" topic is empty");
         }
         topicList.forEach(topicEntity1 -> {
-           topicEntity1.setRuntimeId(instanceId);
+            topicEntity1.setRuntimeId(instanceId);
         });
         this.topicMapper.batchInsert(topicList);
 
@@ -158,11 +147,11 @@ public class BuildFullDataMapper {
         groupEntity.setClusterId(clusterId);
         groupEntity.setRuntimeId(0L);
         List<GroupEntity> groupEntityList = this.groupMapper.queryClusterOrRuntimeGroupByClusterId(topicEntity);
-        if(CollectionUtils.isEmpty(groupEntityList)){
-            throw  new RuntimeException(" group is empty");
+        if (CollectionUtils.isEmpty(groupEntityList)) {
+            throw new RuntimeException(" group is empty");
         }
         groupEntityList.forEach(groupEntity1 -> {
-           groupEntity1.setRuntimeId(instanceId);
+            groupEntity1.setRuntimeId(instanceId);
         });
         this.groupMapper.batchInsert(groupEntityList);
     }
@@ -182,14 +171,14 @@ public class BuildFullDataMapper {
                     buildDataService.buildFullData(clusterEntity);
                 }
                 return;
-            }else if(clusterEntity.getClusterType().isEventMethRuntime()){
+            } else if (clusterEntity.getClusterType().isEventMethRuntime()) {
                 List<RuntimeEntity> runtimeList = this.runtimeMapper.queryRuntimeByClusterId(List.of(clusterEntity));
                 buildDataService.buildFullData(runtimeList);
                 return;
             }
         }
         List<ClusterEntity> clusterList = this.clusterMapper.queryRelationClusterByClusterIdAndType(clusterEntity);
-        if(CollectionUtils.isEmpty(clusterList)){
+        if (CollectionUtils.isEmpty(clusterList)) {
             throw new RuntimeException(" clusterList is empty");
         }
         List<ClusterEntity> notMainClusterList = new ArrayList<>();
@@ -241,7 +230,7 @@ public class BuildFullDataMapper {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setClusterId(1L);
         List<RuntimeEntity> runtimeEntityList = this.runtimeMapper.getRuntimesToFrontByCluster(runtimeEntity);
-        buildDataService.buildFullData(runtimeEntityList,false);
+        buildDataService.buildFullData(runtimeEntityList, false);
     }
 
     /**
@@ -264,27 +253,27 @@ public class BuildFullDataMapper {
         //this.buildFullDataMapper((List<BaseSyncEntity>) t(runtimeEntityList));
     }
 
-    public void buildFullDataMapper(List<ClusterEntity> clusterEntityList,List<RuntimeEntity> runtimeEntityList){
+    public void buildFullDataMapper(List<ClusterEntity> clusterEntityList, List<RuntimeEntity> runtimeEntityList) {
 
     }
 
     /**
-     *  TODO 构建问题， metadata 数据 与 cluster 和 runtime 数据之间的关系。</p>
+     * TODO 构建问题， metadata 数据 与 cluster 和 runtime 数据之间的关系。</p>
      *       不管什么模式， cluster 都有一份数据，runtime 从 cluster 备份一份数据。
      *       需要备份的数据： config
      *       不备份的数据： topic ， group ， 订阅
      *       又得重构
      */
     private void buildFullDataMapper(List<BaseSyncEntity> baseSyncEntities) {
-        this.buildFullDataMapper(baseSyncEntities,true);
+        this.buildFullDataMapper(baseSyncEntities, true);
     }
 
-    private void buildFullDataMapper(List<BaseSyncEntity> baseSyncEntities , boolean onlyMetadata){
+    private void buildFullDataMapper(List<BaseSyncEntity> baseSyncEntities, boolean onlyMetadata) {
         if (CollectionUtils.isEmpty(baseSyncEntities)) {
             return;
         }
         baseSyncEntities.forEach(this::setBaseSyncEntity);
-        if(!onlyMetadata) {
+        if (!onlyMetadata) {
             this.buildMessageData.buildSyncConfig();
             this.configMapper.batchInsert(this.buildMessageData.getConfigEntityList());
             this.buildMessageData.getConfigEntityList().clear();

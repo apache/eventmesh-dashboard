@@ -26,6 +26,4 @@ import lombok.EqualsAndHashCode;
 public class ConsumerDTO extends AbstractMessageDTO {
 
 
-
-
 }

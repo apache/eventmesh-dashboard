@@ -38,6 +38,7 @@ public class Health2ServiceTest {
 
     @Mock
     private HealthDataService dataService;
+    private Health2Service health2Service = new Health2Service();
 
     public static BaseSyncBase createJvm() {
         SDKTypeEnum sdkTypeEnum = SDKTypeEnum.ADMIN;
@@ -61,17 +62,13 @@ public class Health2ServiceTest {
         return baseSyncBase;
     }
 
-    private Health2Service health2Service = new Health2Service();
-
-
-
     @Before
-    public void init(){
+    public void init() {
         health2Service.setDataService(dataService);
     }
 
     @Test
-    public void test(){
+    public void test() {
         BaseSyncBase baseSyncBase = createJvm();
         health2Service.register(baseSyncBase);
         health2Service.executeAll();

@@ -25,7 +25,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum HealthCheckStatus {
 
-    ING(1L,"ing"),
+    ING(1L, "ing"),
 
     SUCCESS(1L, "success"),
 

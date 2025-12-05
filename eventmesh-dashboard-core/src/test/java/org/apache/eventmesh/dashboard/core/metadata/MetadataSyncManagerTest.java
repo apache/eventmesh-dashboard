@@ -100,8 +100,6 @@ public class MetadataSyncManagerTest {
     }
 
 
-
-
     static class MockConvertMetaData implements ConvertMetaData<Object, Object> {
 
         @Override

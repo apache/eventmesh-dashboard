@@ -57,29 +57,29 @@ public interface HealthCheckResultMapper {
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
     @Insert("INSERT INTO health_check_result(type,type_id, cluster_id, state,result_desc)"
-        + " VALUES( #{type}, #{typeId}, #{clusterId}, #{state}, #{resultDesc})")
+            + " VALUES( #{type}, #{typeId}, #{clusterId}, #{state}, #{resultDesc})")
     void insert(HealthCheckResultEntity healthCheckResultEntity);
 
     @Insert("""
-        <script>
-           insert into health_check_result(
-                    cluster_type, cluster_id, protocol, 
-                    type, type_id,address,health_check_type,
-                    result,result_desc,
-                    begin_time)
-           values 
-               <foreach collection='list' item='item' index='index' separator=','>
-                   (
-                    #{item.clusterType}   , #{item.clusterId}, #{item.protocol},
-                    #{item.type}   ,        #{item.typeId},    #{item.address},
-                    #{item.healthCheckType}, #{item.result},   #{item.resultDesc},
-                    #{item.beginTime}
-                   )
-               </foreach>
-               on duplicate key update
-               result = values(result), result_desc = values(result_desc)
-        </script>
-    """)
+            <script>
+               insert into health_check_result(
+                        cluster_type, cluster_id, protocol, 
+                        type, type_id,address,health_check_type,
+                        result,result_desc,
+                        begin_time)
+               values 
+                   <foreach collection='list' item='item' index='index' separator=','>
+                       (
+                        #{item.clusterType}   , #{item.clusterId}, #{item.protocol},
+                        #{item.type}   ,        #{item.typeId},    #{item.address},
+                        #{item.healthCheckType}, #{item.result},   #{item.resultDesc},
+                        #{item.beginTime}
+                       )
+                   </foreach>
+                   on duplicate key update
+                   result = values(result), result_desc = values(result_desc)
+            </script>
+        """)
     void batchInsert(List<HealthCheckResultEntity> healthCheckResultEntityList);
 
     @Insert({

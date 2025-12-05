@@ -36,5 +36,4 @@ public class ClusterAndRelationshipEntity extends ClusterEntity {
     private ClusterType relationshipType;
 
 
-
 }

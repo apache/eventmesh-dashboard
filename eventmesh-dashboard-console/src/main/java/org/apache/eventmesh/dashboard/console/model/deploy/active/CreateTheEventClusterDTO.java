@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,6 @@ public class CreateTheEventClusterDTO extends OrganizationIdDTO {
     private List<CreateRuntimeDTO> prometheusRuntime;
 
 
-
-
     @Data
     @EqualsAndHashCode(callSuper = true)
     public static class BaseCreateTheEntireClusterDTO extends BaseCreateClusterDTO {
@@ -63,7 +61,7 @@ public class CreateTheEventClusterDTO extends OrganizationIdDTO {
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class CreateCapStorageClusterDTO extends BaseCreateTheEntireClusterDTO{
+    public static class CreateCapStorageClusterDTO extends BaseCreateTheEntireClusterDTO {
 
         private CreateTheEntireClusterDTO brokerClusterList;
 
@@ -73,7 +71,7 @@ public class CreateTheEventClusterDTO extends OrganizationIdDTO {
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class RuntimeClusterDTO extends BaseCreateTheEntireClusterDTO{
+    public static class RuntimeClusterDTO extends BaseCreateTheEntireClusterDTO {
 
         private CreateTheEntireClusterDTO metaClusterList;
 
@@ -83,7 +81,7 @@ public class CreateTheEventClusterDTO extends OrganizationIdDTO {
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class MainStorageClusterDTO extends BaseCreateTheEntireClusterDTO{
+    public static class MainStorageClusterDTO extends BaseCreateTheEntireClusterDTO {
 
         private List<CreateTheEntireClusterDTO> metaClusterList;
 

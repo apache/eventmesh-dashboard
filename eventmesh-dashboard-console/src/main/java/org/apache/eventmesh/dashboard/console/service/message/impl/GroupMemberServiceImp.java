@@ -48,7 +48,7 @@ public class GroupMemberServiceImp implements GroupMemberService {
     @Override
     @EmLog(OprType = "View", OprTarget = "GroupMember")
     public List<GroupMemberEntity> getGroupMemberByClusterId(GroupMemberEntity groupMemberEntity) {
-        return null;//groupMemberMapper.getGroupByClusterId(groupMemberEntity);
+        return null;
     }
 
     @Override

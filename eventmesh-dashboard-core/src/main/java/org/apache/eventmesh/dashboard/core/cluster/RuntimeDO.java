@@ -30,5 +30,4 @@ import lombok.EqualsAndHashCode;
 public class RuntimeDO extends RuntimeBaseDO<RuntimeMetadata, Object, ConfigMetadata> {
 
 
-
 }

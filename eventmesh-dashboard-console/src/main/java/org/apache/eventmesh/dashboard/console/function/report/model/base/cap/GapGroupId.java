@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.report.model.base;
+package org.apache.eventmesh.dashboard.console.function.report.model.base.cap;
+
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-public class TopicId extends RuntimeId{
+@EqualsAndHashCode(callSuper = true)
+public class GapGroupId extends RuntimeId implements CapModel {
 
 
-    private Long topicId;
+    private Long groupId;
 
-    private String topicName;
+    private String groupName;
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class TopicLongValue extends TopicId{
+    public static class GroupLongValue extends GapGroupId {
 
         private Long value;
 
@@ -38,7 +41,7 @@ public class TopicId extends RuntimeId{
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class TopicFloatValue extends TopicId{
+    public static class GroupFloatValue extends GapGroupId {
 
         private Float value;
 

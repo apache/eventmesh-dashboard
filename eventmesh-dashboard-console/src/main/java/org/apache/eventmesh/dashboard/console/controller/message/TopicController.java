@@ -71,7 +71,6 @@ public class TopicController {
         // cap 的直接查询
         Page<?> page = PageHelper.getLocalPage();
         PageHelper.clearPage();
-        System.out.println(page.getPageNum());
         boolean isCap = this.clusterAbilityService.isCap(getTopicListDTO);
         PageHelper.startPage(page.getPageNum(), page.getPageSize()).setOrderBy(page.getOrderBy());
         if (isCap) {

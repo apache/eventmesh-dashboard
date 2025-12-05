@@ -39,17 +39,14 @@ import java.util.List;
 public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
 
-
-
     @Select("""
-         select * from config where cluster_id
-             <foreach item='item' index='index' open='in(' separator=',' close=')'>
-                #{item.id}
-             </foreach>
-             and status = 1
-    """)
+             select * from config where cluster_id
+                 <foreach item='item' index='index' open='in(' separator=',' close=')'>
+                    #{item.id}
+                 </foreach>
+                 and status = 1
+        """)
     List<ConfigEntity> queryByClusterIdList(List<ClusterEntity> clusterConfigEntityList);
-
 
 
     @Select("""

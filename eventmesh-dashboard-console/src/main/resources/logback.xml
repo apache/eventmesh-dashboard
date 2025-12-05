@@ -145,7 +145,6 @@
     </appender>
 
 
-
     <logger name="org.apache.eventmesh.dashboard.console.spring.support" level="info">
         <appender-ref ref="register"/>
         <appender-ref ref="registerError"/>

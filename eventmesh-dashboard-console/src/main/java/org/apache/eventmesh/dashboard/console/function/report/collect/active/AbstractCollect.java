@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import java.util.List;
 
 import lombok.Setter;
 
-public abstract class  AbstractCollect<C> extends AbstractClientInfo<C> implements Collect {
+public abstract class AbstractCollect<C> extends AbstractClientInfo<C> implements Collect {
 
     protected List<Time> times = new ArrayList<>();
 
@@ -37,7 +37,7 @@ public abstract class  AbstractCollect<C> extends AbstractClientInfo<C> implemen
 
 
     @Override
-    protected SDKTypeEnum getSDKTypeEnum(){
+    protected SDKTypeEnum getSDKTypeEnum() {
         return SDKTypeEnum.ADMIN;
     }
 
@@ -54,14 +54,14 @@ public abstract class  AbstractCollect<C> extends AbstractClientInfo<C> implemen
 
 
     @Setter
-    public static  abstract class AbstractClusterCollect<C> extends AbstractClientInfo<C> {
+    public abstract static  class AbstractClusterCollect<C> extends AbstractClientInfo<C> {
 
         private ClusterMetadata clusterMetadata;
 
     }
 
     @Setter
-    public static  abstract class AbstractRuntimeCollect<C> extends AbstractClusterCollect<C> {
+    public abstract static  class AbstractRuntimeCollect<C> extends AbstractClusterCollect<C> {
 
         private List<RuntimeMetadata> runtimeMetadataList;
     }

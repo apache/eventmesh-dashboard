@@ -19,8 +19,7 @@
 package org.apache.eventmesh.dashboard.common.enums;
 
 /**
- * 业务类型,
- * storage:可选值(rocketmq,pravega,mongodb,pulsar,redis,kafka,knative,rabbitmq),
+ * 业务类型, storage:可选值(rocketmq,pravega,mongodb,pulsar,redis,kafka,knative,rabbitmq),
  * sinkConnector:可选值(rocketmq,spring,pravega,wechat,openfunction,file,knative,pulsar,lark,slack,rabbitmq,redis,mongodb,dingtalk)
  * sourceConnector:可选值(rocketmq,spring,pravega,openfunction,jdbc,file,http,wecom,knative,pulsar,prometheus,rabbitmq,redis,mongodb)',
  */

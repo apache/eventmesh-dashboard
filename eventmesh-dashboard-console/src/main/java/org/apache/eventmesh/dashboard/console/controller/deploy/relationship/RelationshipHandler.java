@@ -44,9 +44,8 @@ public class RelationshipHandler implements UpdateHandler<ClusterRelationshipEnt
     }
 
     /**
-     *  TODO 如果是 替换关联，应该怎么做？</p>
+     * TODO 如果是 替换关联，应该怎么做？</p>
      *       kafka 的集群，接触，在关联上，时两个步骤，那么是两次，可以做到成一次
-     *
      */
     @Override
     public void handler(ClusterRelationshipEntity clusterRelationshipEntity) {
@@ -67,14 +66,14 @@ public class RelationshipHandler implements UpdateHandler<ClusterRelationshipEnt
         //  如果  relationship runtime 集群 不是 托管类型 不需要处理
 
         // main cluster  与 relationship cluster 都不是 self 类型就不需要管
-        if(mainClusterEntity.getTrusteeshipType().isReverse() && relationshipClusterEntity.getTrusteeshipType().isReverse()){
+        if (mainClusterEntity.getTrusteeshipType().isReverse() && relationshipClusterEntity.getTrusteeshipType().isReverse()) {
             return;
         }
 
-        if(mainClusterEntity.getClusterType().isEventCluster()){
-            if(relationshipClusterEntity.getClusterType().isStorageCluster()){
+        if (mainClusterEntity.getClusterType().isEventCluster()) {
+            if (relationshipClusterEntity.getClusterType().isStorageCluster()) {
                 // 还要判断 main 集群 是否 支持 API 操作 meta cluster
-                if(mainClusterEntity.getTrusteeshipType().isReverse()){
+                if (mainClusterEntity.getTrusteeshipType().isReverse()) {
                     return;
                 }
 
@@ -85,7 +84,7 @@ public class RelationshipHandler implements UpdateHandler<ClusterRelationshipEnt
                 // 如果 main cluster 不支持...... 同时是self 模式，操作 k8s 更新 runtime list
                 return;
             }
-            if(relationshipClusterEntity.getClusterType().isEventMethMeta()){
+            if (relationshipClusterEntity.getClusterType().isEventMethMeta()) {
                 // 得到 所有 eventmesh runtime cluster
                 // 得到 所有 eventmesh meta cluster
                 // 组件新的 注册中心地址
@@ -94,7 +93,7 @@ public class RelationshipHandler implements UpdateHandler<ClusterRelationshipEnt
 
                 return;
             }
-            if(relationshipClusterEntity.getClusterType().isEventMethRuntime()){
+            if (relationshipClusterEntity.getClusterType().isEventMethRuntime()) {
                 // 得到 所有 eventmesh meta
                 // 得到 该 runtime list
                 // 修改 runtime list config 的meta 配置
@@ -120,9 +119,8 @@ public class RelationshipHandler implements UpdateHandler<ClusterRelationshipEnt
 
             // TODO 如果是 rocketmq 的 meta ， 那么被关联的 eventmesh runtime cluster 需要更新 meta 地址
         }
-        if(clusterRelationshipEntity.getRelationshipType().isRuntime()){
+        if (clusterRelationshipEntity.getRelationshipType().isRuntime()) {
             // 查询 main cluster 里面 是否存在 meta cluster ， 如果存在则需要更新
-
 
             // 如果 没有 meta cluster 不需要查询 runtime 列表
 

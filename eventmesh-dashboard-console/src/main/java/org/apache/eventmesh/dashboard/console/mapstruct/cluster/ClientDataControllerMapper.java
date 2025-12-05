@@ -28,5 +28,4 @@ public interface ClientDataControllerMapper {
     ClientDataControllerMapper INSTANCE = Mappers.getMapper(ClientDataControllerMapper.class);
 
 
-
 }

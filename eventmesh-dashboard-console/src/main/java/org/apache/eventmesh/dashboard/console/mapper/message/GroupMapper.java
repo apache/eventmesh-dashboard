@@ -38,12 +38,12 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
 
 
     @Select("""
-        select *  from `group` where name in(
-            select group_name from group_member where topic_name  = (
-                select topic.topic_name from topic where id=#{id}
+            select *  from `group` where name in(
+                select group_name from group_member where topic_name  = (
+                    select topic.topic_name from topic where id=#{id}
+                )
             )
-        )
-    """)
+        """)
     List<GroupEntity> queryGroupListByTopicId(TopicEntity topicEntity);
 
     @Select("""
@@ -61,7 +61,6 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
         </script>
         """)
     List<GroupEntity> queryClusterOrRuntimeGroupByClusterId(TopicEntity topicEntity);
-
 
 
     @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND type=0 ")

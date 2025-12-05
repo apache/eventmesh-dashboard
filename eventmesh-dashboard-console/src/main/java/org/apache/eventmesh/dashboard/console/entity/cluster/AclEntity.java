@@ -18,10 +18,12 @@
 
 package org.apache.eventmesh.dashboard.console.entity.cluster;
 
-import org.apache.eventmesh.dashboard.console.entity.base.BaseIdEntity;;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseIdEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+;
 
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "status")

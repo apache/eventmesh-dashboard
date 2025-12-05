@@ -28,5 +28,4 @@ import lombok.EqualsAndHashCode;
 public class ResouceEntity extends BaseOrganizationEntity {
 
 
-
 }

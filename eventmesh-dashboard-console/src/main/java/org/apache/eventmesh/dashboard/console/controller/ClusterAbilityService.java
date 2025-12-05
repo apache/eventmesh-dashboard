@@ -46,10 +46,7 @@ public class ClusterAbilityService {
 
 
     /**
-     *
-     *  可以对 topic， group， config ，sub 等做到强制性.offset 无法做到强制一致性
-     *
-     *
+     * 可以对 topic， group， config ，sub 等做到强制性.offset 无法做到强制一致性
      */
     @Value("${console.data.forceConsistent:false}")
     private boolean forceConsistent = false;

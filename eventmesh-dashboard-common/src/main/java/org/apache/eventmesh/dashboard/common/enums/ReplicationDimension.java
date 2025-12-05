@@ -22,7 +22,6 @@ public enum ReplicationDimension {
 
     NOT,
 
-
     /**
      * 节点复制 复制，
      */
@@ -31,7 +30,7 @@ public enum ReplicationDimension {
     TOPIC,
 
     /**
-     *  部分复制
+     * 部分复制
      */
     SECTION_REPLICATION,
     ;

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.SubscribeId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.not.SubscribeId;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,7 +30,7 @@ import lombok.EqualsAndHashCode;
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_messages_out_total",
     defaultViewType = ReportViewType.COUNTER, tableName = "rocketmq_messages_out_total",
     comment = "已就绪消息量")
-public class RocketmqMessagesOutTotal  extends SubscribeId {
+public class RocketmqMessagesOutTotal extends SubscribeId {
 
     private Long topicNum;
 

@@ -40,12 +40,8 @@ public abstract class AbstractBothDifference extends AbstractBufferDifference {
     }
 
     /**
-     * database 与 cluster 求结果
-     * 依据 target 删除了 source 集合里面的数据， sourceData 里面剩下的数据 是 target 不存在啊的
-     * target 4 5 6 7 ,  source  1 2 3 4 5 6
-     * 4 5 6 remove 不等于 null， 不做任何操作。
-     * 7 remove 时， 为空，那么需要 删除 7.
-     * 剩下 1 2 3 ，那么表示需要新增
+     * database 与 cluster 求结果 依据 target 删除了 source 集合里面的数据， sourceData 里面剩下的数据 是 target 不存在啊的 target 4 5 6 7 ,  source  1 2 3 4 5 6 4 5 6 remove 不等于
+     * null， 不做任何操作。 7 remove 时， 为空，那么需要 删除 7. 剩下 1 2 3 ，那么表示需要新增
      * TODO update 操作如何识别，equals 识别。比如 topic 元信息 ， 配置信息，是 一起 equals，还是分开 </p>
      */
     protected Map<String, BaseClusterIdBase> basedOnSourceDifference(List<BaseClusterIdBase> targetList, Map<String, BaseClusterIdBase> sourceData) {
@@ -56,7 +52,8 @@ public abstract class AbstractBothDifference extends AbstractBufferDifference {
         targetList.forEach((value) -> {
             String key = value.nodeUnique();
             BaseClusterIdBase oldValue = sourceData.remove(key);
-            if(Objects.isNull(oldValue)) {// source 不存在， 而 target 存在，删处理
+            // source 不存在， 而 target 存在，删处理
+            if (Objects.isNull(oldValue)) {
                 this.deleteData.add(value);
             }
         });
@@ -66,18 +63,18 @@ public abstract class AbstractBothDifference extends AbstractBufferDifference {
     }
 
     /**
-     * sourceData 存在 ， allData 不存在的  添加
-     * sourceData 不存在 ， allData 存在的  删除
+     * sourceData 存在 ， allData 不存在的  添加 sourceData 不存在 ， allData 存在的  删除
+     *
      * @param sourceData
      * @param allData
      */
-    protected void intersection(List<BaseClusterIdBase> sourceData,Map<String, BaseClusterIdBase> allData) {
+    protected void intersection(List<BaseClusterIdBase> sourceData, Map<String, BaseClusterIdBase> allData) {
         if (CollectionUtils.isEmpty(sourceData)) {
             return;
         }
-        if(MapUtils.isEmpty(allData)){
+        if (MapUtils.isEmpty(allData)) {
             sourceData.forEach(data -> {
-                this.allData.put(data.getUnique(),data);
+                this.allData.put(data.getUnique(), data);
                 this.insertData.add(data);
             });
             return;

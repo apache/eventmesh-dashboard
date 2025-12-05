@@ -73,7 +73,7 @@ public class ClasspathScanner {
             if (Modifier.isAbstract(clazz.getModifiers())) {
                 continue;
             }
-            if(Objects.isNull(this.interfaceSet)){
+            if (Objects.isNull(this.interfaceSet)) {
                 resourcesList.add(clazz);
                 continue;
             }

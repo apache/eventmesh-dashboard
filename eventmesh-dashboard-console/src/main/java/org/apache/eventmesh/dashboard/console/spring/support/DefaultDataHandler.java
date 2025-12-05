@@ -61,7 +61,7 @@ public class DefaultDataHandler implements DataHandler<RuntimeDO, ClusterDO> {
         RuntimeMetadata runtimeMetadata = RuntimeConvertMetaData.INSTANCE.toMetaData(runtimeEntity);
         healthService.unRegister(runtimeMetadata);
         metadataSyncManage.unRegister(runtimeMetadata);
-        SDKManage.getInstance().deleteClient(null,runtimeMetadata.getUnique());
+        SDKManage.getInstance().deleteClient(null, runtimeMetadata.getUnique());
     }
 
     @Override
@@ -74,21 +74,21 @@ public class DefaultDataHandler implements DataHandler<RuntimeDO, ClusterDO> {
             clusterDO.getClusterInfo().getClusterType());
 
         healthService.register(clusterDO.getClusterInfo());
-        if(clusterEntity.getClusterType() == ClusterType.KUBERNETES_RUNTIME){
+        if (clusterEntity.getClusterType() == ClusterType.KUBERNETES_RUNTIME) {
             kubernetesManage.register(clusterDO.getClusterInfo());
-        }else {
+        } else {
             metadataSyncManage.register(clusterDO.getClusterInfo());
         }
     }
 
     @Override
     public void unRegisterCluster(ClusterEntity clusterEntity, ClusterDO clusterDO, ColonyDO<ClusterDO> colonyDO) {
-        if(clusterEntity.getClusterType() == ClusterType.KUBERNETES_RUNTIME){
+        if (clusterEntity.getClusterType() == ClusterType.KUBERNETES_RUNTIME) {
             this.kubernetesManage.unregister(clusterDO.getClusterInfo());
         }
 
         healthService.unRegisterCluster(clusterEntity.getClusterId());
-        SDKManage.getInstance().deleteClient(null,clusterDO.getClusterInfo().getUnique());
+        SDKManage.getInstance().deleteClient(null, clusterDO.getClusterInfo().getUnique());
 
     }
 

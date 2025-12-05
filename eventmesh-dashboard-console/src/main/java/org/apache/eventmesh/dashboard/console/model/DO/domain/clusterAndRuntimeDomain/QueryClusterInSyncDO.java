@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,15 +36,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class QueryClusterInSyncDO {
 
-    public static QueryClusterInSyncDO create(Long id,Supplier<BaseRuntimeIdEntity> function) {
-        return create(id,null,function);
+    private ClusterEntity clusterEntity;
+    private List<ClusterType> syncClusterTypeList;
+    private Object object;
+    /**
+     * clusterEntity and runtimeEntity  转换  操作 entity
+     */
+    private Supplier<BaseRuntimeIdEntity> function;
+    private ClusterOperationHandler clusterOperationHandler;
+
+    public static QueryClusterInSyncDO create(Long id, Supplier<BaseRuntimeIdEntity> function) {
+        return create(id, null, function);
     }
 
-    public static QueryClusterInSyncDO create(Long id , Object object) {
-        return create(id,object,null);
+    public static QueryClusterInSyncDO create(Long id, Object object) {
+        return create(id, object, null);
     }
 
-    private static QueryClusterInSyncDO create(Long id , Object object,Supplier<BaseRuntimeIdEntity> function) {
+    private static QueryClusterInSyncDO create(Long id, Object object, Supplier<BaseRuntimeIdEntity> function) {
         QueryClusterInSyncDO data = new QueryClusterInSyncDO();
         data.setObject(object);
         data.setFunction(function);
@@ -53,19 +62,5 @@ public class QueryClusterInSyncDO {
         data.setClusterEntity(data.getClusterEntity());
         return data;
     }
-
-    private ClusterEntity clusterEntity;
-
-    private List<ClusterType> syncClusterTypeList;
-
-    private Object object;
-
-    /**
-     *  clusterEntity and runtimeEntity  转换  操作 entity
-     */
-    private Supplier<BaseRuntimeIdEntity> function;
-
-
-    private ClusterOperationHandler clusterOperationHandler;
 
 }

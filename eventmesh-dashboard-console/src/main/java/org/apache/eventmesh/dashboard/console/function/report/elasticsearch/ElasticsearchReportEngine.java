@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,44 +60,4 @@ public class ElasticsearchReportEngine extends AbstractReportEngine {
 
     }
 
-//    private ElasticsearchClient esClient;
-//
-//
-//
-//    public void handler() throws IOException {
-//        ScriptsPainlessExecuteRequest.Builder builder = new ScriptsPainlessExecuteRequest.Builder();
-//        Script.Builder script = new Script.Builder();
-//
-//        ScriptSource.Builder scriptSourceBuilder = new ScriptSource.Builder();
-//        scriptSourceBuilder.scriptString("");
-//        script.source(scriptSourceBuilder.build());
-//        builder.script(script.build());
-//
-//        esClient.scriptsPainlessExecute(builder.build());
-//    }
-//
-//    @Override
-//    protected void doInit() {
-//        try {
-//            URL url = new URL(this.reportConfig.getEngineAddress());
-//            HttpHost httpHost = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
-//            RestClient restClient = RestClient.builder(httpHost).build();
-//            this.esClient = new ElasticsearchClient(
-//                new RestClientTransport(restClient, new JacksonJsonpMapper())
-//            );
-//        } catch (MalformedURLException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
-//
-//    @Override
-//    public CompletableFuture<List<Map<String, Object>>> query(SingleGeneralReportDO singleGeneralReportDO) {
-//        return null;
-//    }
-//
-//    @Override
-//    public void batchInsert(String tableName, Map<String, Object> data) {
-//
-//    }
 }

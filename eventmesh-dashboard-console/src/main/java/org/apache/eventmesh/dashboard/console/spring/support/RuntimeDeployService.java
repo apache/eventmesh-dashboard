@@ -111,6 +111,31 @@ public class RuntimeDeployService {
 
     }
 
+    private final BuildMetadataManage buildMetadataManage = new BuildMetadataManage();
+    private final ThreadPoolExecutor deployThreadPoolExecutor = new ThreadPoolExecutor(10, 10, 20, TimeUnit.SECONDS, new LinkedBlockingDeque<>(),
+        new ThreadFactory() {
+            final AtomicInteger counter = new AtomicInteger(0);
+
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "deploy-" + counter.incrementAndGet());
+            }
+        });
+    @Autowired
+    private ClusterService clusterService;
+    @Autowired
+    private RuntimeService runtimeService;
+    @Autowired
+    private ClusterRelationshipService clusterRelationshipService;
+    @Autowired
+    private DeployScriptService deployScriptService;
+    @Autowired
+    private ResourcesConfigService resourcesConfigService;
+    @Autowired
+    private ConfigService configService;
+    @Autowired
+    private PortService portService;
+
     static DeployStatusType getFailedType(DeployStatusType deployStatusType) {
         return DEPLOY_FAIL_STATUS.get(deployStatusType);
     }
@@ -122,41 +147,6 @@ public class RuntimeDeployService {
     static DeployStatusType getSuccess(DeployStatusType deployStatusType) {
         return DEPLOY_ING_STATUS.get(deployStatusType);
     }
-
-    @Autowired
-    private ClusterService clusterService;
-
-    @Autowired
-    private RuntimeService runtimeService;
-
-    @Autowired
-    private ClusterRelationshipService clusterRelationshipService;
-
-    @Autowired
-    private DeployScriptService deployScriptService;
-
-    @Autowired
-    private ResourcesConfigService resourcesConfigService;
-
-    @Autowired
-    private ConfigService configService;
-
-    @Autowired
-    private PortService portService;
-
-
-    private final BuildMetadataManage buildMetadataManage = new BuildMetadataManage();
-
-    private final ThreadPoolExecutor deployThreadPoolExecutor = new ThreadPoolExecutor(10, 10, 20, TimeUnit.SECONDS, new LinkedBlockingDeque<>(),
-        new ThreadFactory() {
-            final AtomicInteger counter = new AtomicInteger(0);
-
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "deploy-" + counter.incrementAndGet());
-            }
-        });
-
 
     //@Scheduled(initialDelay = 100, fixedDelay = 100)
     public void deploy() {
@@ -183,7 +173,7 @@ public class RuntimeDeployService {
             case PAUSE_ING, PAUSE_FULL_WAIT -> {
                 return new RuntimePauseDeploy();
             }
-            case UNINSTALL,UNINSTALL_ING -> {
+            case UNINSTALL, UNINSTALL_ING -> {
                 return new RuntimeUninstallDeploy();
             }
             default -> {
@@ -269,7 +259,6 @@ public class RuntimeDeployService {
                 this.buildMetadata.buildMetaAddress(this.scriptBuildData, runtimeEntity, metaAndRuntimeList);
             }
         }
-
 
 
         /**

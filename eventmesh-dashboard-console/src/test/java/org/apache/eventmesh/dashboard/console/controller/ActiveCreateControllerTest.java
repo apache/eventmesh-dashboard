@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,37 +51,26 @@ public class ActiveCreateControllerTest {
     private static final List<FirstToWhom> firstToWhomArrangeType = List.of(FirstToWhom.DASHBOARD, FirstToWhom.RUNTIME, FirstToWhom.NOT);
 
     private static final List<Matrix> matrixList = new ArrayList<>();
-
-    private static Matrix matrix = new Matrix(ClusterTrusteeshipType.TRUSTEESHIP, FirstToWhom.DASHBOARD);
-
-
     private static final ClusterGroup eventGroup =
         ClusterGroup.builder().mainClusterType(ClusterType.EVENTMESH_CLUSTER).brokerClusterType(ClusterType.EVENTMESH_RUNTIME)
             .metaClusterType(ClusterType.EVENTMESH_META_NACOS).build();
-
     private static final ClusterGroup rocketMQGroup =
         ClusterGroup.builder().mainClusterType(ClusterType.STORAGE_ROCKETMQ_CLUSTER).brokerClusterType(ClusterType.STORAGE_ROCKETMQ_BROKER)
             .metaClusterType(ClusterType.STORAGE_ROCKETMQ_NAMESERVER).build();
-
     private static final ClusterGroup kafkaGroup =
         ClusterGroup.builder().mainClusterType(ClusterType.STORAGE_KAFKA_CLUSTER).brokerClusterType(ClusterType.STORAGE_KAFKA_BROKER)
             .metaClusterType(ClusterType.STORAGE_KAFKA_ZK).build();
-
     private static final ClusterGroup eventJvmGroup =
         ClusterGroup.builder().mainClusterType(ClusterType.EVENTMESH_JVM_CLUSTER).brokerClusterType(ClusterType.EVENTMESH_JVM_RUNTIME)
             .metaClusterType(ClusterType.EVENTMESH_JVM_META).build();
-
     private static final ClusterGroup jvmStorageGroup =
         ClusterGroup.builder().mainClusterType(ClusterType.STORAGE_JVM_CLUSTER).brokerClusterType(ClusterType.STORAGE_JVM_BROKER)
             .metaClusterType(ClusterType.STORAGE_JVM_META).build();
-
     private static final ClusterGroup jvmCapStorageGroup =
         ClusterGroup.builder().mainClusterType(ClusterType.STORAGE_JVM_CAP_CLUSTER).brokerClusterType(ClusterType.STORAGE_JVM_CAP_BROKER)
             .metaClusterType(ClusterType.STORAGE_JVM_CAP_META).build();
-
-
+    private static Matrix matrix = new Matrix(ClusterTrusteeshipType.TRUSTEESHIP, FirstToWhom.DASHBOARD);
     private ExecuteData executeData;
-
 
 
     /**
@@ -224,12 +213,12 @@ public class ActiveCreateControllerTest {
         return eventCluster;
     }
 
-    private CreateRuntimeDTO createRuntimeDTO(CLusterBuildData cLusterBuildData ,ReplicationType replicationType, int index) {
+    private CreateRuntimeDTO createRuntimeDTO(CLusterBuildData cLusterBuildData, ReplicationType replicationType, int index) {
         CreateRuntimeDTO createRuntimeDTO = new CreateRuntimeDTO();
-        if(Objects.nonNull(cLusterBuildData.getExecuteData())){
+        if (Objects.nonNull(cLusterBuildData.getExecuteData())) {
 
-        }else {
-            createRuntimeDTO.setHost("127.0.0."+index);
+        } else {
+            createRuntimeDTO.setHost("127.0.0." + index);
             createRuntimeDTO.setPort(8080);
             createRuntimeDTO.setName(cLusterBuildData.getClusterType() + "-" + index + "-" + System.nanoTime());
             createRuntimeDTO.setReplicationType(replicationType);
@@ -252,7 +241,7 @@ public class ActiveCreateControllerTest {
             List<CreateRuntimeDTO> createRuntimeDTOList = new ArrayList<>();
             createTheEntireClusterDTO.setCreateRuntimeDTOList(createRuntimeDTOList);
             for (int i = 0; i <= buildData.getBrokerCount(); i++) {
-                createRuntimeDTOList.add(this.createRuntimeDTO(buildData,ReplicationType.NOT, i));
+                createRuntimeDTOList.add(this.createRuntimeDTO(buildData, ReplicationType.NOT, i));
             }
         }
         return createTheEntireClusterDTOList;

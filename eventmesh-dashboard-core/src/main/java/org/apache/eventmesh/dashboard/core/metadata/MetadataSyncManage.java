@@ -215,8 +215,8 @@ public class MetadataSyncManage {
 
 
     public void register(BaseSyncBase baseSyncBase) {
-        if (Objects.equals(baseSyncBase.getTrusteeshipType(), ClusterTrusteeshipType.NO_TRUSTEESHIP) ||
-            Objects.equals(baseSyncBase.getTrusteeshipType(), ClusterTrusteeshipType.NOT)
+        if (Objects.equals(baseSyncBase.getTrusteeshipType(), ClusterTrusteeshipType.NO_TRUSTEESHIP)
+            || Objects.equals(baseSyncBase.getTrusteeshipType(), ClusterTrusteeshipType.NOT)
         ) {
             log.info("type {} , is {} not sync , ClusterTrusteeshipType {}", baseSyncBase.getId(), baseSyncBase.getClusterType(),
                 baseSyncBase.getTrusteeshipType());

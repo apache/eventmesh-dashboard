@@ -37,7 +37,7 @@ public class QueryListByClusterIdAndTypeDO {
     private List<Long> clusterIdList;
 
     private List<ClusterType> clusterTypeList;
-    
+
     private List<ClusterType> relationshipTypeList;
 
 }

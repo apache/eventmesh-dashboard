@@ -26,7 +26,7 @@ import lombok.EqualsAndHashCode;
 public class BaseRuntimeIdEntity extends BaseClusterIdEntity {
 
     /**
-     *  如果是 runtime 级别的 runtime_id 为零， 比如 topic
+     * 如果是 runtime 级别的 runtime_id 为零， 比如 topic
      */
     private Long runtimeId;
 

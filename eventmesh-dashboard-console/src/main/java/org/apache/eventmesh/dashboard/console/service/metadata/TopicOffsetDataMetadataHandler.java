@@ -32,9 +32,9 @@ public class TopicOffsetDataMetadataHandler extends AbstractDBDataMetadataHandle
 
 
     @Override
-    public void handleAll(Collection<TopicOffsetEntity> allData, List<TopicOffsetEntity> addData, List<TopicOffsetEntity> updateData, List<TopicOffsetEntity> deleteData) {
+    public void handleAll(Collection<TopicOffsetEntity> allData, List<TopicOffsetEntity> addData, List<TopicOffsetEntity> updateData,
+        List<TopicOffsetEntity> deleteData) {
 
-        System.out.println("TopicOffsetDataMetadataHandler handleAll");
     }
 
 

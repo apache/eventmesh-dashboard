@@ -54,6 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Component
 @Slf4j
+@Deprecated
 public class CreateCycleService {
 
     @Autowired
@@ -251,7 +252,6 @@ public class CreateCycleService {
         // 需要一个被 console 管理的端口，所以要 锁定 端口
         //
     }
-
 
     // TODO  添加修改绑定解绑 meta 集群，都需要 所有的 runtime集群。是通过事件方式处理还是立即处理？
     // IP 管理

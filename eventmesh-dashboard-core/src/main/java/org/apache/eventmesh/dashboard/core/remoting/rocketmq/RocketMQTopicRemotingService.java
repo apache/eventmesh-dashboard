@@ -48,7 +48,7 @@ import com.alibaba.fastjson.TypeReference;
 
 public class RocketMQTopicRemotingService extends AbstractRocketMQRemotingService implements TopicRemotingService {
 
-    private static final TypeReference<Map<String, String>> ATTRIBUTES_TYPE_REFERENCE = new TypeReference<Map<String, String>>() {
+    private static final TypeReference<Map<String, String>> ATTRIBUTES_TYPE_REFERENCE = new TypeReference<>() {
     };
 
 
@@ -70,7 +70,7 @@ public class RocketMQTopicRemotingService extends AbstractRocketMQRemotingServic
         requestHeader.setTopicFilterType(topicFilterType.name());
         requestHeader.setTopicSysFlag(0);
         requestHeader.setOrder(!Objects.isNull(topicMetadata.getOrder()) && topicMetadata.getOrder() == 1);
-        if(Objects.nonNull(topicMetadata.getTopicConfig())){
+        if (Objects.nonNull(topicMetadata.getTopicConfig())) {
             Map<String, String> configMap = JSON.parseObject(topicMetadata.getTopicConfig(), ATTRIBUTES_TYPE_REFERENCE);
             requestHeader.setAttributes(AttributeParser.parseToString(configMap));
         }
@@ -95,7 +95,7 @@ public class RocketMQTopicRemotingService extends AbstractRocketMQRemotingServic
                 topicMetadata.setReadQueueNum(value.getReadQueueNums());
                 topicMetadata.setWriteQueueNum(value.getWriteQueueNums());
                 topicMetadata.setTopicFilterType(value.getTopicFilterType().name());
-                topicMetadata.setOrder(value.isOrder()?1:0);
+                topicMetadata.setOrder(value.isOrder() ? 1 : 0);
                 topicMetadata.setTopicConfig(JSON.toJSONString(value.getAttributes()));
                 topicMetadataList.add(topicMetadata);
             });

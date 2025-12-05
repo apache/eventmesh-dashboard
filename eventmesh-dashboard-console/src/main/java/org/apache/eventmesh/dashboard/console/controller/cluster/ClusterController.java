@@ -64,11 +64,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ClusterController {
 
     @Autowired
-    private ClusterService clusterService;
-
-    @Autowired
     public RuntimeService runtimeService;
-
+    @Autowired
+    private ClusterService clusterService;
     @Autowired
     private ClusterAndRuntimeDomain clusterAndRuntimeDomain;
 
@@ -98,16 +96,14 @@ public class ClusterController {
     }
 
 
-
     @PostMapping("queryClusterByUserForm")
     public List<ClientEntity> queryClusterByUserForm(QueryClientByUserFormDTO queryClientByUserFormDTO) {
         return null;
     }
 
 
-
     /**
-     *  TODO 1. 返回全量数据
+     * TODO 1. 返回全量数据
      *       2. 构建树
      *       3. 类型
      *          1. clusterType
@@ -118,7 +114,6 @@ public class ClusterController {
      *          4. 提供获得 url 功能，在 后端进行整理，前端处理太麻烦了
      *           4. cluster 与 关系表内容是否进行关联
      *       5. cluster runtime  与 关联表 需要整理成 一个 DO，适配前端 前端 tree table
-     *
      */
     @PostMapping("queryTreeByClusterId")
     public List<ClusterTreeVO> queryTreeByClusterId(@RequestBody QueryTreeByClusterIdDTO data) {
@@ -127,7 +122,6 @@ public class ClusterController {
 
     /**
      * 这个接口用户 cluster 对应业务的 首页，方便查询
-     *
      */
     @PostMapping("queryVisualizationClusterByOrganizationIdAndType")
     public List<ClusterEntity> queryVisualizationClusterByOrganizationIdAndType(@RequestBody @Validated QueryClusterByOrganizationIdAndTypeDTO dto) {
@@ -194,7 +188,7 @@ public class ClusterController {
             list.add(pair);
 
         });
-        this.clusterService.createClusterInfo(mainClusterEntity, list, this.creatingRelation(data.getMainClusterId(),mainClusterEntity));
+        this.clusterService.createClusterInfo(mainClusterEntity, list, this.creatingRelation(data.getMainClusterId(), mainClusterEntity));
     }
 
     /**
@@ -219,7 +213,7 @@ public class ClusterController {
         Pair<ClusterEntity, List<RuntimeEntity>> pair =
             ClusterControllerUtils.handlerSimpleCreateClusterDataDTO(clusterEntity, data);
         // runtime cap 架构需要 检查节点数量，
-        this.clusterService.createClusterInfo(mainClusterEntity, List.of(pair), this.creatingRelation(data.getMainClusterId(),mainClusterEntity));
+        this.clusterService.createClusterInfo(mainClusterEntity, List.of(pair), this.creatingRelation(data.getMainClusterId(), mainClusterEntity));
 
     }
 

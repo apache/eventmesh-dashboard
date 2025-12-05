@@ -23,7 +23,7 @@ import org.apache.eventmesh.dashboard.common.model.metadata.TopicOffsetMetadata;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public interface TopicOffsetRemotingService {
 

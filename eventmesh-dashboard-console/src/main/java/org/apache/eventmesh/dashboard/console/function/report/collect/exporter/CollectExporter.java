@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,12 +17,14 @@
 
 package org.apache.eventmesh.dashboard.console.function.report.collect.exporter;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData.AggregationClass;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.ClusterId;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.OrganizationId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.Time;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,29 +57,29 @@ import lombok.extern.slf4j.Slf4j;
 public class CollectExporter {
 
 
-    private Map<String, ReportMetaData> reportMetaDataMap = new HashMap<>();
-
-    private Map<String, ReportMetaData> aggregationMetaDataMap = new HashMap<>();
-
-    private Map<String, AggregationWrapper> aggregationWrapperMap = new HashMap<>();
-
     protected ClusterType clusterType;
-
     protected ClusterMetadata clusterMetadata;
-
     protected List<Time> times = new ArrayList<>();
-
     protected List<Time> standby = new ArrayList<>();
-
-
+    private Map<String, ReportMetaData> reportMetaDataMap = new HashMap<>();
+    private Map<String, ReportMetaData> aggregationMetaDataMap = new HashMap<>();
+    private Map<String, AggregationWrapper> aggregationWrapperMap = new HashMap<>();
     private Map<String, String> fieldMapper = new HashMap<>();
 
     private Map<String, Map<String, Field>> objectFieldMapper = new HashMap<>();
 
     private HttpClient client = HttpClient.newHttpClient();
 
+    private ClusterSyncMetadataEnum clusterSyncMetadataEnum;
+
     @Setter
     private String url;
+
+    public static LocalDateTime millisToLocalDateTime(long millis) {
+        return Instant.ofEpochMilli(millis)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
+    }
 
     public void init() {
         reportMetaDataMap.forEach((clusterMetadata, reportMetaData) -> {
@@ -101,6 +103,7 @@ public class CollectExporter {
                 return aggregationWrapper;
             });
         });
+        this.clusterSyncMetadataEnum = ClusterSyncMetadataEnum.valueOf(this.clusterMetadata.getClusterType().name());
     }
 
     public List<Time> collect() {
@@ -177,7 +180,6 @@ public class CollectExporter {
 
     }
 
-
     public ClusterId buildObject(String key, JSONObject jsonObject, String value, LocalDateTime time) {
         ReportMetaData reportMetaData = this.reportMetaDataMap.get(key);
 
@@ -198,25 +200,46 @@ public class CollectExporter {
 
             Map<String, Field> stringFieldMapper = this.createStringFieldMapper(reportMetaData);
 
-            ClusterId object = this.createObject(stringFieldMapper,reportMetaData,time,jsonObject);
+            ClusterId object = this.createObject(stringFieldMapper, reportMetaData, time, jsonObject);
             if (Objects.nonNull(aggregationWrapper)) {
                 aggregationWrapper.organization = object;
             }
             return object;
-        }catch (Exception e){
-            log.error(e.getMessage(),e);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
             return null;
         }
 
     }
 
-    private ClusterId createObject(Map<String, Field> stringFieldMapper , ReportMetaData reportMetaData,LocalDateTime time,JSONObject jsonObject)
+    private ClusterId createObject(Map<String, Field> stringFieldMapper, ReportMetaData reportMetaData, LocalDateTime time, JSONObject jsonObject)
         throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Class<?> clazz = reportMetaData.getClazz();
         ClusterId object = (ClusterId) clazz.getDeclaredConstructor().newInstance();
         object.setOrganizationId(this.clusterMetadata.getOrganizationId());
-        object.setClustersId(this.clusterMetadata.getClusterId());
-        object.setClustersName(this.clusterMetadata.getClusterName());
+        /*
+            TODO 目前只有 rocketmq 架构 的 普罗米修斯 采集 多 cluster 信息
+                 无法通过架构去决定  普罗米修斯 exporter 是采集单集群，还是多集群
+                 硬编码
+                 硬编码
+         */
+        if (Objects.equals(this.clusterMetadata.getClusterType(), ClusterType.STORAGE_ROCKETMQ_CLUSTER)
+            || Objects.equals(this.clusterMetadata.getClusterType(), ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE)
+            || Objects.equals(this.clusterMetadata.getClusterType(), ClusterType.STORAGE_ROCKETMQ_BROKER_RAFT)
+            || Objects.equals(this.clusterMetadata.getClusterType(), ClusterType.STORAGE_ROCKETMQ_NAMESERVER)
+        ) {
+            object.setClustersName(jsonObject.getString("cluster"));
+            if (object instanceof RuntimeId runtimeId) {
+                if (jsonObject.containsKey("broker")) {
+                    runtimeId.setRuntimeName(jsonObject.getString("broker"));
+                } else if (jsonObject.containsKey("brokerIP")) {
+                    runtimeId.setRuntimeName(jsonObject.getString("brokerIP"));
+                }
+            }
+        } else {
+            object.setClustersId(this.clusterMetadata.getClusterId());
+            object.setClustersName(this.clusterMetadata.getClusterName());
+        }
         object.setTime(time);
         stringFieldMapper.forEach((fieldName, field) -> {
             String fieldValue = jsonObject.getString(fieldName);
@@ -232,7 +255,7 @@ public class CollectExporter {
         return object;
     }
 
-    private Map<String, Field> createStringFieldMapper(ReportMetaData reportMetaData){
+    private Map<String, Field> createStringFieldMapper(ReportMetaData reportMetaData) {
         Map<String, Field> stringFieldMapper = this.objectFieldMapper.get(reportMetaData.getReportName());
         if (Objects.isNull(stringFieldMapper)) {
             stringFieldMapper = new HashMap<>();
@@ -250,15 +273,6 @@ public class CollectExporter {
         }
         return stringFieldMapper;
     }
-
-
-
-    public static LocalDateTime millisToLocalDateTime(long millis) {
-        return Instant.ofEpochMilli(millis)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDateTime();
-    }
-
 
     @Data
     static class AggregationWrapper {

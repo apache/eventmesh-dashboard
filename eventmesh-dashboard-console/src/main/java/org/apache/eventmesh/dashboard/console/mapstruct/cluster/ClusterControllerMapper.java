@@ -21,13 +21,13 @@ package org.apache.eventmesh.dashboard.console.mapstruct.cluster;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryClusterTreeDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateClusterDTO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.CreateClusterBySimpleDataDTO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.BatchCreateClusterDataDTO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.QueryClusterByOrganizationIdAndTypeDTO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.QueryRelationClusterByClusterIdAndTypeDTO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.QueryTreeByClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.SimpleCreateClusterDataDTO;
-import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateClusterDTO;
 
 import java.util.List;
 
@@ -53,11 +53,11 @@ public interface ClusterControllerMapper {
 
     ClusterEntity toClusterEntity(ClusterIdDTO clusterIdDTO);
 
-    ClusterEntity createClusterDTO(CreateClusterDTO createClusterDTO);
-
     ClusterEntity toClusterEntity(SimpleCreateClusterDataDTO data);
 
     ClusterEntity toClusterEntity(BatchCreateClusterDataDTO data);
+
+    ClusterEntity createClusterDTO(CreateClusterDTO createClusterDTO);
 
     List<ClusterEntity> simpleCreateClusterDataToClusterEntity(List<SimpleCreateClusterDataDTO> data);
 

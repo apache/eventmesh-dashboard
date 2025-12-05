@@ -52,5 +52,4 @@ public class RuntimeEntity extends BaseSyncEntity {
     private String authType;
 
 
-
 }

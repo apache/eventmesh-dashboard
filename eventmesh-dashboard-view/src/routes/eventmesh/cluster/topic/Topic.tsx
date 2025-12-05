@@ -17,14 +17,15 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps, Button, Stack, Tab, Tabs } from '@mui/material'
+import React, {forwardRef} from 'react'
+import {Box, BoxProps, Button, Stack} from '@mui/material'
 import Page from '../../../../components/page/Layout'
 import Stats from './stats/Stats'
 import TopicList from './topic-list/TopicList'
-import { styled } from '@mui/material/styles'
+import {styled} from '@mui/material/styles'
 
-interface TopicProps extends BoxProps {}
+interface TopicProps extends BoxProps {
+}
 
 const PagSubMenuButton = styled(Button)({
   paddingLeft: 8,
@@ -44,19 +45,19 @@ const PagSubMenuButton = styled(Button)({
   }
 })
 
-const Topic = forwardRef<typeof Box, TopicProps>(({ ...props }, ref) => {
+const Topic = forwardRef<typeof Box, TopicProps>(({...props}, ref) => {
   return (
-    <Page sx={{ height: 1, display: 'flex', flexDirection: 'column' }}>
-      <Stack direction="row" sx={{ pt: 1, pb: 1 }} spacing={2}>
-        <PagSubMenuButton className="active">Overview</PagSubMenuButton>
-        <PagSubMenuButton> Topic List</PagSubMenuButton>
-      </Stack>
+      <Page sx={{height: 1, display: 'flex', flexDirection: 'column'}}>
+        <Stack direction="row" sx={{pt: 1, pb: 1}} spacing={2}>
+          <PagSubMenuButton className="active">Overview</PagSubMenuButton>
+          <PagSubMenuButton> Topic List</PagSubMenuButton>
+        </Stack>
 
-      <Stack sx={{ flexGrow: 1 }} spacing={2}>
-        <Stats />
-        <TopicList />
-      </Stack>
-    </Page>
+        <Stack sx={{flexGrow: 1}} spacing={2}>
+          <Stats/>
+          <TopicList/>
+        </Stack>
+      </Page>
   )
 })
 

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,14 +43,14 @@ public class HealthDataServiceDatabaseImplTest {
 
 
     @Test
-    public void test_batchInsertNewCheckResult(){
+    public void test_batchInsertNewCheckResult() {
         List<HealthCheckResultEntity> healthCheckResultEntityList = new ArrayList<>();
         LocalDateTime localDateTime = LocalDateTime.now();
-        for(long i = 1; i <= 100; i++) {
+        for (long i = 1; i <= 100; i++) {
 
             HealthCheckResultEntity healthCheckResultEntity = new HealthCheckResultEntity();
             healthCheckResultEntity.setClusterType(ClusterType.EVENTMESH_JVM_RUNTIME);
-            healthCheckResultEntity.setClusterId(i%10);
+            healthCheckResultEntity.setClusterId(i % 10);
             healthCheckResultEntity.setProtocol("");
             healthCheckResultEntity.setType(2);
             healthCheckResultEntity.setTypeId(i);

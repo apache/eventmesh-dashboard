@@ -17,20 +17,12 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import {
-  Button,
-  ButtonProps,
-  Stack,
-  Typography,
-  Chip,
-  StackProps,
-  Collapse
-} from '@mui/material'
-import { alpha, styled } from '@mui/material/styles'
-import { grey } from '@mui/material/colors'
-import { NavMenuIdEnum, NavMenuType } from './navigation.types'
-import { useNavigate } from 'react-router-dom'
+import React, {forwardRef} from 'react'
+import {Button, ButtonProps, Chip, Collapse, Stack, StackProps, Typography} from '@mui/material'
+import {alpha, styled} from '@mui/material/styles'
+import {grey} from '@mui/material/colors'
+import {NavMenuIdEnum, NavMenuType} from './navigation.types'
+import {useNavigate} from 'react-router-dom'
 
 const NavButton = styled(Button)({
   boxShadow: 'none',
@@ -73,36 +65,36 @@ interface NavigationSubMenuItemProps extends ButtonProps {
 }
 
 const NavigationSubMenuItem = forwardRef<
-  typeof NavButton,
-  NavigationSubMenuItemProps
->(({ text, count, icon, active, onClick, ...props }, ref) => {
+    typeof NavButton,
+    NavigationSubMenuItemProps
+>(({text, count, icon, active, onClick, ...props}, ref) => {
   return (
-    <NavButton
-      startIcon={icon}
-      variant={active ? 'contained' : 'text'}
-      className={active ? 'active' : ''}
-      // sx={{ color: active ? 'white' : 'inherit' }}
-      onClick={onClick}>
-      <Stack
-        sx={{ width: 1 }}
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center">
-        <Typography fontSize="inherit">{text}</Typography>
-        {(count ?? 0) > 0 && (
-          <Chip
-            sx={{
-              height: 15,
-              fontSize: 13,
-              bgcolor: active ? grey[200] : 'white'
-            }}
-            size="small"
-            color="default"
-            label={count}
-          />
-        )}
-      </Stack>
-    </NavButton>
+      <NavButton
+          startIcon={icon}
+          variant={active ? 'contained' : 'text'}
+          className={active ? 'active' : ''}
+          // sx={{ color: active ? 'white' : 'inherit' }}
+          onClick={onClick}>
+        <Stack
+            sx={{width: 1}}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center">
+          <Typography fontSize="inherit">{text}</Typography>
+          {(count ?? 0) > 0 && (
+              <Chip
+                  sx={{
+                    height: 15,
+                    fontSize: 13,
+                    bgcolor: active ? grey[200] : 'white'
+                  }}
+                  size="small"
+                  color="default"
+                  label={count}
+              />
+          )}
+        </Stack>
+      </NavButton>
   )
 })
 
@@ -114,40 +106,40 @@ interface SubNavifationMenuProps extends StackProps {
 }
 
 const NavigationSubMenu = forwardRef<typeof Stack, SubNavifationMenuProps>(
-  ({ activeMenuId, show, onMenuActived, menus, onClick, ...props }, ref) => {
-    const navigate = useNavigate()
+    ({activeMenuId, show, onMenuActived, menus, onClick, ...props}, ref) => {
+      const navigate = useNavigate()
 
-    return (
-      <Collapse in={show} exit={!show}>
-        <Stack
-          sx={{
-            py: 2,
-            px: 2,
-            bgcolor: alpha('#fff', 0.5),
-            borderTopLeftRadius: 0,
-            borderTopRightRadius: 0,
-            borderBottomLeftRadius: 8,
-            borderBottomRightRadius: 8
-          }}>
-          {menus.map((menu) => {
-            return (
-              <NavigationSubMenuItem
-                key={menu.id}
-                icon={menu.icon}
-                text={menu.text}
-                count={menu?.count}
-                active={activeMenuId === menu?.id}
-                onClick={() => {
-                  onMenuActived(menu?.id)
-                  navigate(menu.route)
-                }}
-              />
-            )
-          })}
-        </Stack>
-      </Collapse>
-    )
-  }
+      return (
+          <Collapse in={show} exit={!show}>
+            <Stack
+                sx={{
+                  py: 2,
+                  px: 2,
+                  bgcolor: alpha('#fff', 0.5),
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0,
+                  borderBottomLeftRadius: 8,
+                  borderBottomRightRadius: 8
+                }}>
+              {menus.map((menu) => {
+                return (
+                    <NavigationSubMenuItem
+                        key={menu.id}
+                        icon={menu.icon}
+                        text={menu.text}
+                        count={menu?.count}
+                        active={activeMenuId === menu?.id}
+                        onClick={() => {
+                          onMenuActived(menu?.id)
+                          navigate(menu.route)
+                        }}
+                    />
+                )
+              })}
+            </Stack>
+          </Collapse>
+      )
+    }
 )
 
 NavigationSubMenu.displayName = 'NavigationSubMenu'

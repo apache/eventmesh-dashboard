@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,9 +44,9 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
         stringBuilder.deleteCharAt(stringBuilder.length() - 1).append(" ) values \r\n");
         stringBuilder.append("  <foreach  collection='_parameter' item='item' index='index'  separator=','> \r\n    (");
         this.fieldList.forEach(field -> {
-            if(field.getName().endsWith("Id") || !(Number.class.isAssignableFrom(field.getType()))){
+            if (field.getName().endsWith("Id") || !(Number.class.isAssignableFrom(field.getType()))) {
                 stringBuilder.append("'${item.").append(field.getName()).append("}'");
-            }else {
+            } else {
                 stringBuilder.append("${item.").append(field.getName()).append("}");
             }
 
@@ -60,7 +60,7 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
     public String query(String type) {
         Map<String, Field> map = new HashMap<>();
         this.fieldList.forEach(field -> {
-           map.put(field.getName(), field);
+            map.put(field.getName(), field);
         });
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("select ")
@@ -69,7 +69,7 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
         stringBuilder.append("\r\n  <trim prefix=' ' prefixOverrides=','>");
         this.fieldList.forEach(field -> {
             String filedName = field.getName();
-            if(Objects.equals(filedName,"time")){
+            if (Objects.equals(filedName, "time")) {
                 return;
             }
             String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
@@ -80,12 +80,12 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
                 stringBuilder.append("\r\n    ");
                 stringBuilder.append("<if test='_parameter.").append(filedName).append("!=null'>  ,")
                     .append(key).append(',');
-                String typeField = filedName.replace("Id","Type");
-                if(map.containsKey(typeField)){
+                String typeField = filedName.replace("Id", "Type");
+                if (map.containsKey(typeField)) {
                     stringBuilder.append(",").append(key.replace("id", "type"));
                 }
-                String nameField = filedName.replace("Id","Name");
-                if(map.containsKey(nameField)){
+                String nameField = filedName.replace("Id", "Name");
+                if (map.containsKey(nameField)) {
                     //  last_by 函数可以解决 attribute类型字段 必须 与 group by 保持一致的问题
                     stringBuilder.append(",")
                         .append("last_by(").append(key.replace("id", "name"))
@@ -101,8 +101,14 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
             String filedName = field.getName();
             if (filedName.endsWith("Id")) {
                 String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
-                stringBuilder.append("\r\n    <if test='_parameter.").append(field.getName()).append("!=null'>").append("   and  ").
-                    append(key).append("='${_parameter.").append(field.getName()).append("}'   </if>");
+                stringBuilder.append("\r\n    <if test='_parameter.")
+                    .append(field.getName())
+                    .append("!=null'>")
+                    .append("   and  ")
+                    .append(key)
+                    .append("='${_parameter.")
+                    .append(field.getName())
+                    .append("}'   </if>");
             }
         });
         stringBuilder.append("\r\n  <if test='_parameter.selectFun != null'> ");
@@ -114,11 +120,6 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
                 stringBuilder.append(AbstractReportMetaHandler.lineAndTabString);
                 stringBuilder.append("<if test='_parameter.").append(filedName).append("!=null'>,")
                     .append(key).append(" , ");
-//                stringBuilder.append(key.replace("id", "name"));
-//                String typeField = filedName.replace("Id","Type");
-//                if(map.containsKey(typeField)){
-//                    stringBuilder.append(",").append(key.replace("id", "type"));
-//                }
                 stringBuilder.append("  </if>");
             }
         });
@@ -138,8 +139,10 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
             String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
             stringBuilder.append(key);
             Class<?> type = field.getType();
-            if (type == long.class || type == Long.class ||
-                type == int.class || type == Integer.class
+            if (type == long.class
+                || type == Long.class
+                || type == int.class
+                || type == Integer.class
             ) {
                 stringBuilder.append(key.endsWith("_id") ? " string " : " int64 ");
             } else if (type == float.class || type == Float.class) {
@@ -160,7 +163,7 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
             } else {
                 stringBuilder.append(" attribute");
             }
-            if(num.decrementAndGet() != 0){
+            if (num.decrementAndGet() != 0) {
                 stringBuilder.append(",");
                 stringBuilder.append(lineAndTabString);
             }

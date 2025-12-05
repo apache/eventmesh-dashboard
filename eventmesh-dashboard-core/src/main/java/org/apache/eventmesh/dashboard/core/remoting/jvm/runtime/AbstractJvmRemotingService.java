@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,8 +22,8 @@ import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMapper;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.core.remoting.AbstractRemotingService;
 
-@RemotingServiceMapper(clusterType = {ClusterType.STORAGE_JVM_BROKER,ClusterType.STORAGE_JVM_META,
-    ClusterType.EVENTMESH_JVM_RUNTIME,ClusterType.EVENTMESH_JVM_RUNTIME})
+@RemotingServiceMapper(clusterType = {ClusterType.STORAGE_JVM_BROKER, ClusterType.STORAGE_JVM_META,
+    ClusterType.EVENTMESH_JVM_RUNTIME, ClusterType.EVENTMESH_JVM_RUNTIME})
 public abstract class AbstractJvmRemotingService extends AbstractRemotingService<Object> {
 
 

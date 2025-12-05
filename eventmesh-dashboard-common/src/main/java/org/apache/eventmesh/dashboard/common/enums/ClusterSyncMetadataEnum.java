@@ -81,6 +81,16 @@ public enum ClusterSyncMetadataEnum {
     ;
 
     private static final Map<ClusterType, ClusterSyncMetadata> SYNC_METADATA_CONCURRENT_HASH_MAP = new ConcurrentHashMap<>();
+    @Getter
+    private ClusterSyncMetadata clusterSyncMetadata;
+
+    ClusterSyncMetadataEnum(ClusterSyncMetadata clusterSyncMetadata) {
+        this.clusterSyncMetadata = clusterSyncMetadata;
+    }
+
+    ClusterSyncMetadataEnum(ClusterSyncMetadataEnum clusterSyncMetadataEnum) {
+        this.clusterSyncMetadata = clusterSyncMetadataEnum.clusterSyncMetadata;
+    }
 
     public static ClusterSyncMetadata getClusterSyncMetadata(ClusterType clusterType) {
         ClusterSyncMetadata clusterSyncMetadata = SYNC_METADATA_CONCURRENT_HASH_MAP.get(clusterType);
@@ -104,26 +114,15 @@ public enum ClusterSyncMetadataEnum {
 
     static class ListWrapper {
 
+        private final List<MetadataType> list = new ArrayList<>();
+
         static ListWrapper build() {
             return new ListWrapper();
         }
-
-        private final List<MetadataType> list = new ArrayList<>();
 
         ListWrapper add(List<MetadataType> list) {
             this.list.addAll(list);
             return this;
         }
-    }
-
-    @Getter
-    private ClusterSyncMetadata clusterSyncMetadata;
-
-    ClusterSyncMetadataEnum(ClusterSyncMetadata clusterSyncMetadata) {
-        this.clusterSyncMetadata = clusterSyncMetadata;
-    }
-
-    ClusterSyncMetadataEnum(ClusterSyncMetadataEnum clusterSyncMetadataEnum) {
-        this.clusterSyncMetadata = clusterSyncMetadataEnum.clusterSyncMetadata;
     }
 }

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ import java.util.Random;
 import lombok.Getter;
 
 /**
- *  可以删除
+ * 可以删除
  */
 @Getter
 public class BuildMessageData {
@@ -69,13 +69,13 @@ public class BuildMessageData {
 
     private MetadataType metadataType;
 
-    private void recognize(BaseSyncEntity baseSyncEntity){
+    private void recognize(BaseSyncEntity baseSyncEntity) {
         this.baseSyncEntity = baseSyncEntity;
-        if(baseSyncEntity instanceof ClusterEntity){
+        if (baseSyncEntity instanceof ClusterEntity) {
             this.clusterId = baseSyncEntity.getId();
             this.runtimeId = 0L;
             this.metadataType = MetadataType.CLUSTER;
-        }else{
+        } else {
             this.clusterId = baseSyncEntity.getClusterId();
             this.runtimeId = baseSyncEntity.getId();
             this.metadataType = MetadataType.RUNTIME;
@@ -172,7 +172,7 @@ public class BuildMessageData {
         this.groupMemberEntityList.addAll(groupMemberEntityList);
     }
 
-    public void buildSyncConfig(){
+    public void buildSyncConfig() {
         this.buildConfig(this.metadataType, baseSyncEntity, baseSyncEntity.getId());
     }
 

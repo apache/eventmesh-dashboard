@@ -44,7 +44,7 @@ import com.alibaba.fastjson.JSON;
 public interface ClusterAndRuntimeDomain {
 
 
-    List<ClusterEntity> getClusterByCLusterId(ClusterEntity clusterEntity);
+    List<ClusterEntity> getClusterByClusterId(ClusterEntity clusterEntity);
 
     List<ClusterTreeVO> queryClusterTree(QueryClusterTreeDO data);
 
@@ -52,20 +52,10 @@ public interface ClusterAndRuntimeDomain {
 
     GetClusterInSyncReturnDO queryClusterInSync(ClusterEntity clusterEntity, List<ClusterType> syncClusterTypeList);
 
-    default Supplier<BaseRuntimeIdEntity> createBaseRuntimeIdEntity(Object object) {
-        String json = JSON.toJSONString(object);
-        Class<?> clazz = object.getClass();
-        return () -> (BaseRuntimeIdEntity) JSON.parseObject(json, clazz);
-    }
-
-    /**
-     *
-     */
-    @SuppressWarnings("unchecked")
-    default <T>T queryClusterInSync(QueryClusterInSyncDO data) {
+    default <T> T queryClusterInSync(QueryClusterInSyncDO data) {
         GetClusterInSyncReturnDO getClusterInSyncReturnDO = this.queryClusterInSync(data.getClusterEntity(), data.getSyncClusterTypeList());
-        if (Objects.isNull(getClusterInSyncReturnDO.getClusterEntityList()) &&
-            Objects.isNull(getClusterInSyncReturnDO.getRuntimeEntityList())) {
+        if (Objects.isNull(getClusterInSyncReturnDO.getClusterEntityList())
+            && Objects.isNull(getClusterInSyncReturnDO.getRuntimeEntityList())) {
             throw new RuntimeException("");
         }
         /*
@@ -105,7 +95,15 @@ public interface ClusterAndRuntimeDomain {
             baseRuntimeIdEntity.setClusterType(runtimeEntity.getClusterType());
             baseRuntimeIdEntity.setRuntimeId(runtimeEntity.getId());
         });
-        return (T)runtimeIdEntityList;
+        return (T) runtimeIdEntityList;
     }
+
+
+    default Supplier<BaseRuntimeIdEntity> createBaseRuntimeIdEntity(Object object) {
+        String json = JSON.toJSONString(object);
+        Class<?> clazz = object.getClass();
+        return () -> (BaseRuntimeIdEntity) JSON.parseObject(json, clazz);
+    }
+
 
 }

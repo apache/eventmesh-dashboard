@@ -48,12 +48,12 @@ public class ConfigServiceImpl implements ConfigService {
     private Map<Object, String> defaultConfigCache = new HashMap<>();
 
     @Override
-    public  List<ConfigEntity> queryByClusterIdList(List<ClusterEntity> clusterConfigEntityList){
+    public List<ConfigEntity> queryByClusterIdList(List<ClusterEntity> clusterConfigEntityList) {
         return this.configMapper.queryByClusterIdList(clusterConfigEntityList);
     }
 
     @Override
-    public List<ConfigEntity> queryByInstanceIdList(List<ConfigEntity> configEntityList, MetadataType metadataType){
+    public List<ConfigEntity> queryByInstanceIdList(List<ConfigEntity> configEntityList, MetadataType metadataType) {
         return this.configMapper.queryByInstanceIdList(configEntityList, metadataType);
     }
 

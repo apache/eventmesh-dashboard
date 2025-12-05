@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
+import org.apache.eventmesh.dashboard.console.controller.deploy.active.ActiveCreateDTOHandler;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
@@ -58,7 +59,6 @@ public class ActiveCreateController {
     /**
      * 分 eventmesh 集群创建
      *
-     * @param
      */
     @PostMapping("createEventMeshSpace")
     public Long createEventMeshSpace(@RequestBody @Validated CreateEventMeshSpaceDTO dto) {
@@ -120,6 +120,7 @@ public class ActiveCreateController {
      * TODO 先完成 数据 直接录入的实现，
      *      在完成 通过 API 调用获得 broker config 补充 broker 与 cluster 信息，以及 cluster 组织关系
      *      保留 两套机制，还是只留下 通过 API 获得信息的机制？
+     *
      * @param createTheEventClusterDTO
      * @return
      */
@@ -128,7 +129,7 @@ public class ActiveCreateController {
         ActiveCreateDTOHandler activeCreateDTOHandler = new ActiveCreateDTOHandler();
         activeCreateDTOHandler.handler(createTheEventClusterDTO);
         this.clusterService.createTheEventCluster(activeCreateDTOHandler.getClusterEntityList(),
-            activeCreateDTOHandler.getClusterListRelationshipList(),activeCreateDTOHandler.getClusterAndRuntimeList());
+            activeCreateDTOHandler.getClusterListRelationshipList(), activeCreateDTOHandler.getClusterAndRuntimeList());
 
         return activeCreateDTOHandler.getEventSapaceClusterEntity().getId();
     }

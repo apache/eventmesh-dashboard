@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,16 +59,13 @@ public class CreateClusterByCopyHandler extends AbstractUpdateHandler implements
                 this.kubernetesManage.checkResource(pair.getRight(), dto.getKubernetesClusterId());
             });
         }
-
-        List<TopicEntity> topciEntityList =
-            this.topicService.queryByClusterIdList(data.getClusterEntityList());
-
         // Topic
         data.setTopicMap(new HashMap<>());
         data.getTopicMap().put(MetadataType.CLUSTER, new HashMap<>());
         data.getTopicMap().put(MetadataType.RUNTIME, new HashMap<>());
         Map<MetadataType, Map<Long, List<TopicEntity>>> topicMap = data.getTopicMap();
 
+        List<TopicEntity> topciEntityList = this.topicService.queryByClusterIdList(data.getClusterEntityList());
         topciEntityList.forEach(topicEntity -> {
             boolean isRuntime = topicEntity.getRuntimeId() == 0;
             data.getTopicMap().get(isRuntime ? MetadataType.RUNTIME : MetadataType.CLUSTER)

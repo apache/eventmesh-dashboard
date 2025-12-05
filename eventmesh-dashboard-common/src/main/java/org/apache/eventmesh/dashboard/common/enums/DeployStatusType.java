@@ -21,7 +21,7 @@ package org.apache.eventmesh.dashboard.common.enums;
 import lombok.Getter;
 
 /**
- *  TODO 流程：
+ * TODO 流程：
  *      runtime： 先 创建数据 -> 绑定关系 -> 在启动
  *      meta ： 先 创建数据直接启动
  *      eventmesh 空间是
@@ -42,7 +42,6 @@ import lombok.Getter;
  *          runtime 在 绑定时 ， 是否可选
  *          点击 启动
  *     有 agent 的存在，就不需要启动循序了
- *
  */
 public enum DeployStatusType {
 
@@ -63,7 +62,7 @@ public enum DeployStatusType {
     CREATE_COPY,
 
     /**
-     *  是不是需要这个状态的检查
+     * 是不是需要这个状态的检查
      */
     CREATE_DATA_ING,
 
@@ -159,7 +158,8 @@ public enum DeployStatusType {
     @Getter
     private String explanation;
 
-    DeployStatusType() {}
+    DeployStatusType() {
+    }
 
     DeployStatusType(String name, String explanation) {
         this.name = name;

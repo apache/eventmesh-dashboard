@@ -44,17 +44,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SDKManage {
 
     /**
-     * inner key is the unique key of a client, such as (ip + port) they are defined in CreateClientConfig
-     * <p>
-     * key: SDKTypeEnum value: A map collection is used with key being (ip+port) and value being client.
-     *
-     * @see CreateSDKConfig#getUniqueKey()
-     */
-    private final Map<String, ClientWrapper> clientMap = new ConcurrentHashMap<>();
-
-    private final Map<String, Map<Class<?>,AbstractClientInfo<Object>>> stringMapConcurrentHashMap = new ConcurrentHashMap<>();
-
-    /**
      * Initialise the SDKOperation object instance according to SDKTypeEnum.
      * <p>
      * key: SDKTypeEnum value: SDKOperation
@@ -64,9 +53,7 @@ public class SDKManage {
      */
     private static final Map<ClusterType, Map<SDKTypeEnum, SDKMetadataWrapper>> CLUSTER_TYPE_MAP_CONCURRENT_HASH_MAP =
         new ConcurrentHashMap<>();
-
     private static final SDKManage INSTANCE = new SDKManage();
-
 
     // register all client create operation
     static {
@@ -80,6 +67,19 @@ public class SDKManage {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * inner key is the unique key of a client, such as (ip + port) they are defined in CreateClientConfig
+     * <p>
+     * key: SDKTypeEnum value: A map collection is used with key being (ip+port) and value being client.
+     *
+     * @see CreateSDKConfig#getUniqueKey()
+     */
+    private final Map<String, ClientWrapper> clientMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<Class<?>, AbstractClientInfo<Object>>> stringMapConcurrentHashMap = new ConcurrentHashMap<>();
+
+    private SDKManage() {
     }
 
     static void createSDKMetadataWrapper(Class<?> clazz) {
@@ -139,19 +139,15 @@ public class SDKManage {
         return null;
     }
 
-    private SDKManage() {
-    }
-
     public static synchronized SDKManage getInstance() {
         return INSTANCE;
     }
 
     /**
-     *  cluster 模式下，有问题？
+     * cluster 模式下，有问题？
      *  TODO 去重。 如果去重
      *       1. 只识别 地址？
      *       2. 识别 整个 CreateSDKConfig
-     *
      */
     public <T> T createClient(SDKTypeEnum sdkTypeEnum, BaseSyncBase baseSyncBase, CreateSDKConfig config, ClusterType clusterType) {
 
@@ -206,7 +202,6 @@ public class SDKManage {
      *  此方法只提供 core 直接调用，如果是 console 调用，需要console 在封装一层。
      *  是否要 缓存 AbstractClientInfo 对象。但 cluster or runtime 卸载的时候需要删除.
      *  直接提供 console 的是否需要一个代理层
-     *
      */
     @SuppressWarnings("unchecked")
     public <T> T createAbstractClientInfo(Class<?> clazz, BaseSyncBase baseSyncBase) {
@@ -215,8 +210,9 @@ public class SDKManage {
             if (!baseSyncBase.isCluster() && ClusterSyncMetadataEnum.getClusterFramework(baseSyncBase.getClusterType()).isCAP()) {
                 unique = ((RuntimeMetadata) baseSyncBase).clusterUnique();
             }
-            Map<Class<?> ,AbstractClientInfo<Object>> classMap = this.stringMapConcurrentHashMap.computeIfAbsent(unique, k -> new ConcurrentHashMap<>());
-            if(classMap.containsKey(clazz)){
+            Map<Class<?>, AbstractClientInfo<Object>> classMap =
+                this.stringMapConcurrentHashMap.computeIfAbsent(unique, k -> new ConcurrentHashMap<>());
+            if (classMap.containsKey(clazz)) {
                 return (T) classMap.get(clazz);
             }
 

@@ -34,7 +34,7 @@ public class BothNotCacheDifference extends AbstractBothDifference {
     void doDifference() {
         List<BaseClusterIdBase> sourcetList = sourceHandler.getData();
         List<BaseClusterIdBase> targetList = targetHandler.getData();
-        if(CollectionUtils.isEmpty(sourcetList) && CollectionUtils.isEmpty(targetList)){
+        if (CollectionUtils.isEmpty(sourcetList) && CollectionUtils.isEmpty(targetList)) {
             return;
         }
         if (CollectionUtils.isEmpty(sourcetList)) {

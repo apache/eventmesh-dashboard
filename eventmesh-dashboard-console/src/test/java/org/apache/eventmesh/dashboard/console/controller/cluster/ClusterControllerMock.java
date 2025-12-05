@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,8 +47,8 @@ public class ClusterControllerMock {
         BatchCreateClusterDataDTO data = new BatchCreateClusterDataDTO();
         data.setClusterType(ClusterType.EVENTMESH_JVM_CLUSTER);
         data.setOrganizationId(1L);
-        data.setName("mock_data"+ System.currentTimeMillis());
-        data.setDescription("mock_describe"+ System.currentTimeMillis());
+        data.setName("mock_data" + System.currentTimeMillis());
+        data.setDescription("mock_describe" + System.currentTimeMillis());
         data.setVersion("1.0.0");
         List<SimpleCreateClusterDataDTO> simpleCreateClusterDataDTOList = new ArrayList<>();
         data.setSimpleCreateClusterDataList(simpleCreateClusterDataDTOList);
@@ -59,7 +59,7 @@ public class ClusterControllerMock {
         simpleCreateClusterDataDTO.setFirstToWhom(FirstToWhom.RUNTIME);
         simpleCreateClusterDataDTO.setClusterTrusteeshipType(ClusterTrusteeshipType.TRUSTEESHIP_FIND_REVERSE);
         simpleCreateClusterDataDTO.setAddress("127.0.0.1,127.0.0.2,127.0.0.3/?tcp=9876&http=9999&grpc=9898");
-        simpleCreateClusterDataDTO.setDescription("mock_describe"+ System.currentTimeMillis());
+        simpleCreateClusterDataDTO.setDescription("mock_describe" + System.currentTimeMillis());
         simpleCreateClusterDataDTO.setVersion("1.0.0");
         simpleCreateClusterDataDTOList.add(simpleCreateClusterDataDTO);
 
@@ -69,10 +69,9 @@ public class ClusterControllerMock {
         simpleCreateClusterDataDTO.setFirstToWhom(FirstToWhom.RUNTIME);
         simpleCreateClusterDataDTO.setClusterTrusteeshipType(ClusterTrusteeshipType.TRUSTEESHIP_FIND_REVERSE);
         simpleCreateClusterDataDTO.setAddress("127.0.0.1:9090");
-        simpleCreateClusterDataDTO.setDescription("mock_describe"+ System.currentTimeMillis());
+        simpleCreateClusterDataDTO.setDescription("mock_describe" + System.currentTimeMillis());
         simpleCreateClusterDataDTO.setVersion("1.0.0");
         simpleCreateClusterDataDTOList.add(simpleCreateClusterDataDTO);
-
 
         System.out.println(JSON.toJSONString(data));
 
@@ -80,13 +79,13 @@ public class ClusterControllerMock {
     }
 
     @Test
-    public void mock_createClusterByBachAddress_storage_jvm(){
+    public void mock_createClusterByBachAddress_storage_jvm() {
 
         BatchCreateClusterDataDTO data = new BatchCreateClusterDataDTO();
         data.setClusterType(ClusterType.STORAGE_JVM_CLUSTER);
         data.setOrganizationId(1L);
-        data.setName("mock_rocketmq"+ System.currentTimeMillis());
-        data.setDescription("mock_describe"+ System.currentTimeMillis());
+        data.setName("mock_rocketmq" + System.currentTimeMillis());
+        data.setDescription("mock_describe" + System.currentTimeMillis());
         data.setVersion("1.0.0");
         data.setMainClusterId(82L);
         List<SimpleCreateClusterDataDTO> simpleCreateClusterDataDTOList = new ArrayList<>();
@@ -98,10 +97,9 @@ public class ClusterControllerMock {
         simpleCreateClusterDataDTO.setFirstToWhom(FirstToWhom.RUNTIME);
         simpleCreateClusterDataDTO.setClusterTrusteeshipType(ClusterTrusteeshipType.TRUSTEESHIP_FIND_REVERSE);
         simpleCreateClusterDataDTO.setAddress("127.0.0.11,127.0.0.12,127.0.0.13:9999");
-        simpleCreateClusterDataDTO.setDescription("mock_describe"+ System.currentTimeMillis());
+        simpleCreateClusterDataDTO.setDescription("mock_describe" + System.currentTimeMillis());
         simpleCreateClusterDataDTO.setVersion("1.0.0");
         simpleCreateClusterDataDTOList.add(simpleCreateClusterDataDTO);
-
 
         System.out.println(JSON.toJSONString(data));
     }

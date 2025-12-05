@@ -44,7 +44,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,8 +87,8 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
 
 
     @Override
-    public List<ClusterEntity> getClusterByCLusterId(ClusterEntity clusterEntity) {
-        return Collections.emptyList();
+    public List<ClusterEntity> getClusterByClusterId(ClusterEntity clusterEntity) {
+        return List.of();
     }
 
     @Override
@@ -167,24 +166,18 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
 
     class GetSyncObjectHandler {
 
+        private final List<ClusterRelationshipEntity> clusterRelationshipEntityList = new ArrayList<>();
         @Setter
         private ClusterEntity clusterEntity;
-
         @Setter
         private DeployStatusType deployStatusType;
-
         private ClusterType clusterType;
-
         /**
          * 修改 eventmesh 空间下 所有 存储集群
          */
         @Setter
         private List<ClusterType> syncClusterTypeList;
-
         private List<ClusterEntity> independenceClusterList = new ArrayList<>();
-
-        private final List<ClusterRelationshipEntity> clusterRelationshipEntityList = new ArrayList<>();
-
         private List<ClusterEntity> clusterEntityList = new ArrayList<>();
 
         private List<ClusterEntity> capClusterList = new ArrayList<>();
@@ -471,10 +464,10 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
                 reationClusterList.forEach(value -> {
                     ClusterType storageClusterType = value.getClusterType();
                     if (!storageClusterType.isDefinition()) {
-                    /*
-                    目前来说 definition 的 storage 集群 只有 rocketmq（还有关系型数据库），
-                    如果认为 definition 即 主从集群，那么认 definition
-                    */
+                        /*
+                         *目前来说 definition 的 storage 集群 只有 rocketmq（还有关系型数据库），
+                         *如果认为 definition 即 主从集群，那么认 definition
+                        */
                         definitionClusterList.add(value);
                     } else {
                         ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(value.getClusterType());

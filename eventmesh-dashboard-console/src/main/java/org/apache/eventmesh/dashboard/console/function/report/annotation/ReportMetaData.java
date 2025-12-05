@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,6 @@ import lombok.Data;
 
 /**
  * 组件类型，report名，数据类型，类名（因为采集模块），表名，默认展示类型，可以展示类型，
- *
  */
 @Data
 public class ReportMetaData {
@@ -72,16 +71,16 @@ public class ReportMetaData {
     private boolean aggregation = false;
 
 
-    private Map<String,AggregationClass> aggregationClasses;
+    private Map<String, AggregationClass> aggregationClasses;
 
 
     private List<Field> fieldList;
 
-    private Map<String,Field> aggregationFieldMap;
+    private Map<String, Field> aggregationFieldMap;
 
 
     @Data
-    public static class AggregationClass{
+    public static class AggregationClass {
 
         private String alias;
 

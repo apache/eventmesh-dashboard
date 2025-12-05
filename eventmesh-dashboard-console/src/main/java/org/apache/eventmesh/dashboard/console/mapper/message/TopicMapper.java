@@ -40,13 +40,13 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
 
 
     @Select("""
-        <script>
-            select * from topic where cluster_id
-                <foreach item='item' index='index' open='in(' separator=',' close=')'>
-                        #{item.id}
-                </foreach>
-        </script>
-    """)
+            <script>
+                select * from topic where cluster_id
+                    <foreach item='item' index='index' open='in(' separator=',' close=')'>
+                            #{item.id}
+                    </foreach>
+            </script>
+        """)
     List<TopicEntity> queryByClusterIdList(List<ClusterEntity> topicEntityList);
 
 

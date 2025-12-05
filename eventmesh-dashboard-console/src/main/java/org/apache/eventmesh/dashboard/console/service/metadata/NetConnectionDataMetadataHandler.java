@@ -33,7 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class NetConnectionDataMetadataHandler implements DataMetadataHandler<NetConnectionEntity> {
 
     @Override
-    public void handleAll(Collection<NetConnectionEntity> allData, List<NetConnectionEntity> addData, List<NetConnectionEntity> updateData, List<NetConnectionEntity> deleteData) {
+    public void handleAll(Collection<NetConnectionEntity> allData, List<NetConnectionEntity> addData, List<NetConnectionEntity> updateData,
+        List<NetConnectionEntity> deleteData) {
 
     }
 

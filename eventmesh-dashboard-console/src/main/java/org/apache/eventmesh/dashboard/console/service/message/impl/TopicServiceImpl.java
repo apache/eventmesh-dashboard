@@ -68,6 +68,7 @@ public class TopicServiceImpl implements TopicService {
         return this.topicMapper.queryByClusterIdList(topicEntityList);
     }
 
+    @Deprecated
     @Override
     public List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId) {
         TopicEntity topicEntity = new TopicEntity();
@@ -76,14 +77,14 @@ public class TopicServiceImpl implements TopicService {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setClusterId(topicEntity.getClusterId());
         groupMemberEntity.setTopicName(topicEntity.getTopicName());
-        List<String> groupNamelist = new ArrayList<>() ;// groupMemberMapper.selectGroupNameByTopicName(groupMemberEntity);
+        List<String> groupNamelist = new ArrayList<>();
         ArrayList<TopicDetailGroupVO> topicDetailGroupVOList = new ArrayList<>();
         TopicEntity finalTopicEntity = topicEntity;
         groupNamelist.forEach(n -> {
             TopicDetailGroupVO topicDetailGroupVO = new TopicDetailGroupVO();
             topicDetailGroupVO.setGroupName(n);
             groupMemberEntity.setGroupName(n);
-            List<String> list = new ArrayList<>();//sgroupMemberMapper.selectTopicsByGroupNameAndClusterId(groupMemberEntity);
+            List<String> list = new ArrayList<>();
             topicDetailGroupVO.setTopics(list);
             GroupEntity groupEntity = new GroupEntity();
             groupEntity.setClusterId(finalTopicEntity.getClusterId());
@@ -109,7 +110,7 @@ public class TopicServiceImpl implements TopicService {
         topicMapper.batchInsert(topicEntities);
     }
 
-    public List<RuntimeEntity>  queryRuntimeByBaseSyncEntity(List<TopicEntity> topicName) {
+    public List<RuntimeEntity> queryRuntimeByBaseSyncEntity(List<TopicEntity> topicName) {
 
         return null;
     }

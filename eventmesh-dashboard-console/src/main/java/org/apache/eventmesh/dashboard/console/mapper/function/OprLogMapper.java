@@ -53,7 +53,7 @@ public interface OprLogMapper {
     List<LogEntity> getLogList(LogEntity logEntity);
 
     @Insert("INSERT INTO operation_log ( cluster_id, operation_type,target_type, content,operation_user,result)"
-        + "VALUE (#{clusterId},#{operationType},#{targetType},#{content},#{operationUser},#{result})")
+            + "VALUE (#{clusterId},#{operationType},#{targetType},#{content},#{operationUser},#{result})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Long addLog(LogEntity logEntity);
 

@@ -25,6 +25,4 @@ public class DeployRuntimeDO extends BaseDeployDO {
     private RuntimeEntity runtime;
 
 
-
-
 }

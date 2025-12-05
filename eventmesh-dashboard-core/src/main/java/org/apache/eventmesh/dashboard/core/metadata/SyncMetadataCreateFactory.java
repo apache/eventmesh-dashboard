@@ -53,34 +53,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SyncMetadataCreateFactory {
 
+    private final Map<Long, List<BaseClusterIdBase>> runtimeMetadataMap = new ConcurrentHashMap<>();
+    private final Map<Long, List<BaseClusterIdBase>> clusterMetadataMap = new ConcurrentHashMap<>();
     @Setter
     private DataMetadataHandler<Object> dataMetadataHandler;
-
     @Setter
     @Getter
     private MetadataType metadataType;
-
     @Getter
     @Setter
     private ConvertMetaData<Object, BaseClusterIdBase> convertMetaData;
-
-
     @Getter
     @Setter
     private DatabaseAndMetadataMapper databaseAndMetadataMapper;
-
     @Setter
     private ColonyDO<ClusterDO> colonyDO;
-
     /**
      * 初次加载量非常大，设置一个一个变量识别初次加载
      */
     private boolean printIntiGetData = false;
-
-    private final Map<Long, List<BaseClusterIdBase>> runtimeMetadataMap = new ConcurrentHashMap<>();
-
-    private final Map<Long, List<BaseClusterIdBase>> clusterMetadataMap = new ConcurrentHashMap<>();
-
     private List<Object> addData = new ArrayList<>();
 
     private List<Object> updateData = new ArrayList<>();
@@ -99,7 +90,7 @@ public class SyncMetadataCreateFactory {
          */
         List<Object> dataList = dataMetadataHandler.getData();
         if (log.isTraceEnabled()) {
-            log.trace("$sync metadata type {} load data: {}",dataMetadataHandler.getClass().getSimpleName(), dataList.size());
+            log.trace("$sync metadata type {} load data: {}", dataMetadataHandler.getClass().getSimpleName(), dataList.size());
         }
         dataList.forEach(data -> {
             BaseRuntimeIdBase baseRuntimeIdBase = (BaseRuntimeIdBase) this.convertMetaData.toMetaData(data);
@@ -138,7 +129,9 @@ public class SyncMetadataCreateFactory {
             return;
         }
 
-        List<Object> addData, updateData, deleteData;
+        List<Object> addData;
+        List<Object> updateData;
+        List<Object> deleteData;
         synchronized (this) {
             addData = this.addData;
             updateData = this.updateData;

@@ -495,13 +495,11 @@ public class BuildFullSceneData {
     private static class ShareMetadata {
 
         private final List<ClusterEntity> shareClusterEntityList = new ArrayList<>();
-
+        private final Map<ClusterType, List<ClusterEntity>> shareMap = new HashMap<>();
         /**
          * 共享 集群 概率值
          */
         private Integer shareNum = 0;
-
-        private final Map<ClusterType, List<ClusterEntity>> shareMap = new HashMap<>();
 
 
     }

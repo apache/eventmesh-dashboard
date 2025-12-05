@@ -66,8 +66,11 @@ public class Remoting2Manage {
         }
     }
 
+    private Remoting2Manage() {
+    }
+
     /**
-     * 识别 AbstractGlobal2Request<T> 行为
+     * 识别 AbstractGlobal2Request 行为
      *
      * @param clazz 远程服务
      */
@@ -122,12 +125,8 @@ public class Remoting2Manage {
 
     }
 
-
     public static Remoting2Manage getInstance() {
         return INSTANCE;
-    }
-
-    private Remoting2Manage() {
     }
 
     /**

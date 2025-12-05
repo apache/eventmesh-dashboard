@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,7 +38,7 @@ public class CollectExporterTest {
 
 
     @Before
-    public void init(){
+    public void init() {
 
         collectExporter.setClusterType(ClusterType.STORAGE_ROCKETMQ_CLUSTER);
 
@@ -51,14 +51,14 @@ public class CollectExporterTest {
         ReportEngine reportEngine = new IotDBReportEngine();
         reportHandlerManage.setReportEngine(reportEngine);
         reportHandlerManage.init();
-        collectExporter.setClassMap(reportHandlerManage.getReportMetaDataMap());
+        collectExporter.setReportMetaDataMap(reportHandlerManage.getReportMetaDataMap());
 
         Map<String, String> fieldMapper = new HashMap<>();
         fieldMapper.put("groupName", "group");
         fieldMapper.put("topicName", "topic");
         fieldMapper.put("clusterName", "cluster");
         fieldMapper.put("runtimeName", "runtime");
-        fieldMapper.put("queueId","queueid");
+        fieldMapper.put("queueId", "queueid");
         collectExporter.setFieldMapper(fieldMapper);
         collectExporter.init();
     }
@@ -72,7 +72,7 @@ public class CollectExporterTest {
 
 
     @Test
-    public void test_rocketmq_exporter(){
+    public void test_rocketmq_exporter() {
         collectExporter.setUrl("http://127.0.0.1:5557/metrics");
         collectExporter.request();
     }

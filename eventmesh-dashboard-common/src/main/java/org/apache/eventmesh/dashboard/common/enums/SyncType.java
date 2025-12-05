@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,21 +18,23 @@
 package org.apache.eventmesh.dashboard.common.enums;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public enum SyncType {
 
-    NOT("NOT","没命中"),
+    NOT("NOT", "没命中"),
 
-    READONLY("READONLY","只读"),
+    READONLY("READONLY", "只读"),
 
-    FIRSTTOWHOM("FIRSTTOWHOM","第一次同步"),
+    FIRSTTOWHOM("FIRSTTOWHOM", "第一次同步"),
 
-    INIT("INIT","初始化"),
+    INIT("INIT", "初始化"),
 
-    CHECK("CHECK","检查"),
+    CHECK("CHECK", "检查"),
 
-    TIMINGSYNC("TIMINGSYNC","定时同步"),
+    TIMINGSYNC("TIMINGSYNC", "定时同步"),
 
     ;
 
@@ -41,17 +43,10 @@ public enum SyncType {
     private final String description;
 
 
-    SyncType(String name , String description) {
+    SyncType(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
 
-    @Override
-    public String toString() {
-        return "SyncType{" +
-               "name='" + name + '\'' +
-               ", description='" + description + '\'' +
-               '}';
-    }
 }

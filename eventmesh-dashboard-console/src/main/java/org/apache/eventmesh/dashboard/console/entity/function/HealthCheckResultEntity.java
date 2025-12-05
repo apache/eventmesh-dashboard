@@ -54,7 +54,6 @@ public class HealthCheckResultEntity extends BaseRuntimeIdEntity {
     private LocalDateTime finishTime;
 
 
-
     @Schema(description = "Type of Health Check;0:Unknown, 1:Cluster, 2:Runtime, 3:Topic, 4:Storage", defaultValue = "0", allowableValues = {"0",
         "1", "2", "3", "4"})
     private Integer type;

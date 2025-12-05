@@ -29,8 +29,6 @@ import org.junit.Test;
 public class Test1 {
 
 
-
-
     @Test
     public void ClasspathScannerTest() throws Exception {
         Set<Class<?>> interfaceSet = new HashSet<>();

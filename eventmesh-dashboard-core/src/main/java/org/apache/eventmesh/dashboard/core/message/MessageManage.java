@@ -57,17 +57,15 @@ public class MessageManage {
         }
     }
 
-    static void createMessageOperate(Class<?> clazz) {
-
-    }
-
-
     private Map<Class<?>, Map<String, AbstractMessageOperate>> classMapConcurrentHashMap = new ConcurrentHashMap<>();
-
 
     {
         classMapConcurrentHashMap.put(ProducerOperate.class, new ConcurrentHashMap<>());
         classMapConcurrentHashMap.put(ConsumerOperate.class, new ConcurrentHashMap<>());
+    }
+
+    static void createMessageOperate(Class<?> clazz) {
+
     }
 
     public ProducerOperate createProducerOperate(ProducerDTO producerDTO) throws Exception {

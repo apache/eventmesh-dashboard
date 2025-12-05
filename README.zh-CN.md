@@ -4,9 +4,11 @@
 
 ## 介绍
 
-EventMesh Dashboard 处于开发中，将支持 Connection 管理、集群健康检查等功能。欢迎联系 [EventMesh 小助手](https://github.com/apache/eventmesh?tab=readme-ov-file#community)参与贡献。
+EventMesh Dashboard 处于开发中，将支持 Connection
+管理、集群健康检查等功能。欢迎联系 [EventMesh 小助手](https://github.com/apache/eventmesh?tab=readme-ov-file#community)参与贡献。
 
-EventMesh 于 v1.8.0 ~ v1.10.0 期间维护的 Dashboard 纯前端项目位于 [Next.js Dashboard 分支](https://github.com/apache/eventmesh-dashboard/tree/nextjs-dashboard)。
+EventMesh 于 v1.8.0 ~ v1.10.0 期间维护的 Dashboard
+纯前端项目位于 [Next.js Dashboard 分支](https://github.com/apache/eventmesh-dashboard/tree/nextjs-dashboard)。
 
 EventMesh Dashboard 每周开发例会文档：https://docs.qq.com/doc/DQmhVbklUdGNNWGZi
 
@@ -22,12 +24,12 @@ EventMesh Dashboard 每周开发例会文档：https://docs.qq.com/doc/DQmhVbklU
 
 ### 模块介绍
 
-1. eventmesh-dashboard-console  业务模块的代码，调用service接口
-2. eventmesh-dashboard-observe  监控模块的代码
-3. eventmesh-dashboard-core     对EventMesh Runtime, Meta以及相关组件的代码，提供service实现
-4. eventmesh-dashboard-service  公用API接口，对core的抽象
-5. eventmesh-dashboard-common   公共模块的代码
-6. eventmesh-dashboard-view     前端代码
+1. eventmesh-dashboard-console 业务模块的代码，调用service接口
+2. eventmesh-dashboard-observe 监控模块的代码
+3. eventmesh-dashboard-core 对EventMesh Runtime, Meta以及相关组件的代码，提供service实现
+4. eventmesh-dashboard-service 公用API接口，对core的抽象
+5. eventmesh-dashboard-common 公共模块的代码
+6. eventmesh-dashboard-view 前端代码
 
 ## 自动部署最新版 EventMesh Dashboard
 
@@ -67,7 +69,7 @@ cd eventmesh-dashboard
 ./mvnw clean package
 ```
 
->TODO download mysql-connector-j manually
+> TODO download mysql-connector-j manually
 
 ```
 java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSWORD -jar eventmesh-dashboard-console/target/eventmesh-dashboard-console-0.0.1-SNAPSHOT.jar
@@ -75,7 +77,7 @@ java -DDB_ADDRESS=$DB_ADDRESS -DDB_USERNAME=$DB_USERNAME -DDB_PASSWORD=$DB_PASSW
 
 ### 构建并运行 Docker 镜像
 
->To be updated
+> To be updated
 
 ```
 cd eventmesh-dashboard
@@ -88,17 +90,19 @@ docker run -d --name eventmesh-dashboard -p 8080:8080 yourname/eventmesh-dashboa
 ```
 
 ### 开发准备
-1. 配置格式化 
-   1. 后端格式文档地址：https://eventmesh.apache.org/zh/community/contribute/contribute/
-   2. 前端使用 eslint
-2. 配置协议头工具 license-eye。
-   1. 检查命令：license-eye header check
-   2. 使用命令：license-eye header fix
-   3. 下载地址： https://skywalking.apache.org/downloads/
 
+1. 配置格式化
+    1. 后端格式文档地址：https://eventmesh.apache.org/zh/community/contribute/contribute/
+    2. 前端使用 eslint
+2. 配置协议头工具 license-eye。
+    1. 检查命令：license-eye header check
+    2. 使用命令：license-eye header fix
+    3. 下载地址： https://skywalking.apache.org/downloads/
 
 ### 提交代码前
+
 在项目根目录执行下面命令
+
 ```
 license-eye -v info -c .licenserc.yaml header check
 ./mvnw -B package -DskipTests --file pom.xml

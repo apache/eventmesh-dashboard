@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ import org.apache.eventmesh.dashboard.console.function.report.model.base.Runtime
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_storage_dispatch_behind_bytes",
     defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_storage_dispatch_behind_bytes",
     comment = "dispatch 落后大小")
-public class RocketmqStorageDispatchBehindBytes  extends RuntimeLongValue {
+public class RocketmqStorageDispatchBehindBytes extends RuntimeLongValue {
 
 
 }

@@ -34,13 +34,12 @@ public abstract class AbstractRemotingService<T> extends AbstractClientInfo<T> {
     }
 
 
-
     @SuppressWarnings("unchecked")
-    protected <D>D createSuccessGlobalResult(Object data){
+    protected <D> D createSuccessGlobalResult(Object data) {
         GlobalResult<D> globalResult = new GlobalResult<>();
         globalResult.setCode(200);
-        globalResult.setData((D)data);
-        return (D)globalResult;
+        globalResult.setData((D) data);
+        return (D) globalResult;
     }
 
 }

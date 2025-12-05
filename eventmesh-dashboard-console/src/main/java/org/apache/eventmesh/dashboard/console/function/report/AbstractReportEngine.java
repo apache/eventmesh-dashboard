@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,15 +49,10 @@ public abstract class AbstractReportEngine implements ReportEngine {
 
 
     protected ReportEngineConfig reportEngineConfig;
-
-    private VelocityEngine velocityEngine;
-
-    private Configuration configuration = new Configuration();
-
-    private Map<String, Map<String, SqlSource>> stringSqlSourceMap = new HashMap<>();
-
     protected XMLLanguageDriver xmlLanguageDriver = new XMLLanguageDriver();
-
+    private VelocityEngine velocityEngine;
+    private Configuration configuration = new Configuration();
+    private Map<String, Map<String, SqlSource>> stringSqlSourceMap = new HashMap<>();
     private Class<?> reportClass;
 
     private StringResourceRepository resourceLoader = new StringResourceRepositoryImpl();

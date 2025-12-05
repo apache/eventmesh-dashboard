@@ -94,6 +94,12 @@ public abstract class AbstractRocketMQRemotingService extends AbstractRemotingSe
         return (T) result;
     }
 
+    /**
+     *
+     */
+    public interface RocketMQFunction<T> extends Function<T, Object> {
+
+    }
 
     @Data
     @Builder
@@ -110,10 +116,6 @@ public abstract class AbstractRocketMQRemotingService extends AbstractRemotingSe
 
         private RocketMQFunction<?> handlerFunction;
 
-
-    }
-
-    public interface RocketMQFunction<T> extends Function<T, Object> {
 
     }
 

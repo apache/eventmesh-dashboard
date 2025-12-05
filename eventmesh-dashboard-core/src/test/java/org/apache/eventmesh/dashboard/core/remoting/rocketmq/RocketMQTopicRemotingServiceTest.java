@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,7 @@ public class RocketMQTopicRemotingServiceTest {
 
 
     @Before
-    public void init(){
+    public void init() {
         RuntimeMetadata runtimeMetadata = new RuntimeMetadata();
         runtimeMetadata.setId(5L);
         runtimeMetadata.setHost("127.0.0.1");
@@ -58,8 +58,8 @@ public class RocketMQTopicRemotingServiceTest {
         netAddress.setPort(runtimeMetadata.getPort());
         config.setNetAddress(netAddress);
 
-        SDKManage.getInstance().createClient(SDKTypeEnum.ADMIN , runtimeMetadata,config,runtimeMetadata.getClusterType());
-        rocketMQTopicRemotingService = Remoting2Manage.getInstance().createRemotingService(TopicRemotingService.class,runtimeMetadata);
+        SDKManage.getInstance().createClient(SDKTypeEnum.ADMIN, runtimeMetadata, config, runtimeMetadata.getClusterType());
+        rocketMQTopicRemotingService = Remoting2Manage.getInstance().createRemotingService(TopicRemotingService.class, runtimeMetadata);
     }
 
     @Test

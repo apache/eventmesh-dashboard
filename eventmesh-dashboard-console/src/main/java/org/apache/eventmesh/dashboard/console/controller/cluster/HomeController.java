@@ -99,7 +99,7 @@ public class HomeController {
     }
 
 
-    public void queueHome(){
+    public void queueHome() {
         // out io
         // offset
     }

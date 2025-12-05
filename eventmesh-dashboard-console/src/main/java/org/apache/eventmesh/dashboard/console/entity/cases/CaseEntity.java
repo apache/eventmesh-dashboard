@@ -31,7 +31,7 @@ public class CaseEntity extends BaseOrganizationEntity {
     private String caseType;
 
     /**
-     *  cluster , runtime
+     * cluster , runtime
      */
     private String objectType;
 

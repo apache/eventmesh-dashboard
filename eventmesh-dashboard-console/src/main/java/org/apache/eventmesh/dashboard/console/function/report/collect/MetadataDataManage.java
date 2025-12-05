@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,16 +20,21 @@ package org.apache.eventmesh.dashboard.console.function.report.collect;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.ClusterId;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.GroupId;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.OrganizationId;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.SubscribeId;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.TopicId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.cap.CapModel;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.cap.CapSubscribeId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.cap.CapTopicId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.cap.GapGroupId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.not.GroupId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.not.SubscribeId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.not.TopicId;
 import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -50,27 +55,37 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MetadataDataManage {
 
-    private String sql;
-
-    private DruidDataSource dataSource;
-
     private final List<NameAndId> nameAndIdList = new ArrayList<>();
-
-    private LocalDateTime localDateTime = LocalDateTime.of(2000, 1, 1, 0, 0);
-
     private final Map<NameAndId, NameAndId> nameAndIdMap = new ConcurrentHashMap<>();
-
     private final NameAndId nameAndId = new NameAndId();
+    private String sql;
+    private DruidDataSource dataSource;
+    private LocalDateTime localDateTime = LocalDateTime.of(2000, 1, 1, 0, 0);
+    private int selectObjectCount = 0;
 
 
-    public boolean supplement(OrganizationId organizationId) {
+    public void supplement(OrganizationId organizationId) {
+        if (organizationId instanceof CapModel) {
+            this.capSupplement(organizationId);
+        } else {
+            this.notSupplement(organizationId);
+        }
+    }
+
+    public void notSupplement(OrganizationId organizationId) {
         Long superId = organizationId.getOrganizationId();
         if (organizationId instanceof ClusterId clusterId) {
-            superId = this.getId(MetadataType.CLUSTER, superId, clusterId.getClustersName());
+            superId = this.getId(MetadataType.CLUSTER, organizationId.getOrganizationId(), clusterId.getClustersName());
             clusterId.setClustersId(superId);
         }
         if (organizationId instanceof RuntimeId runtimeId) {
-            superId = this.getId(MetadataType.RUNTIME, superId, runtimeId.getRuntimeName());
+            String runtimeName = runtimeId.getRuntimeName();
+            if (runtimeName.indexOf(':') > 1) {
+                //TODO
+                superId = this.getId(MetadataType.RUNTIME, runtimeId.getClustersId(), runtimeId.getRuntimeName());
+            } else {
+                superId = this.getId(MetadataType.RUNTIME, runtimeId.getClustersId(), runtimeId.getRuntimeName());
+            }
             runtimeId.setRuntimeId(superId);
         }
         if (organizationId instanceof TopicId topicId) {
@@ -85,13 +100,51 @@ public class MetadataDataManage {
             Long group = this.getId(MetadataType.GROUP, superId, subscribeId.getGroupName());
             subscribeId.setGroupId(group);
         }
+    }
 
-        return Boolean.FALSE;
+    public void capSupplement(OrganizationId organizationId) {
+        if (organizationId instanceof RuntimeId runtimeId) {
+            Long id = this.getId(MetadataType.RUNTIME, runtimeId.getClustersId(), runtimeId.getRuntimeName());
+            runtimeId.setRuntimeId(id);
+        }
+        if (organizationId instanceof CapTopicId topicId) {
+            Long id = this.getId(MetadataType.TOPIC, topicId.getClustersId(), topicId.getTopicName());
+            topicId.setTopicId(id);
+        }
+        if (organizationId instanceof GapGroupId gapGroupId) {
+            Long id = this.getId(MetadataType.GROUP, gapGroupId.getClustersId(), gapGroupId.getGroupName());
+            gapGroupId.setGroupId(id);
+        }
+        if (organizationId instanceof CapSubscribeId capSubscribeId) {
+            Long id = this.getId(MetadataType.TOPIC, capSubscribeId.getClustersId(), capSubscribeId.getTopicName());
+            capSubscribeId.setTopicId(id);
+
+            id = this.getId(MetadataType.GROUP, capSubscribeId.getClustersId(), capSubscribeId.getGroupName());
+            capSubscribeId.setGroupId(id);
+        }
     }
 
     public void init(String url, String user, String password) {
+        try {
+            this.dataSource = this.createSource(url, user, password);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         this.createSql();
         this.createConnection(url, user, password);
+    }
+
+    public DruidDataSource createSource(String url, String user, String password) throws SQLException {
+        DruidDataSource dataSource = new DruidDataSource();
+        dataSource.setUrl(url);
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setUsername(user);
+        dataSource.setPassword(password);
+        dataSource.setMaxActive(200);
+        dataSource.setInitialSize(50);
+        dataSource.setMaxWait(1000 * 60 * 60 * 24);
+        dataSource.init();
+        return dataSource;
     }
 
     public void syncData() {
@@ -102,7 +155,6 @@ public class MetadataDataManage {
     private void executeSql() {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(this.sql);
-            int selectObjectCount = 4;
             for (int i = 1; i <= selectObjectCount; i++) {
                 preparedStatement.setObject(i, localDateTime);
             }
@@ -156,7 +208,7 @@ public class MetadataDataManage {
     }
 
     /**
-     *  TODO 需要重构，因为 普罗米修斯 与 eventmesh 的 采集架构冲突了 </p>
+     * TODO 需要重构，因为 普罗米修斯 与 eventmesh 的 采集架构冲突了 </p>
      *       保留，</p>
      *       1. 两个之间不重提，</p>
      *       2. 没时间 ，</p>
@@ -165,13 +217,16 @@ public class MetadataDataManage {
      */
     private void createSql() {
         StringBuilder stringBuilder = new StringBuilder();
-        String sql = this.createSql(MetadataType.CLUSTER, "cluster", "organization_id", "name");
+        String sql;
+        sql = this.createSql(MetadataType.CLUSTER, "cluster", "organization_id", "name");
         stringBuilder.append(sql).append("\r\n union all \r\n");
         sql = this.createSql(MetadataType.RUNTIME, "runtime", "cluster_id", "name");
         stringBuilder.append(sql).append("\r\n union all \r\n");
-        sql = this.createSql(MetadataType.GROUP, "group", "runtime_id", "name");
+        sql = this.createSql(MetadataType.RUNTIME, "runtime", "cluster_id", "host");
         stringBuilder.append(sql).append("\r\n union all \r\n");
-        sql = this.createSql(MetadataType.TOPIC, "topic", "runtime_id", "name");
+        sql = this.createSql(MetadataType.GROUP, "`group`", "cluster_id", "name");
+        stringBuilder.append(sql).append("\r\n union all \r\n");
+        sql = this.createSql(MetadataType.TOPIC, "topic", "runtime_id", "topicName");
         stringBuilder.append(sql);
 
         this.sql = stringBuilder.toString();
@@ -179,10 +234,11 @@ public class MetadataDataManage {
 
 
     public String createSql(MetadataType metadataType, String table, String superId, String name) {
+        this.selectObjectCount++;
         String sql = """
-                select {} , id , {} , update_time,create_time,is_delete,status from {} where update_time > ?
+                select '{}' , id , {} , update_time,create_time,is_delete,status from {} where update_time > ?
             """;
-        return MessageFormatter.arrayFormat(sql, List.of(metadataType,superId, table, name).toArray()).getMessage();
+        return MessageFormatter.arrayFormat(sql, List.of(metadataType, superId, table, name).toArray()).getMessage();
     }
 
     public DataMetadataHandler<BaseClusterIdBase> createDataMetadataHandler(MetadataType metadataType) {
@@ -239,15 +295,5 @@ public class MetadataDataManage {
             return "";
         }
     }
-
-    interface QueryOperator {
-
-
-        String querySql();
-
-        String s(ResultSet re);
-
-    }
-
 
 }

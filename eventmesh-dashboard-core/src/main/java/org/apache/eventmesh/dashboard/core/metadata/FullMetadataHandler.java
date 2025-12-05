@@ -26,15 +26,14 @@ import java.util.List;
  */
 public interface FullMetadataHandler<T> {
 
-    default void handleAll(List<T> addData, List<T> updateData, List<T> deleteData){
-        this.handleAll(null,addData, updateData, deleteData);
+    default void handleAll(List<T> addData, List<T> updateData, List<T> deleteData) {
+        this.handleAll(null, addData, updateData, deleteData);
     }
 
     void handleAll(Collection<T> allData, List<T> addData, List<T> updateData, List<T> deleteData);
 
 
-
-    default void handleAllObject(Collection<Object> allData,List<Object> addData, List<Object> updateData, List<Object> deleteData) {
-        handleAll((Collection<T>)allData, (List<T>) addData, (List<T>) updateData, (List<T>) deleteData);
+    default void handleAllObject(Collection<Object> allData, List<Object> addData, List<Object> updateData, List<Object> deleteData) {
+        handleAll((Collection<T>) allData, (List<T>) addData, (List<T>) updateData, (List<T>) deleteData);
     }
 }

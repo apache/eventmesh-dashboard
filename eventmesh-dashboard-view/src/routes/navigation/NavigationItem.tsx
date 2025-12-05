@@ -17,11 +17,11 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Button, ButtonProps, Stack, Typography, Chip } from '@mui/material'
-import { styled } from '@mui/material/styles'
-import { grey } from '@mui/material/colors'
-import { Icons } from '../../assets/icons'
+import React, {forwardRef} from 'react'
+import {Button, ButtonProps, Chip, Stack, Typography} from '@mui/material'
+import {styled} from '@mui/material/styles'
+import {grey} from '@mui/material/colors'
+import {Icons} from '../../assets/icons'
 
 const NavButton = styled(Button)({
   boxShadow: 'none',
@@ -68,75 +68,75 @@ interface NavigationItemProps extends ButtonProps {
 }
 
 const NavigationItem = forwardRef<typeof NavButton, NavigationItemProps>(
-  (
-    {
-      text,
-      count,
-      icon,
-      active,
-      hasSubmenu,
-      pinSubmenu,
-      onPinChange,
-      onMenuActived,
-      ...props
-    },
-    ref
-  ) => {
-    return (
-      <NavButton
-        startIcon={icon}
-        variant={active ? 'contained' : 'text'}
-        className={active ? 'active' : ''}
-        sx={{
-          ...(hasSubmenu &&
-            active && {
-              borderTopLeftRadius: 8,
-              borderTopRightRadius: 8,
-              borderBottomLeftRadius: 0,
-              borderBottomRightRadius: 0
-            })
-        }}
-        onClick={() => onMenuActived()}>
-        <Stack
-          sx={{ width: 1 }}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center">
-          <Typography fontSize="inherit">{text}</Typography>
+    (
+        {
+          text,
+          count,
+          icon,
+          active,
+          hasSubmenu,
+          pinSubmenu,
+          onPinChange,
+          onMenuActived,
+          ...props
+        },
+        ref
+    ) => {
+      return (
+          <NavButton
+              startIcon={icon}
+              variant={active ? 'contained' : 'text'}
+              className={active ? 'active' : ''}
+              sx={{
+                ...(hasSubmenu &&
+                    active && {
+                      borderTopLeftRadius: 8,
+                      borderTopRightRadius: 8,
+                      borderBottomLeftRadius: 0,
+                      borderBottomRightRadius: 0
+                    })
+              }}
+              onClick={() => onMenuActived()}>
+            <Stack
+                sx={{width: 1}}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center">
+              <Typography fontSize="inherit">{text}</Typography>
 
-          {hasSubmenu && (
-            <span
-              onClick={(event) => {
-                event.stopPropagation()
-                onPinChange(!pinSubmenu)
-              }}>
+              {hasSubmenu && (
+                  <span
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        onPinChange(!pinSubmenu)
+                      }}>
               {pinSubmenu ? (
-                <Icons.PushPin fontSize="inherit" />
+                  <Icons.PushPin fontSize="inherit"/>
               ) : (
-                <Icons.PushPinOutlined
-                  fontSize="inherit"
-                  sx={{ transform: 'rotate(45deg) translateY(5px)' }}
-                />
+                  <Icons.PushPinOutlined
+                      fontSize="inherit"
+                      sx={{transform: 'rotate(45deg) translateY(5px)'}}
+                  />
               )}
             </span>
-          )}
+              )}
 
-          {(count ?? 0) > 0 && (
-            <Chip
-              sx={{
-                height: 15,
-                fontSize: 13,
-                bgcolor: active ? grey[200] : 'white'
-              }}
-              size="small"
-              color="default"
-              label={count}
-            />
-          )}
-        </Stack>
-      </NavButton>
-    )
-  }
+              {(count ?? 0) > 0 && (
+                  <Chip
+                      sx={{
+                        height: 15,
+                        fontSize: 13,
+                        bgcolor: active ? grey[200] : 'white'
+                      }}
+                      size="small"
+                      color="default"
+                      label={count}
+                  />
+              )}
+            </Stack>
+          </NavButton>
+      )
+    }
 )
 
 NavigationItem.displayName = 'NavigationItem'

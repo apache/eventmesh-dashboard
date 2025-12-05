@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 @SDKMetadata(clusterType = {ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE,
-    ClusterType.STORAGE_ROCKETMQ_NAMESERVER, ClusterType.STORAGE_ROCKETMQ_BROKER_RAFT}, remotingType = RemotingType.ROCKETMQ, 
+    ClusterType.STORAGE_ROCKETMQ_NAMESERVER, ClusterType.STORAGE_ROCKETMQ_BROKER_RAFT}, remotingType = RemotingType.ROCKETMQ,
     sdkTypeEnum = {SDKTypeEnum.ADMIN, SDKTypeEnum.PING})
 public class RocketMQRemotingSDKOperation extends AbstractSDKOperation<DefaultRemotingClient, CreateRemotingConfig> {
 

@@ -51,19 +51,13 @@ import org.springframework.stereotype.Component;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OperationRangeDomain {
 
+    private final Set<ClusterType> clusterTypeSet = new HashSet<>();
     @Autowired
     private ClusterService clusterService;
-
     @Autowired
     private RuntimeService runtimeService;
-
-
     private OperationBaseDTO operationBaseDTO;
-
     private OperationRangeDomainDataHandler rangeDomainDataHandler;
-
-    private final Set<ClusterType> clusterTypeSet = new HashSet<>();
-
     private ClusterType rangeType;
 
     private boolean currentType;

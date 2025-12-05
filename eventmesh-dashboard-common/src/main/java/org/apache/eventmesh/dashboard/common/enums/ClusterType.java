@@ -29,7 +29,7 @@ import lombok.Getter;
 public enum ClusterType {
 
     /**
-     *  只有逻辑集群才会使用 这个枚举。比如  EVENTMESH_CLUSTER，先定义 EVENTMESH_CLUSTER，然后 runtime 与 meta 集群关联上
+     * 只有逻辑集群才会使用 这个枚举。比如  EVENTMESH_CLUSTER，先定义 EVENTMESH_CLUSTER，然后 runtime 与 meta 集群关联上
      */
     DEFINITION(0),
 
@@ -116,7 +116,6 @@ public enum ClusterType {
     EVENTMESH_JVM_META(EVENTMESH, EVENTMESH_JVM, META, META_TYPE_JVM, RemotingType.JVM),
 
 
-
     STORAGE_ROCKETMQ(ClusterType.STORAGE.code + 1),
 
     STORAGE_ROCKETMQ_CLUSTER(STORAGE, STORAGE_ROCKETMQ, CLUSTER, DEFINITION, RemotingType.ROCKETMQ),
@@ -161,7 +160,7 @@ public enum ClusterType {
 
     STORAGE_JVM_CAP_BROKER(STORAGE, STORAGE_JVM_CAP, META_AND_RUNTIME, DEFAULT, RemotingType.JVM),
 
-    STORAGE_JVM_CAP_META(STORAGE,STORAGE_JVM_CAP, META, DEFAULT, RemotingType.JVM),
+    STORAGE_JVM_CAP_META(STORAGE, STORAGE_JVM_CAP, META, DEFAULT, RemotingType.JVM),
     ;
 
 
@@ -190,6 +189,52 @@ public enum ClusterType {
         }
     }
 
+    /**
+     * 集群在 eventmesh 集群内的 节点（集群）类型。meta集群，存储集群，runtime集群
+     */
+    @Getter
+    private ClusterType eventmeshNodeType;
+    /**
+     * 具体类型集群
+     */
+    @Getter
+    private ClusterType assemblyName;
+    /**
+     * 这个节点在 具体集群内是什么节点
+     */
+    @Getter
+    private ClusterType assemblyNodeType;
+    /**
+     * 厂商是什么类型。比如注册中心。注册中心有 etc，nacos
+     */
+    @Getter
+    private ClusterType assemblyBusiness;
+    /**
+     * 远程协议类型
+     */
+    @Getter
+    private RemotingType remotingType;
+    @Getter
+    private int code;
+    private ClusterType higherType;
+    private List<ClusterType> mainClusterType;
+    private List<ClusterType> metaClusterType;
+    private List<ClusterType> runtimeClusterType;
+
+
+    ClusterType(int code) {
+        this.code = code;
+    }
+
+    ClusterType(ClusterType eventmeshNodeType, ClusterType assemblyName, ClusterType assemblyNodeType, ClusterType assemblyBusiness,
+        RemotingType remotingType) {
+        this.eventmeshNodeType = eventmeshNodeType;
+        this.assemblyName = assemblyName;
+        this.assemblyNodeType = assemblyNodeType;
+        this.assemblyBusiness = assemblyBusiness;
+        this.remotingType = remotingType;
+    }
+
     public static List<ClusterType> getStorageCluster() {
         return STORAGE_MAIN_CLUSTER_TYPE_LIST;
     }
@@ -207,62 +252,6 @@ public enum ClusterType {
     }
 
     /**
-     * 集群在 eventmesh 集群内的 节点（集群）类型。meta集群，存储集群，runtime集群
-     */
-    @Getter
-    private ClusterType eventmeshNodeType;
-    /**
-     * 具体类型集群
-     */
-    @Getter
-    private ClusterType assemblyName;
-
-    /**
-     * 这个节点在 具体集群内是什么节点
-     */
-    @Getter
-    private ClusterType assemblyNodeType;
-
-    /**
-     * 厂商是什么类型。比如注册中心。注册中心有 etc，nacos
-     */
-    @Getter
-    private ClusterType assemblyBusiness;
-
-    /**
-     * 远程协议类型
-     */
-    @Getter
-    private RemotingType remotingType;
-
-    @Getter
-    private int code;
-
-
-    private ClusterType higherType;
-
-    private List<ClusterType> mainClusterType;
-
-    private List<ClusterType> metaClusterType;
-
-    private List<ClusterType> runtimeClusterType;
-
-    ClusterType(int code) {
-        this.code = code;
-    }
-
-
-    ClusterType(ClusterType eventmeshNodeType, ClusterType assemblyName, ClusterType assemblyNodeType, ClusterType assemblyBusiness,
-        RemotingType remotingType) {
-        this.eventmeshNodeType = eventmeshNodeType;
-        this.assemblyName = assemblyName;
-        this.assemblyNodeType = assemblyNodeType;
-        this.assemblyBusiness = assemblyBusiness;
-        this.remotingType = remotingType;
-    }
-
-
-    /**
      * 半托管状态需要 如要从
      */
     public boolean isEventMethMeta() {
@@ -270,7 +259,7 @@ public enum ClusterType {
     }
 
 
-    public boolean isEventCluster(){
+    public boolean isEventCluster() {
         return this.eventmeshNodeType.equals(EVENTMESH) && this.assemblyNodeType.equals(CLUSTER);
     }
 
@@ -365,23 +354,23 @@ public enum ClusterType {
     /**
      *
      */
-    public ClusterType getHigher(){
-        if(Objects.isNull(this.higherType)){
-            for (ClusterType allClusterType : ClusterType.values()){
-                if(!Objects.equals(allClusterType.eventmeshNodeType, this.eventmeshNodeType) ||
-                   !Objects.equals(allClusterType.assemblyName, this.assemblyName)){
+    public ClusterType getHigher() {
+        if (Objects.isNull(this.higherType)) {
+            for (ClusterType allClusterType : ClusterType.values()) {
+                if (!Objects.equals(allClusterType.eventmeshNodeType, this.eventmeshNodeType)
+                    || !Objects.equals(allClusterType.assemblyName, this.assemblyName)) {
                     continue;
                 }
-                if(!Objects.equals(allClusterType.assemblyNodeType, CLUSTER)){
+                if (!Objects.equals(allClusterType.assemblyNodeType, CLUSTER)) {
                     continue;
                 }
-                if(!Objects.equals(allClusterType.assemblyBusiness, DEFINITION)){
+                if (!Objects.equals(allClusterType.assemblyBusiness, DEFINITION)) {
                     continue;
                 }
                 this.higherType = allClusterType;
                 break;
             }
-            if(Objects.isNull(this.higherType)){
+            if (Objects.isNull(this.higherType)) {
                 throw new RuntimeException("higher type is null, current type:" + this);
             }
         }

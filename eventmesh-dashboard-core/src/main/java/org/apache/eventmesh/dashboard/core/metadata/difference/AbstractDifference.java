@@ -33,8 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractDifference implements Difference<BaseClusterIdBase> {
 
     /**
-     *  是否相信 allData 数据是正确的，如果不正确怎么做。
-     *  有一个 check，每24小时，全量加载一次数据。
+     * 是否相信 allData 数据是正确的，如果不正确怎么做。 有一个 check，每24小时，全量加载一次数据。
      */
     @Setter
     protected Map<String, BaseClusterIdBase> allData = new HashMap<>();
@@ -57,7 +56,7 @@ public abstract class AbstractDifference implements Difference<BaseClusterIdBase
     public void difference() {
         try {
             this.doDifference();
-            targetHandler.handleAll( this.allData.values(), this.insertData, this.updateData, this.deleteData);
+            targetHandler.handleAll(this.allData.values(), this.insertData, this.updateData, this.deleteData);
             this.closeUpdate();
         } catch (Exception e) {
             // TODO

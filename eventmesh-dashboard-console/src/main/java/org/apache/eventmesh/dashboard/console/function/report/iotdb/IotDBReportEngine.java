@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,10 +55,6 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("SqlSourceToSinkFlow")
 @Slf4j
 public class IotDBReportEngine extends AbstractReportEngine {
-
-    private DruidDataSource dataSource;
-
-    private boolean isBatch = false;
 
     /**
      *
@@ -169,6 +165,8 @@ public class IotDBReportEngine extends AbstractReportEngine {
                 </if>
         
         """;
+    private DruidDataSource dataSource;
+    private boolean isBatch = false;
 
     @Override
     protected void doInit() {
@@ -319,7 +317,7 @@ public class IotDBReportEngine extends AbstractReportEngine {
             }
         });
         String sql = stringBuilder.toString();
-        return sql.substring(0, sql.length() - 9);
+        return StringUtils.isEmpty(sql) ? sql : sql.substring(0, sql.length() - 9);
     }
 
 
@@ -328,7 +326,7 @@ public class IotDBReportEngine extends AbstractReportEngine {
             Statement statement = conn.createStatement()) {
             statement.execute(sql);
         } catch (SQLException e) {
-            throw new RuntimeException(sql,e);
+            throw new RuntimeException(sql, e);
         }
     }
 
@@ -340,12 +338,12 @@ public class IotDBReportEngine extends AbstractReportEngine {
         this.executeQuery(sql, null, consumer);
     }
 
-    public void executeQuery(String sql, List<Object> pList, Consumer<ResultSet> consumer) {
+    public void executeQuery(String sql, List<Object> objectList, Consumer<ResultSet> consumer) {
         try (Connection conn = this.dataSource.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql)) {
-            if (CollectionUtils.isNotEmpty(pList)) {
-                for (int i = 0; i < pList.size(); i++) {
-                    ps.setObject(i, pList.get(i));
+            if (CollectionUtils.isNotEmpty(objectList)) {
+                for (int i = 0; i < objectList.size(); i++) {
+                    ps.setObject(i, objectList.get(i));
                 }
             }
             try (ResultSet rs = ps.executeQuery()) {

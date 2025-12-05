@@ -35,7 +35,7 @@ public class UninstallClusterHandler extends AbstractUpdateHandler implements Up
     }
 
     /**
-     *  只需要 修改状态，通知删除 容器就行了
+     * 只需要 修改状态，通知删除 容器就行了
      */
     @Override
     public void handler(ClusterEntity clusterEntity) {

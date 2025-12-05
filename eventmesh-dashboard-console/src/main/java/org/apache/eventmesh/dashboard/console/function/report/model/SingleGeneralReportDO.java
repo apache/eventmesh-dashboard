@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,12 +25,11 @@ import lombok.EqualsAndHashCode;
 public class SingleGeneralReportDO extends GeneralReportDO {
 
     /**
-     * 二级维度，是在原有的数据上进行整理。
-     * 对 order 与 分页，不关系
+     * 二级维度，是在原有的数据上进行整理。 对 order 与 分页，不关系
      */
     private String twoLevelGroup;
 
-    private String  order;
+    private String order;
 
     private Integer limit;
 

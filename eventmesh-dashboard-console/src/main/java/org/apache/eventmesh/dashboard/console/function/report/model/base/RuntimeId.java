@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class RuntimeId extends ClusterId{
+public class RuntimeId extends ClusterId {
 
     private Long runtimeId;
 
@@ -33,7 +33,7 @@ public class RuntimeId extends ClusterId{
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class RuntimeLongValue extends RuntimeId{
+    public static class RuntimeLongValue extends RuntimeId {
 
         private Long value;
 
@@ -41,7 +41,7 @@ public class RuntimeId extends ClusterId{
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class RuntimeFloatValue extends RuntimeId{
+    public static class RuntimeFloatValue extends RuntimeId {
 
         private Float value;
 

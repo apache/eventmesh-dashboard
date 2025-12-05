@@ -200,7 +200,7 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
         });
         this.clusterMapper.batchInsert(clusterEntityList);
         List<ClusterRelationshipEntity> clusterRelationshipEntityList = new ArrayList<>();
-        if(Objects.nonNull(mainClusterRelationshipEntity)) {
+        if (Objects.nonNull(mainClusterRelationshipEntity)) {
             mainClusterRelationshipEntity.setRelationshipId(mainClusterEntity.getId());
             clusterRelationshipEntityList.add(mainClusterRelationshipEntity);
         }

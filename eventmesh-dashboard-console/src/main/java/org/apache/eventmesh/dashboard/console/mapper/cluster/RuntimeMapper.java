@@ -161,7 +161,8 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
                </foreach>
         </script>
         """)
-    void batchUpdateDeployStatusTypeByListAndType(@Param("list") List<RuntimeEntity> runtimeEntities, @Param("deployStatusType") DeployStatusType deployStatusType);
+    void batchUpdateDeployStatusTypeByListAndType(@Param("list") List<RuntimeEntity> runtimeEntities,
+        @Param("deployStatusType") DeployStatusType deployStatusType);
 
 
     @Update("UPDATE runtime SET port=#{port} ,jmx_port=#{jmxPort} ,status=#{status} where cluster_id=#{clusterId} AND status=1")

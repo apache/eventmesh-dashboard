@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.function.report.model.base;
+package org.apache.eventmesh.dashboard.console.function.report.model.base.not;
+
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SubscribeId extends RuntimeId{
+public class GroupId extends RuntimeId {
 
-    private Long topicId;
-
-    private String topicName;
 
     private Long groupId;
 
     private String groupName;
 
-
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class LongValue extends SubscribeId{
+    public static class GroupLongValue extends GroupId {
 
         private Long value;
 
@@ -43,7 +41,7 @@ public class SubscribeId extends RuntimeId{
 
     @Data
     @EqualsAndHashCode(callSuper = true)
-    public static class FloatValue extends SubscribeId{
+    public static class GroupFloatValue extends GroupId {
 
         private Float value;
 

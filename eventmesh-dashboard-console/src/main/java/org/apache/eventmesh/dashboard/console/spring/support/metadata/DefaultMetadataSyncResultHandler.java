@@ -51,21 +51,27 @@ public class DefaultMetadataSyncResultHandler implements MetadataSyncResultHandl
     private final Map<String, Dimension> dimensionMap = new ConcurrentHashMap<>();
 
     private final Object recordLock = new Object();
-
-    private List<MetadataSyncResultEntity> record = new ArrayList<>();
-
     private final Object runtimeLock = new Object();
-
-    private List<RuntimeEntity> runtimeList = new ArrayList<>();
-
     private final Object clusterLock = new Object();
-
+    private List<MetadataSyncResultEntity> record = new ArrayList<>();
+    private List<RuntimeEntity> runtimeList = new ArrayList<>();
     private List<ClusterEntity> clusterList = new ArrayList<>();
 
 
     @Autowired
     private MetadataSyncResultService metadataSyncResultService;
 
+    private static MetadataSyncResultEntity getMetadataSyncResultEntity(MetadataSyncResult metadataSyncResult, Dimension dimension) {
+        BaseSyncEntity baseSyncEntity = dimension.getBaseSyncEntity();
+
+        MetadataSyncResultEntity metadataSyncResultEntity = new MetadataSyncResultEntity();
+        metadataSyncResultEntity.setClusterId(baseSyncEntity.getClusterId());
+        metadataSyncResultEntity.setSyncId(baseSyncEntity.getId());
+        metadataSyncResultEntity.setMetadataType(metadataSyncResult.getMetadataType());
+        metadataSyncResultEntity.setSyncErrorType(metadataSyncResult.getSyncErrorType());
+        metadataSyncResultEntity.setResultData(metadataSyncResultEntity.getResultData());
+        return metadataSyncResultEntity;
+    }
 
     /**
      * TODO
@@ -100,7 +106,6 @@ public class DefaultMetadataSyncResultHandler implements MetadataSyncResultHandl
         }
         metadataSyncResultService.bachMetadataSyncResult(record, runtimeList, clusterList);
     }
-
 
     @Override
     public void register(List<MetadataSyncResult> metadataSyncResults) {
@@ -146,19 +151,6 @@ public class DefaultMetadataSyncResultHandler implements MetadataSyncResultHandl
             baseSyncEntity.setFirstSyncState(FirstToWhom.COMPLETE);
         }
     }
-
-    private static MetadataSyncResultEntity getMetadataSyncResultEntity(MetadataSyncResult metadataSyncResult, Dimension dimension) {
-        BaseSyncEntity baseSyncEntity = dimension.getBaseSyncEntity();
-
-        MetadataSyncResultEntity metadataSyncResultEntity = new MetadataSyncResultEntity();
-        metadataSyncResultEntity.setClusterId(baseSyncEntity.getClusterId());
-        metadataSyncResultEntity.setSyncId(baseSyncEntity.getId());
-        metadataSyncResultEntity.setMetadataType(metadataSyncResult.getMetadataType());
-        metadataSyncResultEntity.setSyncErrorType(metadataSyncResult.getSyncErrorType());
-        metadataSyncResultEntity.setResultData(metadataSyncResultEntity.getResultData());
-        return metadataSyncResultEntity;
-    }
-
 
     /**
      *

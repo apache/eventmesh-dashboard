@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.controller.deploy;
+package org.apache.eventmesh.dashboard.console.controller.deploy.active;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
 import org.apache.eventmesh.dashboard.common.enums.ClusterOwnType;
@@ -77,11 +77,11 @@ public class ActiveCreateDTOHandler {
         return clusterEntity;
     }
 
-    private void fillBaseSyncEntity(BaseSyncEntity baseSyncEntity){
-        if(Objects.isNull(baseSyncEntity.getTrusteeshipType())){
+    private void fillBaseSyncEntity(BaseSyncEntity baseSyncEntity) {
+        if (Objects.isNull(baseSyncEntity.getTrusteeshipType())) {
             baseSyncEntity.setTrusteeshipType(ClusterTrusteeshipType.NO_TRUSTEESHIP);
         }
-        if(Objects.isNull(baseSyncEntity.getFirstToWhom())){
+        if (Objects.isNull(baseSyncEntity.getFirstToWhom())) {
             baseSyncEntity.setFirstToWhom(FirstToWhom.NOT);
         }
         baseSyncEntity.setOrganizationId(organizationId);
@@ -121,9 +121,6 @@ public class ActiveCreateDTOHandler {
             runtimeEntity.setCreateScriptContent("");
             runtimeEntity.setAuthType("");
             runtimeEntity.setJmxPort(1);
-
-
-
 
             runtimeEntityList.add(runtimeEntity);
         });
@@ -180,6 +177,7 @@ public class ActiveCreateDTOHandler {
 
     /**
      * 通過 runtime 信息 得到 meta 信息，然後通過
+     *
      * @param createTheEventClusterDTO
      */
     public void handler(CreateTheEventClusterDTO createTheEventClusterDTO) {

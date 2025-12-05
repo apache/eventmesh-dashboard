@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,10 +43,8 @@ public class ClusterAndRuntimeDomainImplTest {
     private ClusterAndRuntimeDomainImpl clusterAndRuntimeDomain;
 
 
-
-
     @Test
-    public void test_getAllClusterAndRuntimeByCluster_deploy(){
+    public void test_getAllClusterAndRuntimeByCluster_deploy() {
         ClusterEntity clusterEntity = new ClusterEntity();
         clusterEntity.setId(82L);
         ClusterAndRuntimeOfRelationshipDO data =
@@ -60,7 +58,7 @@ public class ClusterAndRuntimeDomainImplTest {
 
 
     @Test
-    public void test_sync(){
+    public void test_sync() {
         ClusterEntity clusterEntity = new ClusterEntity();
         clusterEntity.setId(82L);
         List<ClusterType> clusterTypeList = ClusterType.getStorageRuntimeCluster();
@@ -72,7 +70,7 @@ public class ClusterAndRuntimeDomainImplTest {
     }
 
     @Test
-    public void test_queryClusterTree(){
+    public void test_queryClusterTree() {
         QueryClusterTreeDO data = new QueryClusterTreeDO();
         data.setClusterId(82L);
         List<ClusterTreeVO> result = this.clusterAndRuntimeDomain.queryClusterTree(data);

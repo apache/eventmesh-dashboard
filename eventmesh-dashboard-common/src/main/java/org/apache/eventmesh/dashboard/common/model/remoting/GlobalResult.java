@@ -33,7 +33,6 @@ import lombok.NoArgsConstructor;
  *  因为 所有的 远程调用，都在 RemotingService 里面。 在 RemotingService 做好同时支持 GlobalResult 与 直接返回
  *  对于同步行为
  *  本来设计成 请求，响应，返回 三件套的，因为完成整体链路的 异步调用，实在太麻烦了。最终
- *
  */
 @Data
 @Builder

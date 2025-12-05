@@ -27,13 +27,12 @@ public class ConfigManage {
 
     private static final ConfigManage configManage = new ConfigManage();
 
-    public static ConfigManage getInstance() {
-        return configManage;
-    }
-
     private ConfigManage() {
     }
 
+    public static ConfigManage getInstance() {
+        return configManage;
+    }
 
     public AbstractMultiCreateSDKConfig getMultiCreateSDKConfig(ClusterType clusterType, SDKTypeEnum sdkTypeEnum) {
         return (AbstractMultiCreateSDKConfig) getCreateSDKConfig(clusterType, sdkTypeEnum);

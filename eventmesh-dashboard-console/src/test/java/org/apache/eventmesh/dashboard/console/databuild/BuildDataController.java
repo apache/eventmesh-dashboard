@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,19 +36,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class BuildDataController {
 
 
-
-
     @Autowired
     private BuildDataService buildDataService;
 
 
     @Before
-    public void init(){
+    public void init() {
         System.out.println(buildDataService);
     }
 
     @Test
-    public void mock_copyRuntimeByCluster(){
+    public void mock_copyRuntimeByCluster() {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setId(0L);
         this.buildDataService.runtimeCopyByCluster(runtimeEntity);
@@ -56,34 +54,34 @@ public class BuildDataController {
 
 
     @Test
-    public void mock_databases_sync_cap(){
+    public void mock_databases_sync_cap() {
 
     }
 
     @Test
-    public void mock_databases_sync_mainSlave(){
-
-    }
-
-
-    @Test
-    public void mock_databases_increment_independence(){
-
-    }
-
-    @Test
-    public void mock_cluster_sync_cap(){
-
-    }
-
-    @Test
-    public void mock_cluster_sync_mainSlave(){
+    public void mock_databases_sync_mainSlave() {
 
     }
 
 
     @Test
-    public void mock_cluster_increment_independence(){
+    public void mock_databases_increment_independence() {
+
+    }
+
+    @Test
+    public void mock_cluster_sync_cap() {
+
+    }
+
+    @Test
+    public void mock_cluster_sync_mainSlave() {
+
+    }
+
+
+    @Test
+    public void mock_cluster_increment_independence() {
 
     }
 }

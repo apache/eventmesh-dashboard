@@ -23,17 +23,14 @@ public enum ResetOffsetMode {
     /**
      * 支持维度如下：
      * <p>
-     * event mesh cluster 。
-     *  RockerMQ 查出 所有的 存储集群，然后存储存储集群里面,所有子集群，以及子集群里面所有的 broker ，对每个broker 进行一次请求奥做。
-     *  Kkakfa 查出 所有的 存储集群，然后存储存储集群里面。 只需要对 cluster 进行一次请求操作
+     * event mesh cluster 。 RockerMQ 查出 所有的 存储集群，然后存储存储集群里面,所有子集群，以及子集群里面所有的 broker ，对每个broker 进行一次请求奥做。 Kkakfa 查出 所有的 存储集群，然后存储存储集群里面。 只需要对 cluster
+     * 进行一次请求操作
      * <p>
      * storage cluster
      * <p>
      * storage definition cluster
      * <p>
      * storage runtime cluster
-     *
-     *
      */
     CONSUME_FROM_LAST_OFFSET,
 

@@ -26,17 +26,15 @@ import lombok.EqualsAndHashCode;
 public class NetAddress {
 
 
+    private String address;
+    private Integer port;
+
     public static NetAddress create(String address, int port) {
         NetAddress netAddress = new NetAddress();
         netAddress.address = address;
         netAddress.port = port;
         return netAddress;
     }
-
-    private String address;
-
-    private Integer port;
-
 
     public String doUniqueKey() {
         return this.address + ":" + this.port;

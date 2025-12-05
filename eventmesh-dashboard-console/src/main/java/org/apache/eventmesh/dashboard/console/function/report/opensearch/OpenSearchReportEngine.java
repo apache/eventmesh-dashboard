@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,6 +52,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
+/**
+ *
+ */
 public class OpenSearchReportEngine extends AbstractReportEngine {
 
     private OpenSearchClient client;
@@ -71,7 +74,7 @@ public class OpenSearchReportEngine extends AbstractReportEngine {
     protected void doInit() {
         try {
             URL url = new URL(this.reportEngineConfig.getEngineAddress());
-            HttpHost httpHost = new HttpHost(url.getHost(), url.getPort(),url.getProtocol());
+            HttpHost httpHost = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
             RestClient restClient = RestClient.builder(httpHost)
                 .setDefaultHeaders(new Header[] {
                     new BasicHeader("Accept", "application/json"),
@@ -120,15 +123,6 @@ public class OpenSearchReportEngine extends AbstractReportEngine {
     @Override
     public void batchInsert(String tableName, List<Object> data) {
         BulkRequest.Builder bulkRequestBuilder = new BulkRequest.Builder();
-//        try {
-//            data.forEach((k, v) -> {
-//                bulkRequestBuilder.operations((op) -> op
-//                    .index(idx -> idx.index(tableName).id(k).document(v)));
-//            });
-//            this.client.bulk(bulkRequestBuilder.build());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
     @Override

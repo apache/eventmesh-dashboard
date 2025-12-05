@@ -278,6 +278,7 @@ public class ClusterMetadataDomain {
 
     /**
      * TODO @see OperationRangeDomain.
+     *
      * @param clusterId
      * @param clusterOperationHandler
      */
@@ -353,13 +354,10 @@ public class ClusterMetadataDomain {
     @SuppressWarnings("rawtypes")
     private static class QueueConditionHandler {
 
-        private QueueCondition queueCondition;
-
-        private ColonyDO<ClusterDO> colonyDO;
-
-        private Map<Long, ColonyDO<ClusterDO>> currentColonyDOMap;
-
         private final List<Object> resultData = new ArrayList<>();
+        private QueueCondition queueCondition;
+        private ColonyDO<ClusterDO> colonyDO;
+        private Map<Long, ColonyDO<ClusterDO>> currentColonyDOMap;
 
         public <T> T handler() {
             this.getColonyDOMap();
@@ -401,17 +399,17 @@ public class ClusterMetadataDomain {
 
     public static class QueueCondition {
 
+        private final ClusterType resultType = ClusterType.CLUSTER;
         private Long clusterId;
-
         /**
          *
          */
         private ClusterType clusterType;
-
-        private final ClusterType resultType = ClusterType.CLUSTER;
-
         private boolean resultId = false;
 
+
+        public QueueCondition() {
+        }
 
         public QueueCondition clusterId(Long clusterId) {
             this.clusterId = clusterId;
@@ -436,9 +434,6 @@ public class ClusterMetadataDomain {
         public QueueCondition runtime() {
             this.clusterType = ClusterType.RUNTIME;
             return this;
-        }
-
-        public QueueCondition() {
         }
 
         public QueueCondition resultId() {
