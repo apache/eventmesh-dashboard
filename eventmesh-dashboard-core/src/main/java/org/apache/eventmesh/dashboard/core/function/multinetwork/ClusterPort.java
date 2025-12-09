@@ -36,7 +36,7 @@ public enum ClusterPort {
 
 
     static {
-        {
+          {
             PortMetadata portMetadata = new PortMetadata();
             portMetadata.setVirtual(true);
             portMetadata.setExplanation("RocketMQ 的 virtual 端口是  port - 2");
@@ -61,8 +61,8 @@ public enum ClusterPort {
             portMetadata = new PortMetadata();
             portMetadata.setConfigName("");
             STORAGE_ROCKETMQ_NAMESERVER.setPortMetadata(portMetadata);
-        }
-        
+          }
+
     }
 
     private List<PortMetadata> portMetadataList = new ArrayList<>();

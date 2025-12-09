@@ -108,7 +108,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
                           and config_name = #{configName}
              </foreach>
         </script>
-    """)
+        """)
     Integer updateValueByConfigList(List<ConfigEntity> configEntityList);
 
     @Insert("""

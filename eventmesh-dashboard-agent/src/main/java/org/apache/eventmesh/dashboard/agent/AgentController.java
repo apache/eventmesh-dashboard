@@ -242,7 +242,7 @@ public class AgentController {
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 JSON.parseObject(EntityUtils.toString(response.getEntity()), clazz);
                 return JSON.parseObject(EntityUtils.toString(response.getEntity()), clazz);
-            }catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }

@@ -88,7 +88,7 @@ public class PortServiceImpl implements PortService {
             List<ConfigEntity> queryData = this.configMapper.queryByRuntimeIdAndConfigName(configEntityList);
             queryData.forEach(configEntity -> {
                 JSONObject jsonObject = JSONObject.parseObject(configEntity.getConfigValueRange());
-                jsonObject.put("port",portMap.get(configEntity.getConfigName()));
+                jsonObject.put("port", portMap.get(configEntity.getConfigName()));
                 configEntity.setConfigValueRange(jsonObject.toJSONString());
             });
         }

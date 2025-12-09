@@ -1,4 +1,4 @@
-package org.apache.eventmesh.dashboard.console.mapstruct.deploy;/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,6 +15,7 @@ package org.apache.eventmesh.dashboard.console.mapstruct.deploy;/*
  * limitations under the License.
  */
 
+package org.apache.eventmesh.dashboard.console.mapstruct.deploy;
 
 import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
 import org.apache.eventmesh.dashboard.console.model.deploy.resouce.QueryResourceByObjectTypeDTO;

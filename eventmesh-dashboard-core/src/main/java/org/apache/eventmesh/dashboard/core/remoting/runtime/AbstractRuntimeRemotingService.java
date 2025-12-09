@@ -1,4 +1,4 @@
-package org.apache.eventmesh.dashboard.core.remoting.runtime;/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -14,6 +14,8 @@ package org.apache.eventmesh.dashboard.core.remoting.runtime;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package org.apache.eventmesh.dashboard.core.remoting.runtime;
 
 import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMapper;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;

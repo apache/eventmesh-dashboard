@@ -119,7 +119,7 @@ public class ReportHandlerManage {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        if(!this.enable){
+        if (!this.enable) {
             return;
         }
 

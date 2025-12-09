@@ -1,4 +1,4 @@
-package org.apache.eventmesh.dashboard.core.remoting.runtime;/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,6 +15,7 @@ package org.apache.eventmesh.dashboard.core.remoting.runtime;/*
  * limitations under the License.
  */
 
+package org.apache.eventmesh.dashboard.core.remoting.runtime;
 
 import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigRequest;

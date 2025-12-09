@@ -29,11 +29,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class MetadataSyncResultEntity extends BaseRuntimeIdEntity {
-/**
- * Base Entity provide some basic fields that every Eventmesh Dashboard Entity would have
- * <p>
- * 12 broker -> 12 queue ， 11 queue ，  1broker 没有 队列。 副本，随机出现在一个 broker
- */
+
     private Long syncId;
 
     private MetadataType metadataType;
