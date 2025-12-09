@@ -15,15 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package org.apache.eventmesh.dashboard.core.remoting.jvm;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class CreateKakfaConfig extends AbstractMultiCreateSDKConfig {
 
+import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
+import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupsRequest;
+import org.apache.eventmesh.dashboard.service.remoting.GroupRemotingService;
+
+
+public class JvmGroupRemotingService extends AbstractJvmRemotingService implements GroupRemotingService {
+
+    @Override
+    public GetGroupResult getAllGroups(GetGroupsRequest getGroupsRequest) {
+        return null;
+    }
+
+    @Override
+    public BaseGlobalResult deleteGroup(Global2Request global2Request) {
+        return null;
+    }
 }

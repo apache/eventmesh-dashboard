@@ -16,7 +16,11 @@
  */
 
 
+<<<<<<<< HEAD:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/runtime/RuntimeConfigRemotingService.java
 package org.apache.eventmesh.dashboard.core.remoting.runtime;
+========
+package org.apache.eventmesh.dashboard.core.remoting.jvm;
+>>>>>>>> main/main:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/jvm/JvmConfigRemotingService.java
 
 
 import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
@@ -27,7 +31,11 @@ import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResul
 import org.apache.eventmesh.dashboard.service.remoting.ConfigRemotingService;
 
 
+<<<<<<<< HEAD:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/runtime/RuntimeConfigRemotingService.java
 public class RuntimeConfigRemotingService extends AbstractRuntimeRemotingService implements ConfigRemotingService {
+========
+public class JvmConfigRemotingService extends AbstractJvmRemotingService implements ConfigRemotingService {
+>>>>>>>> main/main:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/jvm/JvmConfigRemotingService.java
 
     @Override
     public BaseGlobalResult addConfig(AddConfigRequest addConfigRequest) {

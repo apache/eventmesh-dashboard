@@ -15,18 +15,27 @@
  * limitations under the License.
  */
 
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/mapper/message/ConsumerOffsetMapper.java
 package org.apache.eventmesh.dashboard.console.mapper.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.ConsumeOffsetEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
 import org.apache.ibatis.annotations.Mapper;
+========
+package org.apache.eventmesh.dashboard.console.spring.support.register;
+
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.port.PortValidate;
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+>>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/spring/support/register/BuildMetadata.java
 
 import java.util.List;
 
 /**
  *
  */
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/mapper/message/ConsumerOffsetMapper.java
 @Mapper
 public interface ConsumerOffsetMapper extends SyncDataHandlerMapper<ConsumeOffsetEntity> {
 
@@ -36,6 +45,23 @@ public interface ConsumerOffsetMapper extends SyncDataHandlerMapper<ConsumeOffse
     void syncUpdate(List<ConsumeOffsetEntity> entityList);
 
     void syncDelete(List<ConsumeOffsetEntity> entityList);
+========
+public interface BuildMetadata {
+
+
+    boolean isMeta();
+
+
+    PortValidate portValidate();
+
+
+    List<ClusterType> runtimeTypes();
+
+    void buildMetaAddress(ScriptBuildData data, RuntimeEntity target, List<RuntimeEntity> runtimeMetadataList);
+
+
+    void buildConfig(ScriptBuildData data, RuntimeEntity target);
+>>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/spring/support/register/BuildMetadata.java
 
     List<ConsumeOffsetEntity> syncGet(ConsumeOffsetEntity topicOffsetEntity);
 }

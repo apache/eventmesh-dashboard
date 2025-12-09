@@ -15,17 +15,29 @@
  * limitations under the License.
  */
 
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/dto/connection/CreateConnectionDTO.java
 
 package org.apache.eventmesh.dashboard.console.model.dto.connection;
+========
 
-import lombok.AllArgsConstructor;
+package org.apache.eventmesh.dashboard.common.model.remoting.topic;
+
+import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
+>>>>>>>> main/main:eventmesh-dashboard-common/src/main/java/org/apache/eventmesh/dashboard/common/model/remoting/topic/GetTopics2Request.java
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/dto/connection/CreateConnectionDTO.java
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class CreateConnectionDTO {
+========
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class GetTopics2Request extends Global2Request {
+>>>>>>>> main/main:eventmesh-dashboard-common/src/main/java/org/apache/eventmesh/dashboard/common/model/remoting/topic/GetTopics2Request.java
 
     private Long clusterId;
 

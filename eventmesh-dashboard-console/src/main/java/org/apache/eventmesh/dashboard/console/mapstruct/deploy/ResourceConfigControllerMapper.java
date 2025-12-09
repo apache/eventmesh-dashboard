@@ -16,10 +16,11 @@
  */
 
 
-package org.apache.eventmesh.dashboard.console.mapstruct.deploy;
-
 import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
 import org.apache.eventmesh.dashboard.console.model.deploy.resouce.QueryResourceByObjectTypeDTO;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateKafkaZkConfig;
+
+import org.apache.zookeeper.ZooKeeper;
 
 import org.mapstruct.factory.Mappers;
 
@@ -33,4 +34,29 @@ public interface ResourceConfigControllerMapper {
 
     ResourcesConfigEntity queryResourcesConfigByObjectType(QueryResourceByObjectTypeDTO queryResourceByObjectTypeDTO);
 
+========
+package org.apache.eventmesh.dashboard.core.function.SDK.operation.kafka;
+
+import org.apache.eventmesh.dashboard.core.function.SDK.AbstractSDKOperation;
+import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateKafkaZkConfig;
+
+import org.apache.zookeeper.ZooKeeper;
+
+/**
+ * user ZooKeeper or KafkaZkClient or  ZookeeperAdmin
+ *
+ * @see org.apache.eventmesh.dashboard.core.function.SDK.operation.zookeeper.ZookeeperAdmin
+ */
+public class KafkaZkAdminOperation extends AbstractSDKOperation<ZooKeeper, CreateKafkaZkConfig> {
+
+    @Override
+    public ZooKeeper createClient(CreateKafkaZkConfig clientConfig) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void close(ZooKeeper client) throws Exception {
+        client.close();
+    }
+>>>>>>>> main/main:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/function/SDK/operation/kafka/KafkaZkAdminOperation.java
 }

@@ -15,18 +15,31 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.remoting;
 
+<<<<<<<< HEAD:eventmesh-dashboard-service/src/main/java/org/apache/eventmesh/dashboard/service/remoting/ConsumeOffsetRemotingService.java
 import org.apache.eventmesh.dashboard.common.model.metadata.ConsumeOffsetMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
 
 import java.util.List;
+========
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
+import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntime2Request;
+import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeResult;
+>>>>>>>> main/main:eventmesh-dashboard-service/src/main/java/org/apache/eventmesh/dashboard/service/remoting/MetaRemotingService.java
 
 /**
  *
  */
 public interface ConsumeOffsetRemotingService {
 
+<<<<<<<< HEAD:eventmesh-dashboard-service/src/main/java/org/apache/eventmesh/dashboard/service/remoting/ConsumeOffsetRemotingService.java
 
     List<ConsumeOffsetMetadata> getConsumeOffsetMetadata(TopicMetadata topicMetadata);
+========
+    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
+    GetRuntimeResult getRuntime(GetRuntime2Request getRuntimeRequest);
+>>>>>>>> main/main:eventmesh-dashboard-service/src/main/java/org/apache/eventmesh/dashboard/service/remoting/MetaRemotingService.java
 }

@@ -17,7 +17,9 @@
 
 
 
-package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
+package org.apache.eventmesh.dashboard.core.remoting.jvm;
+
+
 
 import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetResult;
@@ -25,7 +27,8 @@ import org.apache.eventmesh.dashboard.common.model.remoting.offset.ResetOffsetRe
 import org.apache.eventmesh.dashboard.common.model.remoting.offset.ResetOffsetResult;
 import org.apache.eventmesh.dashboard.service.remoting.OffsetRemotingService;
 
-public class RocketMQOffsetRemotingService extends AbstractRocketMQRemotingService implements OffsetRemotingService {
+
+public class JvmOffsetRemotingService extends AbstractJvmRemotingService implements OffsetRemotingService {
 
     @Override
     public GetOffsetResult getOffset(GetOffsetRequest getOffsetRequest) {

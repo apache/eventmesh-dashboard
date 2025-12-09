@@ -15,8 +15,18 @@
  * limitations under the License.
  */
 
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/function/MetadataSyncResultEntity.java
 
 package org.apache.eventmesh.dashboard.console.entity.function;
+========
+
+package org.apache.eventmesh.dashboard.console.entity;
+
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+>>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/BaseEntity.java
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
@@ -26,11 +36,25 @@ import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/function/MetadataSyncResultEntity.java
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class MetadataSyncResultEntity extends BaseRuntimeIdEntity {
+========
+/**
+ * Base Entity provide some basic fields that every Eventmesh Dashboard Entity would have
+ * <p>
+ * 12 broker -> 12 queue ， 11 queue ，  1broker 没有 队列。 副本，随机出现在一个 broker
+ */
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Schema(name = "BaseEntity", description = "Base entity")
+@Deprecated
+public class BaseEntity implements Serializable {
+>>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/BaseEntity.java
 
 
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/function/MetadataSyncResultEntity.java
     private Long syncId;
 
     private MetadataType metadataType;
@@ -45,4 +69,18 @@ public class MetadataSyncResultEntity extends BaseRuntimeIdEntity {
 
     private String resultData;
 
+========
+    /**
+     * 集群id，不是 eventmesh集群id。
+     */
+    protected Long clusterId;
+
+    protected ClusterType clusterType;
+
+    protected LocalDateTime createTime;
+
+    protected LocalDateTime updateTime;
+
+    private Integer status;
+>>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/BaseEntity.java
 }

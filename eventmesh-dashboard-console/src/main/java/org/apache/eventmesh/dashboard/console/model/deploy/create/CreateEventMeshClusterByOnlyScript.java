@@ -15,25 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.model.deploy.create;
-
+import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.model.OrganizationIdDTO;
+import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
+
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/deploy/create/CreateEventMeshClusterByOnlyScript.java
 
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class CreateEventMeshClusterByOnlyScript extends OrganizationIdDTO {
+========
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class CreateRuntimeDTO extends ClusterIdDTO {
+>>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/dto/cluster/runtime/CreateRuntimeDTO.java
 
 
     @NotNull
     private String name;
 
 
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/deploy/create/CreateEventMeshClusterByOnlyScript.java
     @NotNull
     private String description;
+========
+    private Integer port;
+
+    private Integer jmxPort;
+
+    private LocalDateTime startTimestamp = LocalDateTime.now();
+
+    private String rack = "";
+
+    private String endpointMap;
+
+    private FirstToWhom firstToWhom = FirstToWhom.DASHBOARD;
+
+    private ClusterType trusteeshipArrangeType = ClusterType.RUNTIME;
+>>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/dto/cluster/runtime/CreateRuntimeDTO.java
 }

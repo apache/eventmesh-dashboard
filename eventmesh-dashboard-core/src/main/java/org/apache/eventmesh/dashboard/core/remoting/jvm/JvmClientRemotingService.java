@@ -15,15 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package org.apache.eventmesh.dashboard.core.remoting.jvm;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class CreateKakfaConfig extends AbstractMultiCreateSDKConfig {
 
+
+import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
+import org.apache.eventmesh.dashboard.service.remoting.ClientRemotingService;
+
+import java.util.List;
+
+
+public class JvmClientRemotingService extends AbstractJvmRemotingService implements ClientRemotingService {
+
+    @Override
+    public List<ClientMetadata> getClientList() {
+        return null;
+    }
 }

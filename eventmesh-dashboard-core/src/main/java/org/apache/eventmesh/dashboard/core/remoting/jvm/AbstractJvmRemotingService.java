@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package org.apache.eventmesh.dashboard.core.remoting.jvm;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class CreateKakfaConfig extends AbstractMultiCreateSDKConfig {
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMapper;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.core.remoting.AbstractRemotingService;
+
+@RemotingServiceMapper(clusterType = ClusterType.STORAGE_JVM_BROKER)
+public abstract class AbstractJvmRemotingService extends AbstractRemotingService<Object> {
+
 
 }

@@ -16,24 +16,29 @@
  */
 
 
+package org.apache.eventmesh.dashboard.core.remoting.jvm;
 
-package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
+import org.apache.eventmesh.dashboard.common.model.remoting.user.CreateUserRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.user.DeleterUserRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.user.GetUserRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.user.GetUserResult;
+import org.apache.eventmesh.dashboard.service.remoting.UserRemotingService;
 
-import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.offset.ResetOffsetRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.offset.ResetOffsetResult;
-import org.apache.eventmesh.dashboard.service.remoting.OffsetRemotingService;
 
-public class RocketMQOffsetRemotingService extends AbstractRocketMQRemotingService implements OffsetRemotingService {
+public class JvmUserRemotingService extends AbstractJvmRemotingService implements UserRemotingService {
 
     @Override
-    public GetOffsetResult getOffset(GetOffsetRequest getOffsetRequest) {
+    public CreateUserRequest createInstanceUser(CreateUserRequest request) {
         return null;
     }
 
     @Override
-    public ResetOffsetResult resetOffset(ResetOffsetRequest resetOffsetRequest) {
+    public DeleterUserRequest deleteInstanceUser(DeleterUserRequest request) {
+        return null;
+    }
+
+    @Override
+    public GetUserResult getInstanceUser(GetUserRequest request) {
         return null;
     }
 }

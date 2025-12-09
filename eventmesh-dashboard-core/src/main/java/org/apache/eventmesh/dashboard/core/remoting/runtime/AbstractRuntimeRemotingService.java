@@ -15,9 +15,15 @@
  * limitations under the License.
  */
 
+<<<<<<<< HEAD:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/runtime/AbstractRuntimeRemotingService.java
+========
+
+package org.apache.eventmesh.dashboard.core.remoting.jvm;
+>>>>>>>> main/main:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/jvm/JvmSubscriptionRemotingService.java
 
 package org.apache.eventmesh.dashboard.core.remoting.runtime;
 
+<<<<<<<< HEAD:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/runtime/AbstractRuntimeRemotingService.java
 import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMapper;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq.RocketMQRemotingSDKOperation.DefaultRemotingClient;
@@ -27,4 +33,17 @@ import org.apache.eventmesh.dashboard.core.remoting.AbstractRemotingService;
 public abstract class AbstractRuntimeRemotingService extends AbstractRemotingService<DefaultRemotingClient> {
 
 
+========
+import org.apache.eventmesh.dashboard.common.model.remoting.subscription.GetSubscriptionRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.subscription.GetSubscriptionResult;
+import org.apache.eventmesh.dashboard.service.remoting.SubscriptionRemotingService;
+
+
+public class JvmSubscriptionRemotingService extends AbstractJvmRemotingService implements SubscriptionRemotingService {
+
+    @Override
+    public GetSubscriptionResult getSubscription(GetSubscriptionRequest request) {
+        return null;
+    }
+>>>>>>>> main/main:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/jvm/JvmSubscriptionRemotingService.java
 }

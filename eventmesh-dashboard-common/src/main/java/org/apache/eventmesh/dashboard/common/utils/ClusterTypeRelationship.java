@@ -26,6 +26,12 @@ import java.util.Objects;
 public class ClusterTypeRelationship {
 
     private static final ClusterTypeRelationship INSTANCE = new ClusterTypeRelationship();
+
+    public static ClusterTypeRelationship getInstance() {
+        return INSTANCE;
+    }
+
+
     private final List<ClusterType> storageClusterTypeList = new ArrayList<>();
 
     {
@@ -52,10 +58,6 @@ public class ClusterTypeRelationship {
 
     public ClusterTypeRelationship() {
 
-    }
-
-    public static ClusterTypeRelationship getInstance() {
-        return INSTANCE;
     }
 
     public List<ClusterType> getStorageClusterTypeList() {

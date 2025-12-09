@@ -15,16 +15,28 @@
  * limitations under the License.
  */
 
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/deploy/create/CreateClusterByCopyDTO.java
 package org.apache.eventmesh.dashboard.console.model.deploy.create;
 
 import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
 
 import java.util.Map;
+========
+
+package org.apache.eventmesh.dashboard.console.modle;
+
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType;
+>>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/OperateDTO.java
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ *
+ */
 @Data
+<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/deploy/create/CreateClusterByCopyDTO.java
 @EqualsAndHashCode(callSuper = false)
 public class CreateClusterByCopyDTO extends ClusterIdDTO {
 
@@ -33,4 +45,14 @@ public class CreateClusterByCopyDTO extends ClusterIdDTO {
     private Long kubernetesClusterId;
 
     private Map<Long, Long> clusterAndKubernetesIdMap;
+========
+@EqualsAndHashCode(callSuper = true)
+public class OperateDTO extends IdDTO {
+
+
+    private OperationRangeType operationRangeType;
+
+    private ClusterType clusterType;
+
+>>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/OperateDTO.java
 }

@@ -24,5 +24,4 @@ public enum SyncStatus {
     SUCCESS,
 
     FAIL,
-
 }
