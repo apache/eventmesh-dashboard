@@ -29,7 +29,6 @@ public enum ReplicationType {
     MAIN_SLAVE,
     ;
 
-
     public boolean isNot() {
         return this == NOT;
     }

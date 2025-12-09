@@ -25,7 +25,7 @@ import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
-import org.apache.eventmesh.dashboard.console.modle.vo.health.InstanceLiveProportionVo;
+import org.apache.eventmesh.dashboard.console.model.vo.health.InstanceLiveProportionVo;
 import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
 
 import java.sql.Timestamp;
@@ -140,26 +140,13 @@ public class HealthDataServiceDatabaseImpl implements HealthDataService {
         healthCheckResultMapper.batchUpdate(healthCheckResultEntityList);
     }
 
+    @Deprecated
     @Override
     public void batchUpdateCheckResultByClusterIdAndTypeAndTypeId(List<HealthCheckResultEntity> healthCheckResultEntityList) {
         if (healthCheckResultEntityList.isEmpty()) {
             return;
         }
-        List<HealthCheckResultEntity> entitiesNeedToBeUpdate = healthCheckResultMapper.getIdsNeedToBeUpdateByClusterIdAndTypeAndTypeId(
-            healthCheckResultEntityList);
-        if (entitiesNeedToBeUpdate.isEmpty()) {
-            return;
-        }
-        entitiesNeedToBeUpdate.forEach(entity -> {
-            healthCheckResultEntityList.forEach(updateEntity -> {
-                if (entity.getClusterId().equals(updateEntity.getClusterId()) && entity.getType().equals(updateEntity.getType())
-                    && entity.getTypeId().equals(updateEntity.getTypeId())) {
-                    entity.setStatus(updateEntity.getStatus());
-                    entity.setResultDesc(updateEntity.getResultDesc());
-                }
-            });
-        });
-        healthCheckResultMapper.batchUpdate(entitiesNeedToBeUpdate);
+        healthCheckResultMapper.batchUpdate(null);
     }
 
 

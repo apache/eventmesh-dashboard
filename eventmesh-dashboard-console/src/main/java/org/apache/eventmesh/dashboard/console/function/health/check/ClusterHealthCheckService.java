@@ -26,8 +26,6 @@ import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
 public interface ClusterHealthCheckService {
 
 
-
-
     AbstractTopicHealthCheckService register(BaseSyncBase baseSyncBase);
 
 

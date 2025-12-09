@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-
 package org.apache.eventmesh.dashboard.console.mapstruct.deploy;
 
 import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.deploy.resouce.QueryResourceByObjectTypeDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.resouce.QueryResourceByObjectTypeDTO;
 
 import org.mapstruct.factory.Mappers;
 

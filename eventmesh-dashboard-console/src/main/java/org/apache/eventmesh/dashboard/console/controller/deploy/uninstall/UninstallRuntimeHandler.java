@@ -18,10 +18,21 @@
 
 package org.apache.eventmesh.dashboard.console.controller.deploy.uninstall;
 
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
 import org.apache.eventmesh.dashboard.console.controller.deploy.handler.UpdateHandler;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class UninstallRuntimeHandler implements UpdateHandler<RuntimeEntity> {
+
+    @Autowired
+    private RuntimeService runtimeService;
 
     @Override
     public void init() {
@@ -30,6 +41,10 @@ public class UninstallRuntimeHandler implements UpdateHandler<RuntimeEntity> {
 
     @Override
     public void handler(RuntimeEntity runtimeEntity) {
+        // 主从 架构 如果有从存在则不能操作主
 
+        // 直接修改 runtime 状态就行了
+        runtimeEntity.setDeployStatusType(DeployStatusType.UNINSTALL_ING);
+        this.runtimeService.batchUpdateDeployStatusType(List.of(runtimeEntity));
     }
 }

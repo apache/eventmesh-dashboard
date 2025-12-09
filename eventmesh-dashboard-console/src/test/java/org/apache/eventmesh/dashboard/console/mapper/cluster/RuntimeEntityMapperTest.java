@@ -17,17 +17,23 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
+import org.apache.eventmesh.dashboard.console.databuild.BuildFullMetadata;
 import org.apache.eventmesh.dashboard.console.databuild.BuildFullSceneData;
+import org.apache.eventmesh.dashboard.console.databuild.BuildFullSceneData.ClusterFrameworkData;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
+import org.apache.eventmesh.dashboard.console.model.DO.runtime.QueryRuntimeByBigExpandClusterDO;
 
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,27 +48,49 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {EventMeshDashboardApplication.class})
-@Sql(scripts = {"classpath:eventmesh-dashboard.sql"})
+//@Sql(scripts = {"classpath:eventmesh-dashboard.sql"})
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class RuntimeEntityMapperTest {
 
+    private static final Map<Long, AtomicLong> aliasIndex = new HashMap<>();
+    private final BuildFullSceneData buildFullSceneData = new BuildFullSceneData();
     @Autowired
     private ClusterMapper clusterMapper;
-
     @Autowired
     private RuntimeMapper runtimeMapper;
-
     @Autowired
     private ClusterRelationshipMapper clusterRelationshipMapper;
 
-    private BuildFullSceneData buildFullSceneData = new BuildFullSceneData();
+    public static RuntimeEntity createRuntimeEntity(ClusterEntity clusterEntity) {
+        AtomicLong nameIndex = aliasIndex.computeIfAbsent(clusterEntity.getId(), k -> new AtomicLong(2));
+        RuntimeEntity runtimeEntity = ClusterDataMapperTest.INSTANCE.toRuntimeEntity(clusterEntity);
+        runtimeEntity.setClusterId(clusterEntity.getId());
+        runtimeEntity.setName(nameIndex.incrementAndGet() + "-----runtime");
+        runtimeEntity.setHost(nameIndex.incrementAndGet() + "");
+        runtimeEntity.setPort((int) nameIndex.get());
+        runtimeEntity.setJmxPort((int) nameIndex.get());
+        runtimeEntity.setKubernetesClusterId(nameIndex.get());
+        return runtimeEntity;
+    }
 
-    private static final AtomicLong nameIndex = new AtomicLong(2);
+    @Test
+    public void mock_jvm() {
+        BuildFullMetadata buildFullMetadata = BuildFullMetadata.builder().
+            clusterTypeSet(Set.of(ClusterType.EVENTMESH_JVM_CLUSTER, ClusterType.STORAGE_JVM_CLUSTER)).
+            firstToWhomSet(Set.of(FirstToWhom.DASHBOARD, FirstToWhom.RUNTIME, FirstToWhom.NOT)).eventMeshEnabled(true).build();
+        buildFullSceneData.buildBySupplement(buildFullMetadata);
+        List<ClusterEntity> clusterEntityList = buildFullSceneData.getClusterEntityList();
+        this.clusterMapper.batchInsert(clusterEntityList);
+        List<ClusterRelationshipEntity> clusterRelationshipEntityList = buildFullSceneData.createClusterRelationshipEntity();
+        this.clusterRelationshipMapper.batchClusterRelationshipEntry(clusterRelationshipEntityList);
+        List<RuntimeEntity> runtimeEntityList = buildFullSceneData.createRuntimeEntity();
+        this.runtimeMapper.batchInsert(runtimeEntityList);
+
+    }
 
     @Test
     public void test_queryClusterRuntimeOnClusterSpecifyByClusterId() {
@@ -73,14 +101,18 @@ public class RuntimeEntityMapperTest {
 
         buildFullSceneData.getClusterTripleList().forEach(triple -> {
             final Set<Long> idSet =
-                buildFullSceneData.getRuntimeEntityList(triple.getRight()).stream().map(RuntimeEntity::getClusterId).collect(Collectors.toSet());
+                buildFullSceneData.getRuntimeEntityListByClusterFrameworkData(triple.getRight()).stream().map(RuntimeEntity::getClusterId)
+                    .collect(Collectors.toSet());
             triple.getMiddle().forEach(entity -> {
-                test_queryClusterRuntimeOnClusterSpecifyByClusterId(entity, triple.getLeft().getClusterType().getRuntimeClusterType(), idSet);
+                test_queryClusterRuntimeOnClusterSpecifyByClusterId(entity.getClusterEntity(),
+                    triple.getLeft().getClusterType().getRuntimeClusterType(), idSet);
             });
             final Set<Long> idSet1 =
-                buildFullSceneData.getRuntimeEntityList(triple.getMiddle()).stream().map(RuntimeEntity::getClusterId).collect(Collectors.toSet());
+                buildFullSceneData.getRuntimeEntityListByClusterFrameworkData(triple.getMiddle()).stream().map(RuntimeEntity::getClusterId)
+                    .collect(Collectors.toSet());
             triple.getRight().forEach(entity -> {
-                test_queryClusterRuntimeOnClusterSpecifyByClusterId(entity, triple.getLeft().getClusterType().getMetaClusterType(), idSet1);
+                test_queryClusterRuntimeOnClusterSpecifyByClusterId(entity.getClusterEntity(), triple.getLeft().getClusterType().getMetaClusterType(),
+                    idSet1);
             });
 
         });
@@ -104,7 +136,7 @@ public class RuntimeEntityMapperTest {
         clusterRelationshipMapper.batchClusterRelationshipEntry(buildFullSceneData.createClusterRelationshipEntity());
         runtimeMapper.batchInsert(buildFullSceneData.createRuntimeEntity());
 
-        List<Triple<ClusterEntity, List<ClusterEntity>, List<ClusterEntity>>> triples =
+        List<Triple<ClusterEntity, List<ClusterFrameworkData>, List<ClusterFrameworkData>>> triples =
             buildFullSceneData.getClusterTripleList(ClusterType.EVENTMESH_CLUSTER);
         List<RuntimeEntity> allEntityList = new ArrayList<>();
         triples.forEach(triple -> {
@@ -112,7 +144,7 @@ public class RuntimeEntityMapperTest {
             triple.getRight().forEach(triple1 -> {
                 QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO =
                     QueryRuntimeByBigExpandClusterDO.builder()
-                        .followClusterId(triple1.getId())
+                        .followClusterId(triple1.getClusterEntity().getId())
                         .mainClusterType(ClusterType.EVENTMESH_CLUSTER)
                         .storageClusterTypeList(ClusterType.getStorageCluster())
                         .storageMetaClusterTypeList(ClusterType.getStorageMetaCluster())
@@ -130,7 +162,6 @@ public class RuntimeEntityMapperTest {
 
     }
 
-
     @Test
     public void test_queryRuntimeByClusterId() {
         buildFullSceneData.build(ClusterType.EVENTMESH_CLUSTER);
@@ -142,14 +173,17 @@ public class RuntimeEntityMapperTest {
         List<RuntimeEntity> list = new ArrayList<>();
         buildFullSceneData.getClusterTripleList().forEach(triple -> {
             List<ClusterEntity> clusterEntityList = new ArrayList<>();
-            clusterEntityList.addAll(triple.getMiddle());
-            clusterEntityList.addAll(triple.getRight());
+            triple.getMiddle().forEach(clusterFrameworkData -> {
+                clusterFrameworkData.addClusterEntity(clusterEntityList);
+            });
+            triple.getRight().forEach(clusterFrameworkData -> {
+                clusterFrameworkData.addClusterEntity(clusterEntityList);
+            });
             List<RuntimeEntity> runtimeEntityList1 = this.runtimeMapper.queryRuntimeByClusterId(clusterEntityList);
             list.addAll(runtimeEntityList1);
         });
         Assert.assertEquals(list.size(), runtimeEntityList.size());
     }
-
 
     @Test
     public void test_batch() {
@@ -179,16 +213,6 @@ public class RuntimeEntityMapperTest {
         RuntimeEntity newRuntimeEntity = this.runtimeMapper.queryRuntimeEntityById(runtimeEntity);
         // TODO h2 不支持 MySQL ON DUPLICATE KEY UPDATE
         //Assert.assertNotEquals(runtimeEntity.getOnlineTimestamp(), newRuntimeEntity.getOnlineTimestamp());
-    }
-
-    public static RuntimeEntity createRuntimeEntity(ClusterEntity clusterEntity) {
-        RuntimeEntity runtimeEntity = ClusterDataMapperTest.INSTANCE.toRuntimeEntity(clusterEntity);
-        runtimeEntity.setName(nameIndex.incrementAndGet() + "-----runtime");
-        runtimeEntity.setHost(nameIndex.incrementAndGet() + "");
-        runtimeEntity.setPort((int) nameIndex.get());
-        runtimeEntity.setJmxPort((int) nameIndex.get());
-        runtimeEntity.setKubernetesClusterId(nameIndex.get());
-        return runtimeEntity;
     }
 
 }

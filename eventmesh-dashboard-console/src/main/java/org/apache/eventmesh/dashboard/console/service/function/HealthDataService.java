@@ -19,7 +19,7 @@
 package org.apache.eventmesh.dashboard.console.service.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.HealthCheckResultEntity;
-import org.apache.eventmesh.dashboard.console.modle.vo.health.InstanceLiveProportionVo;
+import org.apache.eventmesh.dashboard.console.model.vo.health.InstanceLiveProportionVo;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

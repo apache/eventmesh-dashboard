@@ -36,7 +36,6 @@ public class GroupMetadata extends BaseRuntimeIdBase {
     private Integer type;
 
 
-
     @Override
     public String nodeUnique() {
         return this.name;

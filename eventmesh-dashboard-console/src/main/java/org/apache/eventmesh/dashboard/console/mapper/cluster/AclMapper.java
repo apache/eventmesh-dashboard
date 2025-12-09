@@ -34,21 +34,21 @@ import java.util.List;
 @Mapper
 public interface AclMapper {
 
-    @Insert({
-        "<script>",
-        "   INSERT INTO acl (cluster_Id, pattern, operation, permission_Type, host, resource_Type, resource_Name, pattern_Type) VALUES ",
-        "   <foreach collection='list' item='c' index='index' separator=','>",
-        "   (#{c.clusterId}, #{c.pattern}, #{c.operation}, #{c.permissionType}, #{c.host}, "
-            +
-            "   #{c.resourceType}, #{c.resourceName}, #{c.patternType})",
-        "   </foreach>",
-        "</script>"})
+    @Insert({"""
+            <script>
+               INSERT INTO acl (cluster_Id, pattern, operation, permission_Type, host, resource_Type, resource_Name, pattern_Type) value
+               <foreach collection='list' item='c' index='index' separator=''>
+                    (#{c.clusterId}, #{c.pattern}, #{c.operation}, #{c.permissionType}, #{c.host}#{c.resourceType},
+                     #{c.resourceName}, #{c.patternType})
+               </foreach>
+            </script>
+          """})
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void batchInsert(List<AclEntity> aclEntities);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO acl (cluster_id, pattern, operation, permission_type, host, resource_type, resource_name, pattern_type)"
-        + "VALUE (#{clusterId}, #{pattern}, #{operation}, #{permissionType}, #{host}, #{resourceType}, #{resourceName}, #{patternType})")
+            + "VALUE (#{clusterId}, #{pattern}, #{operation}, #{permissionType}, #{host}, #{resourceType}, #{resourceName}, #{patternType})")
     void insert(AclEntity aclEntity);
 
     @Update("UPDATE acl SET status=0 WHERE id=#{id}")

@@ -47,11 +47,11 @@ public class HealthConstant {
     public static final String ROCKETMQ_CHECK_CONSUMER_GROUP = "eventmesh-dashboard-healthcheck-rocketmq-consumer-group";
 
     public static final String ROCKETMQ_CHECK_TOPIC = "DO-NOT-USE-THIS-TOPIC-"
-        + "eventmesh-dashboard-healthcheck-rocketmq-topic-90a78a5d-b803-447e-8c48-1c87ab0c74d9";
+                                                      + "eventmesh-dashboard-healthcheck-rocketmq-topic-90a78a5d-b803-447e-8c48-1c87ab0c74d9";
     public static final String ROCKETMQ_CHECK_TOPIC_MSG = "eventmesh-dashboard-healthcheck-rocketmq-message";
 
     public static final String NACOS_CHECK_DATA_ID = "DO-NOT-USE-THIS-"
-        + "eventmesh-dashboard-healthcheck-nacos-data-id-28e2933f-a47b-439d-b14b-7d9970c37042";
+                                                     + "eventmesh-dashboard-healthcheck-nacos-data-id-28e2933f-a47b-439d-b14b-7d9970c37042";
 
     public static final String NACOS_CHECK_GROUP = "EVENTMESH_DASHBOARD_HEALTH_CHECK_GROUP";
 

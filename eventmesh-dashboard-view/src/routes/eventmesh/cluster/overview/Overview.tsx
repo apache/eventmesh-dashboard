@@ -17,18 +17,18 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
+import React, {forwardRef} from 'react'
+import {Box, BoxProps} from '@mui/material'
 import Construction from '../../../../components/Construction'
-import RootLayout from '../../../../components/page/RootLayout'
 
-interface HomeProps extends BoxProps {}
+interface HomeProps extends BoxProps {
+}
 
-const Home = forwardRef<typeof Box, HomeProps>(({ ...props }, ref) => {
+const Home = forwardRef<typeof Box, HomeProps>(({...props}, ref) => {
   return (
-    <Box sx={{ flexGrow: 1, height: 1 }}>
-      <Construction title="Cluster Overview" />
-    </Box>
+      <Box sx={{flexGrow: 1, height: 1}}>
+        <Construction title="Cluster Overview"/>
+      </Box>
   )
 })
 

@@ -16,4 +16,5 @@
  */
 
 
-USE `eventmesh_dashboard_test`;
+USE
+`eventmesh_dashboard_test`;

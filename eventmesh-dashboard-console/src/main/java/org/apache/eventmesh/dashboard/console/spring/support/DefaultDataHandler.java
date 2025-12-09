@@ -19,6 +19,7 @@
 package org.apache.eventmesh.dashboard.console.spring.support;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.ClusterSyncMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterMetadataDomain.DataHandler;
@@ -44,6 +45,8 @@ public class DefaultDataHandler implements DataHandler<RuntimeDO, ClusterDO> {
 
     private Health2Service healthService;
 
+    private KubernetesManage kubernetesManage;
+
 
     @Override
     public void registerRuntime(RuntimeEntity runtimeEntity, RuntimeDO runtimeDO, ColonyDO<ClusterDO> colonyDO) {
@@ -58,6 +61,7 @@ public class DefaultDataHandler implements DataHandler<RuntimeDO, ClusterDO> {
         RuntimeMetadata runtimeMetadata = RuntimeConvertMetaData.INSTANCE.toMetaData(runtimeEntity);
         healthService.unRegister(runtimeMetadata);
         metadataSyncManage.unRegister(runtimeMetadata);
+        SDKManage.getInstance().deleteClient(null, runtimeMetadata.getUnique());
     }
 
     @Override
@@ -68,13 +72,23 @@ public class DefaultDataHandler implements DataHandler<RuntimeDO, ClusterDO> {
         }
         SDKManage.getInstance().createClient(SDKTypeEnum.ADMIN, clusterDO.getClusterInfo(), clusterDO.getMultiCreateSDKConfig(),
             clusterDO.getClusterInfo().getClusterType());
+
         healthService.register(clusterDO.getClusterInfo());
-        metadataSyncManage.register(clusterDO.getClusterInfo());
+        if (clusterEntity.getClusterType() == ClusterType.KUBERNETES_RUNTIME) {
+            kubernetesManage.register(clusterDO.getClusterInfo());
+        } else {
+            metadataSyncManage.register(clusterDO.getClusterInfo());
+        }
     }
 
     @Override
     public void unRegisterCluster(ClusterEntity clusterEntity, ClusterDO clusterDO, ColonyDO<ClusterDO> colonyDO) {
+        if (clusterEntity.getClusterType() == ClusterType.KUBERNETES_RUNTIME) {
+            this.kubernetesManage.unregister(clusterDO.getClusterInfo());
+        }
+
         healthService.unRegisterCluster(clusterEntity.getClusterId());
+        SDKManage.getInstance().deleteClient(null, clusterDO.getClusterInfo().getUnique());
 
     }
 

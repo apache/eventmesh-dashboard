@@ -27,7 +27,7 @@ public enum ClusterFramework {
     INDEPENDENCE,
 
     /**
-     *  AP 架构，的 meta 有控制行为，需要逐一通知
+     * AP 架构，的 meta 有控制行为，需要逐一通知
      */
     AP,
 
@@ -43,6 +43,10 @@ public enum ClusterFramework {
 
     ZK,
     ;
+
+    public boolean isIndependence() {
+        return this == ClusterFramework.INDEPENDENCE;
+    }
 
     public boolean isAP() {
         return Objects.equals(this, AP);

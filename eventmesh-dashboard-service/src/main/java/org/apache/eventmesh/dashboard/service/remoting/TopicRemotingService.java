@@ -33,13 +33,12 @@ import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResul
 public interface TopicRemotingService {
 
     @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
-    CreateTopicResult createTopic(CreateTopic2Request createTopicRequest);
+    CreateTopicResult createTopic(CreateTopic2Request createTopicRequest) throws Exception;
 
     @RemotingServiceMethodMapper(RemotingActionType.DELETE)
-    DeleteTopicResult deleteTopic(DeleteTopicRequest deleteTopicRequest);
+    DeleteTopicResult deleteTopic(DeleteTopicRequest deleteTopicRequest) throws Exception;
 
     @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
-    GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest)
-        throws Exception;
+    GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest) throws Exception;
 
 }

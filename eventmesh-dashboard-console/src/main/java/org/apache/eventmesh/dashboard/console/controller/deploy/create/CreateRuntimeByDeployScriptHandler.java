@@ -26,7 +26,7 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
 import org.apache.eventmesh.dashboard.console.mapstruct.deploy.ClusterCycleControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateRuntimeByDeployScriptDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateRuntimeByDeployScriptDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
@@ -39,8 +39,11 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Slf4j
 public class CreateRuntimeByDeployScriptHandler implements UpdateHandler<CreateRuntimeByDeployScriptDTO> {
 
 
@@ -55,16 +58,21 @@ public class CreateRuntimeByDeployScriptHandler implements UpdateHandler<CreateR
 
     }
 
+    /**
+     * 支持 多 复杂的主从架构
+     */
     @Override
     public void handler(CreateRuntimeByDeployScriptDTO createRuntimeByDeployScriptDTO) {
         ClusterEntity clusterEntity = ClusterControllerMapper.INSTANCE.toClusterEntity(createRuntimeByDeployScriptDTO);
         clusterEntity = this.clusterService.queryClusterById(clusterEntity);
         RuntimeEntity runtimeEntity = ClusterCycleControllerMapper.INSTANCE.createRuntimeByDeployScript(createRuntimeByDeployScriptDTO);
         if (Objects.isNull(runtimeEntity.getDeployScriptId()) && Objects.isNull(clusterEntity.getDeployScriptId())) {
+            log.error("create runtime by deploy script id is null");
             return;
         }
 
         if (Objects.isNull(runtimeEntity.getResourcesConfigId()) && Objects.isNull(clusterEntity.getResourcesConfigId())) {
+            log.error("create runtime by deploy script resources config id is null");
             return;
         }
         if (Objects.nonNull(runtimeEntity.getDeployScriptId())) {
@@ -88,9 +96,10 @@ public class CreateRuntimeByDeployScriptHandler implements UpdateHandler<CreateR
         runtimeEntity.setClusterType(clusterEntity.getClusterType());
         runtimeEntity.setTrusteeshipType(ClusterTrusteeshipType.SELF);
         runtimeEntity.setReplicationType(replicationType);
-        runtimeEntity.setDeployStatusType(DeployStatusType.CREATE_WAIT);
+        runtimeEntity.setDeployStatusType(DeployStatusType.CREATE_DATA_ING);
         runtimeEntity.setRuntimeIndex(linkedList.poll());
-        this.runtimeService.insertRuntime(runtimeEntity);
+
+        this.runtimeService.insertRuntimeByClusterData(runtimeEntity);
 
     }
 

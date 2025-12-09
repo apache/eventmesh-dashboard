@@ -52,10 +52,12 @@ public abstract class AbstractCreateSDKConfig implements CreateSDKConfig {
 
     protected abstract String uniqueKey();
 
+    @Override
     public String getUniqueKey() {
         return this.keyMode ? this.uniqueKey() + this.key : this.doUniqueKey();
     }
 
-    abstract String doUniqueKey();
+    public abstract String doUniqueKey();
+
 
 }

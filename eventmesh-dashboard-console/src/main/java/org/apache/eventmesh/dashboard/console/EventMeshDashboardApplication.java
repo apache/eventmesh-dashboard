@@ -20,12 +20,14 @@ package org.apache.eventmesh.dashboard.console;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootApplication
+@EnableScheduling
 @EnableTransactionManagement
 public class EventMeshDashboardApplication {
 

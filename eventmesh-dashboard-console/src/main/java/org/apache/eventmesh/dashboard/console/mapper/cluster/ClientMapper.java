@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
-import org.apache.eventmesh.dashboard.console.modle.cluster.client.QueryClientByUserFormDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.client.QueryClientByUserFormDTO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -35,7 +35,7 @@ import java.util.List;
  * Mybatis Mapper for the table of client.
  */
 @Mapper
-public interface ClientMapper extends SyncDataHandlerMapper<ClientEntity> {
+public interface    ClientMapper extends SyncDataHandlerMapper<ClientEntity> {
 
 
     @Select({
@@ -67,7 +67,7 @@ public interface ClientMapper extends SyncDataHandlerMapper<ClientEntity> {
                 </where>
                 and status = #{status}
             </script>
-            """})
+           """})
     List<ClientEntity> queryClientByUserForm(QueryClientByUserFormDTO queryClientByUserFormDTO);
 
     @Select("SELECT * FROM `client` WHERE `host` = #{host} AND `port` = #{port} AND status = 1")

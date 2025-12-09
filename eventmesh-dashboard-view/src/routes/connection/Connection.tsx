@@ -17,21 +17,22 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
+import React, {forwardRef} from 'react'
+import {Box, BoxProps} from '@mui/material'
 import Construction from '../../components/Construction'
 import RootLayout from '../../components/page/RootLayout'
 
-interface ConnectionProps extends BoxProps {}
+interface ConnectionProps extends BoxProps {
+}
 
 const Connection = forwardRef<typeof Box, ConnectionProps>(
-  ({ ...props }, ref) => {
-    return (
-      <RootLayout>
-        <Construction title="Connection" />
-      </RootLayout>
-    )
-  }
+    ({...props}, ref) => {
+      return (
+          <RootLayout>
+            <Construction title="Connection"/>
+          </RootLayout>
+      )
+    }
 )
 
 Connection.displayName = 'Connection'

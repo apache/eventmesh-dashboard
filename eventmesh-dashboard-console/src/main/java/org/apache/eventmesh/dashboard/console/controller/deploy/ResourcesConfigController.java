@@ -20,9 +20,9 @@ package org.apache.eventmesh.dashboard.console.controller.deploy;
 
 import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.deploy.ResourceConfigControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.IdDTO;
-import org.apache.eventmesh.dashboard.console.modle.OrganizationIdDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.resouce.QueryResourceByObjectTypeDTO;
+import org.apache.eventmesh.dashboard.console.model.IdDTO;
+import org.apache.eventmesh.dashboard.console.model.OrganizationIdDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.resouce.QueryResourceByObjectTypeDTO;
 
 import java.util.List;
 

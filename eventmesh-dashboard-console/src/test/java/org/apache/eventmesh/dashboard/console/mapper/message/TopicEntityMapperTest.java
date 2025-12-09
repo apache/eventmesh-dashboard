@@ -41,10 +41,31 @@ import org.springframework.test.context.junit4.SpringRunner;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class TopicEntityMapperTest {
 
+    private static AtomicLong nameIndex = new AtomicLong();
     @Autowired
     private TopicMapper topicMapper;
 
-    private static AtomicLong nameIndex = new AtomicLong();
+    public static TopicEntity createTopicEntity() {
+        return createTopicEntity(1L, 2L);
+    }
+
+    public static TopicEntity createTopicEntity(Long clusterId, Long topicId) {
+        TopicEntity topicEntity = new TopicEntity();
+        topicEntity.setClusterId(1L);
+        topicEntity.setRuntimeId(2L);
+        topicEntity.setTopicName("test-" + nameIndex.getAndIncrement());
+        topicEntity.setTopicType("topicType");
+        topicEntity.setWriteQueueNum(8);
+        topicEntity.setReadQueueNum(8);
+        topicEntity.setReplicationFactor(2);
+        topicEntity.setTopicFilterType("topicFilterType");
+        topicEntity.setAttributes("1");
+        topicEntity.setOrder(1);
+        topicEntity.setRetentionMs(1L);
+        topicEntity.setDescription("desc");
+        topicEntity.setCreateProgress(1);
+        return topicEntity;
+    }
 
     @Test
     public void test_batch_delete() {
@@ -52,7 +73,7 @@ public class TopicEntityMapperTest {
         List<TopicEntity> topicEntityList = this.topicMapper.selectAll();
         int num = this.topicMapper.deleteTopicByIds(topicEntityList);
         Assert.assertEquals(num, topicEntityList.size());
-        
+
         List<TopicEntity> newTopicEntityList = this.topicMapper.selectAll();
         Assert.assertEquals(0, newTopicEntityList.size());
 
@@ -78,28 +99,6 @@ public class TopicEntityMapperTest {
         topicEntity = topicMapper.queryTopicById(topicEntity);
         Assert.assertNotNull(topicEntity);
 
-    }
-
-
-    public static TopicEntity createTopicEntity() {
-        return createTopicEntity(1L, 2L);
-    }
-
-    public static TopicEntity createTopicEntity(Long clusterId, Long topicId) {
-        TopicEntity topicEntity = new TopicEntity();
-        topicEntity.setClusterId(1L);
-        topicEntity.setRuntimeId(2L);
-        topicEntity.setTopicName("test-" + nameIndex.getAndIncrement());
-        topicEntity.setTopicType("topicType");
-        topicEntity.setNumQueue(8L);
-        topicEntity.setReplicationFactor(2);
-        topicEntity.setTopicFilterType("topicFilterType");
-        topicEntity.setAttributes("1");
-        topicEntity.setOrder("desc");
-        topicEntity.setRetentionMs(1L);
-        topicEntity.setDescription("desc");
-        topicEntity.setCreateProgress(1);
-        return topicEntity;
     }
 
 

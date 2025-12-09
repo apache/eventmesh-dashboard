@@ -21,8 +21,8 @@ package org.apache.eventmesh.dashboard.console.controller.cluster;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.RuntimeControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
-import org.apache.eventmesh.dashboard.console.modle.IdDTO;
+import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.model.IdDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
 import java.util.List;

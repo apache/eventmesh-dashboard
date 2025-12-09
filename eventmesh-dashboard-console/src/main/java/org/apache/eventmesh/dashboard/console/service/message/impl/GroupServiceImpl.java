@@ -20,12 +20,11 @@ package org.apache.eventmesh.dashboard.console.service.message.impl;
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
 import org.apache.eventmesh.dashboard.console.service.message.GroupMemberService;
 import org.apache.eventmesh.dashboard.console.service.message.GroupService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +39,10 @@ public class GroupServiceImpl implements GroupService {
     @Autowired
     private GroupMemberService groupMemberService;
 
+
     @Override
-    public List<GroupEntity> selectAll() {
-        return groupMapper.selectAll();
+    public List<GroupEntity> queryGroupListByTopicId(TopicEntity topicEntity) {
+        return this.groupMapper.queryGroupListByTopicId(topicEntity);
     }
 
     @Override
@@ -50,7 +50,6 @@ public class GroupServiceImpl implements GroupService {
         groupMapper.batchInsert(groupEntities);
     }
 
-    @EmLog(OprType = "search", OprTarget = "Group")
     @Override
     public List<GroupEntity> getGroupByClusterId(GroupEntity groupEntity) {
         return groupMapper.selectGroup(groupEntity);
@@ -64,51 +63,8 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void updateGroup(GroupEntity groupEntity) {
-        groupMapper.updateGroup(groupEntity);
-    }
-
-    @Override
     public Integer deleteGroup(GroupEntity groupEntity) {
         return groupMapper.deleteGroup(groupEntity);
     }
-
-    @Override
-    public GroupEntity selectGroup(GroupEntity groupEntity) {
-        return groupMapper.selectGroupById(groupEntity);
-    }
-
-    @Override
-    public Integer insertMemberToGroup(SubscriptionEntity subscriptionEntity) {
-        groupMemberService.addGroupMember(subscriptionEntity);
-        GroupEntity groupEntity = new GroupEntity();
-        groupEntity.setName(subscriptionEntity.getGroupName());
-        groupEntity.setClusterId(subscriptionEntity.getClusterId());
-        GroupEntity groupEntity1 = groupMapper.selectGroupByUnique(groupEntity);
-        //^Obtain the group to which the member belongs
-        groupEntity1.setMembers(subscriptionEntity.getId() + "" + "," + groupEntity1.getMembers());
-        //Concatenate the members of the group
-        groupEntity1.setMemberCount(groupEntity1.getMemberCount() + 1);
-        groupEntity1.setUpdateTime(LocalDateTime.now());
-        groupMapper.updateGroup(groupEntity1);
-        return 1;
-        //Modify the group member information
-    }
-
-    @Override
-    public Integer deleteMemberFromGroup(SubscriptionEntity subscriptionEntity) {
-        groupMemberService.deleteGroupMember(subscriptionEntity);
-        GroupEntity groupEntity = new GroupEntity();
-        groupEntity.setName(subscriptionEntity.getGroupName());
-        groupEntity.setClusterId(subscriptionEntity.getClusterId());
-        GroupEntity groupEntity1 = groupMapper.selectGroupByUnique(groupEntity);
-        //^Obtain the group to which the member belongs
-        groupEntity1.setMembers(groupEntity1.getMembers().replaceAll(subscriptionEntity.getId() + "" + ",", ""));
-        groupEntity1.setMemberCount(groupEntity1.getMemberCount() - 1);
-        groupEntity1.setUpdateTime(LocalDateTime.now());
-        groupMapper.updateGroup(groupEntity1);
-        return 1;
-    }
-
 
 }

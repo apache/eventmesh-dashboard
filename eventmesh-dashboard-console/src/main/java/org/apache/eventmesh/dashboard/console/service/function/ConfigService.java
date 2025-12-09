@@ -19,9 +19,10 @@
 package org.apache.eventmesh.dashboard.console.service.function;
 
 
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.ChangeConfigDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.config.ChangeConfigDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -32,9 +33,13 @@ import java.util.Map;
  */
 public interface ConfigService {
 
+    List<ConfigEntity> queryByClusterIdList(List<ClusterEntity> clusterConfigEntityList);
+
+    List<ConfigEntity> queryByInstanceIdList(List<ConfigEntity> configEntityList, MetadataType metadataType);
+
     List<ConfigEntity> queryByClusterAndInstanceId(ConfigEntity configEntity);
 
-    List<ConfigEntity> selectToFront(Long instanceId, Integer type, GetConfigsListDTO getConfigsListDTO);
+    List<ConfigEntity> queryByInstanceId(ConfigEntity configEntity);
 
     void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId, List<ChangeConfigDTO> changeConfigDTOList);
 

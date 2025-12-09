@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-DELETE FROM `eventmesh_dashboard_test`.health_check_result WHERE TRUE;
+DELETE
+FROM `eventmesh_dashboard_test`.health_check_result
+WHERE TRUE;
 ALTER TABLE `eventmesh_dashboard_test`.health_check_result AUTO_INCREMENT = 1;
 
 insert into `eventmesh_dashboard_test`.health_check_result (id, type, type_id, cluster_id, state, result_desc, create_time, update_time)

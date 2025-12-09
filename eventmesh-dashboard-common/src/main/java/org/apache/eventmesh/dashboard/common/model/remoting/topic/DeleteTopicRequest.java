@@ -20,15 +20,8 @@ package org.apache.eventmesh.dashboard.common.model.remoting.topic;
 
 
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public class DeleteTopicRequest extends AbstractGlobal2Request<TopicMetadata> {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class DeleteTopicRequest {
-
-    TopicMetadata topicMetadata;
 }

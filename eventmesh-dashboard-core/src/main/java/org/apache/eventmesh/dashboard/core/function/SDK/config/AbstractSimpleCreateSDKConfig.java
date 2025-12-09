@@ -34,6 +34,7 @@ public class AbstractSimpleCreateSDKConfig extends AbstractCreateSDKConfig {
         return "s_";
     }
 
+    @Override
     public String doUniqueKey() {
         return netAddress.doUniqueKey();
     }

@@ -19,6 +19,7 @@
 package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 
 
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
@@ -27,9 +28,9 @@ import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
-import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
-import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.ClusterAllMetadataDO;
+import org.apache.eventmesh.dashboard.console.model.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
+import org.apache.eventmesh.dashboard.console.model.DO.runtime.QueryRuntimeByBigExpandClusterDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.ClusterAllMetadataDO;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
 import java.util.ArrayList;
@@ -125,6 +126,11 @@ public class RuntimeServiceImpl implements RuntimeService {
 
 
     @Override
+    public List<RuntimeEntity> queryRuntimeToFrontByClusterIdList(List<ClusterEntity> clusterEntityList) {
+        return this.runtimeMapper.queryRuntimeToFrontByClusterIdList(clusterEntityList);
+    }
+
+    @Override
     public void batchInsert(List<RuntimeEntity> runtimeEntities) {
         runtimeMapper.batchInsert(runtimeEntities);
     }
@@ -133,6 +139,17 @@ public class RuntimeServiceImpl implements RuntimeService {
     public Integer batchUpdate(List<RuntimeEntity> runtimeEntities) {
         return 0;
     }
+
+    @Override
+    public void batchUpdateDeployStatusType(List<RuntimeEntity> runtimeEntitieList) {
+        this.runtimeMapper.batchUpdateDeployStatusTypeByList(runtimeEntitieList);
+    }
+
+    @Override
+    public void batchUpdateDeployStatusType(List<RuntimeEntity> runtimeEntitieList, DeployStatusType deployStatusType) {
+        this.runtimeMapper.batchUpdateDeployStatusTypeByListAndType(runtimeEntitieList, deployStatusType);
+    }
+
 
     @Override
     public List<RuntimeEntity> selectAll() {
@@ -144,6 +161,16 @@ public class RuntimeServiceImpl implements RuntimeService {
         return runtimeMapper.queryByUpdateTime(runtimeEntity);
     }
 
+    @Override
+    public void updateAddressByRuntimeId(RuntimeEntity runtimeEntity) {
+
+    }
+
+    @Override
+    public void insertRuntimeByClusterData(RuntimeEntity runtimeEntity) {
+        this.runtimeMapper.insertRuntime(runtimeEntity);
+        // copy config ， rocketmq 集群 copy topic
+    }
 
     @Override
     public void insertRuntime(RuntimeEntity runtimeEntity) {

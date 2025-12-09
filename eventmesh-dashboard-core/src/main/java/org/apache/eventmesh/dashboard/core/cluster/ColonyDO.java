@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * eventmesh ClusterDO meta    ClusterDO runtime ClusterDO storage ClusterDO meta（注册中心，zk，） ClusterDO runtime（broker）   ClusterDO 一个集群 eventmesh 集群有
@@ -39,6 +40,7 @@ import lombok.Getter;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 @Data
+@Slf4j
 public class ColonyDO<C extends ClusterBaseDO> {
 
     private Long superiorId;
@@ -89,6 +91,7 @@ public class ColonyDO<C extends ClusterBaseDO> {
 
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T createBaseDO(Class<?> clusterDO, Object metadata) {
         try {
             ClusterBaseDO clusterEntityDO = (ClusterBaseDO) clusterDO.newInstance();
@@ -142,6 +145,10 @@ public class ColonyDO<C extends ClusterBaseDO> {
         ColonyDO<C> mainColony = this.allColonyDO.get(mainId);
 
         ColonyDO<C> colonyDO = this.allColonyDO.get(clusterId);
+        if (Objects.isNull(colonyDO)) {
+            log.error("clusterId to colonyDO is null, main is is {}, cluster id {}", mainId, clusterId);
+            return;
+        }
         colonyDO.setSuperiorId(mainId);
         //colonyDO.setSuperiorDO(mainColony);
 

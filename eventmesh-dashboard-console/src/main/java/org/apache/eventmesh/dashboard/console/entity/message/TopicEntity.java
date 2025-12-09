@@ -38,7 +38,9 @@ public class TopicEntity extends BaseRuntimeIdEntity {
     /**
      *
      */
-    private Long numQueue;
+    private Integer readQueueNum;
+
+    private Integer writeQueueNum;
 
     /**
      * 副本个数
@@ -55,7 +57,7 @@ public class TopicEntity extends BaseRuntimeIdEntity {
      */
     private String attributes;
 
-    private String order;
+    private Integer order;
 
     @Schema(description = "time to live in milliseconds, -2 unknown, -1 no limit;", example = "1000")
     private Long retentionMs;

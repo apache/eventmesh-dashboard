@@ -16,14 +16,14 @@
  */
 
 
-
 package org.apache.eventmesh.dashboard.console.controller.message;
 
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.GroupControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.IdDTO;
-import org.apache.eventmesh.dashboard.console.modle.vo.RuntimeIdDTO;
+import org.apache.eventmesh.dashboard.console.model.IdDTO;
+import org.apache.eventmesh.dashboard.console.model.vo.RuntimeIdDTO;
 import org.apache.eventmesh.dashboard.console.service.message.GroupService;
 
 import java.util.List;
@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  */
 @RestController
-@RequestMapping("group")
+@RequestMapping("/user/group")
 public class GroupController {
 
 
@@ -49,6 +49,13 @@ public class GroupController {
     @PostMapping("queryGroupListByClusterId")
     public List<GroupEntity> queryGroupListByClusterId(@RequestBody @Validated RuntimeIdDTO runtimeIdDTO) {
         return groupService.getGroupByClusterId(GroupControllerMapper.INSTANCE.queryGroupListByClusterId(runtimeIdDTO));
+    }
+
+    @PostMapping("queryGroupListByTopicId")
+    public List<GroupEntity> queryGroupListByTopicId(@RequestBody @Validated IdDTO idDTO) {
+        TopicEntity topicEntity = new TopicEntity();
+        topicEntity.setId(idDTO.getId());
+        return groupService.queryGroupListByTopicId(topicEntity);
     }
 
     @PostMapping("deleteGroupById")

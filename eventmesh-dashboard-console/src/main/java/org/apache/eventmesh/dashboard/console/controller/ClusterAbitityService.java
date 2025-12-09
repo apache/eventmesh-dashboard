@@ -23,7 +23,7 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseClusterIdEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 
 import org.springframework.beans.factory.annotation.Autowired;

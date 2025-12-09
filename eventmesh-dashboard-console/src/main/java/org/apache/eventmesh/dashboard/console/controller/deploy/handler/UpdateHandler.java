@@ -18,13 +18,20 @@
 
 package org.apache.eventmesh.dashboard.console.controller.deploy.handler;
 
+import org.apache.eventmesh.dashboard.console.controller.deploy.base.DeployBeforeCheck;
+
 /**
  *
  */
-public interface UpdateHandler<T> {
+public interface UpdateHandler<T> extends DeployBeforeCheck<T> {
 
     void init();
 
     void handler(T t);
 
+
+    @Override
+    default boolean check(T t) {
+        return true;
+    }
 }

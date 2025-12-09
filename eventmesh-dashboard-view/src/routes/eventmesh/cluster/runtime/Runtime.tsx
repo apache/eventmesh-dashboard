@@ -17,18 +17,19 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
+import React, {forwardRef} from 'react'
+import {Box, BoxProps} from '@mui/material'
 import Page from '../../../../components/page/Layout'
 import Construction from '../../../../components/Construction'
 
-interface RuntimeProps extends BoxProps {}
+interface RuntimeProps extends BoxProps {
+}
 
-const Runtime = forwardRef<typeof Box, RuntimeProps>(({ ...props }, ref) => {
+const Runtime = forwardRef<typeof Box, RuntimeProps>(({...props}, ref) => {
   return (
-    <Page>
-      <Construction />
-    </Page>
+      <Page>
+        <Construction/>
+      </Page>
   )
 })
 

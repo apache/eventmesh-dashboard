@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.spring.support.register;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.port.PortValidate;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 
 import java.util.List;
 
@@ -37,6 +38,16 @@ public interface BuildMetadata {
 
     List<ClusterType> runtimeTypes();
 
+    /**
+     * 在 create ，绑定时，调用，修改对应的配置。这样速度快点，可以减少 RuntimeDeployService 的复杂度
+     */
+    default ConfigEntity createMetaConfig(RuntimeEntity target, List<RuntimeEntity> runtimeMetadataList) {
+        return null;
+    }
+
+    /**
+     * 这里是 在 create 时候调用?  如果识别了 依赖配置存在，就不进行处理
+     */
     void buildMetaAddress(ScriptBuildData data, RuntimeEntity target, List<RuntimeEntity> runtimeMetadataList);
 
 

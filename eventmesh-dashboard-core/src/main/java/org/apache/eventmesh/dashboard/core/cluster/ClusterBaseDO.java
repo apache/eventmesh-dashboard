@@ -28,7 +28,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ClusterBaseDO<C, R extends  RuntimeBaseDO, RE, CM> extends BaseDataDO<RE, CM> {
+public class ClusterBaseDO<C, R extends RuntimeBaseDO, RE, CM> extends BaseDataDO<RE, CM> {
 
 
     private C clusterInfo;
@@ -36,7 +36,6 @@ public class ClusterBaseDO<C, R extends  RuntimeBaseDO, RE, CM> extends BaseData
     private Map<Long, R> runtimeMap = new ConcurrentHashMap<>();
 
     private AbstractMultiCreateSDKConfig multiCreateSDKConfig;
-
 
 
 }

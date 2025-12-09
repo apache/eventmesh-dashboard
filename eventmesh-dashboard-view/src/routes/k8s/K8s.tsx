@@ -17,21 +17,22 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Stack, StackProps } from '@mui/material'
+import React, {forwardRef} from 'react'
+import {Stack, StackProps} from '@mui/material'
 import Construction from '../../components/Construction'
 import RootLayout from '../../components/page/RootLayout'
 
-interface K8sProps extends StackProps {}
+interface K8sProps extends StackProps {
+}
 
 const K8s = forwardRef<typeof Stack, K8sProps>(
-  ({ children, ...props }, ref) => {
-    return (
-      <RootLayout>
-        <Construction title="K8s" />
-      </RootLayout>
-    )
-  }
+    ({children, ...props}, ref) => {
+      return (
+          <RootLayout>
+            <Construction title="K8s"/>
+          </RootLayout>
+      )
+    }
 )
 
 K8s.displayName = 'K8s'

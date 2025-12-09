@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { PublicState } from './public.types'
-import { NavMenuIdEnum } from '../../../routes/navigation/navigation.types'
+import {createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {PublicState} from './public.types'
+import {NavMenuIdEnum} from '../../../routes/navigation/navigation.types'
 
 const initialState = {
-  navigation: { activeMenuId: NavMenuIdEnum.Home, pinSubmenuIds: [] }
+  navigation: {activeMenuId: NavMenuIdEnum.Home, pinSubmenuIds: []}
 } as PublicState
 
 export const globalSlice = createSlice({
@@ -36,7 +36,8 @@ export const globalSlice = createSlice({
       state.navigation.pinSubmenuIds = action.payload
     }
   },
-  extraReducers: (builder) => {}
+  extraReducers: (builder) => {
+  }
 })
 
 export default globalSlice.reducer

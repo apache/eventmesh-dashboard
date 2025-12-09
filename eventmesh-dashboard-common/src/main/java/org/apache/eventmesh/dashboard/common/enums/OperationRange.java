@@ -33,14 +33,13 @@ public class OperationRange {
 
     private static Map<ClusterType, List<OperationRangeType>> operationRangeListHashMap = new HashMap<>();
 
-    public static OperationRange getInstance() {
-        return operationRange;
-    }
-
     private OperationRange() {
 
     }
 
+    public static OperationRange getInstance() {
+        return operationRange;
+    }
 
     private void setOperationRange(ClusterType clusterType, OperationRangeType operationRangeType) {
         operationRangeListHashMap.computeIfAbsent(clusterType, k -> new ArrayList<>()).add(operationRangeType);
@@ -50,19 +49,27 @@ public class OperationRange {
         return operationRangeListHashMap.get(clusterType);
     }
 
+
+    public enum OperationType {
+
+        RUNTIME_CONFIG,
+
+
+    }
+
     /**
-     * 依据范围查询数据
-     *  集群， runtime ， topic ，SUBSCRIBER ， SUBSCRIBER_QUEUE
+     * 依据范围查询数据 集群， runtime ， topic ，SUBSCRIBER ， SUBSCRIBER_QUEUE
      */
     public enum OperationRangeType {
 
-        ALL(null),
+        ALL(),
 
-        CLUSTER(null),
+        CLUSTER(),
 
-        ALL_RUNTIME(null),
+        ALL_RUNTIME(),
 
-        ONCE_CLUSTER(null),
+        ONCE_CLUSTER(),
+
 
         RANGE_CLUSTER_CAP(CLUSTER),
 

@@ -32,12 +32,11 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://${DB_ADDRESS:localhost:3306}/eventmesh_dashboard?useSSL=false&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://${DB_ADDRESS:localhost:3306}/eventmesh_dashboard?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
       username: ${DB_USERNAME:root}
       password: ${DB_PASSWORD:Ab123123@}
-
       initial-size: 1
-      max-active: 50
+      max-active: 500
       min-idle: 5
       max-wait: 6000
       validation-query: select 'x'
@@ -65,3 +64,11 @@ decoration:
 
 function:
   enabled: false
+
+  reportConfig:
+    url: jdbc:mysql://${DB_ADDRESS:localhost:3306}/eventmesh_dashboard?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:Ab123123@}
+    defaultConfig:
+      engineType: iotdb
+      engineAddress: 127.0.0.1:6667

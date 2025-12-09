@@ -17,18 +17,19 @@
  * under the License.
  */
 
-import React, { forwardRef } from "react";
-import { Box, BoxProps, Stack } from "@mui/material";
-import { LoginOutlined } from "@mui/icons-material";
+import React, {forwardRef} from "react";
+import {Box, BoxProps, Stack} from "@mui/material";
+import {LoginOutlined} from "@mui/icons-material";
 
-interface LoginProps extends BoxProps {}
+interface LoginProps extends BoxProps {
+}
 
-const Login = forwardRef<typeof Box, LoginProps>(({ ...props }, ref) => {
+const Login = forwardRef<typeof Box, LoginProps>(({...props}, ref) => {
   return <Box ref={ref}>
-    <LoginOutlined />
+    <LoginOutlined/>
     <Stack>
-        <span>1</span>
-        <span>2</span>
+      <span>1</span>
+      <span>2</span>
     </Stack>
   </Box>;
 });

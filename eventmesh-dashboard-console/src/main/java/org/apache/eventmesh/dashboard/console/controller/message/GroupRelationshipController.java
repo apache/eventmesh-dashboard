@@ -21,7 +21,7 @@ package org.apache.eventmesh.dashboard.console.controller.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
-import org.apache.eventmesh.dashboard.console.modle.IdDTO;
+import org.apache.eventmesh.dashboard.console.model.IdDTO;
 
 import java.util.List;
 
@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("groupRelationship")
 public class GroupRelationshipController {
-
 
 
     public List<TopicEntity> queryTopicByGroupId(@RequestBody @Validated IdDTO idDTO) {

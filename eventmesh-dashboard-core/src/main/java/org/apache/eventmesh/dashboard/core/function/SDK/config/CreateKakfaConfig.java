@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class CreateKakfaConfig extends AbstractMultiCreateSDKConfig{
+@EqualsAndHashCode(callSuper = true)
+public class CreateKakfaConfig extends AbstractMultiCreateSDKConfig {
 
 }

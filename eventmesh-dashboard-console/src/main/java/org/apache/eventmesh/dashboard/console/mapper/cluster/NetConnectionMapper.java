@@ -25,10 +25,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 /**
- * 网络连接就三个方法
- * 1. 添加 and 修改。没有控制层接口
- * 2. 按照 cluster or runtime id and client（host and port）  查询
- * 3. 按照时间进行统计
+ * 网络连接就三个方法 1. 添加 and 修改。没有控制层接口 2. 按照 cluster or runtime id and client（host and port）  查询 3. 按照时间进行统计
  */
 @Mapper
 public interface NetConnectionMapper {

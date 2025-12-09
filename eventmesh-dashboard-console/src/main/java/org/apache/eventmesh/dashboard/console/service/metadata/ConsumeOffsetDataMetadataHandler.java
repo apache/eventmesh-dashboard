@@ -20,8 +20,6 @@ package org.apache.eventmesh.dashboard.console.service.metadata;
 
 import org.apache.eventmesh.dashboard.console.entity.message.ConsumeOffsetEntity;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,15 +28,4 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConsumeOffsetDataMetadataHandler extends AbstractDBDataMetadataHandler<ConsumeOffsetEntity> {
 
 
-    @Override
-    public void handleAll(List<ConsumeOffsetEntity> addData, List<ConsumeOffsetEntity> updateData, List<ConsumeOffsetEntity> deleteData) {
-
-
-    }
-
-
-    @Override
-    List<ConsumeOffsetEntity> doGetData() {
-        return List.of();
-    }
 }

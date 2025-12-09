@@ -18,13 +18,13 @@
 
 package org.apache.eventmesh.dashboard.console.service.function.Impl;
 
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
-import org.apache.eventmesh.dashboard.console.entity.DefaultConfigKey;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.ChangeConfigDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.GetConfigsListDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.config.UpdateConfigsLog;
+import org.apache.eventmesh.dashboard.console.model.dto.config.ChangeConfigDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.config.UpdateConfigsLog;
 import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
 
 import java.util.Arrays;
@@ -42,12 +42,20 @@ import org.yaml.snakeyaml.Yaml;
 @Service
 public class ConfigServiceImpl implements ConfigService {
 
-
     @Autowired
-    ConfigMapper configMapper;
+    private ConfigMapper configMapper;
 
-    private Map<DefaultConfigKey, String> defaultConfigCache = new HashMap<>();
+    private Map<Object, String> defaultConfigCache = new HashMap<>();
 
+    @Override
+    public List<ConfigEntity> queryByClusterIdList(List<ClusterEntity> clusterConfigEntityList) {
+        return this.configMapper.queryByClusterIdList(clusterConfigEntityList);
+    }
+
+    @Override
+    public List<ConfigEntity> queryByInstanceIdList(List<ConfigEntity> configEntityList, MetadataType metadataType) {
+        return this.configMapper.queryByInstanceIdList(configEntityList, metadataType);
+    }
 
     @EmLog(OprTarget = "Runtime", OprType = "UpdateConfigs")
     public void logUpdateRuntimeConfigs(UpdateConfigsLog updateConfigsLog, List<ChangeConfigDTO> changeConfigDTOList) {
@@ -196,35 +204,15 @@ public class ConfigServiceImpl implements ConfigService {
         return configMapper.selectByInstanceId(config);
     }
 
-    public ConfigEntity setSearchCriteria(GetConfigsListDTO getConfigsListDTO, ConfigEntity configEntity) {
-        if (getConfigsListDTO != null) {
-            if (getConfigsListDTO.getConfigName() != null) {
-                configEntity.setConfigName(getConfigsListDTO.getConfigName());
-            }
-            if (getConfigsListDTO.getIsModify() != null) {
-                configEntity.setIsModify(getConfigsListDTO.getIsModify());
-            }
-            if (getConfigsListDTO.getAlreadyUpdate() != null) {
-                configEntity.setAlreadyUpdate(getConfigsListDTO.getAlreadyUpdate());
-            }
-        }
-        return configEntity;
-    }
 
     @Override
-    public List<ConfigEntity> selectToFront(Long instanceId, Integer type, GetConfigsListDTO getConfigsListDTO) {
-        ConfigEntity config = new ConfigEntity();
-        config.setInstanceId(instanceId);
-        config.setInstanceType(null);
-        config = this.setSearchCriteria(getConfigsListDTO, config);
-        return configMapper.getConfigsToFrontWithDynamic(config);
+    public List<ConfigEntity> queryByInstanceId(ConfigEntity configEntity) {
+        return configMapper.getConfigsToFrontWithDynamic(configEntity);
     }
 
     public void addDefaultConfigToCache() {
         List<ConfigEntity> configEntityList = configMapper.selectAllDefaultConfig();
         configEntityList.forEach(n -> {
-            DefaultConfigKey defaultConfigKey = new DefaultConfigKey(n.getBusinessType(), n.getConfigName());
-            defaultConfigCache.putIfAbsent(defaultConfigKey, n.getConfigValue());
 
         });
     }
@@ -235,12 +223,7 @@ public class ConfigServiceImpl implements ConfigService {
             this.addDefaultConfigToCache();
         }
         ConcurrentHashMap<String, String> stringStringConcurrentHashMap = new ConcurrentHashMap<>();
-        defaultConfigCache.forEach((k, v) -> {
-            if (k.getBusinessType().equals(businessType)) {
-                stringStringConcurrentHashMap.put(k.getConfigName(), v);
-            }
-        });
-        return stringStringConcurrentHashMap;
+        return null;
     }
 
 }

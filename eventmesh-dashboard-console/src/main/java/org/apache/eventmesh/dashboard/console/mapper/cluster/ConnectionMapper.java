@@ -65,20 +65,20 @@ public interface ConnectionMapper {
     public List<ConnectionEntity> selectByClusterIdSinkTypeAndSinkId(ConnectionEntity connectionEntity);
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND source_id = #{sourceId} AND source_type = #{sourceType} "
-        + "AND create_time > #{startTime} AND create_time < #{endTime}")
+            + "AND create_time > #{startTime} AND create_time < #{endTime}")
     public List<ConnectionEntity> selectByClusterIdSourceTypeAndSourceIdAndCreateTimeRange(ConnectionEntity connectionEntity,
         @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND sink_id = #{sinkId} AND sink_type = #{sinkType} "
-        + "AND create_time > #{startTime} AND create_time < #{endTime}")
+            + "AND create_time > #{startTime} AND create_time < #{endTime}")
     public List<ConnectionEntity> selectByClusterIdSinkTypeAndSinkIdAndCreateTimeRange(ConnectionEntity connectionEntity,
         @Param("startTime") Timestamp startTime, @Param("endTime") Timestamp endTime);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("INSERT INTO connection (cluster_id, source_type, source_id," + " sink_type, sink_id, runtime_id, status, topic, group_id, description)"
-        + " VALUES ( #{clusterId}, #{sourceType}, #{sourceId}, "
-        + " #{sinkType}, #{sinkId},  #{runtimeId}, 1, #{topic}, #{groupId}, #{description})"
-        + "ON DUPLICATE KEY UPDATE status = 1")
+            + " VALUES ( #{clusterId}, #{sourceType}, #{sourceId}, "
+            + " #{sinkType}, #{sinkId},  #{runtimeId}, 1, #{topic}, #{groupId}, #{description})"
+            + "ON DUPLICATE KEY UPDATE status = 1")
     Long insert(ConnectionEntity connectionEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")

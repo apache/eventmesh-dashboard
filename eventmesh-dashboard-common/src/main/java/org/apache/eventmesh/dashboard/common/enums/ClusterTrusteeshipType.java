@@ -54,13 +54,25 @@ public enum ClusterTrusteeshipType {
     // 不托管
     NO_TRUSTEESHIP("不托管", List.of(ClusterType.CLUSTER, ClusterType.META, ClusterType.RUNTIME, ClusterType.META_AND_RUNTIME));
 
-    private List<ClusterType> clusterTypeList;
-
     private final String type;
-
+    private List<ClusterType> clusterTypeList;
     private String name;
 
     private FirstToWhom firstToWhom;
+
+    ClusterTrusteeshipType(String type, List<ClusterType> clusterTypeList) {
+        this.type = type;
+        this.clusterTypeList = clusterTypeList;
+    }
+
+    public boolean isSelf() {
+        return this == ClusterTrusteeshipType.SELF || this == ClusterTrusteeshipType.TRUSTEESHIP;
+    }
+
+    public boolean isReverse() {
+        return this == ClusterTrusteeshipType.TRUSTEESHIP_FIND || this == ClusterTrusteeshipType.TRUSTEESHIP_FIND_REVERSE;
+    }
+
 
     public enum FirstToWhom {
 
@@ -84,6 +96,10 @@ public enum ClusterTrusteeshipType {
          * 同步中
          */
         UNDER_WAY,
+
+        NOT_EXECUTED,
+
+        ERROR_ING,
 
         FAIL,
 
@@ -120,18 +136,5 @@ public enum ClusterTrusteeshipType {
         SELF,
 
 
-    }
-
-    ClusterTrusteeshipType(String type, List<ClusterType> clusterTypeList) {
-        this.type = type;
-    }
-
-
-    public boolean isSelf() {
-        return this == ClusterTrusteeshipType.SELF || this == ClusterTrusteeshipType.TRUSTEESHIP;
-    }
-
-    public boolean isReverse() {
-        return this == ClusterTrusteeshipType.TRUSTEESHIP_FIND || this == ClusterTrusteeshipType.TRUSTEESHIP_FIND_REVERSE;
     }
 }

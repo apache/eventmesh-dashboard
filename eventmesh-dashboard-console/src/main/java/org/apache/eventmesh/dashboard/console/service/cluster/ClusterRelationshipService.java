@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.service.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
+import org.apache.eventmesh.dashboard.console.model.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
 
 import java.util.List;
 
@@ -27,6 +28,11 @@ import java.util.List;
  *
  */
 public interface ClusterRelationshipService {
+
+
+    List<ClusterRelationshipEntity> queryListByClusterIdAndType(QueryListByClusterIdAndTypeDO data);
+
+    List<ClusterRelationshipEntity> queryListByClusterIdListAndType(QueryListByClusterIdAndTypeDO data);
 
 
     Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity);

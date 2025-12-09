@@ -38,11 +38,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 
 @Aspect
-@Service
+//@Service
 public class OprLog implements Ordered, ApplicationContextAware {
 
     private int order = LOWEST_PRECEDENCE - 1000; // Specify the order of execution

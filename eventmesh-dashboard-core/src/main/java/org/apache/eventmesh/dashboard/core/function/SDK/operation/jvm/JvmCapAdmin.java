@@ -25,7 +25,8 @@ import org.apache.eventmesh.dashboard.core.function.SDK.SDKMetadata;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateJvmCapConfig;
 
-@SDKMetadata(clusterType = ClusterType.STORAGE_JVM_CAP_BROKER, remotingType = RemotingType.JVM, sdkTypeEnum = SDKTypeEnum.ALL)
+@SDKMetadata(clusterType = {ClusterType.STORAGE_JVM_CAP_BROKER,
+    ClusterType.STORAGE_JVM_CAP_META}, remotingType = RemotingType.JVM, sdkTypeEnum = SDKTypeEnum.ALL)
 public class JvmCapAdmin extends AbstractSDKOperation<Object, CreateJvmCapConfig> {
 
     @Override

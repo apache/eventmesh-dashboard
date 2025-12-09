@@ -26,8 +26,8 @@ import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.modle.domain.ClusterEntityDO;
-import org.apache.eventmesh.dashboard.console.modle.domain.RuntimeEntityDO;
+import org.apache.eventmesh.dashboard.console.model.domain.ClusterEntityDO;
+import org.apache.eventmesh.dashboard.console.model.domain.RuntimeEntityDO;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ClusterConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.RuntimeConvertMetaData;
 import org.apache.eventmesh.dashboard.core.cluster.ClusterBaseDO;
@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,12 +61,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ClusterMetadataDomain {
 
+    @Getter
     private ColonyDO<ClusterDO> colonyDO;
 
 
     private boolean coreModel = true;
 
-    private boolean buildConfig = false;
+    private boolean buildConfig = true;
 
     @Setter
     private DataHandler handler;
@@ -230,7 +232,7 @@ public class ClusterMetadataDomain {
         ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterType);
         if (this.buildConfig && !clusterType.isDefinition() && clusterFramework.isCAP()) {
             AbstractMultiCreateSDKConfig config =
-                ConfigManage.getInstance().getMultiCreateSDKConfig(clusterEntity.getClusterType(), SDKTypeEnum.ADMIN);
+                ConfigManage.getInstance().getMultiCreateSdkConfig(clusterEntity.getClusterType(), SDKTypeEnum.ADMIN);
             config.setKey(clusterEntity.getId().toString());
             clusterBaseDO.setMultiCreateSDKConfig(config);
         }
@@ -246,7 +248,7 @@ public class ClusterMetadataDomain {
             ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(runtimeEntity.getClusterType());
             if (!clusterFramework.isCAP()) {
                 AbstractSimpleCreateSDKConfig config =
-                    ConfigManage.getInstance().getSimpleCreateSDKConfig(runtimeEntity.getClusterType(), SDKTypeEnum.ADMIN);
+                    ConfigManage.getInstance().getSimpleCreateSdkConfig(runtimeEntity.getClusterType(), SDKTypeEnum.ADMIN);
                 config.setKey(runtimeEntity.getId().toString());
                 config.setNetAddress(this.createNetAddress(runtimeEntity));
                 runtimeBaseDO.setCreateSDKConfig(config);
@@ -276,6 +278,7 @@ public class ClusterMetadataDomain {
 
     /**
      * TODO @see OperationRangeDomain.
+     *
      * @param clusterId
      * @param clusterOperationHandler
      */
@@ -351,13 +354,10 @@ public class ClusterMetadataDomain {
     @SuppressWarnings("rawtypes")
     private static class QueueConditionHandler {
 
-        private QueueCondition queueCondition;
-
-        private ColonyDO<ClusterDO> colonyDO;
-
-        private Map<Long, ColonyDO<ClusterDO>> currentColonyDOMap;
-
         private final List<Object> resultData = new ArrayList<>();
+        private QueueCondition queueCondition;
+        private ColonyDO<ClusterDO> colonyDO;
+        private Map<Long, ColonyDO<ClusterDO>> currentColonyDOMap;
 
         public <T> T handler() {
             this.getColonyDOMap();
@@ -399,17 +399,17 @@ public class ClusterMetadataDomain {
 
     public static class QueueCondition {
 
+        private final ClusterType resultType = ClusterType.CLUSTER;
         private Long clusterId;
-
         /**
          *
          */
         private ClusterType clusterType;
-
-        private final ClusterType resultType = ClusterType.CLUSTER;
-
         private boolean resultId = false;
 
+
+        public QueueCondition() {
+        }
 
         public QueueCondition clusterId(Long clusterId) {
             this.clusterId = clusterId;
@@ -434,9 +434,6 @@ public class ClusterMetadataDomain {
         public QueueCondition runtime() {
             this.clusterType = ClusterType.RUNTIME;
             return this;
-        }
-
-        public QueueCondition() {
         }
 
         public QueueCondition resultId() {

@@ -30,7 +30,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class MetadataSyncResultEntity extends BaseRuntimeIdEntity {
 
-
     private Long syncId;
 
     private MetadataType metadataType;

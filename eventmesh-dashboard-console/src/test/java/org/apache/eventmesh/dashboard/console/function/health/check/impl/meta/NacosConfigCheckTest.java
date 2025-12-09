@@ -71,6 +71,6 @@ class NacosConfigCheckTest {
 
     @AfterEach
     public void destroy() {
-       
+
     }
 }

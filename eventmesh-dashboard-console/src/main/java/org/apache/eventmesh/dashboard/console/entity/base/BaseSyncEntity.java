@@ -52,6 +52,8 @@ public abstract class BaseSyncEntity extends BaseClusterIdEntity {
 
     private DeployStatusType deployStatusType;
 
+    private DeployStatusType createMethod;
+
     private Long resourcesConfigId;
 
     private Long deployScriptId;

@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Paper, PaperProps } from '@mui/material'
-import { AppSectionBoxShadow } from '../app.const'
+import {Paper, PaperProps} from '@mui/material'
+import {AppSectionBoxShadow} from '../app.const'
 import styled from '@emotion/styled'
 
-interface RounderPaperProps extends PaperProps {}
+interface RounderPaperProps extends PaperProps {
+}
 
 const RounderPaper = styled(Paper)(() => ({
   borderRadius: 16,

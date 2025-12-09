@@ -18,24 +18,21 @@
 
 package org.apache.eventmesh.dashboard.console.controller.deploy;
 
-import org.apache.eventmesh.dashboard.common.enums.ClusterOwnType;
-import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
-import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
+import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateClusterByCopyHandler;
 import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateClusterByDeployScriptHandler;
+import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateClusterByFullMetadataHandler;
 import org.apache.eventmesh.dashboard.console.controller.deploy.create.CreateRuntimeByDeployScriptHandler;
-import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
-import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.mapstruct.deploy.ClusterCycleControllerMapper;
-import org.apache.eventmesh.dashboard.console.modle.cluster.VerifyNameDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateClusterByDeployScriptDO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateClusterByEventMesh;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateRuntimeByDeployScriptDTO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.create.CreateRuntimeByOnlyDataDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByCopyDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByDeployScriptDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByFullMetadataDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByServiceAddressDTO;
+import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateRuntimeByDeployScriptDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.cluster.VerifyNameDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
+
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -95,6 +92,12 @@ public class ClusterCycleController {
     @Autowired
     private CreateClusterByDeployScriptHandler createClusterByDeployScriptHandler;
 
+    @Autowired
+    private CreateClusterByCopyHandler createClusterByCopyHandler;
+
+    @Autowired
+    private CreateClusterByFullMetadataHandler createClusterByFullMetadataHandler;
+
 
     /**
      * @param verifyNameDTO
@@ -105,15 +108,35 @@ public class ClusterCycleController {
         return "";
     }
 
-    @PostMapping("createRuntimeByOnlyDataHandler")
-    public void createRuntimeByOnlyDataHandler(@RequestBody @Validated CreateRuntimeByOnlyDataDO createRuntimeByOnlyDataDO) {
-        RuntimeEntity runtimeEntity = ClusterCycleControllerMapper.INSTANCE.createRuntimeByOnlyDataHandler(createRuntimeByOnlyDataDO);
-        runtimeService.insertRuntime(runtimeEntity);
-    }
 
     @PostMapping("createRuntimeByDeployScript")
     public void createRuntimeByDeployScript(@RequestBody @Validated CreateRuntimeByDeployScriptDTO createRuntimeByDeployScriptDTO) {
         this.createRuntimeByDeployScriptHandler.handler(createRuntimeByDeployScriptDTO);
+    }
+
+    /**
+     *
+     */
+    @PostMapping("createClusterByServiceAddress")
+    public void createClusterByServiceAddress(CreateClusterByServiceAddressDTO dto) {
+
+        if (Objects.equals(dto.getClusterType(), ClusterType.STORAGE_ROCKETMQ_CLUSTER)) {
+            dto.setClusterType(null);
+        }
+
+    }
+
+
+    public void createClusterByFullAddress() {
+
+    }
+
+    public void createClusterByMetaAddress() {
+
+    }
+
+    public void createClusterByRuntimeAddress() {
+
     }
 
     @PostMapping("createClusterByDeployScript")
@@ -121,72 +144,16 @@ public class ClusterCycleController {
         this.createClusterByDeployScriptHandler.handler(createClusterByDeployScriptDO);
     }
 
+    @PostMapping("createClusterByCopy")
+    public void createClusterByCopy(@RequestBody @Validated CreateClusterByCopyDTO dto) {
+        this.createClusterByCopyHandler.handler(dto);
+    }
+
     /**
-     * 分 eventmesh 集群创建
-     *
-     * @param createClusterByEventMesh
+     * 这里应该上传一个文件
      */
-    @PostMapping("createEventMeshClusterByOnlyData")
-    public Long createEventMeshClusterByOnlyData(@RequestBody @Validated CreateClusterByEventMesh createClusterByEventMesh) {
-        ClusterEntity clusterEntity = ClusterCycleControllerMapper.INSTANCE.createClusterByEventMesh(createClusterByEventMesh);
-        clusterEntity.setClusterType(ClusterType.EVENTMESH_CLUSTER);
-        clusterEntity.setClusterOwnType(ClusterOwnType.NOT);
-        clusterEntity.setAuthType("");
-        clusterEntity.setVersion("");
-        clusterEntity.setRuntimeIndex(0);
-        clusterEntity.setTrusteeshipType(ClusterTrusteeshipType.NOT);
-        clusterEntity.setFirstToWhom(FirstToWhom.NOT);
-        clusterEntity.setDeployStatusType(DeployStatusType.CREATE_SUCCESS);
-        clusterEntity.setResourcesConfigId(0L);
-        clusterEntity.setDeployScriptId(0L);
-        clusterEntity.setDeployScriptName("");
-        clusterEntity.setDeployScriptVersion("");
-        clusterService.insertCluster(clusterEntity);
-        return clusterEntity.getId();
+    @PostMapping("createClusterByFullMetadata")
+    public void createClusterByFullMetadata(@RequestBody @Validated CreateClusterByFullMetadataDTO dto) {
+        this.createClusterByFullMetadataHandler.handler(dto);
     }
-
-    @PostMapping("createClusterByEventMesh")
-    public Long createClusterByEventMesh(@RequestBody @Validated CreateClusterByEventMesh createClusterByEventMesh) {
-        ClusterEntity clusterEntity = ClusterCycleControllerMapper.INSTANCE.createClusterByEventMesh(createClusterByEventMesh);
-        clusterEntity.setClusterType(ClusterType.EVENTMESH_CLUSTER);
-        clusterEntity.setClusterOwnType(ClusterOwnType.INDEPENDENCE);
-        clusterEntity.setAuthType("");
-        clusterEntity.setVersion("");
-        clusterEntity.setRuntimeIndex(0);
-        clusterEntity.setDeployStatusType(DeployStatusType.CREATE_SUCCESS);
-        clusterEntity.setResourcesConfigId(0L);
-        clusterEntity.setDeployScriptId(0L);
-        clusterEntity.setDeployScriptName("");
-        clusterEntity.setDeployScriptVersion("");
-        ClusterRelationshipEntity relationshipEntity = new ClusterRelationshipEntity();
-        clusterService.insertClusterAndRelationship(clusterEntity, relationshipEntity);
-        return clusterEntity.getId();
-
-    }
-
-
-    @PostMapping("pauseCluster")
-    public void pauseCluster(@RequestBody @Validated CreateClusterByEventMesh createClusterByEventMesh) {
-    }
-
-    @PostMapping("pauseRuntime")
-    public void pauseRuntime(@RequestBody @Validated CreateClusterByEventMesh createClusterByEventMesh) {
-    }
-
-    @PostMapping("relationship")
-    public void relationship(@RequestBody @Validated CreateClusterByEventMesh createClusterByEventMesh) {
-    }
-
-    @PostMapping("unrelationship")
-    public void unrelationship(@RequestBody @Validated CreateClusterByEventMesh createClusterByEventMesh) {
-    }
-
-    @PostMapping("uninstallCluster")
-    public void uninstallCluster(@RequestBody @Validated CreateClusterByEventMesh createClusterByEventMesh) {
-    }
-
-    @PostMapping("uninstallRuntime")
-    public void uninstallRuntime(@RequestBody @Validated CreateClusterByEventMesh createClusterByEventMesh) {
-    }
-
 }

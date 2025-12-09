@@ -40,37 +40,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {EventMeshDashboardApplication.class})
-@Sql(scripts = {"classpath:eventmesh-dashboard.sql"})
+//@Sql(scripts = {"classpath:eventmesh-dashboard.sql"})
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class ClusterEntityMapperTest {
 
 
+    private static final AtomicLong nameIndex = new AtomicLong();
     @Autowired
     private ClusterMapper clusterMapper;
-
-
     @Autowired
     private ClusterRelationshipMapper clusterRelationshipMapper;
-
     private BuildFullSceneData buildFullSceneData = new BuildFullSceneData();
-
-    private static final AtomicLong nameIndex = new AtomicLong();
-
     private ClusterEntity clusterEntity = new ClusterEntity();
 
-    @Before
-    public void init() {
-        this.clusterEntity = createClusterEntity();
-        this.clusterMapper.insertCluster(clusterEntity);
-    }
-
-    public static ClusterEntity createClusterEntity(){
+    public static ClusterEntity createClusterEntity() {
         return createClusterEntity(ClusterType.EVENTMESH_CLUSTER);
     }
 
@@ -96,10 +84,15 @@ public class ClusterEntityMapperTest {
         return clusterEntity;
     }
 
+    @Before
+    public void init() {
+        this.clusterEntity = createClusterEntity();
+        //this.clusterMapper.insertCluster(clusterEntity);
+    }
 
     @Test
     public void test_queryRelationClusterByClusterIdAndType() {
-        this.buildFullSceneData.buildReplica(ClusterType.STORAGE_REDIS_CLUSTER);
+        this.buildFullSceneData.buildReplica(ClusterType.EVENTMESH_JVM_CLUSTER);
 
     }
 

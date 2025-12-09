@@ -25,6 +25,7 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.function.health.Health2Service;
+import org.apache.eventmesh.dashboard.console.function.report.ReportHandlerManage;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
@@ -55,58 +56,65 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class FunctionManage {
 
-
+    private final MetadataSyncManage metadataSyncManage = new MetadataSyncManage();
+    private final Health2Service healthService = new Health2Service();
+    private final ClusterMetadataDomain clusterMetadataDomain = new ClusterMetadataDomain();
+    /**
+     * 定时任务查询对象
+     */
+    private final RuntimeEntity runtimeEntity = new RuntimeEntity();
+    /**
+     * 定时任务查询对象
+     */
+    private final ClusterEntity clusterEntity = new ClusterEntity();
+    /**
+     * 定时任务查询对象
+     */
+    private final ClusterRelationshipEntity clusterRelationshipEntity = new ClusterRelationshipEntity();
+    @Autowired
+    private FunctionConfig functionConfig;
     @Autowired
     private RuntimeService runtimeService;
-
-
     @Autowired
     private ClusterService clusterService;
-
     @Autowired
     private ClusterRelationshipService clusterRelationshipService;
-
-
     @Autowired
     private DefaultMetadataSyncResultHandler defaultMetadataSyncResultHandler;
-
     @Autowired
     private HealthDataService dataService;
-
     @Autowired
     private List<DataMetadataHandler> dataMetadataHandlerList;
 
-
-    private final MetadataSyncManage metadataSyncManage = new MetadataSyncManage();
-
-    private final Health2Service healthService = new Health2Service();
-
-    private final ClusterMetadataDomain clusterMetadataDomain = new ClusterMetadataDomain();
-
-    private final RuntimeEntity runtimeEntity = new RuntimeEntity();
-
-    private final ClusterEntity clusterEntity = new ClusterEntity();
-
-    private final ClusterRelationshipEntity clusterRelationshipEntity = new ClusterRelationshipEntity();
-
     @Value("${function.enabled:false}")
     private boolean enabled;
+
+    @Bean
+    public ReportHandlerManage buildReportHandlerManage() {
+        ReportHandlerManage reportHandlerManage = new ReportHandlerManage();
+        reportHandlerManage.setReportConfig(functionConfig.getReportConfig());
+        reportHandlerManage.setEnable(enabled);
+        reportHandlerManage.init();
+        return reportHandlerManage;
+    }
 
     @PostConstruct
     private void init() {
         if (!this.enabled) {
             return;
         }
-        clusterMetadataDomain.rootClusterDHO();
+        this.clusterMetadataDomain.rootClusterDHO();
         this.initQueueData();
         this.createHandler();
         this.buildMetadataSyncManage();
+
+        healthService.setDataService(dataService);
     }
 
     private void initQueueData() {
         LocalDateTime date = LocalDateTime.of(2000, 1, 1, 0, 0, 0, 0);
         runtimeEntity.setUpdateTime(date);
-        clusterEntity.setCreateTime(date);
+        clusterEntity.setUpdateTime(date);
         clusterRelationshipEntity.setUpdateTime(date);
     }
 
@@ -117,8 +125,9 @@ public class FunctionManage {
         }
         this.metadataSyncManage.setMetadataSyncResultHandler(this.defaultMetadataSyncResultHandler);
         this.metadataSyncManage.setDataMetadataHandlerList((List<DataMetadataHandler<Object>>) ((Object) this.dataMetadataHandlerList));
+        this.metadataSyncManage.setColonyDO(this.clusterMetadataDomain.getColonyDO());
 
-        this.metadataSyncManage.init(5000, 100, databaseAndMetadataMapperList);
+        this.metadataSyncManage.init(1000, 50, databaseAndMetadataMapperList);
     }
 
     /**
@@ -141,8 +150,8 @@ public class FunctionManage {
      * <p>
      * 然后 然后日常
      */
-    @Scheduled(fixedRate = 5000)
-    public void initFunctionManager() {
+    @Scheduled(initialDelay = 1500, fixedDelay = 5000)
+    public void health() {
         if (!this.enabled) {
             return;
         }
@@ -150,7 +159,10 @@ public class FunctionManage {
 
     }
 
-    @Scheduled(initialDelay = 500L, fixedDelay = 100)
+    /**
+     * 需要一个日志打印管理模块
+     */
+    @Scheduled(initialDelay = 500L, fixedDelay = 100000)
     public void sync() {
         if (!this.enabled) {
             return;
@@ -161,7 +173,8 @@ public class FunctionManage {
         List<ClusterRelationshipEntity> clusterRelationshipEntityList =
             this.clusterRelationshipService.queryByUpdateTime(clusterRelationshipEntity);
         if (runtimeEntityList.isEmpty() && clusterEntityList.isEmpty() && clusterRelationshipEntityList.isEmpty()) {
-            log.info("No runtime entities found");
+            //log.info("No runtime entities found");
+            return;
         }
         runtimeEntity.setUpdateTime(date);
         clusterEntity.setUpdateTime(date);

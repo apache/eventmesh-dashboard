@@ -32,6 +32,8 @@ public class RuntimeEntity extends BaseSyncEntity {
 
     private String host;
 
+    private String podHost;
+
     /**
      * 添加的时候只需要 host 与 post eventmesh runtime 是 admin port。通过 runtime admin 获得所有的配置。 meta 需要 host 与 post store host 与 post jmxPort
      */
@@ -50,7 +52,6 @@ public class RuntimeEntity extends BaseSyncEntity {
     private Long kubernetesClusterId;
 
     private String authType;
-
 
 
 }

@@ -30,8 +30,8 @@ import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.GetPortsDO;
+import org.apache.eventmesh.dashboard.console.model.DO.runtime.QueryRuntimeByBigExpandClusterDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.GetPortsDO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
@@ -58,8 +58,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Nullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -112,6 +113,31 @@ public class RuntimeDeployService {
 
     }
 
+    private final BuildMetadataManage buildMetadataManage = new BuildMetadataManage();
+    private final ThreadPoolExecutor deployThreadPoolExecutor = new ThreadPoolExecutor(10, 10, 20, TimeUnit.SECONDS, new LinkedBlockingDeque<>(),
+        new ThreadFactory() {
+            final AtomicInteger counter = new AtomicInteger(0);
+
+            @Override
+            public Thread newThread(@Nullable Runnable r) {
+                return new Thread(r, "deploy-" + counter.incrementAndGet());
+            }
+        });
+    @Autowired
+    private ClusterService clusterService;
+    @Autowired
+    private RuntimeService runtimeService;
+    @Autowired
+    private ClusterRelationshipService clusterRelationshipService;
+    @Autowired
+    private DeployScriptService deployScriptService;
+    @Autowired
+    private ResourcesConfigService resourcesConfigService;
+    @Autowired
+    private ConfigService configService;
+    @Autowired
+    private PortService portService;
+
     static DeployStatusType getFailedType(DeployStatusType deployStatusType) {
         return DEPLOY_FAIL_STATUS.get(deployStatusType);
     }
@@ -124,42 +150,7 @@ public class RuntimeDeployService {
         return DEPLOY_ING_STATUS.get(deployStatusType);
     }
 
-    @Autowired
-    private ClusterService clusterService;
-
-    @Autowired
-    private RuntimeService runtimeService;
-
-    @Autowired
-    private ClusterRelationshipService clusterRelationshipService;
-
-    @Autowired
-    private DeployScriptService deployScriptService;
-
-    @Autowired
-    private ResourcesConfigService resourcesConfigService;
-
-    @Autowired
-    private ConfigService configService;
-
-    @Autowired
-    private PortService portService;
-
-
-    private final BuildMetadataManage buildMetadataManage = new BuildMetadataManage();
-
-    private final ThreadPoolExecutor deployThreadPoolExecutor = new ThreadPoolExecutor(10, 10, 20, TimeUnit.SECONDS, new LinkedBlockingDeque<>(),
-        new ThreadFactory() {
-            final AtomicInteger counter = new AtomicInteger(0);
-
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "deploy-" + counter.incrementAndGet());
-            }
-        });
-
-
-    @Scheduled(initialDelay = 100, fixedDelay = 100)
+    //@Scheduled(initialDelay = 100, fixedDelay = 100)
     public void deploy() {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setUpdateTime(LocalDateTime.now().minusMinutes(500));
@@ -184,8 +175,11 @@ public class RuntimeDeployService {
             case PAUSE_ING, PAUSE_FULL_WAIT -> {
                 return new RuntimePauseDeploy();
             }
-            case UNINSTALL -> {
+            case UNINSTALL, UNINSTALL_ING -> {
                 return new RuntimeUninstallDeploy();
+            }
+            case RESET -> {
+                return new RuntimeResetDeploy();
             }
             default -> {
                 return null;
@@ -216,13 +210,40 @@ public class RuntimeDeployService {
         protected BuildMetadata buildMetadata;
 
 
+        /**
+         * TODO
+         *  跨 kubernetes 集群 IP 问题，解决方案解决方案如下：
+         *  1. 如何 不在同一个集群，console 提供 kubernetes node ip。
+         *      1. 这样需要识别 依赖节点是否在同一个 kubernetes 集群， 不想再加模块了，在加下去遥遥无期
+         *  2. kubernetes 集群 之间实现 跨集群 IP 共享
+         *      1. 问题1: 如果 两个 kubernetes 集群 的 IP 冲突解决
+         *          1. 方案一： 跨集群 IP 共享组件进行映射
+         *          2. 方案二： 设置 kubernetes 集群 ip 范围，让集群 ip 不冲突
+         *      2. flannel 与 calico 实现一个 之定义 dns 支持 kubernetes dns
+         *      3. 云厂商怎么做的，定义 一个专有网络，有多个交换机。
+         *          比如： 有三个kubernetes 抽象成一个 大集群，使用 flannel 对大集群进行管理，就是一个专业有望
+         *                同时 flannel 是 这个网络的交换机
+         *               4. console 无法提供 flannel 或则 calico 的解决
+         *          3. kvm 模式下 ，跨机房，没有什么问题，因为 网管会处理机房的 IP 段，不需要管
+         *  4. 混合云模式，私有云 与 公有云 的 IP 段是区分的。网管会把 私有云 与公有云的 IP 做映射，不需要管
+         * TODO
+         *  kubernetes 内组件如何向外部服务提供端口，
+         *  外部调用端口，与内部调用端口不一致，需要识别 节点
+         * TODO
+         *  比如： rocketmq 的 nameserver 与 broker 在一个 kafka 集群， broker 配置 nameservice pod host
+         *        外部 client 调用的 nameserver 外部 node ip ，
+         *        broker 需要向 nameserver 注册 node ip 与 pod ip
+         *        还有端口问题
+         *        需要存储多个 IP 地址，kubernetes 内部的提供 pod ip，外部提供node ip
+         *        kubernetes 域名
+         */
         public void queryHandlerData() {
             this.clusterType = this.runtimeEntity.getClusterType();
             ClusterEntity clusterEntity = new ClusterEntity();
             clusterEntity.setId(this.runtimeEntity.getClusterId());
             this.clusterEntity = clusterService.queryClusterById(clusterEntity);
             /*
-             *   查询 kubernetes  cluster
+             *  查询 kubernetes  cluster
              *  TODO 目前无法处理 多 kubernetes 的问题
              */
             this.kubeClusterEntity = clusterService.queryRelationshipClusterByClusterIdAndType(clusterEntity);
@@ -254,8 +275,10 @@ public class RuntimeDeployService {
 
                 List<RuntimeEntity> newRuntimeEntityList = runtimeService.queryMetaRuntimeByStorageClusterId(queryRuntimeByBigExpandClusterDO);
                 this.buildMetadata.buildMetaAddress(this.scriptBuildData, runtimeEntity, newRuntimeEntityList);
+                return;
             }
-            // 如果是创建 runtime ， 需要得到 所有存储的 runtime
+            // TODO 如果是创建 eventmesh runtime ， 需要得到 所有存储的 client 配置地址
+            // TODO RocketMQ 是 nameserver ， kafka 是 broker list
             if (Objects.equals(this.clusterType, ClusterType.EVENTMESH_RUNTIME)) {
                 QueryRuntimeByBigExpandClusterDO data = QueryRuntimeByBigExpandClusterDO.builder().followClusterId(this.clusterEntity.getId())
                     .mainClusterType(ClusterType.EVENTMESH_CLUSTER).storageClusterTypeList(ClusterType.getStorageCluster())
@@ -263,6 +286,7 @@ public class RuntimeDeployService {
 
                 List<RuntimeEntity> storageMetaRuntimeList = runtimeService.queryRuntimeByBigExpandCluster(data);
                 this.buildMetadata.buildMetaAddress(this.scriptBuildData, runtimeEntity, storageMetaRuntimeList);
+                return;
             }
             if (this.clusterType.isMetaAndRuntime() || (this.clusterType.isMeta() && this.clusterFramework.isCAP())) {
                 // CAP 模式 需要得到本集群里面所有 runtime
@@ -270,7 +294,6 @@ public class RuntimeDeployService {
                 this.buildMetadata.buildMetaAddress(this.scriptBuildData, runtimeEntity, metaAndRuntimeList);
             }
         }
-
 
 
         /**
@@ -289,7 +312,7 @@ public class RuntimeDeployService {
 
             if (this.clusterType.isMetaAndRuntime() && Objects.equals(this.runtimeEntity.getDeployStatusType(),
                 DeployStatusType.CREATE_WAIT)) {
-                // 修改数据
+                // 修改数据 nacos
                 this.metaAndRuntimeList.forEach((value) -> {
                     value.setDeployStatusType(DeployStatusType.CREATE_CAP_UPDATE_WAIT);
                     this.updateRuntimeList.add(value);
@@ -311,6 +334,14 @@ public class RuntimeDeployService {
         @Override
         public void run() {
             try {
+                this.updateRuntimeList.add(this.runtimeEntity);
+                try {
+                    runtimeService.batchUpdate(this.updateRuntimeList);
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    return;
+                }
+
                 this.queryHandlerData();
                 this.buildOperationMetaData();
                 if (Objects.equals(this.runtimeEntity.getDeployStatusType(), DeployStatusType.UNINSTALL)) {
@@ -325,7 +356,6 @@ public class RuntimeDeployService {
                 log.error(e.getMessage(), e);
                 this.runtimeEntity.setDeployStatusType(getFailedType(runtimeEntity.getDeployStatusType()));
             }
-            this.updateRuntimeList.add(this.runtimeEntity);
 
             try {
                 runtimeService.batchUpdate(this.updateRuntimeList);
@@ -345,6 +375,21 @@ public class RuntimeDeployService {
             // 直接从 云 or 容器 删除资源
         }
 
+    }
+
+    /**
+     *  TODO
+     *      本来重启的设计是 与 创建一起的
+     *      但是因为创建会申请端口，所以只能独立出来
+     */
+    class RuntimeResetDeploy extends AbstractRuntimeServiceTask {
+
+        @Override
+        void handler() {
+            // 如果在 就删除
+
+            // 如果不在就设为一
+        }
     }
 
     class RuntimePauseDeploy extends AbstractRuntimeServiceTask {
@@ -382,6 +427,15 @@ public class RuntimeDeployService {
             resourcesConfigEntity = resourcesConfigService.queryResourcesById(resourcesConfigEntity);
             this.scriptBuildData.setResourcesConfigEntity(resourcesConfigEntity);
 
+            this.applyPort();
+            this.buildMetadata.buildConfig(this.scriptBuildData, this.runtimeEntity);
+            this.kubernetesClient.resource(this.buildScriptContent()).serverSideApply();
+
+            //kubernetesClient.load(new ByteArrayInputStream(this.buildScriptContent().getBytes())).serverSideApply().
+
+        }
+
+        private void configHandler() {
             ConfigEntity configEntity = new ConfigEntity();
             configEntity.setClusterId(this.clusterEntity.getId());
             configEntity.setInstanceId(this.clusterEntity.getId());
@@ -389,12 +443,6 @@ public class RuntimeDeployService {
             List<ConfigEntity> configEntityList = configService.queryByClusterAndInstanceId(configEntity);
 
             this.scriptBuildData.setConfigEntityList(configEntityList);
-            this.buildMetadata.buildConfig(this.scriptBuildData, this.runtimeEntity);
-            this.applyPort();
-            this.kubernetesClient.resource(this.buildScriptContent()).serverSideApply();
-
-            //kubernetesClient.load(new ByteArrayInputStream(this.buildScriptContent().getBytes())).serverSideApply().
-
         }
 
         private void applyPort() {
@@ -407,6 +455,7 @@ public class RuntimeDeployService {
             for (int i = 0; i < port.size(); i++) {
                 this.scriptBuildData.put(portValidate.portRules().get(i).getName(), port.get(i));
             }
+            this.configHandler();
         }
 
         private String buildScriptContent() {

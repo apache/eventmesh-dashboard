@@ -21,6 +21,7 @@ package org.apache.eventmesh.dashboard.console.service.cluster.impl;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper;
+import org.apache.eventmesh.dashboard.console.model.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 
 import java.util.List;
@@ -33,6 +34,16 @@ public class ClusterRelationshipServiceImpl implements ClusterRelationshipServic
 
     @Autowired
     private ClusterRelationshipMapper clusterRelationshipMapper;
+
+    @Override
+    public List<ClusterRelationshipEntity> queryListByClusterIdAndType(QueryListByClusterIdAndTypeDO data) {
+        return this.clusterRelationshipMapper.queryListByClusterIdAndType(data);
+    }
+
+    @Override
+    public List<ClusterRelationshipEntity> queryListByClusterIdListAndType(QueryListByClusterIdAndTypeDO data) {
+        return this.clusterRelationshipMapper.queryListByClusterIdListAndType(data);
+    }
 
     @Override
     public Integer addClusterRelationshipEntry(ClusterRelationshipEntity clusterRelationshipEntity) {
@@ -66,6 +77,6 @@ public class ClusterRelationshipServiceImpl implements ClusterRelationshipServic
 
     @Override
     public List<ClusterRelationshipEntity> queryByUpdateTime(ClusterRelationshipEntity clusterRelationshipEntity) {
-        return null;
+        return this.clusterRelationshipMapper.queryNewlyIncreased(clusterRelationshipEntity);
     }
 }

@@ -17,36 +17,36 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps, Typography } from '@mui/material'
-import { Icons } from '../assets/icons'
-import { grey } from '@mui/material/colors'
+import React, {forwardRef} from 'react'
+import {Box, BoxProps, Typography} from '@mui/material'
+import {Icons} from '../assets/icons'
+import {grey} from '@mui/material/colors'
 
 interface ConstructionProps extends BoxProps {
   title?: string
 }
 
 const Construction = forwardRef<typeof Box, ConstructionProps>(
-  ({ title, ...props }, ref) => {
-    return (
-      <Box
-        ref={ref}
-        sx={{
-          width: 1,
-          height: 1,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-          color: grey[500]
-        }}>
-        <Icons.Foundation fontSize="large" />
-        <Typography paragraph>
-          {title ? `${title} is coming` : 'Coming'} soon
-        </Typography>
-      </Box>
-    )
-  }
+    ({title, ...props}, ref) => {
+      return (
+          <Box
+              ref={ref}
+              sx={{
+                width: 1,
+                height: 1,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'column',
+                color: grey[500]
+              }}>
+            <Icons.Foundation fontSize="large"/>
+            <Typography paragraph>
+              {title ? `${title} is coming` : 'Coming'} soon
+            </Typography>
+          </Box>
+      )
+    }
 )
 
 Construction.displayName = 'Construction'

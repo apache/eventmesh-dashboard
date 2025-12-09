@@ -19,14 +19,16 @@
 package org.apache.eventmesh.dashboard.console.mapstruct.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.modle.IdDTO;
-import org.apache.eventmesh.dashboard.console.modle.vo.RuntimeIdDTO;
+import org.apache.eventmesh.dashboard.console.model.IdDTO;
+import org.apache.eventmesh.dashboard.console.model.vo.RuntimeIdDTO;
 
+import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 /**
  *
  */
+@Mapper
 public interface GroupControllerMapper {
 
     GroupControllerMapper INSTANCE = Mappers.getMapper(GroupControllerMapper.class);

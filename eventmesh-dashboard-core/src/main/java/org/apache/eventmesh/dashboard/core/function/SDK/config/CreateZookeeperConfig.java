@@ -18,6 +18,6 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-public class CreateZookeeperConfig extends AbstractMultiCreateSDKConfig{
+public class CreateZookeeperConfig extends AbstractMultiCreateSDKConfig {
 
 }

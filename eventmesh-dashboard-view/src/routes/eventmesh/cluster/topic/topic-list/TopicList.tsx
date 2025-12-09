@@ -17,26 +17,15 @@
  * under the License.
  */
 
-import React, { forwardRef, useEffect, useState } from 'react'
-import {
-  Stack,
-  StackProps,
-  TextField,
-  Paper,
-  Button,
-  Typography
-} from '@mui/material'
-import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid'
-import { grey } from '@mui/material/colors'
-import { fetchTopics } from '../../../../../service/topics'
-import {
-  Topic,
-  TopicCreationStatusEnum,
-  TopicHealthStatusEnum
-} from '../topic.types'
-import { TopicCreationStatusText, TopicHealthStatusText } from '../topic.const'
-import { useParams } from 'react-router-dom'
-import { AppSectionBoxShadow } from '../../../../../app.const'
+import React, {forwardRef, useEffect, useState} from 'react'
+import {Button, Paper, Stack, StackProps, TextField, Typography} from '@mui/material'
+import {DataGrid, GridColDef} from '@mui/x-data-grid'
+import {grey} from '@mui/material/colors'
+import {fetchTopics} from '../../../../../service/topics'
+import {Topic, TopicCreationStatusEnum, TopicHealthStatusEnum} from '../topic.types'
+import {TopicCreationStatusText, TopicHealthStatusText} from '../topic.const'
+import {useParams} from 'react-router-dom'
+import {AppSectionBoxShadow} from '../../../../../app.const'
 
 export type TopicListParams = {
   page: number
@@ -50,87 +39,88 @@ export type TopicListDatas = {
   totalCount: number
 }
 
-interface TopicListProps extends StackProps {}
+interface TopicListProps extends StackProps {
+}
 
 const TopicList = forwardRef<typeof Stack, TopicListProps>(
-  ({ ...props }, ref) => {
-    const routeParams = useParams()
-    const clusterId = routeParams?.clusterId
-    const [loading, setLoading] = useState(false)
+    ({...props}, ref) => {
+      const routeParams = useParams()
+      const clusterId = routeParams?.clusterId
+      const [loading, setLoading] = useState(false)
 
-    const [listParams, setListParams] = useState<TopicListParams>({
-      page: 1,
-      pageSize: 10,
-      clusterId: Number(clusterId)
-    })
+      const [listParams, setListParams] = useState<TopicListParams>({
+        page: 1,
+        pageSize: 10,
+        clusterId: Number(clusterId)
+      })
 
-    const [listDatas, setListDatas] = useState<TopicListDatas>({
-      topics: [],
-      totalCount: 0
-    })
+      const [listDatas, setListDatas] = useState<TopicListDatas>({
+        topics: [],
+        totalCount: 0
+      })
 
-    const getTopics = async () => {
-      if (loading && Boolean(clusterId)) {
-        return
+      const getTopics = async () => {
+        if (loading && Boolean(clusterId)) {
+          return
+        }
+        setLoading(true)
+        const resp = await fetchTopics(listParams)
+        if (resp?.code) {
+          setListDatas(resp.data)
+        }
+        setLoading(false)
       }
-      setLoading(true)
-      const resp = await fetchTopics(listParams)
-      if (resp?.code) {
-        setListDatas(resp.data)
-      }
-      setLoading(false)
+
+      useEffect(() => {
+        setListParams({...listParams, clusterId: Number(clusterId)})
+      }, [clusterId])
+
+      useEffect(() => {
+        getTopics()
+      }, [listParams])
+
+      return (
+          <Paper
+              sx={{
+                flexGrow: 1,
+                borderRadius: 4,
+                boxShadow: AppSectionBoxShadow
+              }}>
+            <Stack
+                sx={{px: 2, py: 3}}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center">
+              <TextField size="small" placeholder="Topic 名称" variant="outlined"/>
+
+              <Button
+                  variant="contained"
+                  size="small"
+                  sx={{textTransform: 'none'}}>
+                新增Topic
+              </Button>
+            </Stack>
+
+            <DataGrid
+                loading={loading}
+                density="compact"
+                sx={{
+                  border: 0,
+                  borderRadius: 4,
+                  '& .MuiDataGrid-columnHeaderTitle': {
+                    color: grey[400]
+                  },
+                  '& .MuiDataGrid-cell': {
+                    fontWeight: 'normal',
+                    fontSize: 14
+                  }
+                }}
+                rows={listDatas.topics}
+                columns={getTopicColumns()}
+            />
+          </Paper>
+      )
     }
-
-    useEffect(() => {
-      setListParams({ ...listParams, clusterId: Number(clusterId) })
-    }, [clusterId])
-
-    useEffect(() => {
-      getTopics()
-    }, [listParams])
-
-    return (
-      <Paper
-        sx={{
-          flexGrow: 1,
-          borderRadius: 4,
-          boxShadow: AppSectionBoxShadow
-        }}>
-        <Stack
-          sx={{ px: 2, py: 3 }}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center">
-          <TextField size="small" placeholder="Topic 名称" variant="outlined" />
-
-          <Button
-            variant="contained"
-            size="small"
-            sx={{ textTransform: 'none' }}>
-            新增Topic
-          </Button>
-        </Stack>
-
-        <DataGrid
-          loading={loading}
-          density="compact"
-          sx={{
-            border: 0,
-            borderRadius: 4,
-            '& .MuiDataGrid-columnHeaderTitle': {
-              color: grey[400]
-            },
-            '& .MuiDataGrid-cell': {
-              fontWeight: 'normal',
-              fontSize: 14
-            }
-          }}
-          rows={listDatas.topics}
-          columns={getTopicColumns()}
-        />
-      </Paper>
-    )
-  }
 )
 
 TopicList.displayName = 'TopicList'
@@ -159,9 +149,9 @@ const getTopicColumns = (): GridColDef<Topic>[] => {
       renderCell: (row) => {
         const topicStatus = row.value as TopicHealthStatusEnum
         return (
-          <Typography fontSize={'inherit'}>
-            {TopicHealthStatusText[topicStatus]}
-          </Typography>
+            <Typography fontSize={'inherit'}>
+              {TopicHealthStatusText[topicStatus]}
+            </Typography>
         )
       }
     },
@@ -172,9 +162,9 @@ const getTopicColumns = (): GridColDef<Topic>[] => {
       renderCell: (row) => {
         const topicStatus = row.value as TopicCreationStatusEnum
         return (
-          <Typography fontSize={'inherit'}>
-            {TopicCreationStatusText[topicStatus]}
-          </Typography>
+            <Typography fontSize={'inherit'}>
+              {TopicCreationStatusText[topicStatus]}
+            </Typography>
         )
       }
     },
@@ -183,7 +173,7 @@ const getTopicColumns = (): GridColDef<Topic>[] => {
       headerName: '保留时间（ms）',
       width: 150
     },
-    { field: 'description', headerName: '描述', flex: 1 },
+    {field: 'description', headerName: '描述', flex: 1},
     {
       field: 'actions',
       headerName: '操作',
@@ -192,10 +182,10 @@ const getTopicColumns = (): GridColDef<Topic>[] => {
       align: 'center',
       renderCell: () => {
         return (
-          <Stack direction="row" spacing={1}>
-            <Button size="small">清除数据</Button>
-            <Button size="small">删除</Button>
-          </Stack>
+            <Stack direction="row" spacing={1}>
+              <Button size="small">清除数据</Button>
+              <Button size="small">删除</Button>
+            </Stack>
         )
       }
     }

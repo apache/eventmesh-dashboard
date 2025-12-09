@@ -43,4 +43,6 @@ public class ClusterRelationshipEntity extends BaseClusterIdEntity {
 
     private LocalDateTime unRelationshipTime;
 
+    private String bindType;
+
 }

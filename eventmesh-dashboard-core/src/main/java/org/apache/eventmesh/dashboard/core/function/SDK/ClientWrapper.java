@@ -36,4 +36,9 @@ public class ClientWrapper {
     private BaseSyncBase baseSyncBase;
 
 
+    @SuppressWarnings("unchecked")
+    public <T> T getClient(SDKTypeEnum type) {
+        return (T) clientMap.get(type);
+    }
+
 }

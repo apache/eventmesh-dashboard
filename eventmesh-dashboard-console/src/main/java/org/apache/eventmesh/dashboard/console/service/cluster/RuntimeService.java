@@ -19,9 +19,11 @@
 package org.apache.eventmesh.dashboard.console.service.cluster;
 
 
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
-import org.apache.eventmesh.dashboard.console.modle.deploy.ClusterAllMetadataDO;
+import org.apache.eventmesh.dashboard.console.model.DO.runtime.QueryRuntimeByBigExpandClusterDO;
+import org.apache.eventmesh.dashboard.console.model.deploy.ClusterAllMetadataDO;
 
 import java.util.List;
 
@@ -34,21 +36,31 @@ public interface RuntimeService {
 
     List<RuntimeEntity> queryRuntimeToFrontByClusterId(RuntimeEntity runtimeEntity);
 
+    List<RuntimeEntity> queryRuntimeToFrontByClusterIdList(List<ClusterEntity> clusterEntityList);
+
     List<RuntimeEntity> queryRuntimeByBigExpandCluster(QueryRuntimeByBigExpandClusterDO data);
 
     List<RuntimeEntity> queryMetaRuntimeByStorageClusterId(QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO);
 
     ClusterAllMetadataDO queryAllByClusterId(RuntimeEntity runtimeEntity, boolean isRuntime, boolean isRelationship);
 
-    void batchInsert(List<RuntimeEntity> runtimeEntities);
-
-    Integer batchUpdate(List<RuntimeEntity> runtimeEntities);
-
     List<RuntimeEntity> selectAll();
 
     List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity);
 
+    void updateAddressByRuntimeId(RuntimeEntity runtimeEntity);
+
+    Integer batchUpdate(List<RuntimeEntity> runtimeEntities);
+
+    void batchUpdateDeployStatusType(List<RuntimeEntity> runtimeEntities);
+
+    void batchUpdateDeployStatusType(List<RuntimeEntity> runtimeEntities, DeployStatusType deployStatusType);
+
+    void insertRuntimeByClusterData(RuntimeEntity runtimeEntity);
+
     void insertRuntime(RuntimeEntity runtimeEntity);
+
+    void batchInsert(List<RuntimeEntity> runtimeEntities);
 
     void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
 

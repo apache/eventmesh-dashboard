@@ -20,6 +20,11 @@ spring:
     name: eventmesh-dashboard
   profiles:
     active: dev
+  devtools:
+    restart:
+      exclude: static/&zwnj;**,public/**&zwnj
+      enabled: true
+      additional-paths: src/main/java
 
 logging:
   config: classpath:logback.xml
@@ -29,6 +34,8 @@ mybatis:
   configuration:
     useGeneratedKeys: true
     mapUnderscoreToCamelCase: true
+    localCacheScope: STATEMENT  # 关闭一级缓存
+    cacheEnabled: false         # 关闭二级缓存
 
 
 pagehelper:
@@ -36,3 +43,6 @@ pagehelper:
   reasonable: true
   supportMethodsArguments: true
   params: count=countSql
+
+
+

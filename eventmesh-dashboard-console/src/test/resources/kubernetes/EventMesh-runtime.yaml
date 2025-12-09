@@ -37,9 +37,13 @@ spec:
           image: apache/eventmesh-runtime:latest
           ports:
             - containerPort: 10000  # HTTP API 端口
+              hostPort: ${adminPort}
             - containerPort: 10105  # gRPC 端口
+              hostPort: ${tcpPort}
             - containerPort: 10111  # tcp 端口
+              hostPort: ${httpPort}
             - containerPort: 11111  # admin 端口
+              hostPort: ${grpcPort}
           env:
             - name: EVENTMESH_STORAGE_TYPE
               value: "rocketmq"  # 指定事件存储类型（如 RocketMQ/Kafka）
@@ -47,31 +51,4 @@ spec:
               value: "rocketmq-namesrv:9876"  # 中间件地址
             - name: CONFIG
               value: "${runtimeConfig}"
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ${name}-service
-  namespace: ${namespace}
-spec:
-  type: LoadBalancer
-  ports:
-    - name: admin
-      port: ${adminPort}
-      targetPort: 11111
-      protocol: TCP
-    - name: TCP
-      port: ${tcpPort}
-      targetPort: 10111
-      protocol: TCP
-    - name: http
-      port: ${httpPort}
-      targetPort: 10000
-      protocol: TCP
-    - name: grpc
-      port: ${grpcPort}
-      targetPort: 10105
-      protocol: TCP
-  selector:
-    app: ${name}
+          command: [ "java -jar " ]

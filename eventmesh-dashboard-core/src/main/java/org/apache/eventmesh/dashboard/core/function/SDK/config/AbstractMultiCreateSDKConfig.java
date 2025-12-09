@@ -18,18 +18,25 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import lombok.Getter;
 
 public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
 
 
-    private List<NetAddress> netAddresseList = new CopyOnWriteArrayList<>();
+    private final List<NetAddress> netAddresseList = new CopyOnWriteArrayList<>();
+
+
+    @Getter
+    private String[] netAddresses;
 
     /**
-     * TODO
-     * TODO
      * TODO 有意义？
      *  设定次字段的时候，是为了解决 kafka 老版本操作的时候是 需要操作zk。 目前还没解决这个问题
      */
@@ -42,6 +49,9 @@ public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
 
     public void addNetAddress(NetAddress netAddress) {
         this.netAddresseList.add(netAddress);
+        if (Objects.nonNull(netAddress)) {
+            this.netAddresses = this.getNetAddresses(this.netAddresseList);
+        }
     }
 
     public void removeNetAddress(NetAddress netAddress) {
@@ -86,15 +96,11 @@ public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
         return this.getNetAddresses(this.metaAddressList);
     }
 
-    public String[] getNetAddresses() {
-        return this.getNetAddresses(this.netAddresseList);
-    }
-
     private String[] getNetAddresses(List<NetAddress> netAddresseList) {
         List<String> netAddresses = new ArrayList<>();
         netAddresseList.forEach(netAddress -> {
             netAddresses.add(netAddress.doUniqueKey());
         });
-        return netAddresses.toArray(new String[netAddresses.size()]);
+        return netAddresses.toArray(new String[0]);
     }
 }

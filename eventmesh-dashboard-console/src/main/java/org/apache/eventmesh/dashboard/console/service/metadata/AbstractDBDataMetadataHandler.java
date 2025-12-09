@@ -18,16 +18,19 @@
 
 package org.apache.eventmesh.dashboard.console.service.metadata;
 
-import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseClusterIdEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,19 +42,18 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractDBDataMetadataHandler<T extends BaseRuntimeIdEntity> implements DataMetadataHandler<T>, ApplicationContextAware {
+public abstract class AbstractDBDataMetadataHandler<T extends BaseClusterIdEntity> implements DataMetadataHandler<T>, ApplicationContextAware {
 
     private static final Map<Type, Object> CLASS_SYNC_DATA_HANDLER_MAPPER_MAP = new HashMap<>();
-
+    protected SyncDataHandlerMapper<T> syncDataHandlerMapper;
     private AbstractApplicationContext applicationContext;
-
     private T baseRuntimeIdBase;
-
-    private SyncDataHandlerMapper<T> syncDataHandlerMapper;
+    private List<T> dataList = new ArrayList<>(1);
 
     /**
      * TODO
@@ -78,6 +80,7 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseRuntimeIdEntit
                             if (Objects.equals(mapperClass, SyncDataHandlerMapper.class)) {
                                 Type syncType = ((ParameterizedType) mapperType).getActualTypeArguments()[0];
                                 CLASS_SYNC_DATA_HANDLER_MAPPER_MAP.put(syncType, syncDataHandlerMapper);
+                                log.info("db sync mapper , syncType:{} , syncMapper", syncDataHandlerMapper.getClass().getSimpleName());
                             }
                         }
                     } catch (IllegalAccessException e) {
@@ -95,6 +98,7 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseRuntimeIdEntit
 
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = (AbstractApplicationContext) applicationContext;
     }
@@ -103,22 +107,37 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseRuntimeIdEntit
         return this.baseRuntimeIdBase;
     }
 
-    public void handleAll(List<T> addData, List<T> updateData, List<T> deleteData) {
-
+    @Override
+    public void handleAll(Collection<T> allData, List<T> addData, List<T> updateData, List<T> deleteData) {
+        if (CollectionUtils.isNotEmpty(addData)) {
+            this.syncDataHandlerMapper.syncInsert(addData);
+        }
+        if (CollectionUtils.isNotEmpty(updateData)) {
+            this.syncDataHandlerMapper.syncUpdate(updateData);
+        }
+        if (CollectionUtils.isNotEmpty(deleteData)) {
+            this.syncDataHandlerMapper.syncDelete(deleteData);
+        }
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<T> getData() {
         LocalDateTime date = LocalDateTime.now();
         try {
-
-            //this.syncDataHandlerMapper.syncGet(this.baseRuntimeIdBase);
-            return this.doGetData();
+            List<T> list = this.doGetData();
+            if (this.dataList == list) {
+                return this.syncDataHandlerMapper.syncGet(this.baseRuntimeIdBase);
+            }
+            return list;
         } finally {
             this.baseRuntimeIdBase.setUpdateTime(date);
         }
     }
 
-    abstract List<T> doGetData();
+    List<T> doGetData() {
+        return this.dataList;
+    }
 
 
 }

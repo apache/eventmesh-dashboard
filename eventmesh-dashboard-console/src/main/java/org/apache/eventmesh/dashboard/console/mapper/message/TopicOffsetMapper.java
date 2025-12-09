@@ -21,6 +21,7 @@ import org.apache.eventmesh.dashboard.console.entity.message.TopicOffsetEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -37,5 +38,9 @@ public interface TopicOffsetMapper extends SyncDataHandlerMapper<TopicOffsetEnti
 
     void syncDelete(List<TopicOffsetEntity> entityList);
 
+    @Override
+    @Select("""
+            select * from topic where update_time >= #{updateTime} and status != 0
+        """)
     List<TopicOffsetEntity> syncGet(TopicOffsetEntity topicOffsetEntity);
 }

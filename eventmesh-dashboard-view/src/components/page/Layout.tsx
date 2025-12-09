@@ -17,25 +17,26 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
+import React, {forwardRef} from 'react'
+import {Box, BoxProps} from '@mui/material'
 
-interface PageProps extends BoxProps {}
+interface PageProps extends BoxProps {
+}
 
 const Page = forwardRef<typeof Box, PageProps>(
-  ({ sx, children, ...props }, ref) => {
-    return (
-      <Box
-        ref={ref}
-        sx={{
-          width: 1,
-          height: 1,
-          ...sx
-        }}>
-        {children}
-      </Box>
-    )
-  }
+    ({sx, children, ...props}, ref) => {
+      return (
+          <Box
+              ref={ref}
+              sx={{
+                width: 1,
+                height: 1,
+                ...sx
+              }}>
+            {children}
+          </Box>
+      )
+    }
 )
 
 Page.displayName = 'Page'

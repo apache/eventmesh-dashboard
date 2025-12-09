@@ -15,10 +15,15 @@
  * limitations under the License.
  */
 
+
 package org.apache.eventmesh.dashboard.service.remoting;
 
+import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConsumeOffsetMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
+import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntime2Request;
+import org.apache.eventmesh.dashboard.common.model.remoting.runtime.GetRuntimeResult;
 
 import java.util.List;
 
@@ -29,4 +34,7 @@ public interface ConsumeOffsetRemotingService {
 
 
     List<ConsumeOffsetMetadata> getConsumeOffsetMetadata(TopicMetadata topicMetadata);
+
+    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
+    GetRuntimeResult getRuntime(GetRuntime2Request getRuntimeRequest);
 }

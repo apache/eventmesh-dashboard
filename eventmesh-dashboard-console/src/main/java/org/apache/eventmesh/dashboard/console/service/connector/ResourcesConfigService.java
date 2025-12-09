@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-
 package org.apache.eventmesh.dashboard.console.service.connector;
 
 import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 
 import java.util.List;
+
 
 /**
  *
  */
 public interface ResourcesConfigService {
 
+
+    List<ResourcesConfigEntity> queryByRuntimeList(List<RuntimeEntity> runtimeEntityList);
 
 
     void insertResources(ResourcesConfigEntity resourcesConfigEntity);

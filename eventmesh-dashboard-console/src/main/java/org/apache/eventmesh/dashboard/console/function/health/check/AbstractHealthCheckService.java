@@ -34,7 +34,7 @@ public abstract class AbstractHealthCheckService<T> extends AbstractClientInfo<T
     private volatile boolean endCheck = true;
 
 
-    public SDKTypeEnum getSDKTypeEnum() {
+    public SDKTypeEnum getSdkTypeEnum() {
         return SDKTypeEnum.PING;
     }
 
@@ -64,7 +64,7 @@ public abstract class AbstractHealthCheckService<T> extends AbstractClientInfo<T
     }
 
     @Override
-    public void destroy() throws Exception{
+    public void destroy() throws Exception {
 
     }
 }

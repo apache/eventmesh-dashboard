@@ -18,18 +18,28 @@
 
 package org.apache.eventmesh.dashboard.console.controller.deploy.uninstall;
 
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
+import org.apache.eventmesh.dashboard.console.controller.deploy.base.AbstractUpdateHandler;
 import org.apache.eventmesh.dashboard.console.controller.deploy.handler.UpdateHandler;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 
-public class UninstallClusterHandler implements UpdateHandler<ClusterEntity> {
+import org.springframework.stereotype.Component;
+
+@Component
+public class UninstallClusterHandler extends AbstractUpdateHandler implements UpdateHandler<ClusterEntity> {
+
 
     @Override
     public void init() {
 
     }
 
+    /**
+     * 只需要 修改状态，通知删除 容器就行了
+     */
     @Override
     public void handler(ClusterEntity clusterEntity) {
+        this.updateDeployStatus(clusterEntity, DeployStatusType.UNINSTALL);
 
     }
 }

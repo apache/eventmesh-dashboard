@@ -18,10 +18,12 @@
 package org.apache.eventmesh.dashboard.console.databuild;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterOwnType;
+import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
+import org.apache.eventmesh.dashboard.common.enums.ReplicationType;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
@@ -29,6 +31,7 @@ import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterEntityMapper
 import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapperTest;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeEntityMapperTest;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -44,6 +47,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Data;
 import lombok.Getter;
 
+
+/**
+ * 创建全 多矩阵的 cluster 构建集群
+ */
 public class BuildFullSceneData {
 
 
@@ -56,7 +63,9 @@ public class BuildFullSceneData {
     private final List<Pair<ClusterEntity, List<ClusterEntity>>> eventMeshRuntimeTripleList = new ArrayList<>();
 
     @Getter
-    private final List<Triple<ClusterEntity, List<ClusterEntity>/* meta */, List<ClusterEntity>>> clusterTripleList = new ArrayList<>();
+    private final List<Triple<ClusterEntity, List<ClusterFrameworkData>/* meta cluster */, List<ClusterFrameworkData> /* runtime cluster*/>>
+        clusterTripleList =
+        new ArrayList<>();
 
     @Getter
     private final List<ClusterEntity> clusterEntityList = new ArrayList<>();
@@ -65,12 +74,12 @@ public class BuildFullSceneData {
     private final List<ClusterRelationshipEntity> clusterRelationshipEntityList = new ArrayList<>();
 
 
-    private final Map<Long, RuntimeEntity> runtimeEntityMap = new HashMap<>();
+    private final Map<Long, List<RuntimeEntity>> runtimeEntityMap = new HashMap<>();
 
 
-    private ShareMetadata runtimeShareMetadata = new ShareMetadata();
+    private final ShareMetadata runtimeShareMetadata = new ShareMetadata();
 
-    private ShareMetadata mateShareMetadata = new ShareMetadata();
+    private final ShareMetadata mateShareMetadata = new ShareMetadata();
 
 
     @Getter
@@ -102,25 +111,49 @@ public class BuildFullSceneData {
      *  TODO 如何构建 ， RocketMQ 三个结构
      */
     public void build() {
+        // 计算 基本枚举 矩阵
         this.buildBase();
+        // 计算 main cluster 下  meta 与 runtime 的矩阵 以及 共享集群概率
         this.buildReplica();
+
         this.association();
     }
 
     public void association() {
         tripleList.forEach(this::buildCluster);
-        // 写入数据库
+        this.bindStorage();
 
-        //this.createClusterRelationshipEntity();
-        // 写入数据库
-
-        //this.clusterEntityList.forEach(this::createRuntimeEntity);
-        // 写入数据库
 
     }
 
-    public List<Triple<ClusterEntity, List<ClusterEntity>, List<ClusterEntity>>> getClusterTripleList(ClusterType clusterType) {
-        List<Triple<ClusterEntity, List<ClusterEntity>, List<ClusterEntity>>> tripleList = new ArrayList<>();
+    public void bindStorage() {
+        if (!this.buildFullMetadata.isEventMeshEnabled()) {
+            return;
+        }
+        // 这里建 eventmesh 集群 与 存储集群 关联。 随机关联
+        List<ClusterEntity> eventmeshClusterList = new ArrayList<>();
+        List<ClusterEntity> storageClusterList = new ArrayList<>();
+        this.clusterTripleList.forEach(tripleList1 -> {
+            ClusterEntity clusterEntity = tripleList1.getLeft();
+            if (clusterEntity.getClusterType().isStorageCluster()) {
+                storageClusterList.add(clusterEntity);
+            } else if (clusterEntity.getClusterType().isEventCluster()) {
+                eventmeshClusterList.add(clusterEntity);
+            }
+        });
+        int num = storageClusterList.size() % eventmeshClusterList.size();
+        int count = storageClusterList.size() / eventmeshClusterList.size();
+        int start = 0, subCount = 0;
+        for (ClusterEntity clusterEntity : eventmeshClusterList) {
+            subCount = subCount + (num-- > 0 ? count + 1 : count);
+            eventMeshRuntimeTripleList.add(Pair.of(clusterEntity, storageClusterList.subList(start, subCount)));
+            start = start + subCount;
+        }
+    }
+
+    public List<Triple<ClusterEntity, List<ClusterFrameworkData>, List<ClusterFrameworkData>>> getClusterTripleList(ClusterType clusterType) {
+        List<Triple<ClusterEntity, List<ClusterFrameworkData>/* meta cluster */, List<ClusterFrameworkData> /* runtime cluster*/>> tripleList =
+            new ArrayList<>();
         this.clusterTripleList.forEach(tripleList1 -> {
             if (tripleList1.getLeft().getClusterType() == clusterType) {
                 tripleList.add(tripleList1);
@@ -129,7 +162,20 @@ public class BuildFullSceneData {
         return tripleList;
     }
 
+    /**
+     * 计算 ClusterTrusteeshipType, FirstToWhom, ClusterOwnType 的 笛卡尔 集
+     */
     public void buildBase() {
+        if (CollectionUtils.isEmpty(buildFullMetadata.getClusterTrusteeshipTypesSet())) {
+            buildFullMetadata.setClusterTrusteeshipTypesSet(Set.of(ClusterTrusteeshipType.SELF));
+        }
+        if (CollectionUtils.isEmpty(buildFullMetadata.getFirstToWhomSet())) {
+            buildFullMetadata.setFirstToWhomSet(Set.of(FirstToWhom.NOT));
+        }
+        if (CollectionUtils.isEmpty(buildFullMetadata.getClusterOwnTypesSet())) {
+            buildFullMetadata.setClusterOwnTypesSet(Set.of(ClusterOwnType.INDEPENDENCE));
+        }
+
         buildFullMetadata.getClusterTrusteeshipTypesSet().forEach(clusterTrusteeshipType -> {
             buildFullMetadata.getFirstToWhomSet().forEach(firstToWhom -> {
                 buildFullMetadata.getClusterOwnTypesSet().forEach(clusterOwnType -> {
@@ -158,34 +204,23 @@ public class BuildFullSceneData {
     private void buildCluster(Triple<ClusterTrusteeshipType, FirstToWhom, ClusterOwnType> triple) {
         clusterTypeTripleList.forEach(cluster -> {
             ClusterType clusterType = cluster.getLeft();
+            // 构建 主 集群
             ClusterEntity clusterEntity = this.createClusterEntity(clusterType);
             this.build(clusterEntity, triple);
             clusterTripleList.add(Triple.of(clusterEntity, this.buildCluster(clusterType, cluster.getMiddle(), triple),
                 this.buildCluster(clusterType, cluster.getRight(), triple)));
         });
-        if (this.buildFullMetadata.isEventMeshEnabled()) {
-            List<ClusterEntity> eventMeshEntities = new ArrayList<>();
-            List<ClusterEntity> clusterEntityList1 = new ArrayList<>();
-            this.clusterTripleList.forEach(tripleList1 -> {
-                ClusterEntity clusterEntity = tripleList1.getLeft();
-                if (clusterEntity.getClusterType() == ClusterType.EVENTMESH_CLUSTER) {
-                    eventMeshEntities.add(clusterEntity);
-                } else {
-                    clusterEntityList1.add(clusterEntity);
-                }
-            });
-            int num = clusterEntityList1.size() % eventMeshEntities.size();
-            for (int i = 0; i < eventMeshEntities.size(); i++) {
-                eventMeshRuntimeTripleList.add(Pair.of(eventMeshEntities.get(i), clusterEntityList1.subList(i * num, num)));
-            }
 
-        }
     }
 
-    private List<ClusterEntity> buildCluster(ClusterType clusterType, List<ClusterType> clusterTypeList,
+    /**
+     * 随机创建 meta or runtime 集群 数量。随机加入一些共享集群
+     */
+    private List<ClusterFrameworkData> buildCluster(ClusterType clusterType, List<ClusterType> clusterTypeList,
         Triple<ClusterTrusteeshipType, FirstToWhom, ClusterOwnType> triple) {
-        Set<ClusterType> oneSet = Set.of(ClusterType.STORAGE_KAFKA_BROKER, ClusterType.STORAGE_KAFKA_ZK, ClusterType.STORAGE_KAFKA_RAFT);
-        List<ClusterEntity> runtimeClusterEntity = new ArrayList<>();
+        Set<ClusterType> oneSet = Set.of(ClusterType.STORAGE_KAFKA_BROKER, ClusterType.STORAGE_KAFKA_ZK, ClusterType.STORAGE_KAFKA_RAFT,
+            ClusterType.STORAGE_JVM_CAP_CLUSTER);
+        List<ClusterFrameworkData> runtimeClusterEntity = new ArrayList<>();
         Random random = new Random();
         clusterTypeList.forEach(middle -> {
             Map<ClusterType, List<ClusterEntity>> shareMap = middle.isMeta() ? mateShareMetadata.getShareMap() : runtimeShareMetadata.getShareMap();
@@ -200,7 +235,7 @@ public class BuildFullSceneData {
             int shareNum = random.nextInt(num) + 1;
             Set<Integer> shareNumSet = new HashSet<>();
             for (int i = 0; i < num; i++) {
-                ClusterEntity runtime = null;
+                ClusterFrameworkData runtime;
                 if (triple.getRight() == ClusterOwnType.SHARE && shareNum != 0) {
                     List<ClusterEntity> clusterEntitieList = shareMap.get(middle);
                     for (; ; ) {
@@ -209,20 +244,28 @@ public class BuildFullSceneData {
                             continue;
                         }
                         shareNumSet.add(randomNum);
-                        runtime = clusterEntitieList.get(random.nextInt(clusterEntitieList.size()));
+                        ClusterEntity clusterEntity = clusterEntitieList.get(random.nextInt(clusterEntitieList.size()));
+                        runtime = new ClusterFrameworkData();
+                        runtime.setClusterEntity(clusterEntity);
                         break;
                     }
                 } else {
-                    runtime = this.createClusterEntity(middle);
+                    runtime = this.createClusterFrameworkData(middle);
                 }
+                runtime.build(triple);
                 runtimeClusterEntity.add(runtime);
-
-                if (runtime != null) {
-                    this.build(runtime, triple);
-                }
             }
         });
         return runtimeClusterEntity;
+    }
+
+    private void build(ClusterFrameworkData clusterFrameworkData, Triple<ClusterTrusteeshipType, FirstToWhom, ClusterOwnType> triple) {
+        this.build(clusterFrameworkData.clusterEntity, triple);
+        if (CollectionUtils.isNotEmpty(clusterFrameworkData.childClusterEntityList)) {
+            clusterFrameworkData.childClusterEntityList.forEach(childClusterEntity -> {
+                build(childClusterEntity, triple);
+            });
+        }
     }
 
     private void build(ClusterEntity clusterEntity, Triple<ClusterTrusteeshipType, FirstToWhom, ClusterOwnType> triple) {
@@ -231,7 +274,33 @@ public class BuildFullSceneData {
         clusterEntity.setClusterOwnType(triple.getRight());
     }
 
+    private ClusterFrameworkData createClusterFrameworkData(ClusterType clusterType) {
+        ClusterFrameworkData clusterFrameworkData = new ClusterFrameworkData();
+        if (clusterType.isStorage() && clusterType.isRuntime()) {
+            ClusterType assembly = clusterType.getAssemblyNodeType();
+            if (assembly.isRuntime()) {
+                ClusterEntity clusterEntity = this.createClusterEntity(assembly);
+                clusterFrameworkData.setClusterEntity(clusterEntity);
+                List<ClusterEntity> mainSlaveClusterEntity = new ArrayList<>();
+                clusterFrameworkData.setChildClusterEntityList(mainSlaveClusterEntity);
+                Random random = new Random();
+                int num = random.nextInt(5) + 2;
+                for (int i = 0; i < num; i++) {
+                    ClusterEntity clusterEntity1 = createClusterEntity(clusterType);
+                    clusterEntity1.setReplicationType(ReplicationType.MAIN_SLAVE);
+                    mainSlaveClusterEntity.add(clusterEntity1);
+                }
+                return clusterFrameworkData;
+            }
+        }
+        ClusterEntity clusterEntity = this.createClusterEntity(clusterType);
+        clusterFrameworkData.setClusterEntity(clusterEntity);
+        return clusterFrameworkData;
+    }
 
+    /**
+     * 随机创建 共享集群，
+     */
     private void buildShare(Set<ClusterType> clusterTypeList, ShareMetadata mateShareMetadata) {
         Random random = new Random();
         clusterTypeList.forEach(clusterType -> {
@@ -254,7 +323,9 @@ public class BuildFullSceneData {
         });
     }
 
-
+    /**
+     * 得到 clusterType 里面 所有 meta 类型 与  broker 类型。 </p> 形成 笛卡尔 集. 一对一，一对多，全支持。比如 RocketMQ , 有两种 runtime，那么 1，2， 1+2 三种情况
+     */
     public void buildReplica(ClusterType type) {
         List<ClusterType> metaList = new ArrayList<>();
         for (ClusterType meta : type.getMetaClusterType()) {
@@ -283,13 +354,29 @@ public class BuildFullSceneData {
 
     public List<RuntimeEntity> createRuntimeEntity() {
         this.clusterEntityList.forEach(this::createRuntimeEntity);
-        return new ArrayList<>(this.runtimeEntityMap.values());
+        List<RuntimeEntity> runtimeEntityList = new ArrayList<>();
+        this.runtimeEntityMap.values().forEach(runtimeEntityList::addAll);
+        return runtimeEntityList;
     }
+
+    public List<RuntimeEntity> getRuntimeEntityListByClusterFrameworkData(List<ClusterFrameworkData> clusterFrameworkDataList) {
+        List<RuntimeEntity> runtimeEntityList = new ArrayList<>();
+        for (ClusterFrameworkData clusterFrameworkData : clusterFrameworkDataList) {
+            runtimeEntityList.addAll(this.runtimeEntityMap.get(clusterFrameworkData.getClusterEntity().getId()));
+            if (CollectionUtils.isNotEmpty(clusterFrameworkData.childClusterEntityList)) {
+                clusterFrameworkData.childClusterEntityList.forEach(childClusterEntity -> {
+                    runtimeEntityList.addAll(this.runtimeEntityMap.get(childClusterEntity.getId()));
+                });
+            }
+        }
+        return runtimeEntityList;
+    }
+
 
     public List<RuntimeEntity> getRuntimeEntityList(List<ClusterEntity> clusterEntityList) {
         List<RuntimeEntity> runtimeEntityList = new ArrayList<>();
         for (ClusterEntity clusterEntity : clusterEntityList) {
-            runtimeEntityList.add(this.runtimeEntityMap.get(clusterEntity.getId()));
+            runtimeEntityList.addAll(this.runtimeEntityMap.get(clusterEntity.getId()));
         }
         return runtimeEntityList;
     }
@@ -312,6 +399,16 @@ public class BuildFullSceneData {
         return this.clusterRelationshipEntityList;
     }
 
+
+    private void createClusterRelationshipEntity(ClusterEntity clusterEntity, ClusterFrameworkData clusterFrameworkData) {
+        this.createClusterRelationshipEntity(clusterEntity, clusterFrameworkData.getClusterEntity());
+        if (CollectionUtils.isNotEmpty(clusterFrameworkData.getChildClusterEntityList())) {
+            clusterFrameworkData.getChildClusterEntityList().forEach(childClusterEntity -> {
+                this.createClusterRelationshipEntity(clusterFrameworkData.getClusterEntity(), childClusterEntity);
+            });
+        }
+    }
+
     private void createClusterRelationshipEntity(ClusterEntity clusterEntity, ClusterEntity relationshipClusterEntity) {
         ClusterRelationshipEntity clusterRelationshipEntity =
             ClusterRelationshipMapperTest.buildClusterRelationshipEntity(clusterEntity, relationshipClusterEntity);
@@ -326,6 +423,7 @@ public class BuildFullSceneData {
         if (clusterEntity.getClusterType().isDefinition()) {
             return;
         }
+        List<RuntimeEntity> runtimeEntityList = new ArrayList<>();
         Random random = new Random();
         int num = random.nextInt(3) + 3;
         for (int i = 0; i < num; i++) {
@@ -334,21 +432,24 @@ public class BuildFullSceneData {
             if (num == i + 1) {
                 runtimeEntity.setDeployStatusType(DeployStatusType.CREATE_WAIT);
             }
-            this.runtimeEntityMap.put(runtimeEntity.getId(), runtimeEntity);
+            runtimeEntityList.add(runtimeEntity);
+            if (ClusterSyncMetadataEnum.getClusterFramework(clusterEntity.getClusterType()).isMainSlave()) {
+                runtimeEntity.setReplicationType(ReplicationType.MAIN);
+                RuntimeEntity slave = RuntimeEntityMapperTest.createRuntimeEntity(clusterEntity);
+                slave.setDeployStatusType(runtimeEntity.getDeployStatusType());
+                slave.setReplicationType(ReplicationType.SLAVE);
+                runtimeEntityList.add(slave);
+            }
         }
+        this.runtimeEntityMap.put(clusterEntity.getId(), runtimeEntityList);
     }
 
 
     public void buildFullMetadata() {
-        this.buildFullMetadata =
-            BuildFullMetadata.builder()
-                .eventMeshEnabled(true)
-                .clusterTypeSet(new HashSet<>(ClusterType.getStorageCluster()))
-                .metaTypeSet(new HashSet<>(ClusterType.getStorageRuntimeCluster()))
-                .runtimeTypeSet(new HashSet<>(ClusterType.getStorageMetaCluster()))
-                .firstToWhomSet(Set.of(FirstToWhom.NOT))
-                .clusterTrusteeshipTypesSet(Set.of(ClusterTrusteeshipType.SELF))
-                .clusterOwnTypesSet(Set.of(ClusterOwnType.INDEPENDENCE)).build();
+        this.buildFullMetadata = BuildFullMetadata.builder().eventMeshEnabled(true).clusterTypeSet(new HashSet<>(ClusterType.getStorageCluster()))
+            .metaTypeSet(new HashSet<>(ClusterType.getStorageRuntimeCluster())).runtimeTypeSet(new HashSet<>(ClusterType.getStorageMetaCluster()))
+            .firstToWhomSet(Set.of(FirstToWhom.NOT)).clusterTrusteeshipTypesSet(Set.of(ClusterTrusteeshipType.SELF))
+            .clusterOwnTypesSet(Set.of(ClusterOwnType.INDEPENDENCE)).build();
 
         this.buildFullMetadata.getClusterTypeSet().add(ClusterType.EVENTMESH_CLUSTER);
         this.buildFullMetadata.getMetaTypeSet().addAll(ClusterType.EVENTMESH_CLUSTER.getMetaClusterType());
@@ -357,39 +458,79 @@ public class BuildFullSceneData {
     }
 
     public void buildStorageAll() {
-        this.buildFullMetadata =
-            BuildFullMetadata.builder()
-                .clusterTypeSet(new HashSet<>(ClusterType.getStorageCluster()))
-                .metaTypeSet(new HashSet<>(ClusterType.getStorageRuntimeCluster()))
-                .runtimeTypeSet(new HashSet<>(ClusterType.getStorageMetaCluster()))
-                .firstToWhomSet(Set.of(FirstToWhom.NOT))
-                .clusterTrusteeshipTypesSet(Set.of(ClusterTrusteeshipType.SELF))
-                .clusterOwnTypesSet(Set.of(ClusterOwnType.INDEPENDENCE)).build();
+        this.buildFullMetadata = BuildFullMetadata.builder().clusterTypeSet(new HashSet<>(ClusterType.getStorageCluster()))
+            .metaTypeSet(new HashSet<>(ClusterType.getStorageRuntimeCluster())).runtimeTypeSet(new HashSet<>(ClusterType.getStorageMetaCluster()))
+            .firstToWhomSet(Set.of(FirstToWhom.NOT)).clusterTrusteeshipTypesSet(Set.of(ClusterTrusteeshipType.SELF))
+            .clusterOwnTypesSet(Set.of(ClusterOwnType.INDEPENDENCE)).build();
         this.build();
     }
 
     public void build(ClusterType clusterType) {
-        this.buildFullMetadata = BuildFullMetadata.builder().clusterTypeSet(Set.of(clusterType))
-            .metaTypeSet(Set.copyOf(clusterType.getMetaClusterType()))
-            .runtimeTypeSet(Set.copyOf(clusterType.getRuntimeClusterType()))
-            .firstToWhomSet(Set.of(FirstToWhom.NOT))
-            .clusterTrusteeshipTypesSet(Set.of(ClusterTrusteeshipType.SELF))
-            .clusterOwnTypesSet(Set.of(ClusterOwnType.INDEPENDENCE)).build();
+        this.buildFullMetadata =
+            BuildFullMetadata.builder().clusterTypeSet(Set.of(clusterType)).metaTypeSet(Set.copyOf(clusterType.getMetaClusterType()))
+                .runtimeTypeSet(Set.copyOf(clusterType.getRuntimeClusterType())).firstToWhomSet(Set.of(FirstToWhom.NOT))
+                .clusterTrusteeshipTypesSet(Set.of(ClusterTrusteeshipType.SELF)).clusterOwnTypesSet(Set.of(ClusterOwnType.INDEPENDENCE)).build();
         this.build();
     }
 
     public void build(BuildFullMetadata buildFullMetadata) {
         this.buildFullMetadata = buildFullMetadata;
+        this.build();
+    }
+
+    public void buildBySupplement(BuildFullMetadata buildFullMetadata) {
+        Set<ClusterType> clusterTypeSet = buildFullMetadata.getClusterTypeSet();
+        Set<ClusterType> metaTypeSet = new HashSet<>();
+        Set<ClusterType> runtimeTypeSet = new HashSet<>();
+        buildFullMetadata.setMetaTypeSet(metaTypeSet);
+        buildFullMetadata.setRuntimeTypeSet(runtimeTypeSet);
+        clusterTypeSet.forEach(type -> {
+            metaTypeSet.addAll(type.getMetaClusterType());
+            runtimeTypeSet.addAll(type.getRuntimeClusterType());
+        });
+        this.build(buildFullMetadata);
     }
 
     @Data
     private static class ShareMetadata {
 
         private final List<ClusterEntity> shareClusterEntityList = new ArrayList<>();
-
+        private final Map<ClusterType, List<ClusterEntity>> shareMap = new HashMap<>();
+        /**
+         * 共享 集群 概率值
+         */
         private Integer shareNum = 0;
 
-        private final Map<ClusterType, List<ClusterEntity>> shareMap = new HashMap<>();
+
+    }
+
+
+    @Data
+    public static class ClusterFrameworkData {
+
+        private ClusterEntity clusterEntity;
+
+
+        private List<ClusterEntity> childClusterEntityList;
+
+
+        public void addClusterEntity(List<ClusterEntity> clusterEntityList) {
+            clusterEntityList.add(clusterEntity);
+            clusterEntityList.addAll(childClusterEntityList);
+        }
+
+        public void build(Triple<ClusterTrusteeshipType, FirstToWhom, ClusterOwnType> triple) {
+            clusterEntity.setTrusteeshipType(triple.getLeft());
+            clusterEntity.setFirstToWhom(triple.getMiddle());
+            clusterEntity.setClusterOwnType(triple.getRight());
+            if (CollectionUtils.isNotEmpty(childClusterEntityList)) {
+                this.childClusterEntityList.forEach(childClusterEntity -> {
+                    childClusterEntity.setTrusteeshipType(triple.getLeft());
+                    childClusterEntity.setFirstToWhom(triple.getMiddle());
+                    childClusterEntity.setClusterOwnType(triple.getRight());
+                });
+            }
+        }
     }
 
 }

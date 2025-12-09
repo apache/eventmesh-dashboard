@@ -18,10 +18,11 @@
 
 package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
-import org.apache.eventmesh.dashboard.console.modle.DO.runtime.QueryRuntimeByBigExpandClusterDO;
+import org.apache.eventmesh.dashboard.console.model.DO.runtime.QueryRuntimeByBigExpandClusterDO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -47,6 +48,18 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
         </script>
         """)
     List<RuntimeEntity> getRuntimesToFrontByCluster(@Param("runtimeEntity") RuntimeEntity runtimeEntity);
+
+
+    @Select("""
+        <script>
+            select * from runtime where cluster_id
+                <foreach collection='list' item='item' index='index'  open='in(' separator=',' close=')'>
+                    #{item.id}
+                </foreach>
+        </script>
+        """
+    )
+    List<RuntimeEntity> queryRuntimeToFrontByClusterIdList(List<ClusterEntity> clusterEntityList);
 
     @Select("""
         <script>
@@ -118,10 +131,10 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
     List<RuntimeEntity> selectRuntimeByCluster(RuntimeEntity runtimeEntity);
 
 
-    @Select("select COUNT(*) from runtime where cluster_id=#{clusterId} AND status=1")
+    @Select("select COUNT(*) from runtime where cluster_id=#{clusterId} AND status=1 and is_delete = 0")
     Integer getRuntimeNumByCluster(RuntimeEntity runtimeEntity);
 
-    @Select("select * from runtime where update_time = #{updateTime} and status=1")
+    @Select("select * from runtime where update_time >= #{updateTime} and status=1 and is_delete = 0")
     List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity);
 
 
@@ -130,6 +143,27 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
 
     @Select("select * from runtime where status=1")
     List<RuntimeEntity> queryAll();
+
+    @Update("""
+        <script>
+             <foreach item='item'  separator=';' >
+                    update runtime set deploy_status_type=#{DeployStatusType} where id=#{id}
+             </foreach>
+        </script>
+        """)
+    void batchUpdateDeployStatusTypeByList(List<RuntimeEntity> runtimeEntities);
+
+    @Update("""
+        <script>
+            update runtime set deploy_status_type=#{deployStatusType} where id
+               <foreach collection='list'  item='item' open='in('  separator=','  close=')'  >
+                    {item.id}
+               </foreach>
+        </script>
+        """)
+    void batchUpdateDeployStatusTypeByListAndType(@Param("list") List<RuntimeEntity> runtimeEntities,
+        @Param("deployStatusType") DeployStatusType deployStatusType);
+
 
     @Update("UPDATE runtime SET port=#{port} ,jmx_port=#{jmxPort} ,status=#{status} where cluster_id=#{clusterId} AND status=1")
     void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
@@ -149,7 +183,7 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
           values
               <foreach collection='list' item='item' index='index'  separator=','>
                 (
-                    #{item.organizationId}, #{item.clusterId}, #{item.name}, #{item.clusterType},#{item.version},#{item.host},
+                    #{item.organizationId}, #{item.clusterId}, #{item.name}, #{item.clusterType},#{item.version},INET_ATON(#{item.host}),
                     #{item.port},#{item.trusteeshipType},#{item.firstToWhom},#{item.replicationType},#{item.kubernetesClusterId},
                     #{item.deployStatusType}, #{item.resourcesConfigId},#{item.deployScriptId},'',#{item.authType},#{item.jmxPort}
                 )

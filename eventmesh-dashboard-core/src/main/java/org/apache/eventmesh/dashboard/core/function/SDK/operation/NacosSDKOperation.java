@@ -38,6 +38,9 @@ import com.alibaba.nacos.api.naming.NamingService;
 public class NacosSDKOperation extends AbstractSDKOperation<NacosSDKWrapper, CreateNacosConfig> {
 
 
+    private final NacosConfigSDKOperation nacosConfigClientCreateOperation = new NacosConfigSDKOperation();
+    private final NacosNamingSDKOperation nacosNamingClientCreateOperation = new NacosNamingSDKOperation();
+
     private static Properties createProperties(CreateNacosConfig clientConfig) {
         Properties properties = new Properties();
         properties.put(PropertyKeyConst.SERVER_ADDR, clientConfig.doUniqueKey());
@@ -48,10 +51,6 @@ public class NacosSDKOperation extends AbstractSDKOperation<NacosSDKWrapper, Cre
         properties.put(PropertyKeyConst.SECRET_KEY, clientConfig.getSecretKey());
         return properties;
     }
-
-    private final NacosConfigSDKOperation nacosConfigClientCreateOperation = new NacosConfigSDKOperation();
-
-    private final NacosNamingSDKOperation nacosNamingClientCreateOperation = new NacosNamingSDKOperation();
 
     @Override
     public NacosSDKWrapper createClient(CreateNacosConfig createClientConfig) throws Exception {

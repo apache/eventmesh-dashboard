@@ -20,7 +20,7 @@
 package org.apache.eventmesh.dashboard.console.controller.function;
 
 
-import org.apache.eventmesh.dashboard.console.modle.function.OverviewDTO;
+import org.apache.eventmesh.dashboard.console.model.function.OverviewDTO;
 import org.apache.eventmesh.dashboard.console.service.OverviewService;
 
 import java.util.Map;

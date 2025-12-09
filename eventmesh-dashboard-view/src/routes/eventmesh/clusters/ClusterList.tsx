@@ -17,21 +17,13 @@
  * under the License.
  */
 
-import React, { forwardRef, useState } from 'react'
-import {
-  Box,
-  BoxProps,
-  Button,
-  Paper,
-  Stack,
-  TextField,
-  Typography
-} from '@mui/material'
+import React, {forwardRef, useState} from 'react'
+import {Box, BoxProps, Button, Stack, TextField, Typography} from '@mui/material'
 
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
-import { Cluster } from './cluster.type'
+import {DataGrid, GridColDef} from '@mui/x-data-grid'
+import {Cluster} from './cluster.type'
 import RounderPaper from '../../../components/RounderPaper'
-import { useNavigate } from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
 
 export type ClusterListParams = {
   page: number
@@ -44,65 +36,66 @@ export type ClusterListDatas = {
   totalCount: number
 }
 
-interface ClusterListProps extends BoxProps {}
+interface ClusterListProps extends BoxProps {
+}
 
 const ClusterList = forwardRef<typeof Box, ClusterListProps>(
-  ({ ...props }, ref) => {
-    const navigate = useNavigate()
-    const [loading, setLoading] = useState(false)
-    const [listParams, setListParams] = useState<ClusterListParams>({
-      page: 1,
-      pageSize: 10
-    })
+    ({...props}, ref) => {
+      const navigate = useNavigate()
+      const [loading, setLoading] = useState(false)
+      const [listParams, setListParams] = useState<ClusterListParams>({
+        page: 1,
+        pageSize: 10
+      })
 
-    const [listDatas, setListDatas] = useState<ClusterListDatas>({
-      topics: [
-        {
-          id: 1,
-          name: 'Demo Cluster',
-          status: '运行中',
-          healthStatus: '健康',
-          numOfRuntime: '2',
-          storage: '123 Gb'
-        }
-      ],
-      totalCount: 0
-    })
+      const [listDatas, setListDatas] = useState<ClusterListDatas>({
+        topics: [
+          {
+            id: 1,
+            name: 'Demo Cluster',
+            status: '运行中',
+            healthStatus: '健康',
+            numOfRuntime: '2',
+            storage: '123 Gb'
+          }
+        ],
+        totalCount: 0
+      })
 
-    return (
-      <RounderPaper sx={{ flexGrow: 1 }} elevation={8}>
-        <Stack sx={{ height: 1 }} spacing={2}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            sx={{ pt: 2, pl: 2, pr: 2 }}>
-            <TextField size="small" placeholder="集群 ID"></TextField>
-            <Button size="small" variant="contained">
-              新增集群
-            </Button>
-          </Stack>
-          <DataGrid
-            loading={loading}
-            sx={{ flexGrow: 1, border: 0, borderRadius: 4 }}
-            rows={listDatas.topics}
-            columns={getTopicColumns({
-              handlerIdClick: (clusterId) => {
-                navigate(`/eventmesh-cluster/${clusterId}/overview`)
-              }
-            })}
-          />
-        </Stack>
-      </RounderPaper>
-    )
-  }
+      return (
+          <RounderPaper sx={{flexGrow: 1}} elevation={8}>
+            <Stack sx={{height: 1}} spacing={2}>
+              <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  sx={{pt: 2, pl: 2, pr: 2}}>
+                <TextField size="small" placeholder="集群 ID"></TextField>
+                <Button size="small" variant="contained">
+                  新增集群
+                </Button>
+              </Stack>
+              <DataGrid
+                  loading={loading}
+                  sx={{flexGrow: 1, border: 0, borderRadius: 4}}
+                  rows={listDatas.topics}
+                  columns={getTopicColumns({
+                    handlerIdClick: (clusterId) => {
+                      navigate(`/eventmesh-cluster/${clusterId}/overview`)
+                    }
+                  })}
+              />
+            </Stack>
+          </RounderPaper>
+      )
+    }
 )
 
 ClusterList.displayName = 'ClusterList'
 export default ClusterList
 
 const getTopicColumns = ({
-  handlerIdClick
-}: {
+                           handlerIdClick
+                         }: {
   handlerIdClick: (clusterId: string | number) => void
 }): GridColDef<Cluster>[] => {
   return [
@@ -115,7 +108,7 @@ const getTopicColumns = ({
       sortable: false,
       renderCell: (row) => {
         return (
-          <Button onClick={() => handlerIdClick(row.value)}>{row.value}</Button>
+            <Button onClick={() => handlerIdClick(row.value)}>{row.value}</Button>
         )
       }
     },
@@ -136,9 +129,9 @@ const getTopicColumns = ({
       sortable: false,
       renderCell: (row) => {
         return (
-          <Typography fontSize="inherit" color="'primary.main'">
-            {row.value}
-          </Typography>
+            <Typography fontSize="inherit" color="'primary.main'">
+              {row.value}
+            </Typography>
         )
       }
     },
@@ -151,9 +144,9 @@ const getTopicColumns = ({
       sortable: false,
       renderCell: (row) => {
         return (
-          <Typography fontSize="inherit" color="success.main">
-            {row.value}
-          </Typography>
+            <Typography fontSize="inherit" color="success.main">
+              {row.value}
+            </Typography>
         )
       }
     },
@@ -179,9 +172,9 @@ const getTopicColumns = ({
       sortable: false,
       renderCell: () => {
         return (
-          <Stack direction="row" spacing={1}>
-            <Button size="small">删除</Button>
-          </Stack>
+            <Stack direction="row" spacing={1}>
+              <Button size="small">删除</Button>
+            </Stack>
         )
       }
     }

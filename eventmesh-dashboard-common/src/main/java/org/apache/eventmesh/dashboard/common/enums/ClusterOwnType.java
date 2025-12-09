@@ -22,12 +22,24 @@ public enum ClusterOwnType {
 
     NOT,
 
+    /**
+     * 独立
+     */
     INDEPENDENCE,
 
+    /**
+     * 共享
+     */
     SHARE,
 
+    /**
+     * 全局共享
+     */
     OVERALL_SHARE,
 
+    /**
+     * 组织内部共享
+     */
     ORGANIZATION_SHARE,
 
     ;

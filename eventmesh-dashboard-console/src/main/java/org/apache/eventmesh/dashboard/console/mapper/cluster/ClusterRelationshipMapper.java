@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterAndRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
-import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
+import org.apache.eventmesh.dashboard.console.model.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -73,6 +73,23 @@ public interface ClusterRelationshipMapper {
     List<ClusterRelationshipEntity> queryListByClusterIdAndType(QueryListByClusterIdAndTypeDO data);
 
 
+    @Select("""
+        <script>
+            select *  from cluster_relationship where cluster_id
+                <foreach collection='clusterIdList' item='item' index='index' open='in(' separator=',' close=')'>
+                    #{item}
+                </foreach>
+                <if test = "clusterTypeList != null">
+                     and relationship_type
+                     <foreach item='item' index='index' collection='clusterTypeList'  open="in(" separator=',' close=")">
+                        #{item}
+                    </foreach>
+                </if>
+        </script>
+        """)
+    List<ClusterRelationshipEntity> queryListByClusterIdListAndType(QueryListByClusterIdAndTypeDO data);
+
+
     @Select({
         "<script>",
         " select * from cluster as c inner join cluster_relationship as cr on c.id = c where cr.cluster_id ",
@@ -85,7 +102,6 @@ public interface ClusterRelationshipMapper {
         "</script>",
     })
     List<ClusterAndRelationshipEntity> queryClusterAndRelationshipEntityListByClusterId(ClusterRelationshipEntity clusterRelationshipEntity);
-
 
 
     @Select(" select * from cluster_relationship where update_time > #{updateTime} and status in(1, 2 ,3)")

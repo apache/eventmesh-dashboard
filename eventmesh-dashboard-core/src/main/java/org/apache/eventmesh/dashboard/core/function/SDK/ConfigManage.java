@@ -25,25 +25,25 @@ import org.apache.eventmesh.dashboard.core.function.SDK.config.AbstractSimpleCre
 
 public class ConfigManage {
 
-    private static final ConfigManage configManage = new ConfigManage();
-
-    public static ConfigManage getInstance() {
-        return configManage;
-    }
+    private static final ConfigManage CONFIG_MANAGE = new ConfigManage();
 
     private ConfigManage() {
     }
 
-
-    public AbstractMultiCreateSDKConfig getMultiCreateSDKConfig(ClusterType clusterType, SDKTypeEnum sdkTypeEnum) {
-        return (AbstractMultiCreateSDKConfig) getCreateSDKConfig(clusterType, sdkTypeEnum);
+    public static ConfigManage getInstance() {
+        return CONFIG_MANAGE;
     }
 
-    public AbstractSimpleCreateSDKConfig getSimpleCreateSDKConfig(ClusterType clusterType, SDKTypeEnum sdkTypeEnum) {
-        return (AbstractSimpleCreateSDKConfig) getCreateSDKConfig(clusterType, sdkTypeEnum);
+    public AbstractMultiCreateSDKConfig getMultiCreateSdkConfig(ClusterType clusterType, SDKTypeEnum sdkTypeEnum) {
+        return (AbstractMultiCreateSDKConfig) getCreateSdkConfig(clusterType, sdkTypeEnum);
     }
 
-    private AbstractCreateSDKConfig getCreateSDKConfig(ClusterType clusterType, SDKTypeEnum sdkTypeEnum) {
+    public AbstractSimpleCreateSDKConfig getSimpleCreateSdkConfig(ClusterType clusterType, SDKTypeEnum sdkTypeEnum) {
+        return (AbstractSimpleCreateSDKConfig) getCreateSdkConfig(clusterType, sdkTypeEnum);
+    }
+
+    @SuppressWarnings("unchecked")
+    private AbstractCreateSDKConfig getCreateSdkConfig(ClusterType clusterType, SDKTypeEnum sdkTypeEnum) {
 
         try {
             Class<?> clazz = SDKManage.getInstance().getConfig(clusterType, sdkTypeEnum);

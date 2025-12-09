@@ -57,17 +57,15 @@ public class MessageManage {
         }
     }
 
-    static void createMessageOperate(Class<?> clazz) {
-
-    }
-
-
     private Map<Class<?>, Map<String, AbstractMessageOperate>> classMapConcurrentHashMap = new ConcurrentHashMap<>();
-
 
     {
         classMapConcurrentHashMap.put(ProducerOperate.class, new ConcurrentHashMap<>());
         classMapConcurrentHashMap.put(ConsumerOperate.class, new ConcurrentHashMap<>());
+    }
+
+    static void createMessageOperate(Class<?> clazz) {
+
     }
 
     public ProducerOperate createProducerOperate(ProducerDTO producerDTO) throws Exception {
@@ -78,12 +76,13 @@ public class MessageManage {
         return this.createOperate(consumerDTO, ConsumerOperate.class, SDKTypeEnum.CONSUMER);
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T createOperate(AbstractMessageDTO abstractMessageDTO, Class<?> operateClazz, SDKTypeEnum sdkTypeEnum) throws Exception {
         Class<?> clazz = MESSAGE_CLASSES.get(abstractMessageDTO.getClusterType()).get(operateClazz);
 
         AbstractConsumerOperate abstractConsumerOperate = (AbstractConsumerOperate) clazz.newInstance();
         AbstractMultiCreateSDKConfig abstractMultiCreateSDKConfig =
-            ConfigManage.getInstance().getMultiCreateSDKConfig(abstractMessageDTO.getClusterType(), sdkTypeEnum);
+            ConfigManage.getInstance().getMultiCreateSdkConfig(abstractMessageDTO.getClusterType(), sdkTypeEnum);
 
         CreateSDKConfig consumerConfig = abstractConsumerOperate.createSDKConfig(abstractMultiCreateSDKConfig, null);
         // RocketMQ，模式如何处理？

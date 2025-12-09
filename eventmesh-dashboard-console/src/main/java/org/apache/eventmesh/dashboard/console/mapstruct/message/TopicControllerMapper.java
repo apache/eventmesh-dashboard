@@ -19,16 +19,18 @@
 package org.apache.eventmesh.dashboard.console.mapstruct.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
-import org.apache.eventmesh.dashboard.console.modle.IdDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.topic.CreateTopicDTO;
-import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
-import org.apache.eventmesh.dashboard.console.modle.vo.RuntimeIdDTO;
+import org.apache.eventmesh.dashboard.console.model.IdDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.topic.CreateTopicDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.topic.GetTopicListDTO;
+import org.apache.eventmesh.dashboard.console.model.vo.RuntimeIdDTO;
 
+import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 /**
  *
  */
+@Mapper
 public interface TopicControllerMapper {
 
     TopicControllerMapper INSTANCE = Mappers.getMapper(TopicControllerMapper.class);

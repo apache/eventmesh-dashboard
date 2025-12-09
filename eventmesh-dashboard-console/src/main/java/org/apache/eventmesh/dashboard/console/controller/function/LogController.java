@@ -19,7 +19,7 @@
 package org.apache.eventmesh.dashboard.console.controller.function;
 
 import org.apache.eventmesh.dashboard.console.entity.function.LogEntity;
-import org.apache.eventmesh.dashboard.console.modle.dto.log.GetLogListDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.log.GetLogListDTO;
 import org.apache.eventmesh.dashboard.console.service.function.LogService;
 
 import java.util.List;
@@ -40,5 +40,6 @@ public class LogController {
     public List<LogEntity> getLogLIstToFront(@Validated @RequestBody GetLogListDTO getLogListDTO) {
         return logService.getLogListByCluster(getLogListDTO);
     }
+
 
 }

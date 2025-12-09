@@ -19,10 +19,10 @@
 
 
 export type Cluster = {
-    id: number
-    name: string
-    status: string
-    healthStatus: string
-    numOfRuntime: string
-    storage: string
+  id: number
+  name: string
+  status: string
+  healthStatus: string
+  numOfRuntime: string
+  storage: string
 }

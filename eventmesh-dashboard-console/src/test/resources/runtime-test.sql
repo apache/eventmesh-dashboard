@@ -16,10 +16,13 @@
  */
 
 
-DELETE FROM `eventmesh_dashboard_test`.runtime WHERE TRUE;
+DELETE
+FROM `eventmesh_dashboard_test`.runtime
+WHERE TRUE;
 ALTER TABLE `eventmesh_dashboard_test`.runtime AUTO_INCREMENT = 1;
 
-INSERT INTO eventmesh_dashboard_test.runtime (id, cluster_id, host, storage_cluster_id, port, jmx_port, start_timestamp, rack, status, create_time, update_time, endpoint_map)
-values  (1, 1, '127.0.0.1', -1, 12345, -1, -1, '', 1, '2024-03-15 14:13:20', '2024-03-18 09:53:10', ''),
-        (2, 2, '127.0.0.1', -1, 12344, -1, -1, '', 1, '2024-03-15 14:13:20', '2024-03-18 09:53:10', ''),
-        (3, 3, '127.0.0.1', -1, 12333, -1, -1, '', 1, '2024-03-15 14:13:20', '2024-03-18 09:53:10', '');
+INSERT INTO eventmesh_dashboard_test.runtime (id, cluster_id, host, storage_cluster_id, port, jmx_port, start_timestamp, rack, status, create_time,
+                                              update_time, endpoint_map)
+values (1, 1, '127.0.0.1', -1, 12345, -1, -1, '', 1, '2024-03-15 14:13:20', '2024-03-18 09:53:10', ''),
+       (2, 2, '127.0.0.1', -1, 12344, -1, -1, '', 1, '2024-03-15 14:13:20', '2024-03-18 09:53:10', ''),
+       (3, 3, '127.0.0.1', -1, 12333, -1, -1, '', 1, '2024-03-15 14:13:20', '2024-03-18 09:53:10', '');

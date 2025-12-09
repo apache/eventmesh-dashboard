@@ -20,10 +20,13 @@ package org.apache.eventmesh.dashboard.console.service.connector.Impl;
 
 
 import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.mapper.connector.ResourcesConfigMapper;
 import org.apache.eventmesh.dashboard.console.service.connector.ResourcesConfigService;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class ResourcesConfigServiceImpl implements ResourcesConfigService {
 
 
+    @Autowired
+    private ResourcesConfigMapper resourcesConfigMapper;
+
+
+    @Override
+    public List<ResourcesConfigEntity> queryByRuntimeList(List<RuntimeEntity> runtimeEntityList) {
+        return this.resourcesConfigMapper.queryByRuntimeList(runtimeEntityList);
+    }
 
     @Override
     public void insertResources(ResourcesConfigEntity resourcesConfigEntity) {

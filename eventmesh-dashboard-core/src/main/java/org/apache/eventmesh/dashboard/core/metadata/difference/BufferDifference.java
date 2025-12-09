@@ -22,12 +22,15 @@ import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
 
 import java.util.List;
 
+/**
+ *
+ */
 public class BufferDifference extends AbstractBothDifference {
 
 
     @Override
     void doDifference() {
         List<BaseClusterIdBase> sourcetList = sourceHandler.getData();
-        this.difference(sourcetList, allData);
+        this.intersection(sourcetList, allData);
     }
 }

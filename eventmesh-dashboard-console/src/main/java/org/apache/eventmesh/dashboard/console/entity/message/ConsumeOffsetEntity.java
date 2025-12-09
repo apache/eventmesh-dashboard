@@ -17,6 +17,11 @@
 
 package org.apache.eventmesh.dashboard.console.entity.message;
 
+
+import org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType;
+
+import java.time.LocalDateTime;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -26,14 +31,20 @@ public class ConsumeOffsetEntity extends TopicOffsetEntity {
 
     private Long subscribeId;
 
-    private Long groupId;
+    private OperationRangeType operationRangeType;
 
-    private String groupName;
+    private Long rangeId;
 
     private Long consumeOffset;
+
+    private Integer queueIndex;
 
     private Integer consumeRate;
 
     private Long delayNum;
 
+    /**
+     *
+     */
+    private LocalDateTime resetTime;
 }

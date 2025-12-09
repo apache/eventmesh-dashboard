@@ -18,6 +18,6 @@
  */
 
 export type TopicStats = {
-    abnormalNum: number
-    allNum: number
+  abnormalNum: number
+  allNum: number
 }

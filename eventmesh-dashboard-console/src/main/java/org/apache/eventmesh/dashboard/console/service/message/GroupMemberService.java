@@ -19,7 +19,7 @@
 package org.apache.eventmesh.dashboard.console.service.message;
 
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
 
 import java.util.List;
 
@@ -28,22 +28,22 @@ import java.util.List;
  */
 public interface GroupMemberService {
 
-    List<SubscriptionEntity> selectAll();
+    List<GroupMemberEntity> selectAll();
 
-    void batchInsert(List<SubscriptionEntity> groupMemberEntities);
+    void batchInsert(List<GroupMemberEntity> groupMemberEntities);
 
-    List<SubscriptionEntity> getGroupMemberByClusterId(SubscriptionEntity subscriptionEntity);
+    List<GroupMemberEntity> getGroupMemberByClusterId(GroupMemberEntity groupMemberEntity);
 
-    void addGroupMember(SubscriptionEntity subscriptionEntity);
+    void addGroupMember(GroupMemberEntity groupMemberEntity);
 
-    void updateGroupMember(SubscriptionEntity subscriptionEntity);
+    void updateGroupMember(GroupMemberEntity groupMemberEntity);
 
-    SubscriptionEntity deleteGroupMember(SubscriptionEntity subscriptionEntity);
+    GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
 
-    SubscriptionEntity selectGroupMemberById(SubscriptionEntity subscriptionEntity);
+    GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 
-    List<SubscriptionEntity> selectGroupMemberByGroup(GroupEntity groupEntity);
+    List<GroupMemberEntity> selectGroupMemberByGroup(GroupEntity groupEntity);
 
-    List<SubscriptionEntity> selectAllMemberByTopic(SubscriptionEntity subscriptionEntity);
+    List<GroupMemberEntity> selectAllMemberByTopic(GroupMemberEntity groupMemberEntity);
 
 }

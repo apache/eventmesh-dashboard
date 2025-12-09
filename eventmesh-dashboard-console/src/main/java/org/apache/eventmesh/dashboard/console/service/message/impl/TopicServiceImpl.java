@@ -20,18 +20,19 @@ package org.apache.eventmesh.dashboard.console.service.message.impl;
 
 
 import org.apache.eventmesh.dashboard.console.annotation.EmLog;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.GroupEntity;
-import org.apache.eventmesh.dashboard.console.entity.message.SubscriptionEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.GroupMemberEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.HealthCheckResultMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
-import org.apache.eventmesh.dashboard.console.mapper.message.OprGroupMemberMapper;
+import org.apache.eventmesh.dashboard.console.mapper.message.GroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
-import org.apache.eventmesh.dashboard.console.modle.dto.topic.GetTopicListDTO;
-import org.apache.eventmesh.dashboard.console.modle.vo.topic.TopicDetailGroupVO;
+import org.apache.eventmesh.dashboard.console.model.dto.topic.GetTopicListDTO;
+import org.apache.eventmesh.dashboard.console.model.vo.topic.TopicDetailGroupVO;
 import org.apache.eventmesh.dashboard.console.service.message.TopicService;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class TopicServiceImpl implements TopicService {
     TopicMapper topicMapper;
 
     @Autowired
-    OprGroupMemberMapper oprGroupMemberMapper;
+    GroupMemberMapper groupMemberMapper;
 
     @Autowired
     HealthCheckResultMapper healthCheckResultMapper;
@@ -63,27 +64,33 @@ public class TopicServiceImpl implements TopicService {
 
 
     @Override
+    public List<TopicEntity> queryByClusterIdList(List<ClusterEntity> topicEntityList) {
+        return this.topicMapper.queryByClusterIdList(topicEntityList);
+    }
+
+    @Deprecated
+    @Override
     public List<TopicDetailGroupVO> getTopicDetailGroups(Long topicId) {
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setId(topicId);
         topicEntity = this.selectTopicById(topicEntity);
-        SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
-        subscriptionEntity.setClusterId(topicEntity.getClusterId());
-        subscriptionEntity.setTopicName(topicEntity.getTopicName());
-        List<String> groupNamelist = oprGroupMemberMapper.selectGroupNameByTopicName(subscriptionEntity);
+        GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
+        groupMemberEntity.setClusterId(topicEntity.getClusterId());
+        groupMemberEntity.setTopicName(topicEntity.getTopicName());
+        List<String> groupNamelist = new ArrayList<>();
         ArrayList<TopicDetailGroupVO> topicDetailGroupVOList = new ArrayList<>();
         TopicEntity finalTopicEntity = topicEntity;
         groupNamelist.forEach(n -> {
             TopicDetailGroupVO topicDetailGroupVO = new TopicDetailGroupVO();
             topicDetailGroupVO.setGroupName(n);
-            subscriptionEntity.setGroupName(n);
-            List<String> list = oprGroupMemberMapper.selectTopicsByGroupNameAndClusterId(subscriptionEntity);
+            groupMemberEntity.setGroupName(n);
+            List<String> list = new ArrayList<>();
             topicDetailGroupVO.setTopics(list);
             GroupEntity groupEntity = new GroupEntity();
             groupEntity.setClusterId(finalTopicEntity.getClusterId());
             groupEntity.setName(n);
             GroupEntity group = groupMapper.selectGroupByNameAndClusterId(groupEntity);
-            topicDetailGroupVO.setMemberNum(group.getMemberCount());
+            //topicDetailGroupVO.setMemberNum(group.getMemberCount());
 
             topicDetailGroupVOList.add(topicDetailGroupVO);
         });
@@ -103,7 +110,7 @@ public class TopicServiceImpl implements TopicService {
         topicMapper.batchInsert(topicEntities);
     }
 
-    public List<RuntimeEntity>  queryRuntimeByBaseSyncEntity(List<TopicEntity> topicName) {
+    public List<RuntimeEntity> queryRuntimeByBaseSyncEntity(List<TopicEntity> topicName) {
 
         return null;
     }
@@ -117,9 +124,9 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public void addTopic(TopicEntity topicEntity) {
-        SubscriptionEntity subscriptionEntity = new SubscriptionEntity();
-        subscriptionEntity.setTopicName(topicEntity.getTopicName());
-        oprGroupMemberMapper.updateMemberByTopic(subscriptionEntity);
+        GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
+        groupMemberEntity.setTopicName(topicEntity.getTopicName());
+        //groupMemberMapper.updateMemberByTopic(groupMemberEntity);
         topicMapper.insertTopic(topicEntity);
     }
 
@@ -157,8 +164,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public List<TopicEntity> getTopicListToFront(TopicEntity topicEntity) {
-        List<TopicEntity> topicEntityList = topicMapper.queryTopicsToFrontByClusterId(topicEntity);
-        return topicEntityList;
+        return topicMapper.queryTopicsToFrontByClusterId(topicEntity);
     }
 
 

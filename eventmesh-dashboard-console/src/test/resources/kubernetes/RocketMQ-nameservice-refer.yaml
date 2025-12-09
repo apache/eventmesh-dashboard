@@ -35,7 +35,7 @@ spec:
       containers:
         - image: rocketmqinc/rocketmq:4.4.0
           name: rockermq-namesrv
-          command: ["/bin/sh","mqnamesrv"]
+          command: [ "/bin/sh","mqnamesrv" ]
           ports:
             - containerPort: 9876
               name: tcp-9876

@@ -22,7 +22,7 @@ import org.apache.eventmesh.dashboard.console.EventMeshDashboardApplication;
 import org.apache.eventmesh.dashboard.console.databuild.BuildFullSceneData;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
-import org.apache.eventmesh.dashboard.console.modle.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
+import org.apache.eventmesh.dashboard.console.model.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -49,19 +49,24 @@ import lombok.extern.slf4j.Slf4j;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class ClusterRelationshipMapperTest {
 
+    private static final AtomicLong nameIndex = new AtomicLong(2);
     @Autowired
     private ClusterRelationshipMapper clusterRelationshipMapper;
-
-
     @Autowired
     private ClusterMapper clusterMapper;
-
     private BuildFullSceneData buildFullSceneData = new BuildFullSceneData();
-
-    private static final AtomicLong nameIndex = new AtomicLong(2);
-
     private ClusterRelationshipEntity clusterRelationshipEntity;
 
+    public static ClusterRelationshipEntity buildClusterRelationshipEntity(ClusterEntity clusterEntity, ClusterEntity relationshipEntity) {
+        ClusterRelationshipEntity clusterRelationshipEntity = new ClusterRelationshipEntity();
+        clusterRelationshipEntity.setOrganizationId(clusterEntity.getOrganizationId());
+        clusterRelationshipEntity.setClusterId(clusterEntity.getId());
+        clusterRelationshipEntity.setClusterType(clusterEntity.getClusterType());
+        clusterRelationshipEntity.setRelationshipId(relationshipEntity.getId());
+        clusterRelationshipEntity.setRelationshipType(relationshipEntity.getClusterType());
+        return clusterRelationshipEntity;
+
+    }
 
     @Test
     public void test_queryListByClusterIdAndType() {
@@ -124,17 +129,6 @@ public class ClusterRelationshipMapperTest {
         this.clusterRelationshipMapper.insertClusterRelationshipEntry(clusterRelationshipEntity);
         clusterRelationshipEntity = this.clusterRelationshipMapper.queryById(clusterRelationshipEntity);
         Assert.assertNotNull(clusterRelationshipEntity);
-    }
-
-    public static ClusterRelationshipEntity buildClusterRelationshipEntity(ClusterEntity clusterEntity, ClusterEntity relationshipEntity) {
-        ClusterRelationshipEntity clusterRelationshipEntity = new ClusterRelationshipEntity();
-        clusterRelationshipEntity.setOrganizationId(clusterEntity.getOrganizationId());
-        clusterRelationshipEntity.setClusterId(clusterEntity.getId());
-        clusterRelationshipEntity.setClusterType(clusterEntity.getClusterType());
-        clusterRelationshipEntity.setRelationshipId(relationshipEntity.getId());
-        clusterRelationshipEntity.setRelationshipType(relationshipEntity.getClusterType());
-        return clusterRelationshipEntity;
-
     }
 
     public ClusterRelationshipEntity buildClusterRelationshipEntity() {

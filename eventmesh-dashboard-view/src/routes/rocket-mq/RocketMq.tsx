@@ -17,22 +17,23 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, StackProps } from '@mui/material'
+import React, {forwardRef} from 'react'
+import {Box, StackProps} from '@mui/material'
 
 import Construction from '../../components/Construction'
 import RootLayout from '../../components/page/RootLayout'
 
-interface RocketMqProps extends StackProps {}
+interface RocketMqProps extends StackProps {
+}
 
 const RocketMq = forwardRef<typeof Box, RocketMqProps>(
-  ({ children, ...props }, ref) => {
-    return (
-      <RootLayout>
-        <Construction title="RocketMQ" />
-      </RootLayout>
-    )
-  }
+    ({children, ...props}, ref) => {
+      return (
+          <RootLayout>
+            <Construction title="RocketMQ"/>
+          </RootLayout>
+      )
+    }
 )
 
 RocketMq.displayName = 'RocketMq'

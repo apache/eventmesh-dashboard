@@ -17,18 +17,19 @@
  * under the License.
  */
 
-import React, { forwardRef } from 'react'
-import { Box, BoxProps } from '@mui/material'
+import React, {forwardRef} from 'react'
+import {Box, BoxProps} from '@mui/material'
 import Page from '../../components/page/Layout'
 import Construction from '../../components/Construction'
 
-interface UsersProps extends BoxProps {}
+interface UsersProps extends BoxProps {
+}
 
-const User = forwardRef<typeof Box, UsersProps>(({ ...props }, ref) => {
+const User = forwardRef<typeof Box, UsersProps>(({...props}, ref) => {
   return (
-    <Page>
-      <Construction />
-    </Page>
+      <Page>
+        <Construction/>
+      </Page>
   )
 })
 

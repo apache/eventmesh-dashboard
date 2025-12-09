@@ -27,13 +27,18 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class TopicMetadata extends BaseRuntimeIdBase {
 
-
-
     private String topicName;
 
-    private Long runtimeId;
+    private Integer readQueueNum;
 
-    private Long storageId;
+    private Integer writeQueueNum;
+
+    /**
+     * topic 拦截器类型
+     */
+    private String topicFilterType;
+
+    private Integer order;
 
     private Long retentionMs;
 

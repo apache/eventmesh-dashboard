@@ -37,15 +37,13 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "HealthCheckResultEntity", description = "Health check result entity")
 public class HealthCheckResultEntity extends BaseRuntimeIdEntity {
 
-    private static final long serialVersionUID = -7350585209577598040L;
-
     private ClusterType clusterType;
 
     private String protocol;
 
-    private String interfaces;
+    private String address;
 
-    private HealthCheckTypeEnum healthCheckTypeEnum;
+    private HealthCheckTypeEnum healthCheckType;
 
     private HealthCheckStatus result;
 
@@ -54,7 +52,6 @@ public class HealthCheckResultEntity extends BaseRuntimeIdEntity {
     private LocalDateTime beginTime;
 
     private LocalDateTime finishTime;
-
 
 
     @Schema(description = "Type of Health Check;0:Unknown, 1:Cluster, 2:Runtime, 3:Topic, 4:Storage", defaultValue = "0", allowableValues = {"0",
