@@ -116,7 +116,7 @@ public class Health2Service {
                 this.createHealthCheckWrapper(baseSyncBase, HealthCheckTypeEnum.TOPIC);
             }
             if (log.isDebugEnabled()) {
-                AbstractCreateSDKConfig abstractCreateSDKConfig = (AbstractCreateSDKConfig) healthCheckWrapper.getCheckService().getCreateSDKConfig();
+                AbstractCreateSDKConfig abstractCreateSDKConfig = (AbstractCreateSDKConfig) healthCheckWrapper.getCheckService().getCreateSdkConfig();
                 log.debug("register health check service for {} , metadata type {} , {} ,{}", baseSyncBase.getClusterType(),
                     baseSyncBase.getClass().getSimpleName(), baseSyncBase.getId(),
                     abstractCreateSDKConfig.getUniqueKey());
@@ -285,7 +285,7 @@ public class Health2Service {
 
         private HealthCheckResultEntity createHealthCheckResultEntity() {
             if (Objects.isNull(this.address)) {
-                this.address = ((AbstractCreateSDKConfig) checkService.getCreateSDKConfig()).doUniqueKey();
+                this.address = ((AbstractCreateSDKConfig) checkService.getCreateSdkConfig()).doUniqueKey();
             }
             return this.createHealthCheckResultEntity(this.address);
         }
@@ -309,7 +309,7 @@ public class Health2Service {
         @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
         public Map<String, HealthCheckResultEntity> createHealthCheckResultEntityMap() {
             Map<String, HealthCheckResultEntity> healthCheckResultEntityMap = new HashMap<>();
-            AbstractMultiCreateSDKConfig abstractMultiCreateSDKConfig = (AbstractMultiCreateSDKConfig) this.checkService.getCreateSDKConfig();
+            AbstractMultiCreateSDKConfig abstractMultiCreateSDKConfig = (AbstractMultiCreateSDKConfig) this.checkService.getCreateSdkConfig();
             for (String address : abstractMultiCreateSDKConfig.getNetAddresses()) {
                 healthCheckResultEntityMap.put(address, createHealthCheckResultEntity(address));
             }

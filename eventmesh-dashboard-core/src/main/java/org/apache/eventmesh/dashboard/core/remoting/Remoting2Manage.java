@@ -234,6 +234,7 @@ public class Remoting2Manage {
         }
 
 
+        @SuppressWarnings("unchecked")
         private Object buildRequest(RemotingServiceMethodMapperWrapper methodMapper, T object) throws InstantiationException, IllegalAccessException {
             if (Objects.nonNull(methodMapper.parameterTypes)) {
                 AbstractGlobal2Request<Object> request =

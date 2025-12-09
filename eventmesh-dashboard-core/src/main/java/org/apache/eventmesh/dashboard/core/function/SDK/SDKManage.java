@@ -82,6 +82,7 @@ public class SDKManage {
     private SDKManage() {
     }
 
+    @SuppressWarnings("unchecked")
     static void createSDKMetadataWrapper(Class<?> clazz) {
         SDKMetadata[] sdkMetadataArray = clazz.getAnnotationsByType(SDKMetadata.class);
         if (ArrayUtils.isEmpty(sdkMetadataArray)) {

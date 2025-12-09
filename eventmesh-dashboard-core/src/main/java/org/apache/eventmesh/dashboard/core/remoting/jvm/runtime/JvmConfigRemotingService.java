@@ -16,18 +16,8 @@
  */
 
 
-<<<<<<<< HEAD:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/jvm/runtime/JvmConfigRemotingService.java
 package org.apache.eventmesh.dashboard.core.remoting.jvm.runtime;
-========
-package org.apache.eventmesh.dashboard.console.service.connector.Impl;
 
-
-import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
-import org.apache.eventmesh.dashboard.console.service.connector.ResourcesConfigService;
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/connector/Impl/ResourcesConfigServiceImpl.java
-
-
-<<<<<<<< HEAD:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/jvm/runtime/JvmConfigRemotingService.java
 import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigRequest;
@@ -40,29 +30,10 @@ public class JvmConfigRemotingService extends AbstractJvmRemotingService impleme
 
     @Override
     public BaseGlobalResult addConfig(AddConfigRequest addConfigRequest) {
-========
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-@Service
-@Transactional
-public class ResourcesConfigServiceImpl implements ResourcesConfigService {
-
-
-
-    @Override
-    public void insertResources(ResourcesConfigEntity resourcesConfigEntity) {
-
-    }
-
-    @Override
-    public ResourcesConfigEntity queryResourcesById(ResourcesConfigEntity resourcesConfigEntity) {
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/connector/Impl/ResourcesConfigServiceImpl.java
         return null;
     }
 
     @Override
-<<<<<<<< HEAD:eventmesh-dashboard-core/src/main/java/org/apache/eventmesh/dashboard/core/remoting/jvm/runtime/JvmConfigRemotingService.java
     public GetTopicsResult getConfig(GetConfigRequest getConfigRequest) {
         return null;
     }
@@ -70,14 +41,5 @@ public class ResourcesConfigServiceImpl implements ResourcesConfigService {
     @Override
     public GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest) {
         return null;
-========
-    public List<ResourcesConfigEntity> queryResourcesByOrganizationId(ResourcesConfigEntity resourcesConfigEntity) {
-        return List.of();
-    }
-
-    @Override
-    public void copyResources(ResourcesConfigEntity resourcesConfigEntity) {
-
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/connector/Impl/ResourcesConfigServiceImpl.java
     }
 }

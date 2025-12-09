@@ -24,7 +24,7 @@ import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateSDKConfig;
 public abstract class AbstractSDKOperation<T, C extends CreateSDKConfig> extends AbstractClientInfo<T> implements SDKOperation<T, C> {
 
 
-    public SDKTypeEnum getSDKTypeEnum() {
+    public SDKTypeEnum getSdkTypeEnum() {
         return SDKTypeEnum.PING;
     }
 

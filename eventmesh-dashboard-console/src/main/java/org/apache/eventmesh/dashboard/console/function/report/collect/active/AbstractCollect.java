@@ -37,7 +37,7 @@ public abstract class AbstractCollect<C> extends AbstractClientInfo<C> implement
 
 
     @Override
-    protected SDKTypeEnum getSDKTypeEnum() {
+    protected SDKTypeEnum getSdkTypeEnum() {
         return SDKTypeEnum.ADMIN;
     }
 

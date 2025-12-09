@@ -91,6 +91,7 @@ public class ColonyDO<C extends ClusterBaseDO> {
 
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T createBaseDO(Class<?> clusterDO, Object metadata) {
         try {
             ClusterBaseDO clusterEntityDO = (ClusterBaseDO) clusterDO.newInstance();

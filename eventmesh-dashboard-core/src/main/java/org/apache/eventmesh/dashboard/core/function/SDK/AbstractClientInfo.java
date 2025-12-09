@@ -35,15 +35,16 @@ public abstract class AbstractClientInfo<T> {
     @Setter
     private Executor executor;
 
+    @SuppressWarnings("unchecked")
     public T getClient() {
-        return (T) this.clientWrapper.getClientMap().get(this.getSDKTypeEnum());
+        return (T) this.clientWrapper.getClientMap().get(this.getSdkTypeEnum());
     }
 
     protected CompletableFuture<Void> completableFuture(Runnable runnable) {
         return Objects.nonNull(this.executor) ? CompletableFuture.runAsync(runnable, executor) : CompletableFuture.runAsync(runnable);
     }
 
-    public CreateSDKConfig getCreateSDKConfig() {
+    public CreateSDKConfig getCreateSdkConfig() {
         return this.clientWrapper.getConfig();
     }
 
@@ -52,5 +53,5 @@ public abstract class AbstractClientInfo<T> {
     }
 
 
-    protected abstract SDKTypeEnum getSDKTypeEnum();
+    protected abstract SDKTypeEnum getSdkTypeEnum();
 }

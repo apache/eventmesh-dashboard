@@ -51,7 +51,7 @@ public class RocketMQTopicRemotingServiceTest {
         runtimeMetadata.setClusterType(ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE);
 
         AbstractSimpleCreateSDKConfig config =
-            ConfigManage.getInstance().getSimpleCreateSDKConfig(runtimeMetadata.getClusterType(), SDKTypeEnum.ADMIN);
+            ConfigManage.getInstance().getSimpleCreateSdkConfig(runtimeMetadata.getClusterType(), SDKTypeEnum.ADMIN);
         config.setKey("11");
         NetAddress netAddress = new NetAddress();
         netAddress.setAddress(runtimeMetadata.getHost());

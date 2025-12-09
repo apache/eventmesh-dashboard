@@ -17,13 +17,11 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class CreateKakfaConfig extends AbstractMultiCreateSDKConfig {
 
 }

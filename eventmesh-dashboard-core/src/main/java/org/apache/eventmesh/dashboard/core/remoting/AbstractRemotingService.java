@@ -29,7 +29,7 @@ public abstract class AbstractRemotingService<T> extends AbstractClientInfo<T> {
 
 
     @Override
-    protected SDKTypeEnum getSDKTypeEnum() {
+    protected SDKTypeEnum getSdkTypeEnum() {
         return SDKTypeEnum.ADMIN;
     }
 

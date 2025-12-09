@@ -232,7 +232,7 @@ public class ClusterMetadataDomain {
         ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterType);
         if (this.buildConfig && !clusterType.isDefinition() && clusterFramework.isCAP()) {
             AbstractMultiCreateSDKConfig config =
-                ConfigManage.getInstance().getMultiCreateSDKConfig(clusterEntity.getClusterType(), SDKTypeEnum.ADMIN);
+                ConfigManage.getInstance().getMultiCreateSdkConfig(clusterEntity.getClusterType(), SDKTypeEnum.ADMIN);
             config.setKey(clusterEntity.getId().toString());
             clusterBaseDO.setMultiCreateSDKConfig(config);
         }
@@ -248,7 +248,7 @@ public class ClusterMetadataDomain {
             ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(runtimeEntity.getClusterType());
             if (!clusterFramework.isCAP()) {
                 AbstractSimpleCreateSDKConfig config =
-                    ConfigManage.getInstance().getSimpleCreateSDKConfig(runtimeEntity.getClusterType(), SDKTypeEnum.ADMIN);
+                    ConfigManage.getInstance().getSimpleCreateSdkConfig(runtimeEntity.getClusterType(), SDKTypeEnum.ADMIN);
                 config.setKey(runtimeEntity.getId().toString());
                 config.setNetAddress(this.createNetAddress(runtimeEntity));
                 runtimeBaseDO.setCreateSDKConfig(config);
