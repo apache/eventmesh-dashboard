@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,25 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.agent.config;
+package org.apache.eventmesh.dashboard.agent;
 
-import org.apache.eventmesh.dashboard.agent.config.handler.RocketMQNameServiceConfigHandler;
+public class Constant {
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+    public static final String ENV_CONSOLE = "eventmesh.agent.console";
 
-public class ConfigHandlerManage {
+    public static final String ENV_CLUSTER_ID = "eventmesh.agent.clusterId";
 
-    private Map<String, Class<?>> configHandlerMap = new ConcurrentHashMap<>();
+    public static final String ENV_RUNTIME_ID = "eventmesh.agent.runtimeId";
 
-    {
-        this.configHandlerMap.put("", RocketMQNameServiceConfigHandler.class);
-    }
-
-
-    public ConfigHandler getConfigHandler(String clusterType) throws InstantiationException, IllegalAccessException {
-        Class<?> clazz = configHandlerMap.get(clusterType);
-        return (ConfigHandler) clazz.newInstance();
-    }
+    public static final String ENV_RUNTIME_HOME = "eventmesh.agent.runtimeHome";
 
 }

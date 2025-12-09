@@ -15,25 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.agent.config;
+package org.apache.eventmesh.dashboard.core.function.multinetwork;
 
-import org.apache.eventmesh.dashboard.agent.config.handler.RocketMQNameServiceConfigHandler;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import lombok.Data;
 
-public class ConfigHandlerManage {
+/**
+ *  申请端口必须连续，这点需要 组件支持端口的配置
+ */
+@Data
+public class PortMetadata {
 
-    private Map<String, Class<?>> configHandlerMap = new ConcurrentHashMap<>();
+    private ClusterType clusterType;
 
-    {
-        this.configHandlerMap.put("", RocketMQNameServiceConfigHandler.class);
-    }
+    private String configName;
 
+    private String protocol = "TCP";
 
-    public ConfigHandler getConfigHandler(String clusterType) throws InstantiationException, IllegalAccessException {
-        Class<?> clazz = configHandlerMap.get(clusterType);
-        return (ConfigHandler) clazz.newInstance();
-    }
+    private String effect = "client";
+
+    private Integer port;
+
+    private boolean required = true;
+
+    private boolean virtual = false;
+
+    private boolean nullPort  = false;
+
+    private String explanation;
 
 }

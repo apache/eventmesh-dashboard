@@ -30,4 +30,7 @@ public interface PortService {
 
     List<String> getPorts(GetPortsDO getPortsDO);
 
+
+    void releasePort(GetPortsDO getPortsDO);
+
 }

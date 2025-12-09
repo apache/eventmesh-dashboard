@@ -44,7 +44,11 @@ public interface RuntimeService {
 
     ClusterAllMetadataDO queryAllByClusterId(RuntimeEntity runtimeEntity, boolean isRuntime, boolean isRelationship);
 
-    void batchInsert(List<RuntimeEntity> runtimeEntities);
+    List<RuntimeEntity> selectAll();
+
+    List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity);
+
+    void updateAddressByRuntimeId(RuntimeEntity runtimeEntity);
 
     Integer batchUpdate(List<RuntimeEntity> runtimeEntities);
 
@@ -52,13 +56,11 @@ public interface RuntimeService {
 
     void batchUpdateDeployStatusType(List<RuntimeEntity> runtimeEntities, DeployStatusType deployStatusType);
 
-    List<RuntimeEntity> selectAll();
-
-    List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity);
-
     void insertRuntimeByClusterData(RuntimeEntity runtimeEntity);
 
     void insertRuntime(RuntimeEntity runtimeEntity);
+
+    void batchInsert(List<RuntimeEntity> runtimeEntities);
 
     void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
 

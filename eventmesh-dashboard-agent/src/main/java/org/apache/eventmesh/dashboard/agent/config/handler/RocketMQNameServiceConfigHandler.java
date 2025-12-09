@@ -15,25 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.agent.config;
+package org.apache.eventmesh.dashboard.agent.config.handler;
 
-import org.apache.eventmesh.dashboard.agent.config.handler.RocketMQNameServiceConfigHandler;
+import org.apache.eventmesh.dashboard.agent.config.AbstractConfigHandler;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+public class RocketMQNameServiceConfigHandler extends AbstractConfigHandler {
 
-public class ConfigHandlerManage {
+    @Override
+    public void handler() {
 
-    private Map<String, Class<?>> configHandlerMap = new ConcurrentHashMap<>();
-
-    {
-        this.configHandlerMap.put("", RocketMQNameServiceConfigHandler.class);
-    }
-
-
-    public ConfigHandler getConfigHandler(String clusterType) throws InstantiationException, IllegalAccessException {
-        Class<?> clazz = configHandlerMap.get(clusterType);
-        return (ConfigHandler) clazz.newInstance();
     }
 
 }

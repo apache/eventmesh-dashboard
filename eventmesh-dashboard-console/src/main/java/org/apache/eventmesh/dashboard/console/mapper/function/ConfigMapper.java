@@ -48,6 +48,17 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
         """)
     List<ConfigEntity> queryByClusterIdList(List<ClusterEntity> clusterConfigEntityList);
 
+    @Select("""
+        <script>
+            <foreach item='item' index='index' separator=' union all '>
+                 select * from config where
+                                instance_id = #{instanceId}
+                            and instance_type = #{instanceType}
+                            and config_name = #{configName}
+             </foreach>
+        <script>
+        """)
+    List<ConfigEntity> queryByRuntimeIdAndConfigName(List<ConfigEntity> configEntityLists);
 
     @Select("""
         select * from config where instance_id
@@ -82,6 +93,23 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
     @Select("select * from config where instance_type=#{instanceType} and instance_id=#{instanceId}")
     List<ConfigEntity> selectConfigsByInstance(ConfigEntity configEntity);
+
+
+    @Update("""
+        <script>
+            <foreach item='item' index='index' separator=' union all '>
+                     update set config_value=#{configValue} 
+                        <if test='configValueRange != null'>  >
+                            , config_value_range = #{configValueRange}
+                         </if>
+                        from  config
+                        where instance_id = #{instanceId}
+                          and instance_type = #{instanceType}
+                          and config_name = #{configName}
+             </foreach>
+        </script>
+    """)
+    Integer updateValueByConfigList(List<ConfigEntity> configEntityList);
 
     @Insert("""
         <script>

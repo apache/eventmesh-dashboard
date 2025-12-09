@@ -30,4 +30,9 @@ public class AgentStartActionDTO {
     @NotNull
     private Long runtimeId;
 
+    @NotNull
+    private String localAddress;
+
+    private String nodeAddress;
+
 }

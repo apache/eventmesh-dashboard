@@ -89,7 +89,7 @@ public class ReportHandlerManage {
     private static final Map<String, Class<?>> engineClasses = new HashMap<>();
 
     static {
-        engineClasses.put("iot", IotDBReportEngine.class);
+        engineClasses.put("iotdb", IotDBReportEngine.class);
     }
 
     private final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(10);
@@ -107,6 +107,7 @@ public class ReportHandlerManage {
     private ReportConfig reportConfig;
 
     public void init() {
+        this.handlerConfig();
         ClasspathScanner classpathScanner =
             ClasspathScanner.builder().base(ReportHandlerManage.class).subPath("/model/**").build();
         try {
@@ -115,8 +116,6 @@ public class ReportHandlerManage {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        this.handlerConfig();
-
         scheduledExecutorService.scheduleAtFixedRate(this.collectManage::request, 5, 5, TimeUnit.SECONDS);
 
         scheduledExecutorService.scheduleAtFixedRate(this::handlerData, 5, 5, TimeUnit.SECONDS);

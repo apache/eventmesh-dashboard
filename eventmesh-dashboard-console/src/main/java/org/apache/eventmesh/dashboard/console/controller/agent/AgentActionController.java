@@ -18,6 +18,8 @@
 package org.apache.eventmesh.dashboard.console.controller.agent;
 
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
+import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
@@ -32,15 +34,17 @@ import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import com.lamp.decoration.core.result.DecorationResultException;
 
 
 @RestController
@@ -62,12 +66,31 @@ public class AgentActionController {
         ClusterEntity clusterEntity = new ClusterEntity();
         clusterEntity.setId(data.getClusterId());
 
-        clusterEntity = this.clusterService.queryClusterById(clusterEntity);
 
+        clusterEntity = this.clusterService.queryClusterById(clusterEntity);
+        if(Objects.isNull(clusterEntity)){
+            DecorationResultException.throwDecorationResultException(41001,"cluster not exist");
+        }
         RuntimeEntity runtimeEntity = new RuntimeEntity();
         runtimeEntity.setId(data.getRuntimeId());
         runtimeEntity = this.runtimeService.queryRuntimeEntityById(runtimeEntity);
+        if(Objects.isNull(runtimeEntity)){
+            DecorationResultException.throwDecorationResultException(41002,"runtime not exist");
+        }
 
+        RuntimeEntity updateRuntimeEntity = new RuntimeEntity();
+        updateRuntimeEntity.setId(runtimeEntity.getId());
+        updateRuntimeEntity.setHost(data.getNodeAddress());
+        updateRuntimeEntity.setPodHost(data.getLocalAddress());
+        this.runtimeService.updateAddressByRuntimeId(updateRuntimeEntity);
+        // 识别架构，修改 需要 修改 config 相关配置 , 端口
+
+
+        // TODO 识别 架构方式，修改 cap 架构配置 ，
+
+        // 依赖组件，在 agentCheckRuntime ，
+
+        // 识别架构, 获得
 
         AgentStartActionVO agentStartActionVO = new AgentStartActionVO();
         agentStartActionVO.setClusterType(clusterEntity.getClusterType().toString());
@@ -111,13 +134,24 @@ public class AgentActionController {
 
         List<RuntimeEntity> runtimeEntityList = this.runtimeService.queryMetaRuntimeByStorageClusterId(queryRuntimeByBigExpandClusterDO);
 
-        if (clusterEntity.getClusterType().isEventMethRuntime()) {
+        ClusterType clusterType = clusterEntity.getClusterType();
+        if (clusterType.isEventMethRuntime()) {
             queryRuntimeByBigExpandClusterDO =
                 QueryRuntimeByBigExpandClusterDO.builder().followClusterId(clusterEntity.getId())
                     .storageMetaClusterTypeList(ClusterType.getStorageMetaRuntimeCluster()).build();
             //如果是 eventmesh 集群，name需要查询 存储集群的 runtime 是否启动
             // 如果识别 meta 的可用度
             runtimeEntityList = this.runtimeService.queryRuntimeByBigExpandCluster(queryRuntimeByBigExpandClusterDO);
+        }else {
+            ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterType);
+            if(clusterFramework.isCAP() && clusterType.isMeta()){
+
+            }else if(clusterType.isMetaAndRuntime()){
+
+            }else if(clusterType.isRuntime()){
+
+            }
+
         }
 
         return agentCheckRuntimeVO;

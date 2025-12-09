@@ -26,14 +26,13 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
+import lombok.Setter;
+
+@Setter
 public abstract class AbstractConfigHandler implements ConfigHandler {
 
     protected String runtimeHome;
 
-
-    public void setRuntimeHome(String runtimeHome) {
-        this.runtimeHome = runtimeHome;
-    }
 
     protected void readConfigFile(String configFile, String fileType, Map<String, String> configData) throws IOException {
         File file = new File(configFile);

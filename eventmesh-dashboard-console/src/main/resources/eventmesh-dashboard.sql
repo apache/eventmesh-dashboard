@@ -427,7 +427,8 @@ drop table if exists `port`;
 create table `port`
 (
     `id`           bigint unsigned primary key auto_increment comment '自增id',
-    `cluster_id`   bigint    not null default '0' comment '集群id',
+    `cluster_id`   bigint    not null comment '集群id',
+    `runtime_id`   bigint    not null comment '节点id',
     `current_port` int       not null default 0 comment '当前 port value',
     `status`       int                default 1 not null comment '状态: 1启用，0未启用',
     `create_time`  timestamp not null default current_timestamp comment '创建时间',

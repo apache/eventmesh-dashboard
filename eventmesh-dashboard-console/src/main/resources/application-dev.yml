@@ -63,7 +63,7 @@ decoration:
 
 
 function:
-  enabled: true
+  enabled: false
   reportConfig:
     defaultConfig:
       engineType: iotdb

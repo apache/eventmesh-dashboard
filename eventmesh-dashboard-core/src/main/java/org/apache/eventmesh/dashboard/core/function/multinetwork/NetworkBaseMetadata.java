@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.agent.config;
+package org.apache.eventmesh.dashboard.core.function.multinetwork;
 
-import org.apache.eventmesh.dashboard.agent.config.handler.RocketMQNameServiceConfigHandler;
+import lombok.Data;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-public class ConfigHandlerManage {
-
-    private Map<String, Class<?>> configHandlerMap = new ConcurrentHashMap<>();
-
-    {
-        this.configHandlerMap.put("", RocketMQNameServiceConfigHandler.class);
-    }
+@Data
+public class NetworkBaseMetadata {
 
 
-    public ConfigHandler getConfigHandler(String clusterType) throws InstantiationException, IllegalAccessException {
-        Class<?> clazz = configHandlerMap.get(clusterType);
-        return (ConfigHandler) clazz.newInstance();
-    }
+
+    private String domain;
+
+    private String address;
+
+    private String domainName;
+
+    private String protocol;
+
+
+
 
 }

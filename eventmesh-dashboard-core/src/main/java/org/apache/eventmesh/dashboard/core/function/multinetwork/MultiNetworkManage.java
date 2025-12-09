@@ -15,20 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.agent;
+package org.apache.eventmesh.dashboard.core.function.multinetwork;
 
-import org.apache.eventmesh.dashboard.agent.model.AgentCheckRuntimeVO;
-import org.apache.eventmesh.dashboard.agent.model.AgentStartActionVO;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Objects;
 
-/**
- *
- */
-public interface AgentActionClient {
+public class MultiNetworkManage {
 
 
-    AgentStartActionVO agentStartAction(Map<String, String> data);
+    static {
+        Arrays.stream(ClusterType.values()).toList().forEach(MultiNetworkManage::handlerClusterType);
+    }
 
-    AgentCheckRuntimeVO agentCheckRuntime(Map<String, String> data);
+    private static void handlerClusterType(ClusterType clusterType) {
+        if (Objects.isNull(clusterType.getAssemblyBusiness())) {
+            return;
+        }
+        if (clusterType.isDefinition()) {
+            return;
+        }
+
+        if (clusterType.name().indexOf("JVM") > 0) {
+            return;
+        }
+        ClusterPort.valueOf(clusterType.name());
+    }
+
 }
