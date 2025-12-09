@@ -15,41 +15,23 @@
  * limitations under the License.
  */
 
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/mapstruct/message/ConfigControllerMapper.java
 package org.apache.eventmesh.dashboard.console.mapstruct.message;
-========
 
-package org.apache.eventmesh.dashboard.console.modle.domain;
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/domain/RuntimeEntityDO.java
-
-import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/mapstruct/message/ConfigControllerMapper.java
 import org.apache.eventmesh.dashboard.console.model.function.config.QueryByInstanceIdDTO;
-========
-import org.apache.eventmesh.dashboard.core.cluster.RuntimeBaseDO;
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/domain/RuntimeEntityDO.java
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/mapstruct/message/ConfigControllerMapper.java
 /**
  *
  */
 @Mapper
 public interface ConfigControllerMapper {
-========
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class RuntimeEntityDO extends RuntimeBaseDO<RuntimeEntity, Object, ConfigEntity> {
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/domain/RuntimeEntityDO.java
+    ConfigControllerMapper INSTANCE = Mappers.getMapper(ConfigControllerMapper.class);
 
 
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/mapstruct/message/ConfigControllerMapper.java
     ConfigEntity queryByInstanceId(QueryByInstanceIdDTO queryByInstanceIdDTO);
 
-========
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/domain/RuntimeEntityDO.java
 }

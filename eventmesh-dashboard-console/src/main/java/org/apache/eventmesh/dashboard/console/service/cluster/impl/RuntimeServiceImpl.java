@@ -162,6 +162,11 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
+    public void updateAddressByRuntimeId(RuntimeEntity runtimeEntity) {
+
+    }
+
+    @Override
     public void insertRuntimeByClusterData(RuntimeEntity runtimeEntity) {
         this.runtimeMapper.insertRuntime(runtimeEntity);
         // copy config ， rocketmq 集群 copy topic

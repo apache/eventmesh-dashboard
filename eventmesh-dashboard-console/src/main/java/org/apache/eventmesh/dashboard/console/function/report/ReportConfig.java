@@ -30,6 +30,11 @@ public class ReportConfig {
 
     private List<ReportEngineConfig> reportEngineConfigList;
 
+    private String url;
+
+    private String username;
+
+    private String password;
 
     @Data
     public static class ReportEngineConfig {

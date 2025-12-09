@@ -64,7 +64,11 @@ decoration:
 
 function:
   enabled: false
+
   reportConfig:
+    url: jdbc:mysql://${DB_ADDRESS:localhost:3306}/eventmesh_dashboard?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:Ab123123@}
     defaultConfig:
       engineType: iotdb
       engineAddress: 127.0.0.1:6667

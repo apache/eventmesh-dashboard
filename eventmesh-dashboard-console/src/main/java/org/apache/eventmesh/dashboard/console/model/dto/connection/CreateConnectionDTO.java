@@ -1,4 +1,4 @@
-/*
+package org.apache.eventmesh.dashboard.console.model.dto.connection;/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,29 +15,14 @@
  * limitations under the License.
  */
 
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/dto/connection/CreateConnectionDTO.java
-
-package org.apache.eventmesh.dashboard.console.model.dto.connection;
-========
-
-package org.apache.eventmesh.dashboard.common.model.remoting.topic;
-
-import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
->>>>>>>> main/main:eventmesh-dashboard-common/src/main/java/org/apache/eventmesh/dashboard/common/model/remoting/topic/GetTopics2Request.java
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/model/dto/connection/CreateConnectionDTO.java
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class CreateConnectionDTO {
-========
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class GetTopics2Request extends Global2Request {
->>>>>>>> main/main:eventmesh-dashboard-common/src/main/java/org/apache/eventmesh/dashboard/common/model/remoting/topic/GetTopics2Request.java
 
     private Long clusterId;
 

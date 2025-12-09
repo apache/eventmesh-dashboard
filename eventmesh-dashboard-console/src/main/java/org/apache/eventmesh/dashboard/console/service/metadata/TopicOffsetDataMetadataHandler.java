@@ -17,11 +17,6 @@
 
 
 package org.apache.eventmesh.dashboard.console.service.metadata;
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/metadata/TopicOffsetDataMetadataHandler.java
-========
-
-import org.apache.eventmesh.dashboard.console.entity.cluster.ClientEntity;
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/metadata/ClientDataMetadataHandler.java
 
 import org.apache.eventmesh.dashboard.console.entity.message.TopicOffsetEntity;
 

@@ -1,4 +1,4 @@
-/*
+package org.apache.eventmesh.dashboard.console.service.connector;/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,18 +16,8 @@
  */
 
 
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/connector/ResourcesConfigService.java
-package org.apache.eventmesh.dashboard.console.service.connector;
-
 import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-========
-package org.apache.eventmesh.dashboard.console.service.function;
-
-import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
-import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.entity.function.MetadataSyncResultEntity;
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/function/MetadataSyncResultService.java
 
 import java.util.List;
 
@@ -35,7 +25,6 @@ import java.util.List;
 /**
  *
  */
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/connector/ResourcesConfigService.java
 public interface ResourcesConfigService {
 
 
@@ -51,14 +40,4 @@ public interface ResourcesConfigService {
     List<ResourcesConfigEntity> queryResourcesByOrganizationId(ResourcesConfigEntity resourcesConfigEntity);
 
     void copyResources(ResourcesConfigEntity resourcesConfigEntity);
-========
-public interface MetadataSyncResultService {
-
-
-    void bachMetadataSyncResult(List<MetadataSyncResultEntity> healthCheckResultEntityList, List<RuntimeEntity> runtimeList,
-        List<ClusterEntity> clusterEntityList);
-
-
-    List<MetadataSyncResultEntity> queueHealthCheckResultEntityList(MetadataSyncResultEntity healthCheckResultEntity);
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/service/function/MetadataSyncResultService.java
 }

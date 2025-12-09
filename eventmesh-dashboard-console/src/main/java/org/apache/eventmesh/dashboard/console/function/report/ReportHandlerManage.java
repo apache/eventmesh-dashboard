@@ -106,6 +106,9 @@ public class ReportHandlerManage {
     @Setter
     private ReportConfig reportConfig;
 
+    @Setter
+    private boolean enable = true;
+
     public void init() {
         this.handlerConfig();
         ClasspathScanner classpathScanner =
@@ -116,6 +119,11 @@ public class ReportHandlerManage {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        if(!this.enable){
+            return;
+        }
+
+        this.metadataDataManage.init(this.reportConfig.getUrl(), this.reportConfig.getUsername(), this.reportConfig.getPassword());
         scheduledExecutorService.scheduleAtFixedRate(this.collectManage::request, 5, 5, TimeUnit.SECONDS);
 
         scheduledExecutorService.scheduleAtFixedRate(this::handlerData, 5, 5, TimeUnit.SECONDS);

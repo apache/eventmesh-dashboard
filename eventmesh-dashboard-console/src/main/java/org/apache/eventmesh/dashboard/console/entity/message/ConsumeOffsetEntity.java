@@ -15,18 +15,10 @@
  * limitations under the License.
  */
 
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/message/ConsumeOffsetEntity.java
 package org.apache.eventmesh.dashboard.console.entity.message;
-========
-
-
-package org.apache.eventmesh.dashboard.console.modle.message.offset;
 
 
 import org.apache.eventmesh.dashboard.common.enums.OperationRange.OperationRangeType;
-import org.apache.eventmesh.dashboard.common.enums.ResetOffsetMode;
-import org.apache.eventmesh.dashboard.console.modle.ClusterIdDTO;
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/modle/message/offset/ResetOffsetDTO.java
 
 import java.time.LocalDateTime;
 
@@ -35,35 +27,24 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/message/ConsumeOffsetEntity.java
 public class ConsumeOffsetEntity extends TopicOffsetEntity {
 
     private Long subscribeId;
-========
-public class ResetOffsetDTO extends ClusterIdDTO {
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/modle/message/offset/ResetOffsetDTO.java
 
     private OperationRangeType operationRangeType;
 
     private Long rangeId;
 
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/message/ConsumeOffsetEntity.java
     private Long consumeOffset;
-========
-    private Long subscribeId;
 
     private Integer queueIndex;
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/modle/message/offset/ResetOffsetDTO.java
 
     private Integer consumeRate;
 
     private Long delayNum;
 
-<<<<<<<< HEAD:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/entity/message/ConsumeOffsetEntity.java
-========
     /**
      *
      */
     private LocalDateTime resetTime;
->>>>>>>> main/main:eventmesh-dashboard-console/src/main/java/org/apache/eventmesh/dashboard/console/modle/message/offset/ResetOffsetDTO.java
 }

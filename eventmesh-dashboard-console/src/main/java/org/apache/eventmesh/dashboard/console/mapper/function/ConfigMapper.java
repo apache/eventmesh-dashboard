@@ -56,7 +56,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
                             and instance_type = #{instanceType}
                             and config_name = #{configName}
              </foreach>
-        <script>
+        </script>
         """)
     List<ConfigEntity> queryByRuntimeIdAndConfigName(List<ConfigEntity> configEntityLists);
 

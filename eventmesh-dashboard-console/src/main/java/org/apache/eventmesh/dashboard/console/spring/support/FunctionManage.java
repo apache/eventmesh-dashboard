@@ -85,6 +85,7 @@ public class FunctionManage {
     private HealthDataService dataService;
     @Autowired
     private List<DataMetadataHandler> dataMetadataHandlerList;
+
     @Value("${function.enabled:false}")
     private boolean enabled;
 
@@ -92,6 +93,7 @@ public class FunctionManage {
     public ReportHandlerManage buildReportHandlerManage() {
         ReportHandlerManage reportHandlerManage = new ReportHandlerManage();
         reportHandlerManage.setReportConfig(functionConfig.getReportConfig());
+        reportHandlerManage.setEnable(enabled);
         reportHandlerManage.init();
         return reportHandlerManage;
     }
