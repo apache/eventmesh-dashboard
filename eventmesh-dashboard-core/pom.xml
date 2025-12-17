@@ -57,6 +57,11 @@
             <artifactId>eventmesh-dashboard-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.eventmesh.dashboard</groupId>
+            <artifactId>eventmesh-dashboard-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
         <!-- eventmesh -->
         <dependency>

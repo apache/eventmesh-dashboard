@@ -106,23 +106,6 @@ public interface ClusterRelationshipMapper {
     List<ClusterRelationshipEntity> queryListByClusterIdListAndType(QueryListByClusterIdAndTypeDO data);
 
 
-    @Select("""
-        <script>
-            select *  from cluster_relationship where cluster_id
-                <foreach collection='clusterIdList' item='item' index='index' open='in(' separator=',' close=')'>
-                    #{item}
-                </foreach>
-                <if test = "clusterTypeList != null">
-                     and relationship_type
-                     <foreach item='item' index='index' collection='clusterTypeList'  open="in(" separator=',' close=")">
-                        #{item}
-                    </foreach>
-                </if>
-        </script>
-        """)
-    List<ClusterRelationshipEntity> queryListByClusterIdListAndType(QueryListByClusterIdAndTypeDO data);
-
-
     @Select({
         "<script>",
         " select * from cluster as c inner join cluster_relationship as cr on c.id = c where cr.cluster_id ",
