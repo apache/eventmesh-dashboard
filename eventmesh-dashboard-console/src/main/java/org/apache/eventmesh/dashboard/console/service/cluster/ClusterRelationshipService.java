@@ -32,6 +32,8 @@ public interface ClusterRelationshipService {
 
     List<ClusterRelationshipEntity> queryListByClusterIdAndType(QueryListByClusterIdAndTypeDO data);
 
+    List<ClusterRelationshipEntity> queryListByRelationshipList(QueryListByClusterIdAndTypeDO data);
+
     List<ClusterRelationshipEntity> queryListByClusterIdListAndType(QueryListByClusterIdAndTypeDO data);
 
 

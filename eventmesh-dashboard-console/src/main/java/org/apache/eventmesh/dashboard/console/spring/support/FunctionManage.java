@@ -30,6 +30,7 @@ import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshi
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 import org.apache.eventmesh.dashboard.console.service.function.HealthDataService;
+import org.apache.eventmesh.dashboard.console.spring.support.address.AddressManage;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.DatabaseAndMetadataType;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.DefaultMetadataSyncResultHandler;
 import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
@@ -96,6 +97,11 @@ public class FunctionManage {
         reportHandlerManage.setEnable(enabled);
         reportHandlerManage.init();
         return reportHandlerManage;
+    }
+
+    @Bean
+    public AddressManage buildAddressManage() {
+        return new AddressManage();
     }
 
     @PostConstruct

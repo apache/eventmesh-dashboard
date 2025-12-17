@@ -29,6 +29,7 @@ import org.apache.eventmesh.dashboard.console.domain.metadata.ClusterMetadataDom
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
+import org.apache.eventmesh.dashboard.console.model.DO.service.function.config.CopyConfigDO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.CreateClusterByCompleteDataDTO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.CreateClusterBySimpleDataDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
@@ -132,7 +133,9 @@ public class CreateCycleService {
         this.verifyName();
         this.clusterService.createCluster(clusterEntity);
         if (Objects.nonNull(configGatherId)) {
-            this.configService.copyConfig(configGatherId, clusterEntity.getId());
+            CopyConfigDO copyConfigDO = new CopyConfigDO();
+
+            //this.configService.copyConfig(configGatherId, clusterEntity.getId());
         }
     }
 

@@ -20,7 +20,9 @@ package org.apache.eventmesh.dashboard.console.service.deploy.impl;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.entity.cases.PortEntity;
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.deploy.PortMapper;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
 import org.apache.eventmesh.dashboard.console.model.deploy.GetPortsDO;
@@ -50,6 +52,9 @@ public class PortServiceImpl implements PortService {
     @Autowired
     private ConfigMapper configMapper;
 
+    @Autowired
+    private RuntimeMapper runtimeMapper;
+
     @Override
     public List<String> getPorts(GetPortsDO getPortsDO) {
         // 节点从哪里开始
@@ -65,7 +70,7 @@ public class PortServiceImpl implements PortService {
         return ports;
     }
 
-    public Map<String, Integer> applyPorts(ClusterType clusterType, Long kubernetesId) {
+    public Map<String, Integer> applyPorts(RuntimeEntity runtimeEntity, ClusterType clusterType, Long kubernetesId) {
         ClusterPort clusterPort = ClusterPort.valueOf(clusterType.name());
         int count = clusterPort.getPortMetadataList().size();
         PortEntity portEntity = new PortEntity();
@@ -83,7 +88,11 @@ public class PortServiceImpl implements PortService {
             configEntity.setConfigValue(port + "");
             configEntityList.add(configEntity);
 
+            if (Objects.equals(clusterPort.getClientMetadata(), portMetadata)) {
+                runtimeEntity.setPort(port);
+            }
         }
+        // TODO 有地址服务之后，这段代码是否需要
         if (Objects.equals(ClusterType.STORAGE_KAFKA_BROKER, clusterType)) {
             List<ConfigEntity> queryData = this.configMapper.queryByRuntimeIdAndConfigName(configEntityList);
             queryData.forEach(configEntity -> {
@@ -93,6 +102,7 @@ public class PortServiceImpl implements PortService {
             });
         }
         this.configMapper.updateValueByConfigList(configEntityList);
+        this.runtimeMapper.updatePortByRuntimeId(runtimeEntity);
         return portMap;
     }
 

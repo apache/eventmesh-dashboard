@@ -22,19 +22,29 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+import org.apache.eventmesh.dashboard.console.domain.ClusterAndRuntimeDomain;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
-import org.apache.eventmesh.dashboard.console.model.DO.runtime.QueryRuntimeByBigExpandClusterDO;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.ClusterAndRuntimeOfRelationshipDO;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryTreeByChildClusterIdDO;
 import org.apache.eventmesh.dashboard.console.model.dto.agent.AgentStartActionDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
+import org.apache.eventmesh.dashboard.console.spring.support.address.AddressManage;
+import org.apache.eventmesh.dashboard.console.spring.support.address.AddressService;
+import org.apache.eventmesh.dashboard.console.spring.support.address.AddressServiceIPDO;
+import org.apache.eventmesh.dashboard.console.spring.support.address.AddressServiceResult;
+import org.apache.eventmesh.dashboard.console.utils.data.controller.agent.AgentActionControllerUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -60,6 +70,17 @@ public class AgentActionController {
     @Autowired
     private RuntimeService runtimeService;
 
+    @Autowired
+    private ClusterAndRuntimeDomain clusterAndRuntimeDomain;
+
+    @Autowired
+    private AddressManage addressManage;
+
+    /**
+     * TODO
+     *      启动时，无法确认其他服务是否启动
+     *      只有在不停地 check 时，可以确认依赖服务已经启动
+     */
     @PostMapping("agentStartAction")
     public AgentStartActionVO agentStartAction(@RequestBody @Valid AgentStartActionDTO data) {
 
@@ -82,37 +103,20 @@ public class AgentActionController {
         updateRuntimeEntity.setHost(data.getNodeAddress());
         updateRuntimeEntity.setPodHost(data.getLocalAddress());
         this.runtimeService.updateAddressByRuntimeId(updateRuntimeEntity);
-        // 识别架构，修改 需要 修改 config 相关配置 , 端口
-
-        // TODO 识别 架构方式，修改 cap 架构配置 ，
-
-        // 依赖组件，在 agentCheckRuntime ，
-
-        // 识别架构, 获得
 
         AgentStartActionVO agentStartActionVO = new AgentStartActionVO();
         agentStartActionVO.setClusterType(clusterEntity.getClusterType().toString());
-        agentStartActionVO.setCheck(clusterEntity.getClusterType().isMeta());
-
-        ConfigEntity configEntity = new ConfigEntity();
-        configEntity.setInstanceId(clusterEntity.getId());
-        configEntity.setInstanceType(MetadataType.CLUSTER);
-        List<ConfigEntity> configEntityList = this.configService.queryByInstanceId(configEntity);
-        Map<String, String> configMap = new HashMap<String, String>();
-        configEntityList.forEach(config -> {
-            configMap.put(config.getConfigName(), config.getConfigValue());
-        });
-
-        configEntity = new ConfigEntity();
-        configEntity.setInstanceId(runtimeEntity.getId());
-        configEntity.setInstanceType(MetadataType.RUNTIME);
-        this.configService.queryByInstanceId(configEntity);
-        configEntityList.forEach(config -> {
-            configMap.put(config.getConfigName(), config.getConfigValue());
-        });
-
-        agentStartActionVO.setConfigMap(configMap);
-
+        ClusterType clusterType = clusterEntity.getClusterType();
+        ClusterSyncMetadataEnum.getClusterFramework(clusterType);
+        if (!clusterType.isMeta()) {
+            return agentStartActionVO;
+        }
+        ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterType);
+        if (!clusterFramework.isAP()) {
+            return agentStartActionVO;
+        }
+        agentStartActionVO.setCheck(true);
+        agentStartActionVO.setConfigMap(this.queryConfig(runtimeEntity, clusterEntity));
         return agentStartActionVO;
 
     }
@@ -124,33 +128,85 @@ public class AgentActionController {
         clusterEntity.setId(data.getClusterId());
         clusterEntity = this.clusterService.queryClusterById(clusterEntity);
 
-        AgentCheckRuntimeVO agentCheckRuntimeVO = new AgentCheckRuntimeVO();
-
-        QueryRuntimeByBigExpandClusterDO queryRuntimeByBigExpandClusterDO =
-            QueryRuntimeByBigExpandClusterDO.builder().followClusterId(clusterEntity.getId())
-                .queryClusterTypeList(clusterEntity.getClusterType().getMetaClusterType()).build();
-
-        List<RuntimeEntity> runtimeEntityList = this.runtimeService.queryMetaRuntimeByStorageClusterId(queryRuntimeByBigExpandClusterDO);
-
         ClusterType clusterType = clusterEntity.getClusterType();
+
+        AddressService addressService = addressManage.getAddressService(clusterType);
+        RuntimeEntity remoteRuntimeEntity = new RuntimeEntity();
+        remoteRuntimeEntity.setClusterId(clusterEntity.getId());
+
+        AddressServiceResult addressServiceResult = new AddressServiceResult();
         if (clusterType.isEventMethRuntime()) {
-            queryRuntimeByBigExpandClusterDO = QueryRuntimeByBigExpandClusterDO.builder().followClusterId(clusterEntity.getId())
-                .storageMetaClusterTypeList(ClusterType.getStorageMetaRuntimeCluster()).build();
-            //如果是 eventmesh 集群，name需要查询 存储集群的 runtime 是否启动
-            // 如果识别 meta 的可用度
-            runtimeEntityList = this.runtimeService.queryRuntimeByBigExpandCluster(queryRuntimeByBigExpandClusterDO);
+            //
+            this.clusterAndRuntimeDomain.getAllClusterAndRuntimeByCluster(null);
         } else {
             ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterType);
-            if (clusterFramework.isCAP() && clusterType.isMeta()) {
-                //
+            if ((clusterFramework.isCAP() && clusterType.isMeta())) {
+                List<RuntimeEntity> runtimeEntities = this.runtimeService.queryRuntimeToFrontByClusterId(remoteRuntimeEntity);
+                addressServiceResult = addressService.createCapAddress(AgentActionControllerUtils.byRuntimeList(runtimeEntities));
             } else if (clusterType.isMetaAndRuntime()) {
-                //
+                List<RuntimeEntity> runtimeEntities = this.runtimeService.queryRuntimeToFrontByClusterId(remoteRuntimeEntity);
+                addressServiceResult = addressService.createCapAddress(AgentActionControllerUtils.byRuntimeList(runtimeEntities));
             } else if (clusterType.isRuntime()) {
-                //
+                // 需要 得到 集群的依赖组件检查依赖 runtime 是否运行
+                // 检查依赖 runtime 是否运行
+                QueryTreeByChildClusterIdDO queryTreeByChildClusterIdDO = new QueryTreeByChildClusterIdDO();
+                queryTreeByChildClusterIdDO.setClusterEntity(clusterEntity);
+                queryTreeByChildClusterIdDO.setRootClusterTypeList(Set.of(clusterType.getHigher()));
+                queryTreeByChildClusterIdDO.setOnlyClusterTypeList(new HashSet<>(clusterType.getHigher().getMetaClusterType()));
+
+                ClusterAndRuntimeOfRelationshipDO clusterAndRuntimeOfRelationshipDo =
+                    this.clusterAndRuntimeDomain.queryTreeByChildClusterId(queryTreeByChildClusterIdDO);
+                AddressServiceIPDO addressServiceDo =
+                    AgentActionControllerUtils.byClusterAndRuntimeOfRelationshipDO(clusterAndRuntimeOfRelationshipDo);
+                addressServiceResult = addressService.createRegisterAddress(addressServiceDo);
             }
-
         }
-
+        AgentCheckRuntimeVO agentCheckRuntimeVO = new AgentCheckRuntimeVO();
+        if (!addressServiceResult.isCheckSuccess()) {
+            agentCheckRuntimeVO.setSuccess(false);
+        } else {
+            ClusterEntity tmpClusterEntity = clusterEntity;
+            // TODO 这个有一个问题，这些配置地址，是写入 cluster ，还是 写入 runtime, 写入 cluster
+            List<ConfigEntity> configEntityList = addressServiceResult.getConfigEntities().stream().filter((value) -> {
+                if (Objects.isNull(value.getConfigName())) {
+                    return false;
+                } else {
+                    value.setInstanceId(tmpClusterEntity.getId());
+                    value.setInstanceType(MetadataType.CLUSTER);
+                    return true;
+                }
+            }).toList();
+            this.configService.updateValueByConfigList(configEntityList);
+            agentCheckRuntimeVO.setConfigMap(this.queryConfig(remoteRuntimeEntity, clusterEntity));
+        }
         return agentCheckRuntimeVO;
     }
+
+
+    private Map<String, String> queryConfig(RuntimeEntity runtimeEntity, ClusterEntity clusterEntity) {
+        List<ConfigEntity> queryConfigConfigList = new ArrayList<>(2);
+
+        ConfigEntity configEntity = new ConfigEntity();
+        configEntity.setInstanceId(clusterEntity.getId());
+        configEntity.setInstanceType(MetadataType.CLUSTER);
+
+        queryConfigConfigList.add(configEntity);
+
+        configEntity = new ConfigEntity();
+        configEntity.setInstanceId(runtimeEntity.getId());
+        configEntity.setInstanceType(MetadataType.RUNTIME);
+
+        queryConfigConfigList.add(configEntity);
+
+        Map<String, String> configMap = new HashMap<>();
+        queryConfigConfigList.forEach(value -> {
+            List<ConfigEntity> configEntityList = this.configService.queryByInstanceId(value);
+            configEntityList.forEach(config -> {
+                configMap.put(config.getConfigName(), config.getConfigValue());
+            });
+        });
+
+        return configMap;
+    }
+
 }

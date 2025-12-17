@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
-import org.apache.eventmesh.dashboard.console.model.QO.cluster.QueryRelationClusterByClusterIdListAndType;
+import org.apache.eventmesh.dashboard.console.model.QO.cluster.QueryRelationClusterByClusterIdListAndTypeQO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -80,7 +80,7 @@ public interface ClusterMapper {
         </script>
         """)
     List<ClusterEntity> queryRelationClusterByClusterIdListAndType(
-        QueryRelationClusterByClusterIdListAndType queryRelationClusterByClusterIdListAndType);
+        QueryRelationClusterByClusterIdListAndTypeQO queryRelationClusterByClusterIdListAndType);
 
 
     @Select("""

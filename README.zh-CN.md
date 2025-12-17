@@ -66,7 +66,7 @@ crontab -e
 
 ```
 cd eventmesh-dashboard
-./mvnw clean package
+./mvnw -Prelease-package -Dmaven.test.skip=true clean install -U
 ```
 
 > TODO download mysql-connector-j manually

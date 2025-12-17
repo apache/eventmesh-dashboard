@@ -35,6 +35,7 @@ public class ConfigEntity extends BaseRuntimeIdEntity {
 
     /**
      * config type 0:runtime,1:storage,2:connector,3:topic
+     * CONFIG is ConfigTemplate
      */
     private MetadataType instanceType;
 

@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console;
 
-import org.apache.dubbo.common.URL;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 
 import org.junit.Test;
 
@@ -26,7 +26,12 @@ public class Test1 {
 
     @Test
     public void test() {
-        URL url = URL.valueOf("127.0.0.1");
-        System.out.println(url);
+
+        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getFrameworkInAllRuntimeCluster());
+
+        System.out.println(ClusterType.STORAGE_ROCKETMQ_CLUSTER.getFrameworkInAllRuntimeCluster());
+
+        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getThisInAllRuntimeCluster());
     }
+
 }

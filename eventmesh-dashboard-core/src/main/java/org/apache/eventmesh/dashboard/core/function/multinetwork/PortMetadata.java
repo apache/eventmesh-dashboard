@@ -22,7 +22,12 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import lombok.Data;
 
 /**
+ * TODO
  *  申请端口必须连续，这点需要 组件支持端口的配置
+ *  集群在 kubernetes 内同步接口
+ *  Runtime 默认端口是 client 端口
+ *  只有对外端口要映射，其他端口都要默认
+ *
  */
 @Data
 public class PortMetadata {

@@ -23,6 +23,8 @@ import org.apache.eventmesh.dashboard.console.annotation.EmLog;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
+import org.apache.eventmesh.dashboard.console.model.DO.service.function.config.CopyConfigDO;
+import org.apache.eventmesh.dashboard.console.model.QO.function.config.CopyConfigQO;
 import org.apache.eventmesh.dashboard.console.model.dto.config.ChangeConfigDTO;
 import org.apache.eventmesh.dashboard.console.model.dto.config.UpdateConfigsLog;
 import org.apache.eventmesh.dashboard.console.service.function.ConfigService;
@@ -113,6 +115,11 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
+    public Integer updateValueByConfigList(List<ConfigEntity> configEntityList) {
+        return this.configMapper.updateValueByConfigList(configEntityList);
+    }
+
+    @Override
     public void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId,
         List<ChangeConfigDTO> changeConfigDTOList) {
         ConcurrentHashMap<String, String> stringStringConcurrentHashMap = new ConcurrentHashMap<>();
@@ -150,8 +157,9 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public void copyConfig(Long sourceId, Long targetId) {
-        configMapper.copyConfig(sourceId, targetId);
+    public void copyConfig(CopyConfigDO copyConfigDO) {
+        CopyConfigQO data = null;
+        configMapper.copyConfig(data);
     }
 
     @Override

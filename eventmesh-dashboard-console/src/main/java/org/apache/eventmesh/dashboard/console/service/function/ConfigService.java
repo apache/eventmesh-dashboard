@@ -22,6 +22,7 @@ package org.apache.eventmesh.dashboard.console.service.function;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.model.DO.service.function.config.CopyConfigDO;
 import org.apache.eventmesh.dashboard.console.model.dto.config.ChangeConfigDTO;
 
 import java.util.List;
@@ -41,13 +42,17 @@ public interface ConfigService {
 
     List<ConfigEntity> queryByInstanceId(ConfigEntity configEntity);
 
+
+    @SuppressWarnings("UnusedReturnValue")
+    Integer updateValueByConfigList(List<ConfigEntity> configEntityList);
+
     void updateConfigsByInstanceId(String name, Long clusterId, Integer instanceType, Long instanceId, List<ChangeConfigDTO> changeConfigDTOList);
 
     List<ConfigEntity> selectAll();
 
     void batchInsert(List<ConfigEntity> configEntityList);
 
-    void copyConfig(Long sourceId, Long targetId);
+    void copyConfig(CopyConfigDO copyConfigDO);
 
     void restoreConfig(Long sourceId, Long targetId);
 

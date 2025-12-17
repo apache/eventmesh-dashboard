@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console.model.QO.cluster;
+package org.apache.eventmesh.dashboard.console.service.function;
 
-import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.entity.function.ConfigTemplateEntity;
 
 import java.util.List;
 
-import lombok.Data;
+/**
+ *
+ */
+public interface ConfigTemplateService {
 
-@Data
-public class QueryRelationClusterByClusterIdListAndType {
+    void insertConfigTemplate(ConfigTemplateEntity configTemplateEntity);
 
-    private List<ClusterType> clusterTypeList;
 
-    private List<ClusterEntity> clusterEntityList;
+    List<ConfigTemplateEntity> queryConfigTemplateByClusterType(ConfigTemplateEntity configTemplateEntity);
 
 }

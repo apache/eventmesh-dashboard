@@ -31,6 +31,7 @@ import lombok.Getter;
 /**
  * 集群的特性
  */
+@Getter
 public enum ClusterSyncMetadataEnum {
 
 
@@ -81,7 +82,6 @@ public enum ClusterSyncMetadataEnum {
     ;
 
     private static final Map<ClusterType, ClusterSyncMetadata> SYNC_METADATA_CONCURRENT_HASH_MAP = new ConcurrentHashMap<>();
-    @Getter
     private ClusterSyncMetadata clusterSyncMetadata;
 
     ClusterSyncMetadataEnum(ClusterSyncMetadata clusterSyncMetadata) {

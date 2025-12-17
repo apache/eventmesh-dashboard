@@ -31,7 +31,7 @@ import org.apache.eventmesh.dashboard.console.mapper.cluster.RuntimeMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
 import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
-import org.apache.eventmesh.dashboard.console.model.QO.cluster.QueryRelationClusterByClusterIdListAndType;
+import org.apache.eventmesh.dashboard.console.model.QO.cluster.QueryRelationClusterByClusterIdListAndTypeQO;
 import org.apache.eventmesh.dashboard.console.model.function.OverviewDTO;
 import org.apache.eventmesh.dashboard.console.model.vo.cluster.GetClusterBaseMessageVO;
 import org.apache.eventmesh.dashboard.console.service.OverviewService;
@@ -100,7 +100,7 @@ public class ClusterServiceImpl implements ClusterService, OverviewService {
 
     @Override
     public List<ClusterEntity> queryRelationClusterByClusterIdListAndType(
-        QueryRelationClusterByClusterIdListAndType queryRelationClusterByClusterIdListAndType) {
+        QueryRelationClusterByClusterIdListAndTypeQO queryRelationClusterByClusterIdListAndType) {
         return this.clusterMapper.queryRelationClusterByClusterIdListAndType(queryRelationClusterByClusterIdListAndType);
     }
 
