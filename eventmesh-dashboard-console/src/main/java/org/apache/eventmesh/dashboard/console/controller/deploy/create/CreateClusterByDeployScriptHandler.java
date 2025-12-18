@@ -24,11 +24,13 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.common.enums.ReplicationType;
 import org.apache.eventmesh.dashboard.console.controller.deploy.handler.UpdateHandler;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.deploy.ClusterCycleControllerMapper;
+import org.apache.eventmesh.dashboard.console.model.DO.service.function.config.CopyConfigDO;
 import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateClusterByDeployScriptDO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
@@ -79,13 +81,20 @@ public class CreateClusterByDeployScriptHandler implements UpdateHandler<CreateC
 
         this.clusterService.insertCluster(this.clusterEntity);
         this.handlerMetadata(this.clusterEntity);
-        if (Objects.nonNull(createClusterByDeployScriptDO.getConfigGatherId())) {
-            configService.copyConfig(createClusterByDeployScriptDO.getConfigGatherId(), this.clusterEntity.getId());
-        }
+
         if (this.clusterFramework.isMainSlave()) {
             this.mainSlaveHandler(createClusterByDeployScriptDO, this.clusterEntity);
         } else {
             this.ordinaryRuntime(createClusterByDeployScriptDO);
+        }
+        // TODO #1111
+        if (Objects.nonNull(createClusterByDeployScriptDO.getConfigGatherId())) {
+            CopyConfigDO copyConfigDO = new CopyConfigDO();
+            copyConfigDO.setSourceId(createClusterByDeployScriptDO.getConfigGatherId());
+            copyConfigDO.setSourceType(createClusterByDeployScriptDO.getConfigGatherType());
+            copyConfigDO.setTargetId(createClusterByDeployScriptDO.getConfigGatherId());
+            copyConfigDO.setTargetType(MetadataType.CLUSTER);
+            configService.copyConfig(copyConfigDO);
         }
 
         this.runtimeService.batchInsert(this.runtimeEntityList);
@@ -109,6 +118,7 @@ public class CreateClusterByDeployScriptHandler implements UpdateHandler<CreateC
             ClusterEntity newClusterEntity = ClusterCycleControllerMapper.INSTANCE.createClusterByDeployScript(createClusterByDeployScriptDO);
             clusterEntityList.add(newClusterEntity);
         }
+        // TODO 添加失败，如何处理
         this.clusterService.batchInsert(clusterEntityList, clusterEntity);
         clusterEntityList.forEach(entity -> {
             this.createRuntimeEntity(clusterEntity, ReplicationType.MAIN, 0);

@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.DeployStatusType;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 
-import org.junit.Test;
+import java.util.Set;
 
-public class Test1 {
+import lombok.Data;
+
+@Data
+public class QueryTreeByChildClusterIdDO {
 
 
-    @Test
-    public void test() {
+    private ClusterEntity clusterEntity;
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getFrameworkInAllRuntimeCluster());
+    private DeployStatusType deployStatusType;
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_CLUSTER.getFrameworkInAllRuntimeCluster());
+    private Set<ClusterType> onlyClusterTypeList;
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getThisInAllRuntimeCluster());
-    }
+    private Set<ClusterType> rootClusterTypeList;
 
 }

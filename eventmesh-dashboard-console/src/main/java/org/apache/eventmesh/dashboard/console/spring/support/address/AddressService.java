@@ -15,23 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.spring.support.address;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 
-import org.junit.Test;
+import java.util.List;
 
-public class Test1 {
+/**
+ *
+ */
+public interface AddressService {
 
 
-    @Test
-    public void test() {
+    List<ClusterType> clusterType();
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getFrameworkInAllRuntimeCluster());
+    /**
+     * 获得 client 地址
+     */
+    AddressServiceResult createClientAddress(AddressServiceIPDO data);
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_CLUSTER.getFrameworkInAllRuntimeCluster());
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getThisInAllRuntimeCluster());
-    }
+    /**
+     * cap 架构 获得
+     */
+    AddressServiceResult createCapAddress(AddressServiceIPDO data);
+
+    /**
+     * 获得 集群 的 注册中心地址
+     */
+    AddressServiceResult createRegisterAddress(AddressServiceIPDO data);
+
+    /**
+     * 依赖其他 大集群 地址
+     */
+    AddressServiceResult createDependAddress(AddressServiceIPDO data);
+
 
 }

@@ -22,11 +22,11 @@ import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
+import org.apache.eventmesh.dashboard.console.model.QO.function.config.CopyConfigQO;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -135,7 +135,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
 
     @Insert("insert into config () select *,#{targetId} as cluster_id from config where clster where cluster_id = #{sourceId}")
-    void copyConfig(@Param("sourceId") Long sourceId, @Param("targetId") Long targetId);
+    void copyConfig(CopyConfigQO data);
 
     @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, "
             + "status, is_default,  diff_type, description, edit, is_modify,start_version,"

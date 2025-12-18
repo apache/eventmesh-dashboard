@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Deprecated
 public class ClusterTypeRelationship {
 
     private static final ClusterTypeRelationship INSTANCE = new ClusterTypeRelationship();

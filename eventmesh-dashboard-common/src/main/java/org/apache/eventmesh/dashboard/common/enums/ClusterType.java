@@ -18,11 +18,15 @@
 
 package org.apache.eventmesh.dashboard.common.enums;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.Getter;
 
@@ -103,26 +107,26 @@ public enum ClusterType {
 
     EVENTMESH_CLUSTER(EVENTMESH, EVENTMESH, CLUSTER, DEFINITION, RemotingType.EVENT_MESH_RUNTIME),
 
-    EVENTMESH_RUNTIME(EVENTMESH, EVENTMESH, RUNTIME, DEFAULT, RemotingType.EVENT_MESH_RUNTIME),
+    EVENTMESH_RUNTIME(EVENTMESH, EVENTMESH_CLUSTER, RUNTIME, DEFAULT, RemotingType.EVENT_MESH_RUNTIME),
 
-    EVENTMESH_META_ETCD(EVENTMESH, EVENTMESH, META, META_TYPE_ETCD, RemotingType.EVENT_MESH_ETCD),
+    EVENTMESH_META_ETCD(EVENTMESH, EVENTMESH_CLUSTER, META, META_TYPE_ETCD, RemotingType.EVENT_MESH_ETCD),
 
-    EVENTMESH_META_NACOS(EVENTMESH, EVENTMESH, META, META_TYPE_NACOS, RemotingType.EVENT_MESH_NACOS),
+    EVENTMESH_META_NACOS(EVENTMESH, EVENTMESH_CLUSTER, META, META_TYPE_NACOS, RemotingType.EVENT_MESH_NACOS),
 
-    EVENTMESH_JVM_CLUSTER(EVENTMESH, EVENTMESH_JVM, CLUSTER, DEFINITION, RemotingType.EVENT_MESH_RUNTIME),
+    EVENTMESH_JVM_CLUSTER(EVENTMESH, EVENTMESH_JVM, CLUSTER, DEFINITION, RemotingType.JVM),
 
-    EVENTMESH_JVM_RUNTIME(EVENTMESH, EVENTMESH_JVM, RUNTIME, DEFAULT, RemotingType.EVENT_MESH_RUNTIME),
+    EVENTMESH_JVM_RUNTIME(EVENTMESH, EVENTMESH_JVM_CLUSTER, RUNTIME, DEFAULT, RemotingType.JVM),
 
-    EVENTMESH_JVM_META(EVENTMESH, EVENTMESH_JVM, META, META_TYPE_JVM, RemotingType.JVM),
+    EVENTMESH_JVM_META(EVENTMESH, EVENTMESH_JVM_CLUSTER, META, META_TYPE_JVM, RemotingType.JVM),
 
 
     STORAGE_ROCKETMQ(ClusterType.STORAGE.code + 1),
 
     STORAGE_ROCKETMQ_CLUSTER(STORAGE, STORAGE_ROCKETMQ, CLUSTER, DEFINITION, RemotingType.ROCKETMQ),
 
-    STORAGE_ROCKETMQ_NAMESERVER(STORAGE, STORAGE_ROCKETMQ, META, DEFAULT, RemotingType.ROCKETMQ_NAMESERVER),
+    STORAGE_ROCKETMQ_NAMESERVER(STORAGE, STORAGE_ROCKETMQ_CLUSTER, META, DEFAULT, RemotingType.ROCKETMQ_NAMESERVER),
 
-    STORAGE_ROCKETMQ_BROKER(STORAGE, STORAGE_ROCKETMQ, RUNTIME, DEFINITION, RemotingType.ROCKETMQ),
+    STORAGE_ROCKETMQ_BROKER(STORAGE, STORAGE_ROCKETMQ_CLUSTER, RUNTIME, DEFINITION, RemotingType.ROCKETMQ),
 
     STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE(STORAGE, STORAGE_ROCKETMQ_BROKER, RUNTIME, DEFAULT, RemotingType.ROCKETMQ),
 
@@ -133,34 +137,34 @@ public enum ClusterType {
 
     STORAGE_KAFKA_CLUSTER(STORAGE, STORAGE_KAFKA, CLUSTER, DEFINITION, RemotingType.KAFKA),
 
-    STORAGE_KAFKA_ZK(STORAGE, STORAGE_KAFKA, META, META_TYPE_ZK, RemotingType.ZK),
+    STORAGE_KAFKA_ZK(STORAGE, STORAGE_KAFKA_CLUSTER, META, META_TYPE_ZK, RemotingType.ZK),
 
-    STORAGE_KAFKA_RAFT(STORAGE, STORAGE_KAFKA, META_AND_RUNTIME, STORAGE_KAFKA, RemotingType.KAFKA),
+    STORAGE_KAFKA_RAFT(STORAGE, STORAGE_KAFKA_CLUSTER, META_AND_RUNTIME, STORAGE_KAFKA, RemotingType.KAFKA),
 
-    STORAGE_KAFKA_BROKER(STORAGE, STORAGE_KAFKA, RUNTIME, DEFAULT, RemotingType.KAFKA),
+    STORAGE_KAFKA_BROKER(STORAGE, STORAGE_KAFKA_CLUSTER, RUNTIME, DEFAULT, RemotingType.KAFKA),
 
 
     STORAGE_REDIS(STORAGE_KAFKA.code + 1),
 
     STORAGE_REDIS_CLUSTER(STORAGE, STORAGE_REDIS, CLUSTER, DEFINITION, RemotingType.REDIS),
 
-    STORAGE_REDIS_BROKER(STORAGE, STORAGE_REDIS, RUNTIME, DEFAULT, RemotingType.REDIS),
+    STORAGE_REDIS_BROKER(STORAGE, STORAGE_REDIS_CLUSTER, RUNTIME, DEFAULT, RemotingType.REDIS),
 
     STORAGE_JVM(STORAGE_REDIS.code + 1),
 
     STORAGE_JVM_CLUSTER(STORAGE, STORAGE_JVM, CLUSTER, DEFINITION, RemotingType.JVM),
 
-    STORAGE_JVM_META(STORAGE, STORAGE_JVM, META, DEFAULT, RemotingType.JVM),
+    STORAGE_JVM_META(STORAGE, STORAGE_JVM_CLUSTER, META, DEFAULT, RemotingType.JVM),
 
-    STORAGE_JVM_BROKER(STORAGE, STORAGE_JVM, RUNTIME, DEFAULT, RemotingType.JVM),
+    STORAGE_JVM_BROKER(STORAGE, STORAGE_JVM_CLUSTER, RUNTIME, DEFAULT, RemotingType.JVM),
 
     STORAGE_JVM_CAP(STORAGE_REDIS.code + 1),
 
     STORAGE_JVM_CAP_CLUSTER(STORAGE, STORAGE_JVM_CAP, CLUSTER, DEFINITION, RemotingType.JVM),
 
-    STORAGE_JVM_CAP_BROKER(STORAGE, STORAGE_JVM_CAP, META_AND_RUNTIME, DEFAULT, RemotingType.JVM),
+    STORAGE_JVM_CAP_BROKER(STORAGE, STORAGE_JVM_CAP_CLUSTER, META_AND_RUNTIME, DEFAULT, RemotingType.JVM),
 
-    STORAGE_JVM_CAP_META(STORAGE, STORAGE_JVM_CAP, META, DEFAULT, RemotingType.JVM),
+    STORAGE_JVM_CAP_META(STORAGE, STORAGE_JVM_CAP_CLUSTER, META, DEFAULT, RemotingType.JVM),
     ;
 
 
@@ -172,8 +176,27 @@ public enum ClusterType {
 
     private static final List<ClusterType> STORAGE_META_RUNTIME_TYPE_LIST = new ArrayList<>();
 
+    private static final Map<ClusterType, ClusterTypeChild> CLUSTER_TYPE_CLUSTER_TYPE_CHILD_MAP = new HashMap<>();
+
     static {
         for (ClusterType clusterType : ClusterType.values()) {
+            if (Objects.isNull(clusterType.assemblyName)) {
+                continue;
+            }
+            ClusterTypeChild clusterTypeChild =
+                CLUSTER_TYPE_CLUSTER_TYPE_CHILD_MAP.computeIfAbsent(clusterType.assemblyName, k -> new ClusterTypeChild());
+            clusterType.assemblyName.clusterTypeChild = clusterTypeChild;
+
+            clusterType.clusterTypeChild = CLUSTER_TYPE_CLUSTER_TYPE_CHILD_MAP.computeIfAbsent(clusterType, k -> new ClusterTypeChild());
+            if (clusterType.isMeta()) {
+                clusterTypeChild.metaClusterType.add(clusterType);
+            } else if (clusterType.isRuntime()) {
+                clusterTypeChild.runtimeClusterType.add(clusterType);
+            } else if (clusterType.isDefinition()) {
+                clusterTypeChild.definitionClusterType.add(clusterType);
+            } else if (clusterType.isCluster()) {
+                clusterTypeChild.clusterType.add(clusterType);
+            }
             if (clusterType.isStorageCluster()) {
                 STORAGE_MAIN_CLUSTER_TYPE_LIST.add(clusterType);
             }
@@ -186,6 +209,11 @@ public enum ClusterType {
             if (clusterType.isMetaAndRuntime()) {
                 STORAGE_META_RUNTIME_TYPE_LIST.add(clusterType);
             }
+
+        }
+        for (ClusterType clusterType : ClusterType.values()) {
+            clusterType.getHigher();
+            clusterType.injection();
         }
     }
 
@@ -217,6 +245,9 @@ public enum ClusterType {
     @Getter
     private int code;
     private ClusterType higherType;
+
+    private ClusterTypeChild clusterTypeChild;
+
     private List<ClusterType> mainClusterType;
     private List<ClusterType> metaClusterType;
     private List<ClusterType> runtimeClusterType;
@@ -272,6 +303,13 @@ public enum ClusterType {
             return false;
         }
         return this.assemblyNodeType.equals(META);
+    }
+
+    public boolean isCluster() {
+        if (Objects.isNull(this.assemblyNodeType)) {
+            return false;
+        }
+        return this.assemblyNodeType.equals(CLUSTER);
     }
 
     public boolean isMetaAndRuntime() {
@@ -338,6 +376,18 @@ public enum ClusterType {
         return list;
     }
 
+    public List<ClusterType> getThisInAllRuntimeCluster() {
+        return this.clusterTypeChild.allRuntimeClusterType;
+    }
+
+    public List<ClusterType> getFrameworkInAllMetaCluster() {
+        return this.higherType.clusterTypeChild.allMetaClusterType;
+    }
+
+    public List<ClusterType> getFrameworkInAllRuntimeCluster() {
+        return this.higherType.clusterTypeChild.allRuntimeClusterType;
+    }
+
     public List<ClusterType> getMainClusterType() {
         return this.getThisClusterType(CLUSTER, this.mainClusterType, "mainClusterType");
 
@@ -351,30 +401,74 @@ public enum ClusterType {
         return this.getThisClusterType(RUNTIME, this.runtimeClusterType, "runtimeClusterType");
     }
 
+    void injection() {
+        if (Objects.isNull(this.clusterTypeChild)) {
+            return;
+        }
+        if (Objects.isNull(this.higherType)) {
+            return;
+        }
+        if (this.clusterTypeChild.isRuntimeAdd.get()) {
+            return;
+        }
+        if (Objects.equals(this.higherType, this)) {
+            this.clusterTypeChild.isRuntimeAdd.set(true);
+            return;
+        }
+        this.clusterTypeChild.isRuntimeAdd.set(true);
+        this.assemblyName.injection(List.of(this), this.assemblyNodeType);
+    }
+
+
+    void injection(List<ClusterType> list, ClusterType clusterType) {
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+        if (Objects.equals(clusterType, META)) {
+            this.clusterTypeChild.allMetaClusterType.addAll(list);
+            return;
+        }
+        if (Objects.equals(clusterType, CLUSTER)) {
+            this.clusterTypeChild.allClusterType.addAll(list);
+            return;
+        }
+        if (Objects.equals(clusterType, RUNTIME)) {
+            this.clusterTypeChild.allRuntimeClusterType.addAll(list);
+        }
+        if (Objects.equals(this.higherType, this)) {
+            return;
+        }
+        this.assemblyName.injection(list, clusterType);
+    }
+
     /**
      *
      */
     public ClusterType getHigher() {
-        if (Objects.isNull(this.higherType)) {
-            for (ClusterType allClusterType : ClusterType.values()) {
-                if (!Objects.equals(allClusterType.eventmeshNodeType, this.eventmeshNodeType)
-                    || !Objects.equals(allClusterType.assemblyName, this.assemblyName)) {
-                    continue;
-                }
-                if (!Objects.equals(allClusterType.assemblyNodeType, CLUSTER)) {
-                    continue;
-                }
-                if (!Objects.equals(allClusterType.assemblyBusiness, DEFINITION)) {
-                    continue;
-                }
-                this.higherType = allClusterType;
+        if (Objects.nonNull(this.higherType)) {
+            return this.higherType;
+        }
+        if (this.code != 0) {
+            this.higherType = this;
+            return this.higherType;
+        }
+        if (this.eventmeshNodeType == DEFAULT) {
+            this.higherType = this;
+            return this.higherType;
+        }
+        if (Objects.isNull(this.assemblyName)) {
+            return this;
+        }
+        ClusterType assemblyName = this.assemblyName;
+        ClusterType lastAssemblyName = this;
+        for (; ; ) {
+            if (Objects.isNull(assemblyName.assemblyName)) {
+                this.higherType = lastAssemblyName;
                 break;
             }
-            if (Objects.isNull(this.higherType)) {
-                throw new RuntimeException("higher type is null, current type:" + this);
-            }
+            lastAssemblyName = assemblyName;
+            assemblyName = assemblyName.assemblyName;
         }
-
         return this.higherType;
     }
 
@@ -413,5 +507,25 @@ public enum ClusterType {
         return clusterTypeList;
     }
 
+
+    static class ClusterTypeChild {
+
+        List<ClusterType> metaClusterType = new ArrayList<>();
+
+        List<ClusterType> runtimeClusterType = new ArrayList<>();
+
+        AtomicBoolean isRuntimeAdd = new AtomicBoolean(false);
+
+        List<ClusterType> definitionClusterType = new ArrayList<>();
+
+        List<ClusterType> clusterType = new ArrayList<>();
+
+        List<ClusterType> allClusterType = new ArrayList<>();
+
+        List<ClusterType> allMetaClusterType = new ArrayList<>();
+
+        List<ClusterType> allRuntimeClusterType = new ArrayList<>();
+
+    }
 
 }

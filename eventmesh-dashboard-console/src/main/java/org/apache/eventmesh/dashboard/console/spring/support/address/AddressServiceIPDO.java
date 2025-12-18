@@ -15,39 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.core.function.multinetwork;
+package org.apache.eventmesh.dashboard.console.spring.support.address;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import lombok.Data;
 
-/**
- * TODO
- *  申请端口必须连续，这点需要 组件支持端口的配置
- *  集群在 kubernetes 内同步接口
- *  Runtime 默认端口是 client 端口
- *  只有对外端口要映射，其他端口都要默认
- *
- */
 @Data
-public class PortMetadata {
+public class AddressServiceIPDO {
 
-    private ClusterType clusterType;
 
-    private String configName;
+    private List<RuntimeEntity> runtimeEntityList;
 
-    private String protocol = "TCP";
+    private Map<ClusterType, List<RuntimeEntity>> clusterTypeMapMap;
 
-    private String effect = "client";
+    public Map<Long, List<RuntimeEntity>> getRuntimeEntityByClusterType(ClusterType clusterType) {
+        List<RuntimeEntity> list = this.clusterTypeMapMap.get(clusterType);
+        if (Objects.isNull(list)) {
+            return null;
+        }
+        return list.stream().collect(Collectors.groupingBy(RuntimeEntity::getClusterId));
+    }
 
-    private Integer port;
-
-    private boolean required = true;
-
-    private boolean virtual = false;
-
-    private boolean nullPort  = false;
-
-    private String explanation;
-
+    public List<RuntimeEntity> getRuntimeEntityList(ClusterType clusterType) {
+        return this.clusterTypeMapMap.get(clusterType);
+    }
 }

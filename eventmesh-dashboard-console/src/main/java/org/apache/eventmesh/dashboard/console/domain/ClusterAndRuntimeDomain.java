@@ -25,10 +25,12 @@ import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.ClusterAndRuntimeDomainQO;
 import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.ClusterAndRuntimeOfRelationshipDO;
 import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.GetClusterInSyncReturnDO;
 import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryClusterInSyncDO;
 import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryClusterTreeDO;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryTreeByChildClusterIdDO;
 import org.apache.eventmesh.dashboard.console.model.vo.cluster.ClusterTreeVO;
 
 import java.util.ArrayList;
@@ -49,6 +51,12 @@ public interface ClusterAndRuntimeDomain {
     List<ClusterTreeVO> queryClusterTree(QueryClusterTreeDO data);
 
     ClusterAndRuntimeOfRelationshipDO getAllClusterAndRuntimeByCluster(ClusterEntity clusterEntity, DeployStatusType deployStatusType);
+
+    ClusterAndRuntimeOfRelationshipDO getAllClusterAndRuntimeByCluster(ClusterAndRuntimeDomainQO data);
+
+
+    ClusterAndRuntimeOfRelationshipDO queryTreeByChildClusterId(QueryTreeByChildClusterIdDO data);
+
 
     GetClusterInSyncReturnDO queryClusterInSync(ClusterEntity clusterEntity, List<ClusterType> syncClusterTypeList);
 

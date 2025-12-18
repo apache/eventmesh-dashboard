@@ -120,7 +120,7 @@ public class ClasspathScanner {
     }
 
     private String createLocationPattern() {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         stringBuffer.append("classpath*:./");
         this.baseString = base.getPackage().getName().replace('.', '/');
         stringBuffer.append(this.baseString);

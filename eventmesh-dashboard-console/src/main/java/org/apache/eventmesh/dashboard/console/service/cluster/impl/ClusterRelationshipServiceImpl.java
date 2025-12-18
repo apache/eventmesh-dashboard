@@ -41,6 +41,11 @@ public class ClusterRelationshipServiceImpl implements ClusterRelationshipServic
     }
 
     @Override
+    public List<ClusterRelationshipEntity> queryListByRelationshipList(QueryListByClusterIdAndTypeDO data) {
+        return this.clusterRelationshipMapper.queryListByRelationshipList(data);
+    }
+
+    @Override
     public List<ClusterRelationshipEntity> queryListByClusterIdListAndType(QueryListByClusterIdAndTypeDO data) {
         return this.clusterRelationshipMapper.queryListByClusterIdListAndType(data);
     }

@@ -144,6 +144,12 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
     @Select("select * from runtime where status=1")
     List<RuntimeEntity> queryAll();
 
+
+    @Update("""
+            update runtime set port=#{port} where id=#{id}
+        """)
+    Integer updatePortByRuntimeId(RuntimeEntity runtimeEntity);
+
     @Update("""
         <script>
              <foreach item='item'  separator=';' >

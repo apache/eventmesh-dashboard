@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
@@ -31,6 +32,8 @@ import org.apache.commons.lang3.tuple.Triple;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import lombok.Data;
 
@@ -60,4 +63,18 @@ public class ClusterAndRuntimeOfRelationshipDO {
     private List<Pair<ClusterEntity, List<ResourcesConfigEntity>>> clusterResourcesList;
 
     private List<Pair<ClusterEntity, Pair<RuntimeEntity, ResourcesConfigEntity>>> resourceData;
+
+    private Map<ClusterType, List<RuntimeEntity>> clusterTypeMapMap;
+
+    public Map<Long, List<RuntimeEntity>> getRuntimeEntityByClusterType(ClusterType clusterType) {
+        if (Objects.isNull(clusterTypeMapMap)) {
+            this.clusterTypeMapMap = this.runtimeEntityList.stream().collect(Collectors.groupingBy(RuntimeEntity::getClusterType));
+
+        }
+        List<RuntimeEntity> list = this.clusterTypeMapMap.get(clusterType);
+        if (Objects.isNull(list)) {
+            return null;
+        }
+        return list.stream().collect(Collectors.groupingBy(RuntimeEntity::getClusterId));
+    }
 }

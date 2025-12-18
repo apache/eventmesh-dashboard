@@ -26,7 +26,6 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.eventmesh.dashboard.common</groupId>
     <artifactId>eventmesh-dashboard-common</artifactId>
 
     <properties>

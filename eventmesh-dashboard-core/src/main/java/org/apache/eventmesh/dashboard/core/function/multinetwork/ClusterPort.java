@@ -56,7 +56,7 @@ public enum ClusterPort {
             portMetadata.setEffect("复制端口");
             STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE.setPortMetadata(portMetadata);
 
-            STORAGE_ROCKETMQ_BROKER_RAFT.setPortMetadataList(STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE.getPortMetadataList());
+            STORAGE_ROCKETMQ_BROKER_RAFT.setClusterPort(STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE);
 
             portMetadata = new PortMetadata();
             portMetadata.setConfigName("");
@@ -65,18 +65,35 @@ public enum ClusterPort {
 
     }
 
+
     private List<PortMetadata> portMetadataList = new ArrayList<>();
+
+    private PortMetadata clientMetadata;
 
 
     private ClusterType clusterType;
 
-    void setPortMetadataList(List<PortMetadata> portMetadataList) {
-        this.portMetadataList = portMetadataList;
+
+    void setClusterPort(ClusterPort clusterPort) {
+        if (Objects.isNull(clusterType)) {
+            this.clusterType = ClusterType.valueOf(this.name());
+        }
+        this.clientMetadata = clusterPort.getClientMetadata();
+        this.portMetadataList = clusterPort.getPortMetadataList();
     }
 
     void setPortMetadata(PortMetadata portMetadata) {
         if (Objects.isNull(clusterType)) {
             this.clusterType = ClusterType.valueOf(this.name());
+        }
+        if (!portMetadata.isVirtual()
+            && !portMetadata.isNullPort()
+            && Objects.equals(portMetadata.getEffect(), "client")
+        ) {
+            if (Objects.isNull(this.clientMetadata)) {
+                String exceptionString = String.format(" current is %s , now is %s", this.clientMetadata, portMetadata);
+                throw new RuntimeException(exceptionString);
+            }
         }
         portMetadata.setClusterType(this.clusterType);
         this.portMetadataList.add(portMetadata);

@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
+package org.apache.eventmesh.dashboard.console.service.function;
 
-package org.apache.eventmesh.dashboard.core.meta.connection;
+import org.apache.eventmesh.dashboard.console.entity.function.ConfigTemplateEntity;
 
-import org.apache.eventmesh.dashboard.service.meta.ConnectionCore;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+/**
+ *
+ */
+public interface ConfigTemplateService {
 
-@Slf4j
-public class EtcdConnectionCore implements ConnectionCore {
+    void insertConfigTemplate(ConfigTemplateEntity configTemplateEntity);
+
+
+    List<ConfigTemplateEntity> queryConfigTemplateByClusterType(ConfigTemplateEntity configTemplateEntity);
 
 }

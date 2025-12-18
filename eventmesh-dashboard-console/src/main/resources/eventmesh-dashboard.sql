@@ -132,7 +132,7 @@ create table config
 (
     id                 bigint unsigned auto_increment primary key,
     organization_id    bigint unsigned not null comment '组织id',
-    cluster_id         bigint          not null comment '集群id',
+    cluster_id         bigint          not null comment '集群id，差点删了',
     cluster_type       varchar(32)     not null comment '',
     instance_type      varchar(31)     not null comment '实例类型 0:runtime,1:storage,2:connector,3:topic',
     instance_id        bigint          not null default -1 comment '实例id，上面配置对应的(比如runtime)的id，如果是-1，是cluster的配置',

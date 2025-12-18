@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.model.QO.function.config;
 
-import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 
-import org.junit.Test;
+import lombok.Data;
 
-public class Test1 {
+@Data
+public class CopyConfigQO {
 
+    private MetadataType sourceType;
 
-    @Test
-    public void test() {
+    private Long sourceId;
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getFrameworkInAllRuntimeCluster());
+    private MetadataType targetType;
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_CLUSTER.getFrameworkInAllRuntimeCluster());
-
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getThisInAllRuntimeCluster());
-    }
+    private Long targetId;
 
 }

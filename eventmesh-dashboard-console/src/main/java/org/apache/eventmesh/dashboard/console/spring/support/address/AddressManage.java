@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.spring.support.address;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 
-import org.junit.Test;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Test1 {
+public class AddressManage {
 
+    private Map<ClusterType, AddressService> addressServiceMap = new ConcurrentHashMap<>();
 
-    @Test
-    public void test() {
-
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getFrameworkInAllRuntimeCluster());
-
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_CLUSTER.getFrameworkInAllRuntimeCluster());
-
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getThisInAllRuntimeCluster());
+    {
+        this.register(new RocketMQBrokerAddressService());
     }
 
+
+    private void register(AddressService addressService) {
+        addressService.clusterType().forEach(clusterType -> {
+            this.addressServiceMap.put(clusterType, addressService);
+        });
+    }
+
+    public AddressService getAddressService(ClusterType clusterType) {
+        return this.addressServiceMap.get(clusterType);
+    }
 }

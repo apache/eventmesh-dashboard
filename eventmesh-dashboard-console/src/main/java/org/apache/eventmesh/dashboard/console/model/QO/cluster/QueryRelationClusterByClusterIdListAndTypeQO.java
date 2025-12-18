@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.model.QO.cluster;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 
-import org.junit.Test;
+import java.util.List;
 
-public class Test1 {
+import lombok.Data;
 
+@Data
+public class QueryRelationClusterByClusterIdListAndTypeQO {
 
-    @Test
-    public void test() {
+    private List<ClusterType> clusterTypeList;
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getFrameworkInAllRuntimeCluster());
-
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_CLUSTER.getFrameworkInAllRuntimeCluster());
-
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getThisInAllRuntimeCluster());
-    }
+    private List<ClusterEntity> clusterEntityList;
 
 }

@@ -112,6 +112,12 @@ public enum DeployStatusType {
 
     UPDATE_FULL_FAIL,
 
+    CHECKING,
+
+    CHECK_WAIT,
+
+    CHECKING_FAILED,
+
     PAUSE,
 
     PAUSE_WAIT,

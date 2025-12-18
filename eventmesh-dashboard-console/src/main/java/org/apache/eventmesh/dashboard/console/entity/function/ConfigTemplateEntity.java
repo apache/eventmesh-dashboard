@@ -15,14 +15,25 @@
  * limitations under the License.
  */
 
+package org.apache.eventmesh.dashboard.console.entity.function;
 
-package org.apache.eventmesh.dashboard.core.meta.connection;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseOrganizationEntity;
 
-import org.apache.eventmesh.dashboard.service.meta.ConnectionCore;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import lombok.extern.slf4j.Slf4j;
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class ConfigTemplateEntity extends BaseOrganizationEntity {
 
-@Slf4j
-public class NacosConnectionCore implements ConnectionCore {
+    private ClusterType clusterType;
+
+    private String version;
+
+    private MetadataType metadataType;
+
+    private String name;
 
 }

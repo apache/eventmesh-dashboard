@@ -62,7 +62,7 @@ public interface ClusterRelationshipMapper {
     @Select("""
         <script>
             select *  from cluster_relationship where cluster_id = #{clusterId}
-                <if test = "clusterTypeList != null">
+                <if test = "relationshipTypeList != null">
                      and relationship_type in
                      <foreach item='item' index='index' collection='relationshipTypeList'  open="(" separator=',' close=")">
                         #{item}
@@ -71,6 +71,22 @@ public interface ClusterRelationshipMapper {
         </script>
         """)
     List<ClusterRelationshipEntity> queryListByClusterIdAndType(QueryListByClusterIdAndTypeDO data);
+
+    @Select("""
+        <script>
+            select *  from cluster_relationship where relationship_id
+                <foreach collection='clusterIdList' item='item' index='index' open='in(' separator=',' close=')'>
+                    #{item}
+                </foreach>
+                <if test = "clusterTypeList != null">
+                     and relationship_type in
+                     <foreach item='item' index='index' collection='clusterTypeList'  open="(" separator=',' close=")">
+                        #{item}
+                    </foreach>
+                </if>
+        </script>
+        """)
+    List<ClusterRelationshipEntity> queryListByRelationshipList(QueryListByClusterIdAndTypeDO data);
 
 
     @Select("""

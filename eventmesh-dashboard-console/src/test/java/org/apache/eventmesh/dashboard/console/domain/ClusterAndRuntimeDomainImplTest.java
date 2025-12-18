@@ -24,9 +24,12 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.ClusterAndRuntimeOfRelationshipDO;
 import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.GetClusterInSyncReturnDO;
 import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryClusterTreeDO;
+import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryTreeByChildClusterIdDO;
 import org.apache.eventmesh.dashboard.console.model.vo.cluster.ClusterTreeVO;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,6 +78,21 @@ public class ClusterAndRuntimeDomainImplTest {
         data.setClusterId(82L);
         List<ClusterTreeVO> result = this.clusterAndRuntimeDomain.queryClusterTree(data);
         System.out.println(result);
+    }
+
+
+    @Test
+    public void test_queryTreeByChildClusterId(){
+        QueryTreeByChildClusterIdDO queryTreeByChildClusterIdDO = new QueryTreeByChildClusterIdDO();
+        ClusterEntity clusterEntity = new ClusterEntity();
+        clusterEntity.setId(24L);
+        queryTreeByChildClusterIdDO.setClusterEntity(clusterEntity);
+        ClusterType clusterType = ClusterType.STORAGE_JVM_BROKER;
+        queryTreeByChildClusterIdDO.setRootClusterTypeList(Set.of(clusterType.getHigher()));
+        queryTreeByChildClusterIdDO.setOnlyClusterTypeList(new HashSet<>(clusterType.getFrameworkInAllMetaCluster()));
+
+        ClusterAndRuntimeOfRelationshipDO data = this.clusterAndRuntimeDomain.queryTreeByChildClusterId(queryTreeByChildClusterIdDO);
+        System.out.println(data);
     }
 
 }

@@ -22,7 +22,7 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
-import org.apache.eventmesh.dashboard.console.model.QO.cluster.QueryRelationClusterByClusterIdListAndType;
+import org.apache.eventmesh.dashboard.console.model.QO.cluster.QueryRelationClusterByClusterIdListAndTypeQO;
 import org.apache.eventmesh.dashboard.console.model.vo.cluster.GetClusterBaseMessageVO;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -49,7 +49,7 @@ public interface ClusterService {
     List<ClusterEntity> queryRelationClusterByClusterIdAndType(ClusterEntity clusterEntity);
 
     List<ClusterEntity> queryRelationClusterByClusterIdListAndType(
-        QueryRelationClusterByClusterIdListAndType queryRelationClusterByClusterIdListAndType);
+        QueryRelationClusterByClusterIdListAndTypeQO queryRelationClusterByClusterIdListAndType);
 
     List<ClusterEntity> queryStorageClusterByEventMeshId(ClusterEntity clusterEntity);
 

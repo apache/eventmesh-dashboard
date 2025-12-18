@@ -150,7 +150,7 @@ public class ClusterCycleController {
     }
 
     /**
-     * 这里应该上传一个文件
+     * 这里应该上传一个文件，可以通过前端把文件数据读出来，然后写入字段里面
      */
     @PostMapping("createClusterByFullMetadata")
     public void createClusterByFullMetadata(@RequestBody @Validated CreateClusterByFullMetadataDTO dto) {

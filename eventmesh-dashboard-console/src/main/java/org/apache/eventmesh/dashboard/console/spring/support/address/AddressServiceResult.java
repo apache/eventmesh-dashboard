@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.dashboard.console;
+package org.apache.eventmesh.dashboard.console.spring.support.address;
 
-import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-public class Test1 {
+import lombok.Data;
+
+@Data
+public class AddressServiceResult {
+
+    private boolean checkSuccess = false;
 
 
-    @Test
-    public void test() {
+    private List<ConfigEntity> configEntities;
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getFrameworkInAllRuntimeCluster());
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_CLUSTER.getFrameworkInAllRuntimeCluster());
 
-        System.out.println(ClusterType.STORAGE_ROCKETMQ_BROKER.getThisInAllRuntimeCluster());
+    public void addConfigEntity(ConfigEntity configEntity) {
+        if (Objects.isNull(configEntities)) {
+            this.configEntities = new ArrayList<>();
+        }
+        this.configEntities.add(configEntity);
     }
+
 
 }

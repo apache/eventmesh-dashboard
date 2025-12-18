@@ -17,11 +17,15 @@
 
 package org.apache.eventmesh.dashboard.console.controller.agent;
 
+import java.util.Map;
+
 import lombok.Data;
 
 @Data
 public class AgentCheckRuntimeVO {
 
     private boolean success;
+
+    private Map<String, String> configMap;
 
 }

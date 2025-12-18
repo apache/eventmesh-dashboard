@@ -19,6 +19,7 @@
 package org.apache.eventmesh.dashboard.console.model.deploy.create;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,6 +32,8 @@ public class CreateClusterByDeployScriptDO extends CreateRuntimeByDeployScriptDO
     private String name;
 
     private Long configGatherId;
+
+    private MetadataType configGatherType;
 
     private ClusterType clusterType;
 

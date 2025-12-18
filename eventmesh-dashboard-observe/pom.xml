@@ -27,7 +27,6 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.eventmesh.dashboard.observe</groupId>
     <artifactId>eventmesh-dashboard-observe</artifactId>
 
     <properties>
