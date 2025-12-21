@@ -280,6 +280,24 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>1.6</version>
+                        <configuration>
+                            <!-- Use the GPG agent so passphrases are handled securely by the agent/pinentry -->
+                            <useAgent>true</useAgent>
+
+                            <!--
+                                Optional settings for environments where you need a specific key, gpg executable,
+                                or to enable loopback pinentry (useful for some CI setups). Uncomment and set
+                                only when required; prefer gpg-agent for local/CI signing.
+                            -->
+                            <!-- <keyname>your-key-id-or-email</keyname> -->
+                            <!-- <gpgExecutable>gpg</gpgExecutable> -->
+                            <!--
+                            <arguments>
+                                <argument>&#45;&#45;pinentry-mode</argument>
+                                <argument>loopback</argument>
+                            </arguments>
+                            -->
+                        </configuration>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
@@ -296,7 +314,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>sonatype</serverId>
-                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <nexusUrl>https://repository.apache.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
@@ -306,11 +324,11 @@
             <distributionManagement>
                 <snapshotRepository>
                     <id>sonatype</id>
-                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+                    <url>https://repository.apache.org/content/repositories/snapshots/</url>
                 </snapshotRepository>
                 <repository>
                     <id>sonatype</id>
-                    <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                    <url>https://repository.apache.org/service/local/staging/deploy/maven2/</url>
                 </repository>
             </distributionManagement>
         </profile>
