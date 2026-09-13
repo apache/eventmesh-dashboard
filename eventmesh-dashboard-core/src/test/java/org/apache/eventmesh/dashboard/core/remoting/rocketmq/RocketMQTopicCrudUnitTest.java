@@ -69,7 +69,7 @@ class RocketMQTopicCrudUnitTest {
 
     @Test
     void createTopicMapsHeaderAndDefaults() throws Exception {
-        log.info("Running Mock test: createTopicMapsHeaderAndDefaults");
+        log.info("【模拟测试】创建主题：检查队列数和默认配置");
         respond(ResponseCode.SUCCESS, null);
         Assertions.assertEquals(200, logResult(service.createTopic(createRequest(4, 6))).getCode());
         RemotingCommand command = capturedRequest();
@@ -77,6 +77,8 @@ class RocketMQTopicCrudUnitTest {
         CreateTopicRequestHeader header = (CreateTopicRequestHeader) command.readCustomHeader();
         Assertions.assertEquals("topic-a", header.getTopic());
         Assertions.assertEquals("topic-a", header.getDefaultTopic());
+        log.info("创建配置：主题={}，读队列数={}，写队列数={}，顺序消息={}",
+            header.getTopic(), header.getReadQueueNums(), header.getWriteQueueNums(), header.getOrder() ? "是" : "否");
         Assertions.assertEquals(4, header.getReadQueueNums());
         Assertions.assertEquals(6, header.getWriteQueueNums());
         Assertions.assertEquals(PermName.PERM_READ | PermName.PERM_WRITE, header.getPerm());
@@ -87,13 +89,14 @@ class RocketMQTopicCrudUnitTest {
 
     @Test
     void updateTopicUsesUpsertWithNewConfiguration() throws Exception {
-        log.info("Running Mock test: updateTopicUsesUpsertWithNewConfiguration");
+        log.info("【模拟测试】更新主题：检查修改后的队列数和属性");
         respond(ResponseCode.SUCCESS, null);
         CreateTopic2Request request = createRequest(8, 10);
         request.getMetaData().setOrder(1);
         request.getMetaData().setTopicFilterType("MULTI_TAG");
         request.getMetaData().setTopicConfig("{\"+message.type\":\"FIFO\"}");
-        log.info("Update parameters: {}", request.getMetaData());
+        log.info("本次提交的主题配置：");
+        logConfig(request.getMetaData());
         Assertions.assertEquals(200, logResult(service.createTopic(request)).getCode());
         RemotingCommand command = capturedRequest();
         Assertions.assertEquals(RequestCode.UPDATE_AND_CREATE_TOPIC, command.getCode());
@@ -108,7 +111,7 @@ class RocketMQTopicCrudUnitTest {
 
     @Test
     void queryTopicsDecodesBrokerConfiguration() throws Exception {
-        log.info("Running Mock test: queryTopicsDecodesBrokerConfiguration");
+        log.info("【模拟测试】查询主题：检查返回配置");
         TopicConfig config = new TopicConfig("topic-a", 4, 6, PermName.PERM_READ | PermName.PERM_WRITE);
         config.setOrder(true);
         config.setTopicFilterType(TopicFilterType.MULTI_TAG);
@@ -131,26 +134,27 @@ class RocketMQTopicCrudUnitTest {
 
     @Test
     void emptyTopicTableReturnsEmptyList() throws Exception {
-        log.info("Running Mock test: emptyTopicTableReturnsEmptyList");
+        log.info("【模拟测试】查询主题：验证空列表");
         respond(ResponseCode.SUCCESS, new TopicConfigSerializeWrapper().encode());
         Assertions.assertTrue(logResult(service.getAllTopics(new GetTopics2Request())).getData().isEmpty());
     }
 
     @Test
     void deleteTopicUsesCorrectHeaderAndResultType() throws Exception {
-        log.info("Running Mock test: deleteTopicUsesCorrectHeaderAndResultType");
+        log.info("【模拟测试】删除主题：检查组装的请求和返回类型");
         respond(ResponseCode.SUCCESS, null);
         DeleteTopicResult result = logResult(service.deleteTopic(deleteRequest()));
         Assertions.assertEquals(200, result.getCode());
         RemotingCommand command = capturedRequest();
         Assertions.assertEquals(RequestCode.DELETE_TOPIC_IN_BROKER, command.getCode());
         DeleteTopicRequestHeader header = (DeleteTopicRequestHeader) command.readCustomHeader();
+        log.info("删除请求：主题={}", header.getTopic());
         Assertions.assertEquals("topic-a", header.getTopic());
     }
 
     @Test
     void brokerErrorsPreserveCodeAndMessageForCrud() throws Exception {
-        log.info("Running Mock test: brokerErrorsPreserveCodeAndMessageForCrud");
+        log.info("【模拟测试】主题操作：验证无权限错误");
         respond(ResponseCode.NO_PERMISSION, null);
         Assertions.assertEquals(10000 + ResponseCode.NO_PERMISSION, logResult(service.createTopic(createRequest(4, 4))).getCode());
         GetTopicsResult queried = logResult(service.getAllTopics(new GetTopics2Request()));
@@ -164,7 +168,7 @@ class RocketMQTopicCrudUnitTest {
 
     @Test
     void timeoutPropagatesForAllOperations() throws Exception {
-        log.info("Running Mock test: timeoutPropagatesForAllOperations");
+        log.info("【模拟测试】主题操作：验证请求超时");
         RemotingTimeoutException timeout = new RemotingTimeoutException("broker", 3000);
         Mockito.when(client.invokeSync(ArgumentMatchers.any(), ArgumentMatchers.anyLong())).thenThrow(timeout);
         Assertions.assertSame(timeout, logExpectedException(Assertions.assertThrows(RemotingTimeoutException.class,
@@ -177,7 +181,7 @@ class RocketMQTopicCrudUnitTest {
 
     @Test
     void invalidFilterTypeFailsBeforeRpc() {
-        log.info("Running Mock test: invalidFilterTypeFailsBeforeRpc");
+        log.info("【模拟测试】主题操作：验证非法过滤类型");
         CreateTopic2Request request = createRequest(4, 4);
         request.getMetaData().setTopicFilterType("invalid");
         logExpectedException(Assertions.assertThrows(IllegalArgumentException.class, () -> logResult(service.createTopic(request))));
@@ -191,7 +195,6 @@ class RocketMQTopicCrudUnitTest {
         metadata.setWriteQueueNum(writeQueues);
         CreateTopic2Request request = new CreateTopic2Request();
         request.setMetaData(metadata);
-        log.info("Topic parameters: {}", metadata);
         return request;
     }
 
@@ -204,12 +207,7 @@ class RocketMQTopicCrudUnitTest {
     private void respond(int code, byte[] body) throws Exception {
         RemotingCommand response = RemotingCommand.createResponseCommand(code, code == ResponseCode.SUCCESS ? null : "denied");
         response.setBody(body);
-        Mockito.when(client.invokeSync(ArgumentMatchers.any(), ArgumentMatchers.anyLong())).thenAnswer(invocation -> {
-            RemotingCommand command = invocation.getArgument(0);
-            log.info("Mock RPC: requestCode={}, header={}, responseCode={}, remark={}",
-                command.getCode(), command.readCustomHeader(), response.getCode(), response.getRemark());
-            return response;
-        });
+        Mockito.when(client.invokeSync(ArgumentMatchers.any(), ArgumentMatchers.anyLong())).thenReturn(response);
     }
 
     private RemotingCommand capturedRequest() throws Exception {
@@ -219,12 +217,31 @@ class RocketMQTopicCrudUnitTest {
     }
 
     private <T extends GlobalResult<?>> T logResult(T result) {
-        log.info("Service result: code={}, message={}, data={}", result.getCode(), result.getMessage(), result.getData());
+        log.info("操作结果：{}，返回码={}", Integer.valueOf(200).equals(result.getCode()) ? "成功" : "失败", result.getCode());
+        if (!Integer.valueOf(200).equals(result.getCode())) {
+            log.info("失败原因：{}", "denied".equals(result.getMessage()) ? "没有操作权限" : result.getMessage());
+        }
+        if (result.getData() instanceof java.util.List<?> values) {
+            log.info("查询结果：共 {} 条", values.size());
+            values.forEach(value -> logConfig((TopicMetadata) value));
+        }
         return result;
     }
 
     private <T extends Throwable> T logExpectedException(T exception) {
-        log.info("Expected exception verified: type={}, message={}", exception.getClass().getSimpleName(), exception.getMessage());
+        String reason = switch (exception.getClass().getSimpleName()) {
+            case "RemotingTimeoutException" -> "请求超时";
+            case "InterruptedException" -> "请求被中断";
+            case "IllegalArgumentException" -> "请求参数不合法";
+            default -> "响应内容缺失或格式不合法";
+        };
+        log.info("异常处理验证通过：{}", reason);
         return exception;
+    }
+
+    private void logConfig(TopicMetadata topic) {
+        log.info("主题={}，读队列数={}，写队列数={}，顺序消息={}，过滤类型={}，主题属性={}",
+            topic.getTopicName(), topic.getReadQueueNum(), topic.getWriteQueueNum(),
+            Integer.valueOf(1).equals(topic.getOrder()) ? "是" : "否", topic.getTopicFilterType(), topic.getTopicConfig());
     }
 }

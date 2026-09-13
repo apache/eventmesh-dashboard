@@ -64,7 +64,7 @@ class RocketMQGroupRemotingServiceTest {
 
     @Test
     void queryReturnsConfiguredGroups() throws Exception {
-        log.info("Running Mock test: queryReturnsConfiguredGroups");
+        log.info("【模拟测试】查询消费组：检查组名和配置");
         SubscriptionGroupWrapper body = new SubscriptionGroupWrapper();
         body.getSubscriptionGroupTable().put("offline-group", new SubscriptionGroupConfig());
         body.getSubscriptionGroupTable().put("another-group", new SubscriptionGroupConfig());
@@ -84,14 +84,14 @@ class RocketMQGroupRemotingServiceTest {
 
     @Test
     void emptyTableReturnsEmptyList() throws Exception {
-        log.info("Running Mock test: emptyTableReturnsEmptyList");
+        log.info("【模拟测试】查询消费组：验证空列表");
         respond(ResponseCode.SUCCESS, null, new SubscriptionGroupWrapper().encode());
         Assertions.assertTrue(logResult(service.getAllGroups(new GetGroupsRequest())).getData().isEmpty());
     }
 
     @Test
     void brokerFailurePreservesCodeAndMessage() throws Exception {
-        log.info("Running Mock test: brokerFailurePreservesCodeAndMessage");
+        log.info("【模拟测试】消费组操作：验证无权限错误");
         respond(ResponseCode.NO_PERMISSION, "denied", null);
         GetGroupResult result = logResult(service.getAllGroups(new GetGroupsRequest()));
         Assertions.assertEquals(10000 + ResponseCode.NO_PERMISSION, result.getCode());
@@ -102,14 +102,14 @@ class RocketMQGroupRemotingServiceTest {
 
     @Test
     void missingBodyIsNotAnEmptySuccessfulQuery() throws Exception {
-        log.info("Running Mock test: missingBodyIsNotAnEmptySuccessfulQuery");
+        log.info("【模拟测试】查询消费组：验证缺少响应内容");
         respond(ResponseCode.SUCCESS, null, null);
         logExpectedException(Assertions.assertThrows(RuntimeException.class, () -> logResult(service.getAllGroups(new GetGroupsRequest()))));
     }
 
     @Test
     void timeoutPropagatesToCaller() throws Exception {
-        log.info("Running Mock test: timeoutPropagatesToCaller");
+        log.info("【模拟测试】查询消费组：验证请求超时");
         RemotingTimeoutException timeout = new RemotingTimeoutException("broker", 3000);
         Mockito.when(client.invokeSync(ArgumentMatchers.any(), ArgumentMatchers.anyLong())).thenThrow(timeout);
         Assertions.assertSame(timeout, logExpectedException(Assertions.assertThrows(RemotingTimeoutException.class,
@@ -118,7 +118,7 @@ class RocketMQGroupRemotingServiceTest {
 
     @Test
     void deleteUsesGroupNameAndRetainsOffsets() throws Exception {
-        log.info("Running Mock test: deleteUsesGroupNameAndRetainsOffsets");
+        log.info("【模拟测试】删除消费组：检查组名并保留消费位点");
         respond(ResponseCode.SUCCESS, null, null);
         Assertions.assertEquals(200, logResult(service.deleteGroup(deleteRequest("group-a"))).getCode());
         ArgumentCaptor<RemotingCommand> request = ArgumentCaptor.forClass(RemotingCommand.class);
@@ -132,7 +132,7 @@ class RocketMQGroupRemotingServiceTest {
 
     @Test
     void deleteRejectsMissingGroupBeforeRpc() {
-        log.info("Running Mock test: deleteRejectsMissingGroupBeforeRpc");
+        log.info("【模拟测试】删除消费组：验证缺少组名");
         logExpectedException(Assertions.assertThrows(IllegalArgumentException.class, () -> logResult(service.deleteGroup(null))));
         logExpectedException(Assertions.assertThrows(IllegalArgumentException.class, () -> logResult(service.deleteGroup(new DeleteGroupRequest()))));
         logExpectedException(Assertions.assertThrows(IllegalArgumentException.class, () -> logResult(service.deleteGroup(deleteRequest(" ")))));
@@ -142,12 +142,7 @@ class RocketMQGroupRemotingServiceTest {
     private void respond(int code, String remark, byte[] body) throws Exception {
         RemotingCommand response = RemotingCommand.createResponseCommand(code, remark);
         response.setBody(body);
-        Mockito.when(client.invokeSync(ArgumentMatchers.any(), ArgumentMatchers.anyLong())).thenAnswer(invocation -> {
-            RemotingCommand command = invocation.getArgument(0);
-            log.info("Mock RPC: requestCode={}, header={}, responseCode={}, remark={}",
-                command.getCode(), command.readCustomHeader(), response.getCode(), response.getRemark());
-            return response;
-        });
+        Mockito.when(client.invokeSync(ArgumentMatchers.any(), ArgumentMatchers.anyLong())).thenReturn(response);
     }
 
     private DeleteGroupRequest deleteRequest(String name) {
@@ -159,12 +154,35 @@ class RocketMQGroupRemotingServiceTest {
     }
 
     private <T extends GlobalResult<?>> T logResult(T result) {
-        log.info("Service result: code={}, message={}, data={}", result.getCode(), result.getMessage(), result.getData());
+        log.info("操作结果：{}，返回码={}", Integer.valueOf(200).equals(result.getCode()) ? "成功" : "失败", result.getCode());
+        if (!Integer.valueOf(200).equals(result.getCode())) {
+            log.info("失败原因：{}", "denied".equals(result.getMessage()) ? "没有操作权限" : result.getMessage());
+        }
+        if (result.getData() instanceof java.util.List<?> values) {
+            log.info("查询结果：共 {} 条", values.size());
+            values.forEach(value -> logConfig((GroupMetadata) value));
+        }
         return result;
     }
 
     private <T extends Throwable> T logExpectedException(T exception) {
-        log.info("Expected exception verified: type={}, message={}", exception.getClass().getSimpleName(), exception.getMessage());
+        String reason = switch (exception.getClass().getSimpleName()) {
+            case "RemotingTimeoutException" -> "请求超时";
+            case "InterruptedException" -> "请求被中断";
+            case "IllegalArgumentException" -> "请求参数不合法";
+            default -> "响应内容缺失或格式不合法";
+        };
+        log.info("异常处理验证通过：{}", reason);
         return exception;
+    }
+
+    private void logConfig(GroupMetadata group) {
+        log.info("消费组={}，允许消费={}，允许广播={}，重试队列数={}，最大重试次数={}",
+            group.getName(), displayFlag(group.getConsumeEnable()), displayFlag(group.getConsumeBroadcastEnable()),
+            group.getRetryQueueNums(), group.getRetryMaxTimes());
+    }
+
+    private String displayFlag(Boolean value) {
+        return value == null ? "未传入" : value ? "是" : "否";
     }
 }

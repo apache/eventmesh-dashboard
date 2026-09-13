@@ -68,7 +68,7 @@ public class RocketMQTopicRemotingServiceTest {
 
     @Test
     public void test_createTopic() throws Exception {
-        log.info("Running Broker test: test_createTopic");
+        log.info("【真实 Broker 测试】创建并查询主题");
         TopicMetadata topicMetadata = new TopicMetadata();
         topicMetadata.setTopicName("test_topic");
         topicMetadata.setWriteQueueNum(10);
@@ -87,7 +87,20 @@ public class RocketMQTopicRemotingServiceTest {
 
 
     private <T extends GlobalResult<?>> T logResult(T result) {
-        log.info("Service result: code={}, message={}, data={}", result.getCode(), result.getMessage(), result.getData());
+        log.info("操作结果：{}，返回码={}", Integer.valueOf(200).equals(result.getCode()) ? "成功" : "失败", result.getCode());
+        if (!Integer.valueOf(200).equals(result.getCode())) {
+            log.info("失败原因：{}", "denied".equals(result.getMessage()) ? "没有操作权限" : result.getMessage());
+        }
+        if (result.getData() instanceof java.util.List<?> values) {
+            log.info("查询结果：共 {} 条", values.size());
+            values.forEach(value -> logConfig((TopicMetadata) value));
+        }
         return result;
+    }
+
+    private void logConfig(TopicMetadata topic) {
+        log.info("主题={}，读队列数={}，写队列数={}，顺序消息={}，过滤类型={}，主题属性={}",
+            topic.getTopicName(), topic.getReadQueueNum(), topic.getWriteQueueNum(),
+            Integer.valueOf(1).equals(topic.getOrder()) ? "是" : "否", topic.getTopicFilterType(), topic.getTopicConfig());
     }
 }

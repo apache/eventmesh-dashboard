@@ -81,7 +81,7 @@ class RocketMQGroupIntegrationTest {
     @Test
     @Order(1)
     void createGroup() throws Exception {
-        log.info("Running Broker test: createGroup");
+        log.info("【真实 Broker 测试】创建消费组");
         GroupMetadata group = new GroupMetadata();
         group.setName(groupName);
         group.setConsumeEnable(true);
@@ -91,24 +91,24 @@ class RocketMQGroupIntegrationTest {
         CreateGroupRequest request = new CreateGroupRequest();
         request.setMetaData(group);
 
-        logGroupConfig("Submitted parameters", group);
+        logGroupConfig("本次创建配置", group);
         Assertions.assertEquals(200, logResult(service.createGroup(request)).getCode());
 
         GroupMetadata actual = queryCreatedGroup();
-        logGroupConfig("Created configuration", actual);
+        logGroupConfig("创建后查询配置", actual);
         Assertions.assertTrue(actual.getConsumeEnable());
         Assertions.assertFalse(actual.getConsumeBroadcastEnable());
         Assertions.assertEquals(2, actual.getRetryQueueNums());
         Assertions.assertEquals(8, actual.getRetryMaxTimes());
-        log.info("Created consumer group retained for MQ console inspection: {}", groupName);
+        log.info("消费组已创建并保留，可在 MQ 控制台查看：{}", groupName);
     }
 
     @Test
     @Order(2)
     void updateGroup() throws Exception {
-        log.info("Running Broker test: updateGroup");
+        log.info("【真实 Broker 测试】更新消费组");
         GroupMetadata previous = queryCreatedGroup();
-        logGroupConfig("Before update", previous);
+        logGroupConfig("更新前", previous);
         GroupMetadata group = new GroupMetadata();
         group.setName(groupName);
         group.setConsumeEnable(false);
@@ -117,11 +117,14 @@ class RocketMQGroupIntegrationTest {
         request.setMetaData(group);
 
         // Like createTopic, createGroup handles both ADD and UPDATE for the same name.
-        logGroupConfig("Update parameters (null means unchanged)", group);
+        logGroupConfig("本次修改参数（未传入的字段保持原值）", group);
         Assertions.assertEquals(200, logResult(service.createGroup(request)).getCode());
 
         GroupMetadata actual = queryCreatedGroup();
-        logGroupConfig("After update (queried from Broker)", actual);
+        logGroupConfig("更新后查询配置", actual);
+        log.info("修改对比：允许消费 {} → {}，最大重试次数 {} → {}",
+            displayFlag(previous.getConsumeEnable()), displayFlag(actual.getConsumeEnable()),
+            previous.getRetryMaxTimes(), actual.getRetryMaxTimes());
         Assertions.assertFalse(actual.getConsumeEnable());
         Assertions.assertEquals(12, actual.getRetryMaxTimes());
         Assertions.assertEquals(previous.getConsumeBroadcastEnable(), actual.getConsumeBroadcastEnable());
@@ -131,30 +134,30 @@ class RocketMQGroupIntegrationTest {
     @Test
     @Order(3)
     void queryGroup() throws Exception {
-        log.info("Running Broker test: queryGroup");
+        log.info("【真实 Broker 测试】查询消费组");
         GetGroupResult result = logResult(service.getAllGroups(new GetGroupsRequest()));
         Assertions.assertEquals(200, result.getCode());
-        log.info("Query consumer groups: targetGroup={}, count={}", groupName, result.getData().size());
-        result.getData().forEach(group -> logGroupConfig("Query result", group));
+        log.info("查询结果：目标消费组={}，共 {} 个消费组", groupName, result.getData().size());
+        result.getData().forEach(group -> logGroupConfig("消费组配置", group));
         Assertions.assertTrue(result.getData().stream().anyMatch(group -> groupName.equals(group.getName())));
     }
 
     @Test
     @Order(4)
     void deleteGroup() throws Exception {
-        log.info("Running Broker test: deleteGroup");
+        log.info("【真实 Broker 测试】删除消费组");
         GroupMetadata group = new GroupMetadata();
         group.setName(groupName);
         DeleteGroupRequest request = new DeleteGroupRequest();
         request.setMetaData(group);
 
-        log.info("Delete group: name={}, cleanOffset=false", groupName);
+        log.info("开始删除：消费组={}，保留消费位点", groupName);
         Assertions.assertEquals(200, logResult(service.deleteGroup(request)).getCode());
 
         GetGroupResult result = logResult(service.getAllGroups(new GetGroupsRequest()));
         Assertions.assertEquals(200, result.getCode());
         boolean exists = result.getData().stream().anyMatch(value -> groupName.equals(value.getName()));
-        log.info("After deletion: group={}, exists={}", groupName, exists);
+        log.info("删除后检查：消费组={}，是否仍存在={}", groupName, exists ? "是" : "否");
         Assertions.assertFalse(exists);
     }
 
@@ -166,9 +169,10 @@ class RocketMQGroupIntegrationTest {
     }
 
     private void logGroupConfig(String stage, GroupMetadata group) {
-        log.info("{}: group={}, consumeEnable={}, consumeBroadcastEnable={}, retryQueueNums={}, retryMaxTimes={}",
-            stage, group.getName(), group.getConsumeEnable(), group.getConsumeBroadcastEnable(),
-            group.getRetryQueueNums(), group.getRetryMaxTimes());
+        log.info("{}：消费组={}，允许消费={}，允许广播={}，重试队列数={}，最大重试次数={}",
+            stage, group.getName(), displayFlag(group.getConsumeEnable()), displayFlag(group.getConsumeBroadcastEnable()),
+            group.getRetryQueueNums() == null ? "未传入" : group.getRetryQueueNums(),
+            group.getRetryMaxTimes() == null ? "未传入" : group.getRetryMaxTimes());
     }
 
     @AfterEach
@@ -185,7 +189,14 @@ class RocketMQGroupIntegrationTest {
     }
 
     private <T extends GlobalResult<?>> T logResult(T result) {
-        log.info("Service result: code={}, message={}, data={}", result.getCode(), result.getMessage(), result.getData());
+        log.info("操作结果：{}，返回码={}", Integer.valueOf(200).equals(result.getCode()) ? "成功" : "失败", result.getCode());
+        if (!Integer.valueOf(200).equals(result.getCode())) {
+            log.info("失败原因：{}", "denied".equals(result.getMessage()) ? "没有操作权限" : result.getMessage());
+        }
         return result;
+    }
+
+    private String displayFlag(Boolean value) {
+        return value == null ? "未传入" : value ? "是" : "否";
     }
 }
