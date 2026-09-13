@@ -20,8 +20,9 @@ package org.apache.eventmesh.dashboard.service.remoting;
 
 import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
 import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
+import org.apache.eventmesh.dashboard.common.model.remoting.group.CreateGroupRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.group.DeleteGroupRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupsRequest;
 
@@ -30,9 +31,12 @@ import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupsReque
  */
 public interface GroupRemotingService {
 
+    @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
+    BaseGlobalResult createGroup(CreateGroupRequest createGroupRequest) throws Exception;
+
     @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
-    GetGroupResult getAllGroups(GetGroupsRequest getGroupsRequest);
+    GetGroupResult getAllGroups(GetGroupsRequest getGroupsRequest) throws Exception;
 
     @RemotingServiceMethodMapper(RemotingActionType.DELETE)
-    BaseGlobalResult deleteGroup(Global2Request global2Request);
+    BaseGlobalResult deleteGroup(DeleteGroupRequest deleteGroupRequest) throws Exception;
 }

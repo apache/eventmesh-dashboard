@@ -35,6 +35,15 @@ public class GroupMetadata extends BaseRuntimeIdBase {
 
     private Integer type;
 
+    /** Null keeps the current Broker value, or the RocketMQ default for a new group. */
+    private Boolean consumeEnable;
+
+    private Boolean consumeBroadcastEnable;
+
+    private Integer retryQueueNums;
+
+    private Integer retryMaxTimes;
+
 
     @Override
     public String nodeUnique() {

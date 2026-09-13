@@ -19,17 +19,8 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.group;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+public class CreateGroupRequest extends AbstractGlobal2Request<GroupMetadata> {
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class GetGroupResult extends GlobalResult<List<GroupMetadata>> {
-
-    private CompletableFuture<List<GroupMetadata>> future;
 }
