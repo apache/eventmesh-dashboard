@@ -21,20 +21,8 @@ package org.apache.eventmesh.dashboard.core.function.SDK.config;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * Admin configuration for one registered RocketMQ node. The inherited address is the target node,
- * while namesrvAddr optionally supplies discovery endpoints; a Broker address is never a NameServer address.
- */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CreateRocketmqAdminSDKConfig extends CreateRemotingConfig {
+public class CreateRocketmqAdminSDKConfig extends AbstractMultiCreateSDKConfig {
 
-    /** Optional semicolon-separated NameServer addresses. */
-    private String namesrvAddr;
-
-    /** Optional RPC timeout in milliseconds; defaults to 3000 when omitted. */
-    private Long timeoutMillis;
-
-    /** Whether to enable TLS; disabled when omitted. */
-    private Boolean useTls;
 }

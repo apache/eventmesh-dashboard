@@ -21,7 +21,6 @@ package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
 import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMapper;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
-import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.operation.rocketmq.RocketMQRemotingSDKOperation.DefaultRemotingClient;
 import org.apache.eventmesh.dashboard.core.remoting.AbstractRemotingService;
 
@@ -48,12 +47,6 @@ import lombok.Data;
     ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE,
     ClusterType.STORAGE_ROCKETMQ_BROKER_RAFT})
 public abstract class AbstractRocketMQRemotingService extends AbstractRemotingService<DefaultRemotingClient> {
-
-    /** The original Remoting methods use the managed transport client, independently of the Admin SDK. */
-    @Override
-    protected SDKTypeEnum getSdkTypeEnum() {
-        return SDKTypeEnum.PING;
-    }
 
 
     @SuppressWarnings("unchecked")

@@ -125,16 +125,6 @@
             <artifactId>decoration-core</artifactId>
             <version>0.1.20</version>
         </dependency>
-        <dependency>
-            <groupId>cn.lampup</groupId>
-            <artifactId>decoration-javax</artifactId>
-            <version>0.1.20</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.0.0</version>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.velocity</groupId>

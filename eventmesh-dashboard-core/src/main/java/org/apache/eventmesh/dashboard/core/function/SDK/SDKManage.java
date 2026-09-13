@@ -30,9 +30,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,12 +38,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * SDK manager is a singleton to manage all SDK clients, it is a facade to create, delete and get a client.
  */
-@Slf4j
 public class SDKManage {
 
     /**
@@ -150,128 +145,53 @@ public class SDKManage {
     }
 
     /**
-     * Creates registered ADMIN/PING clients independently when they use different SDK implementations.
-     * Replacements are published only after all clients have started successfully.
+     * cluster 模式下，有问题？
+     *  TODO 去重。 如果去重
+     *       1. 只识别 地址？
+     *       2. 识别 整个 CreateSDKConfig
      */
-    @SuppressWarnings("unchecked")
-    public synchronized <T> T createClient(SDKTypeEnum sdkType, BaseSyncBase base, CreateSDKConfig config,
-        ClusterType clusterType) {
-        SDKMetadataWrapper metadata = requireMetadata(clusterType, sdkType);
-        if (sdkType == SDKTypeEnum.PRODUCER || sdkType == SDKTypeEnum.CONSUMER) {
-            try {
-                return (T) metadata.abstractSDKOperation.createClient(config);
-            } catch (Exception e) {
-                throw new IllegalStateException("Cannot create SDK client for " + clusterType, e);
-            }
-        }
-        ClientWrapper wrapper = new ClientWrapper();
-        wrapper.setConfig(config);
-        wrapper.setBaseSyncBase(base);
+    public <T> T createClient(SDKTypeEnum sdkTypeEnum, BaseSyncBase baseSyncBase, CreateSDKConfig config, ClusterType clusterType) {
+
         try {
-            addClient(wrapper, sdkType, metadata, config);
-            if (sdkType == SDKTypeEnum.ADMIN) {
-                SDKMetadataWrapper ping = CLUSTER_TYPE_MAP_CONCURRENT_HASH_MAP.get(clusterType).get(SDKTypeEnum.PING);
-                if (ping != null) {
-                    if (ping.abstractSDKOperation.getClass().equals(metadata.abstractSDKOperation.getClass())) {
-                        wrapper.getClientMap().put(SDKTypeEnum.PING, wrapper.getClientMap().get(SDKTypeEnum.ADMIN));
-                        wrapper.getCloseActions().put(SDKTypeEnum.PING, wrapper.getCloseActions().get(SDKTypeEnum.ADMIN));
-                    } else {
-                        addClient(wrapper, SDKTypeEnum.PING, ping, config);
-                    }
-                }
+
+            SDKMetadataWrapper sdkMetadataWrapper = CLUSTER_TYPE_MAP_CONCURRENT_HASH_MAP.get(clusterType).get(sdkTypeEnum);
+
+            Object object = sdkMetadataWrapper.abstractSDKOperation.createClient(config);
+            if (Objects.equals(sdkTypeEnum, SDKTypeEnum.PRODUCER) || Objects.equals(sdkTypeEnum, SDKTypeEnum.CONSUMER)) {
+                return (T) object;
             }
+
+            ClientWrapper wrapper = new ClientWrapper();
+            wrapper.setConfig(config);
+            wrapper.setBaseSyncBase(baseSyncBase);
+
+            wrapper.getClientMap().put(SDKTypeEnum.ADMIN, object);
+            // all 模式下应该共享一个对象。这里需要优化
+            if (Objects.equals(SDKTypeEnum.ADMIN, sdkTypeEnum)) {
+                object = sdkMetadataWrapper.abstractSDKOperation.createClient(config);
+                wrapper.getClientMap().put(SDKTypeEnum.PING, object);
+            }
+            final String uniqueKey = baseSyncBase.getUnique();
+            clientMap.put(uniqueKey, wrapper);
+            return (T) object;
         } catch (Exception e) {
-            closeClients(wrapper);
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
-            throw new IllegalStateException("Cannot create SDK clients for " + clusterType, e);
+            throw new RuntimeException("create client error", e);
         }
-        stringMapConcurrentHashMap.remove(base.getUnique());
-        ClientWrapper previous = clientMap.get(base.getUnique());
-        if (sdkType != SDKTypeEnum.ADMIN && previous != null) {
-            AutoCloseable oldAction = previous.getCloseActions().remove(sdkType);
-            previous.getClientMap().put(sdkType, wrapper.getClientMap().get(sdkType));
-            if (oldAction != null && !previous.getCloseActions().containsValue(oldAction)) {
-                closeClient(oldAction);
-            }
-            previous.getCloseActions().put(sdkType, wrapper.getCloseActions().get(sdkType));
+    }
+
+
+    public void deleteClient(SDKTypeEnum sdkTypeEnum, String uniqueKey) {
+        if (Objects.isNull(sdkTypeEnum)) {
+            this.clientMap.remove(uniqueKey);
+            this.stringMapConcurrentHashMap.remove(uniqueKey);
         } else {
-            clientMap.put(base.getUnique(), wrapper);
-            closeClients(previous);
-        }
-        return (T) wrapper.getClientMap().get(sdkType);
-    }
-
-    private SDKMetadataWrapper requireMetadata(ClusterType clusterType, SDKTypeEnum sdkType) {
-        Map<SDKTypeEnum, SDKMetadataWrapper> metadata = CLUSTER_TYPE_MAP_CONCURRENT_HASH_MAP.get(clusterType);
-        if (metadata == null || !metadata.containsKey(sdkType)) {
-            throw new IllegalArgumentException("No SDK registered for " + clusterType + "/" + sdkType);
-        }
-        return metadata.get(sdkType);
-    }
-
-    private void addClient(ClientWrapper wrapper, SDKTypeEnum sdkType, SDKMetadataWrapper metadata,
-        CreateSDKConfig config) throws Exception {
-        if (!metadata.createSDKConfigClass.isInstance(config)) {
-            throw new IllegalArgumentException("Invalid SDK config for " + sdkType + ": expected "
-                + metadata.createSDKConfigClass.getSimpleName());
-        }
-        Object client = metadata.abstractSDKOperation.createClient(config);
-        wrapper.getClientMap().put(sdkType, client);
-        wrapper.getCloseActions().put(sdkType, () -> metadata.abstractSDKOperation.close(client));
-    }
-
-    /** Removes cached services and closes resources, including shared clients exactly once. */
-    public synchronized void deleteClient(SDKTypeEnum sdkType, String uniqueKey) {
-        stringMapConcurrentHashMap.remove(uniqueKey);
-        if (sdkType == null) {
-            closeClients(clientMap.remove(uniqueKey));
-            return;
-        }
-        ClientWrapper wrapper = clientMap.get(uniqueKey);
-        if (wrapper == null) {
-            return;
-        }
-        wrapper.getClientMap().remove(sdkType);
-        AutoCloseable closeAction = wrapper.getCloseActions().remove(sdkType);
-        if (closeAction != null && !wrapper.getCloseActions().containsValue(closeAction)) {
-            closeClient(closeAction);
-        }
-        if (wrapper.getClientMap().isEmpty()) {
-            clientMap.remove(uniqueKey);
-        }
-    }
-
-    private void closeClients(ClientWrapper wrapper) {
-        if (wrapper == null) {
-            return;
-        }
-        Set<AutoCloseable> uniqueActions = Collections.newSetFromMap(new IdentityHashMap<>());
-        uniqueActions.addAll(wrapper.getCloseActions().values());
-        uniqueActions.forEach(this::closeClient);
-        wrapper.getCloseActions().clear();
-        wrapper.getClientMap().clear();
-    }
-
-    private void closeClient(AutoCloseable closeAction) {
-        try {
-            closeAction.close();
-        } catch (Exception e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
-            log.error("Cannot close SDK client", e);
+            this.clientMap.get(uniqueKey).getClientMap().put(sdkTypeEnum, null);
         }
     }
 
     @SuppressWarnings("unchecked")
     public <T> T getClient(SDKTypeEnum clientTypeEnum, String uniqueKey) {
-        ClientWrapper wrapper = clientMap.get(uniqueKey);
-        if (wrapper == null || !wrapper.getClientMap().containsKey(clientTypeEnum)) {
-            throw new IllegalStateException("No " + clientTypeEnum + " client registered for " + uniqueKey);
-        }
-        return (T) wrapper.getClientMap().get(clientTypeEnum);
+        return (T) clientMap.get(uniqueKey).getClientMap().get(clientTypeEnum);
     }
 
     public ClientWrapper getClientWrapper(String uniqueKey) {
@@ -285,7 +205,7 @@ public class SDKManage {
      *  直接提供 console 的是否需要一个代理层
      */
     @SuppressWarnings("unchecked")
-    public synchronized <T> T createAbstractClientInfo(Class<?> clazz, BaseSyncBase baseSyncBase) {
+    public <T> T createAbstractClientInfo(Class<?> clazz, BaseSyncBase baseSyncBase) {
         try {
             String unique = baseSyncBase.getUnique();
             if (!baseSyncBase.isCluster() && ClusterSyncMetadataEnum.getClusterFramework(baseSyncBase.getClusterType()).isCAP()) {
@@ -298,11 +218,7 @@ public class SDKManage {
             }
 
             AbstractClientInfo<Object> abstractClientInfo = (AbstractClientInfo<Object>) clazz.newInstance();
-            ClientWrapper wrapper = clientMap.get(unique);
-            if (wrapper == null) {
-                throw new IllegalStateException("No SDK clients registered for " + unique);
-            }
-            abstractClientInfo.setClientWrapper(wrapper);
+            abstractClientInfo.setClientWrapper(clientMap.get(unique));
             classMap.put(clazz, abstractClientInfo);
             return (T) abstractClientInfo;
         } catch (Exception e) {

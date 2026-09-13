@@ -35,14 +35,9 @@ public abstract class AbstractClientInfo<T> {
     @Setter
     private Executor executor;
 
-    public T getClient() {
-        return getClient(this.getSdkTypeEnum());
-    }
-
-    /** Retrieves an additional SDK client from the same manager-injected wrapper. */
     @SuppressWarnings("unchecked")
-    protected <C> C getClient(SDKTypeEnum sdkType) {
-        return (C) this.clientWrapper.getClientMap().get(sdkType);
+    public T getClient() {
+        return (T) this.clientWrapper.getClientMap().get(this.getSdkTypeEnum());
     }
 
     protected CompletableFuture<Void> completableFuture(Runnable runnable) {
