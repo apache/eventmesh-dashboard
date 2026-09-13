@@ -18,6 +18,8 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.group;
 
-public class GetGroupsRequest {
-    //TODO where to get groups?
+import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
+
+public class GetGroupsRequest extends AbstractGlobal2Request<GroupMetadata> {
 }

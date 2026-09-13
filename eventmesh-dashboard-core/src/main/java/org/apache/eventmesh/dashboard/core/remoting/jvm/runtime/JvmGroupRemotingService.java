@@ -21,7 +21,8 @@ package org.apache.eventmesh.dashboard.core.remoting.jvm.runtime;
 
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
+import org.apache.eventmesh.dashboard.common.model.remoting.group.CreateGroupRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.group.DeleteGroupRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupsRequest;
 import org.apache.eventmesh.dashboard.service.remoting.GroupRemotingService;
@@ -30,12 +31,17 @@ import org.apache.eventmesh.dashboard.service.remoting.GroupRemotingService;
 public class JvmGroupRemotingService extends AbstractJvmRemotingService implements GroupRemotingService {
 
     @Override
+    public BaseGlobalResult createGroup(CreateGroupRequest createGroupRequest) {
+        return null;
+    }
+
+    @Override
     public GetGroupResult getAllGroups(GetGroupsRequest getGroupsRequest) {
         return null;
     }
 
     @Override
-    public BaseGlobalResult deleteGroup(Global2Request global2Request) {
+    public BaseGlobalResult deleteGroup(DeleteGroupRequest deleteGroupRequest) {
         return null;
     }
 
