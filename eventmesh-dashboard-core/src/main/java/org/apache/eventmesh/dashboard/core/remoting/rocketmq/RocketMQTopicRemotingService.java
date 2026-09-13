@@ -82,7 +82,7 @@ public class RocketMQTopicRemotingService extends AbstractRocketMQRemotingServic
         TopicMetadata topicMetadata = deleteTopicRequest.getMetaData();
         DeleteTopicRequestHeader requestHeader = new DeleteTopicRequestHeader();
         requestHeader.setTopic(topicMetadata.getTopicName());
-        return this.invokeSync(RequestCode.DELETE_TOPIC_IN_BROKER, requestHeader, new CreateTopicResult());
+        return this.invokeSync(RequestCode.DELETE_TOPIC_IN_BROKER, requestHeader, new DeleteTopicResult());
     }
 
     @Override

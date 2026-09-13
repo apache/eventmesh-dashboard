@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.DeleteGroupRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupsRequest;
@@ -43,6 +44,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 class RocketMQGroupRemotingServiceTest {
 
     private DefaultRemotingClient client;
@@ -60,12 +64,13 @@ class RocketMQGroupRemotingServiceTest {
 
     @Test
     void queryReturnsConfiguredGroups() throws Exception {
+        log.info("Running Mock test: queryReturnsConfiguredGroups");
         SubscriptionGroupWrapper body = new SubscriptionGroupWrapper();
         body.getSubscriptionGroupTable().put("offline-group", new SubscriptionGroupConfig());
         body.getSubscriptionGroupTable().put("another-group", new SubscriptionGroupConfig());
         respond(ResponseCode.SUCCESS, null, body.encode());
 
-        GetGroupResult result = service.getAllGroups(new GetGroupsRequest());
+        GetGroupResult result = logResult(service.getAllGroups(new GetGroupsRequest()));
 
         Assertions.assertEquals(200, result.getCode());
         Assertions.assertEquals(Set.of("offline-group", "another-group"), result.getData().stream()
@@ -79,38 +84,43 @@ class RocketMQGroupRemotingServiceTest {
 
     @Test
     void emptyTableReturnsEmptyList() throws Exception {
+        log.info("Running Mock test: emptyTableReturnsEmptyList");
         respond(ResponseCode.SUCCESS, null, new SubscriptionGroupWrapper().encode());
-        Assertions.assertTrue(service.getAllGroups(new GetGroupsRequest()).getData().isEmpty());
+        Assertions.assertTrue(logResult(service.getAllGroups(new GetGroupsRequest())).getData().isEmpty());
     }
 
     @Test
     void brokerFailurePreservesCodeAndMessage() throws Exception {
+        log.info("Running Mock test: brokerFailurePreservesCodeAndMessage");
         respond(ResponseCode.NO_PERMISSION, "denied", null);
-        GetGroupResult result = service.getAllGroups(new GetGroupsRequest());
+        GetGroupResult result = logResult(service.getAllGroups(new GetGroupsRequest()));
         Assertions.assertEquals(10000 + ResponseCode.NO_PERMISSION, result.getCode());
         Assertions.assertEquals("denied", result.getMessage());
         Assertions.assertNull(result.getData());
-        Assertions.assertEquals(10000 + ResponseCode.NO_PERMISSION, service.deleteGroup(deleteRequest("group-a")).getCode());
+        Assertions.assertEquals(10000 + ResponseCode.NO_PERMISSION, logResult(service.deleteGroup(deleteRequest("group-a"))).getCode());
     }
 
     @Test
     void missingBodyIsNotAnEmptySuccessfulQuery() throws Exception {
+        log.info("Running Mock test: missingBodyIsNotAnEmptySuccessfulQuery");
         respond(ResponseCode.SUCCESS, null, null);
-        Assertions.assertThrows(RuntimeException.class, () -> service.getAllGroups(new GetGroupsRequest()));
+        logExpectedException(Assertions.assertThrows(RuntimeException.class, () -> logResult(service.getAllGroups(new GetGroupsRequest()))));
     }
 
     @Test
     void timeoutPropagatesToCaller() throws Exception {
+        log.info("Running Mock test: timeoutPropagatesToCaller");
         RemotingTimeoutException timeout = new RemotingTimeoutException("broker", 3000);
         Mockito.when(client.invokeSync(ArgumentMatchers.any(), ArgumentMatchers.anyLong())).thenThrow(timeout);
-        Assertions.assertSame(timeout, Assertions.assertThrows(RemotingTimeoutException.class,
-            () -> service.getAllGroups(new GetGroupsRequest())));
+        Assertions.assertSame(timeout, logExpectedException(Assertions.assertThrows(RemotingTimeoutException.class,
+            () -> logResult(service.getAllGroups(new GetGroupsRequest())))));
     }
 
     @Test
     void deleteUsesGroupNameAndRetainsOffsets() throws Exception {
+        log.info("Running Mock test: deleteUsesGroupNameAndRetainsOffsets");
         respond(ResponseCode.SUCCESS, null, null);
-        Assertions.assertEquals(200, service.deleteGroup(deleteRequest("group-a")).getCode());
+        Assertions.assertEquals(200, logResult(service.deleteGroup(deleteRequest("group-a"))).getCode());
         ArgumentCaptor<RemotingCommand> request = ArgumentCaptor.forClass(RemotingCommand.class);
         Mockito.verify(client).invokeSync(request.capture(), ArgumentMatchers.eq(3000L));
         Assertions.assertEquals(RequestCode.DELETE_SUBSCRIPTIONGROUP, request.getValue().getCode());
@@ -122,16 +132,22 @@ class RocketMQGroupRemotingServiceTest {
 
     @Test
     void deleteRejectsMissingGroupBeforeRpc() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> service.deleteGroup(null));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> service.deleteGroup(new DeleteGroupRequest()));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> service.deleteGroup(deleteRequest(" ")));
+        log.info("Running Mock test: deleteRejectsMissingGroupBeforeRpc");
+        logExpectedException(Assertions.assertThrows(IllegalArgumentException.class, () -> logResult(service.deleteGroup(null))));
+        logExpectedException(Assertions.assertThrows(IllegalArgumentException.class, () -> logResult(service.deleteGroup(new DeleteGroupRequest()))));
+        logExpectedException(Assertions.assertThrows(IllegalArgumentException.class, () -> logResult(service.deleteGroup(deleteRequest(" ")))));
         Mockito.verifyNoInteractions(client);
     }
 
     private void respond(int code, String remark, byte[] body) throws Exception {
         RemotingCommand response = RemotingCommand.createResponseCommand(code, remark);
         response.setBody(body);
-        Mockito.when(client.invokeSync(ArgumentMatchers.any(), ArgumentMatchers.anyLong())).thenReturn(response);
+        Mockito.when(client.invokeSync(ArgumentMatchers.any(), ArgumentMatchers.anyLong())).thenAnswer(invocation -> {
+            RemotingCommand command = invocation.getArgument(0);
+            log.info("Mock RPC: requestCode={}, header={}, responseCode={}, remark={}",
+                command.getCode(), command.readCustomHeader(), response.getCode(), response.getRemark());
+            return response;
+        });
     }
 
     private DeleteGroupRequest deleteRequest(String name) {
@@ -140,5 +156,15 @@ class RocketMQGroupRemotingServiceTest {
         DeleteGroupRequest request = new DeleteGroupRequest();
         request.setMetaData(metadata);
         return request;
+    }
+
+    private <T extends GlobalResult<?>> T logResult(T result) {
+        log.info("Service result: code={}, message={}, data={}", result.getCode(), result.getMessage(), result.getData());
+        return result;
+    }
+
+    private <T extends Throwable> T logExpectedException(T exception) {
+        log.info("Expected exception verified: type={}, message={}", exception.getClass().getSimpleName(), exception.getMessage());
+        return exception;
     }
 }

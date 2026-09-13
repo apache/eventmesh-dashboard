@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.CreateTopic2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
@@ -36,6 +37,9 @@ import org.apache.rocketmq.common.TopicFilterType;
 import org.junit.Before;
 import org.junit.Test;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class RocketMQTopicRemotingServiceTest {
 
 
@@ -64,6 +68,7 @@ public class RocketMQTopicRemotingServiceTest {
 
     @Test
     public void test_createTopic() throws Exception {
+        log.info("Running Broker test: test_createTopic");
         TopicMetadata topicMetadata = new TopicMetadata();
         topicMetadata.setTopicName("test_topic");
         topicMetadata.setWriteQueueNum(10);
@@ -72,12 +77,17 @@ public class RocketMQTopicRemotingServiceTest {
         topicMetadata.setTopicFilterType(TopicFilterType.SINGLE_TAG.name());
         CreateTopic2Request createTopicRequest = new CreateTopic2Request();
         createTopicRequest.setMetaData(topicMetadata);
-        rocketMQTopicRemotingService.createTopic(createTopicRequest);
+        logResult(rocketMQTopicRemotingService.createTopic(createTopicRequest));
 
         GetTopics2Request getTopicsRequest = new GetTopics2Request();
         getTopicsRequest.setMetaData(topicMetadata);
-        GetTopicsResult getTopicsResult = rocketMQTopicRemotingService.getAllTopics(getTopicsRequest);
+        GetTopicsResult getTopicsResult = logResult(rocketMQTopicRemotingService.getAllTopics(getTopicsRequest));
         getTopicsResult.getData();
     }
 
+
+    private <T extends GlobalResult<?>> T logResult(T result) {
+        log.info("Service result: code={}, message={}, data={}", result.getCode(), result.getMessage(), result.getData());
+        return result;
+    }
 }

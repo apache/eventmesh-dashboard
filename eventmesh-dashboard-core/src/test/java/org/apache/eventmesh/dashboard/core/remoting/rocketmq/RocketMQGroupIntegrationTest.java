@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.GroupMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.CreateGroupRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.DeleteGroupRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.group.GetGroupResult;
@@ -80,6 +81,7 @@ class RocketMQGroupIntegrationTest {
     @Test
     @Order(1)
     void createGroup() throws Exception {
+        log.info("Running Broker test: createGroup");
         GroupMetadata group = new GroupMetadata();
         group.setName(groupName);
         group.setConsumeEnable(true);
@@ -89,9 +91,11 @@ class RocketMQGroupIntegrationTest {
         CreateGroupRequest request = new CreateGroupRequest();
         request.setMetaData(group);
 
-        Assertions.assertEquals(200, service.createGroup(request).getCode());
+        logGroupConfig("Submitted parameters", group);
+        Assertions.assertEquals(200, logResult(service.createGroup(request)).getCode());
 
         GroupMetadata actual = queryCreatedGroup();
+        logGroupConfig("Created configuration", actual);
         Assertions.assertTrue(actual.getConsumeEnable());
         Assertions.assertFalse(actual.getConsumeBroadcastEnable());
         Assertions.assertEquals(2, actual.getRetryQueueNums());
@@ -102,7 +106,9 @@ class RocketMQGroupIntegrationTest {
     @Test
     @Order(2)
     void updateGroup() throws Exception {
+        log.info("Running Broker test: updateGroup");
         GroupMetadata previous = queryCreatedGroup();
+        logGroupConfig("Before update", previous);
         GroupMetadata group = new GroupMetadata();
         group.setName(groupName);
         group.setConsumeEnable(false);
@@ -111,9 +117,11 @@ class RocketMQGroupIntegrationTest {
         request.setMetaData(group);
 
         // Like createTopic, createGroup handles both ADD and UPDATE for the same name.
-        Assertions.assertEquals(200, service.createGroup(request).getCode());
+        logGroupConfig("Update parameters (null means unchanged)", group);
+        Assertions.assertEquals(200, logResult(service.createGroup(request)).getCode());
 
         GroupMetadata actual = queryCreatedGroup();
+        logGroupConfig("After update (queried from Broker)", actual);
         Assertions.assertFalse(actual.getConsumeEnable());
         Assertions.assertEquals(12, actual.getRetryMaxTimes());
         Assertions.assertEquals(previous.getConsumeBroadcastEnable(), actual.getConsumeBroadcastEnable());
@@ -123,31 +131,44 @@ class RocketMQGroupIntegrationTest {
     @Test
     @Order(3)
     void queryGroup() throws Exception {
-        GetGroupResult result = service.getAllGroups(new GetGroupsRequest());
+        log.info("Running Broker test: queryGroup");
+        GetGroupResult result = logResult(service.getAllGroups(new GetGroupsRequest()));
         Assertions.assertEquals(200, result.getCode());
+        log.info("Query consumer groups: targetGroup={}, count={}", groupName, result.getData().size());
+        result.getData().forEach(group -> logGroupConfig("Query result", group));
         Assertions.assertTrue(result.getData().stream().anyMatch(group -> groupName.equals(group.getName())));
     }
 
     @Test
     @Order(4)
     void deleteGroup() throws Exception {
+        log.info("Running Broker test: deleteGroup");
         GroupMetadata group = new GroupMetadata();
         group.setName(groupName);
         DeleteGroupRequest request = new DeleteGroupRequest();
         request.setMetaData(group);
 
-        Assertions.assertEquals(200, service.deleteGroup(request).getCode());
+        log.info("Delete group: name={}, cleanOffset=false", groupName);
+        Assertions.assertEquals(200, logResult(service.deleteGroup(request)).getCode());
 
-        GetGroupResult result = service.getAllGroups(new GetGroupsRequest());
+        GetGroupResult result = logResult(service.getAllGroups(new GetGroupsRequest()));
         Assertions.assertEquals(200, result.getCode());
-        Assertions.assertFalse(result.getData().stream().anyMatch(value -> groupName.equals(value.getName())));
+        boolean exists = result.getData().stream().anyMatch(value -> groupName.equals(value.getName()));
+        log.info("After deletion: group={}, exists={}", groupName, exists);
+        Assertions.assertFalse(exists);
     }
 
     private GroupMetadata queryCreatedGroup() throws Exception {
-        GetGroupResult result = service.getAllGroups(new GetGroupsRequest());
+        GetGroupResult result = logResult(service.getAllGroups(new GetGroupsRequest()));
         Assertions.assertEquals(200, result.getCode());
         return result.getData().stream().filter(group -> groupName.equals(group.getName())).findFirst()
             .orElseThrow(() -> new AssertionError("Consumer group " + groupName + " does not exist; run createGroup first"));
+    }
+
+    private void logGroupConfig(String stage, GroupMetadata group) {
+        log.info("{}: group={}, consumeEnable={}, consumeBroadcastEnable={}, retryQueueNums={}, retryMaxTimes={}",
+            stage, group.getName(), group.getConsumeEnable(), group.getConsumeBroadcastEnable(),
+            group.getRetryQueueNums(), group.getRetryMaxTimes());
     }
 
     @AfterEach
@@ -161,5 +182,10 @@ class RocketMQGroupIntegrationTest {
                 SDKManage.getInstance().deleteClient(null, runtime.getUnique());
             }
         }
+    }
+
+    private <T extends GlobalResult<?>> T logResult(T result) {
+        log.info("Service result: code={}, message={}, data={}", result.getCode(), result.getMessage(), result.getData());
+        return result;
     }
 }
