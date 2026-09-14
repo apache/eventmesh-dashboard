@@ -24,11 +24,11 @@ import org.apache.eventmesh.dashboard.common.model.remoting.subscription.GetSubs
 import org.apache.eventmesh.dashboard.common.model.remoting.subscription.GetSubscriptionResult;
 
 /**
- * remoting service to get a subscription relationship between a topic and a consumer/producer
+ * Query subscription relationships between consumer groups and topics.
  */
 public interface GroupMemberRemotingService {
 
     @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
-    GetSubscriptionResult getSubscription(GetSubscriptionRequest request);
+    GetSubscriptionResult getSubscription(GetSubscriptionRequest request) throws Exception;
 
 }
