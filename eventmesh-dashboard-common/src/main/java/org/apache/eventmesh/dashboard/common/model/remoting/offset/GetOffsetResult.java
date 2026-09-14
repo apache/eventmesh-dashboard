@@ -18,9 +18,9 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
-import java.util.concurrent.CompletableFuture;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 
-public class GetOffsetResult {
+import java.util.List;
 
-    CompletableFuture<GetOffsetResponse> getOffsetResponseCompletableFuture;
+public class GetOffsetResult extends GlobalResult<List<GetOffsetResponse>> {
 }
