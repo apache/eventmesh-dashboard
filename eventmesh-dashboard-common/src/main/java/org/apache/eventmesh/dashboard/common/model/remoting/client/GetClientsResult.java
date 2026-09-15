@@ -16,12 +16,12 @@
  */
 
 
-package org.apache.eventmesh.dashboard.common.model.remoting.user;
+package org.apache.eventmesh.dashboard.common.model.remoting.client;
 
-import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 
 import java.util.List;
 
-public class GetUserResult extends GlobalResult<List<InstanceUserMetadata>> {
+public class GetClientsResult extends GlobalResult<List<ClientMetadata>> {
 }

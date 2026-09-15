@@ -18,17 +18,10 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.config;
 
-import java.util.concurrent.CompletableFuture;
+import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-
-public class GetConfigResult {
-
-    CompletableFuture<GetConfigResponse> getConfigResponseFuture;
+public class GetConfigResult extends GlobalResult<List<ConfigMetadata>> {
 }

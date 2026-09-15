@@ -24,9 +24,8 @@ import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.DeleteConfigRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.UpdateConfigRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
 
 /**
  * A remoting service for config operations. Getting configs from different sources 1. runtime 2. RocketMQ 3. connector to db
@@ -35,19 +34,19 @@ public interface ConfigRemotingService {
 
 
     @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
-    BaseGlobalResult addConfig(AddConfigRequest addConfigRequest);
+    BaseGlobalResult addConfig(AddConfigRequest addConfigRequest) throws Exception;
 
-    default BaseGlobalResult updateConfig(UpdateConfigRequest updateConfigRequest) {
+    default BaseGlobalResult updateConfig(UpdateConfigRequest updateConfigRequest) throws Exception {
         return addConfig(updateConfigRequest);
     }
 
     @RemotingServiceMethodMapper(RemotingActionType.DELETE)
-    default BaseGlobalResult deleteConfig(DeleteConfigRequest deleteConfigRequest) {
+    default BaseGlobalResult deleteConfig(DeleteConfigRequest deleteConfigRequest) throws Exception {
         return addConfig(deleteConfigRequest);
     }
 
-    GetTopicsResult getConfig(GetConfigRequest getConfigRequest);
+    GetConfigResult getConfig(GetConfigRequest getConfigRequest) throws Exception;
 
     @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
-    GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest);
+    GetConfigResult getAllConfigs(GetConfigRequest getConfigRequest) throws Exception;
 }

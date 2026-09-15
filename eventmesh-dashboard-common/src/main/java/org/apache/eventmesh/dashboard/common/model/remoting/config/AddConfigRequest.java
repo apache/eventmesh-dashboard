@@ -18,6 +18,8 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.config;
 
+import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.RemotingOperate;
 
 import java.util.List;
@@ -25,11 +27,11 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class AddConfigRequest {
+public class AddConfigRequest extends AbstractGlobal2Request<ConfigMetadata> {
 
     protected RemotingOperate remotingOperate = RemotingOperate.ADD;
 
-    private ConfigType configType;
+    private ConfigType configType = ConfigType.NODE;
 
     private List<Object> incrementConfig;
 

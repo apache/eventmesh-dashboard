@@ -18,16 +18,30 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import lombok.Data;
+import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 
-/**
- * Service users are users that are used by components like mysql, kafka, etc.
- */
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+/** User account metadata. Passwords are write-only in RocketMQ query results. */
 @Data
-public class InstanceUserMetadata {
+@EqualsAndHashCode(callSuper = true)
+public class InstanceUserMetadata extends BaseRuntimeIdBase {
 
     private String userName;
 
-
+    @ToString.Exclude
     private String password;
+
+    /** RocketMQ: Normal or Super; required explicitly for creation. */
+    private String userType;
+
+    /** RocketMQ: enable or disable; required explicitly for creation. */
+    private String userStatus;
+
+    @Override
+    public String nodeUnique() {
+        return this.userName;
+    }
 }

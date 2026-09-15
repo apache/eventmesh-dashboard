@@ -242,5 +242,35 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>rocketmq-admin-services-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <testIncludes combine.self="override">
+                                <testInclude>**/RocketMQClient*Test.java</testInclude>
+                                <testInclude>**/RocketMQConfig*Test.java</testInclude>
+                                <testInclude>**/RocketMQUser*Test.java</testInclude>
+                            </testIncludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <testFailureIgnore>false</testFailureIgnore>
+                            <includes combine.self="override">
+                                <include>**/RocketMQClient*Test.java</include>
+                                <include>**/RocketMQConfig*Test.java</include>
+                                <include>**/RocketMQUser*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
