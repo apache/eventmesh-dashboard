@@ -191,6 +191,32 @@
             </build>
         </profile>
         <profile>
+            <id>rocketmq-acl-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <testIncludes combine.self="override">
+                                <testInclude>**/RocketMQAcl*Test.java</testInclude>
+                            </testIncludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <testFailureIgnore>false</testFailureIgnore>
+                            <includes combine.self="override">
+                                <include>**/RocketMQAcl*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>rocketmq-topic-tests</id>
             <build>
                 <plugins>

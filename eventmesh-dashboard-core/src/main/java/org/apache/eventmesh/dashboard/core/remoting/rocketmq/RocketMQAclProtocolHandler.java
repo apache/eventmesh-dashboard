@@ -16,10 +16,8 @@
  */
 
 
-package org.apache.eventmesh.dashboard.service.remoting;
+package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
 
-import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
-import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.CreateAclRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.CreateAclResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.DeleteAclRequest;
@@ -27,17 +25,13 @@ import org.apache.eventmesh.dashboard.common.model.remoting.acl.DeleteAclResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.GetAcls2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.acl.GetAclsResult;
 
-/**
- * A remoting service for ACL operations.
- */
-public interface AclRemotingService {
 
-    @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
-    CreateAclResult createAcl(CreateAclRequest createAclRequest) throws Exception;
+/** Internal protocol handlers are not registered as framework services. */
+interface RocketMQAclProtocolHandler {
 
-    @RemotingServiceMethodMapper(RemotingActionType.DELETE)
-    DeleteAclResult deleteAcl(DeleteAclRequest deleteAclRequest) throws Exception;
+    CreateAclResult createAcl(CreateAclRequest request) throws Exception;
 
-    @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
-    GetAclsResult getAllAcls(GetAcls2Request getAclsRequest) throws Exception;
+    DeleteAclResult deleteAcl(DeleteAclRequest request) throws Exception;
+
+    GetAclsResult getAllAcls(GetAcls2Request request) throws Exception;
 }

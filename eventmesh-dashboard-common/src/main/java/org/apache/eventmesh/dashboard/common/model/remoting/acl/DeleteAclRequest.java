@@ -18,6 +18,17 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.acl;
 
-public class DeleteAclRequest {
+import org.apache.eventmesh.dashboard.common.model.metadata.AclMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class DeleteAclRequest extends AbstractGlobal2Request<AclMetadata> {
+
+    /** Required explicitly for ACL 1.0 whole-account deletion; never used for ACL 2.0 policies. */
+    private boolean deleteAccount;
 
 }

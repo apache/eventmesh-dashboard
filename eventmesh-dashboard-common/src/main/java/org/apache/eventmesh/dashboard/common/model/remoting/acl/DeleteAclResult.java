@@ -18,6 +18,7 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.acl;
 
-public class DeleteAclResult {
+import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
 
+public class DeleteAclResult extends BaseGlobalResult {
 }
