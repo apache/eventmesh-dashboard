@@ -16,7 +16,7 @@
  */
 
 
-package org.apache.eventmesh.dashboard.common.model.remoting.metrics;
+package org.apache.eventmesh.dashboard.common.enums;
 
 
 

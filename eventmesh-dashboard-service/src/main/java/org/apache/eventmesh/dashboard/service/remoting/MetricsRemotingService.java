@@ -18,8 +18,8 @@
 
 package org.apache.eventmesh.dashboard.service.remoting;
 
+import org.apache.eventmesh.dashboard.common.enums.MetricFamily;
 import org.apache.eventmesh.dashboard.common.model.remoting.client.GetClientsResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.metrics.MetricFamily;
 import org.apache.eventmesh.dashboard.common.model.remoting.metrics.MetricSample;
 import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetResult;

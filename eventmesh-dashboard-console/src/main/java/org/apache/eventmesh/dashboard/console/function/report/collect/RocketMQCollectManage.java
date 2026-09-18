@@ -18,9 +18,9 @@
 
 package org.apache.eventmesh.dashboard.console.function.report.collect;
 
+import org.apache.eventmesh.dashboard.common.enums.MetricFamily;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-import org.apache.eventmesh.dashboard.common.model.remoting.metrics.MetricFamily;
 import org.apache.eventmesh.dashboard.console.function.report.collect.RocketMQDataSyncHandler.RocketMQDataSyncHandlerWrapper;
 import org.apache.eventmesh.dashboard.console.function.report.collect.exporter.RocketMQCollect;
 

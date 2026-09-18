@@ -20,9 +20,9 @@ package org.apache.eventmesh.dashboard.core.remoting.rocketmq;
 
 import static java.util.Locale.ROOT;
 
+import org.apache.eventmesh.dashboard.common.enums.MetricFamily;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.client.GetClientsResult;
-import org.apache.eventmesh.dashboard.common.model.remoting.metrics.MetricFamily;
 import org.apache.eventmesh.dashboard.common.model.remoting.metrics.MetricSample;
 import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.offset.GetOffsetResponse;

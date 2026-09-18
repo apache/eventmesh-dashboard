@@ -109,8 +109,8 @@ class MetricCollectionTest {
             context.register(RocketMQMetricsCollectTask.class);
             context.refresh();
             Assertions.assertTrue(called.await(3, TimeUnit.SECONDS));
-            for (org.apache.eventmesh.dashboard.common.model.remoting.metrics.MetricFamily family :
-                org.apache.eventmesh.dashboard.common.model.remoting.metrics.MetricFamily.values()) {
+            for (org.apache.eventmesh.dashboard.common.enums.MetricFamily family :
+                org.apache.eventmesh.dashboard.common.enums.MetricFamily.values()) {
                 Mockito.verify(manager, Mockito.atLeastOnce()).collectAsync(family);
             }
         }
