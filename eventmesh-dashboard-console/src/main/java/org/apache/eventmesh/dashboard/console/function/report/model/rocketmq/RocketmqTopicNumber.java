@@ -22,9 +22,24 @@ import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_topic_number",
     defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_topic_number",
-    comment = "主题数量")
+    comment = "Topic数量及实例采集状态，value为主题数量")
 public class RocketmqTopicNumber extends RuntimeLongValue {
+
+    private String familyId;
+
+    private Long valueConnectionCount;
+
+    private Float valueDurationMs;
+
+    private Long valueFailures;
+
+    private Long valueLastSuccessTime;
 
 }

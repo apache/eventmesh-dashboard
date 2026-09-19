@@ -17,9 +17,15 @@
 
 package org.apache.eventmesh.dashboard.console.function.report.iotdb;
 
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData;
+import org.apache.eventmesh.dashboard.console.function.report.collect.RocketMQMetricModels;
 import org.apache.eventmesh.dashboard.console.function.report.model.SingleGeneralReportDO;
-import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqBrokerSample;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,22 +33,28 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.google.common.base.CaseFormat;
 
-/** Opt-in sample engine. The existing IoTDB engine and report framework are unchanged. */
+/** Annotated report models use their own tables and native value types. */
 public class RocketMQIotdbReportEngine extends IotDBReportEngine {
     private DruidDataSource sampleDataSource;
+    private final Map<String, List<Field>> tableFields = new HashMap<>();
+    private final Map<String, Class<?>> tableModels = new HashMap<>();
 
     @Override
     protected void doInit() {
@@ -62,7 +74,27 @@ public class RocketMQIotdbReportEngine extends IotDBReportEngine {
             this.sampleDataSource.close();
             throw new IllegalStateException("Cannot initialize metric storage", e);
         }
-        this.setClazzToTableName(Map.of(RocketmqBrokerSample.class, "rocketmq_broker_sample"));
+        Map<Class<?>, String> modelTables = new HashMap<>();
+        RocketMQMetricModels.models().forEach(factory -> {
+            Class<?> model = factory.get().getClass();
+            ReportMeta annotation = model.getAnnotation(ReportMeta.class);
+            String table = annotation.tableName();
+            List<Field> fields = FieldUtils.getAllFieldsList(model).stream()
+                .filter(field -> !Modifier.isStatic(field.getModifiers()) && !field.isSynthetic()).toList();
+            fields.forEach(field -> field.setAccessible(true));
+            tableFields.put(table, fields);
+            tableModels.put(table, model);
+            modelTables.put(model, table);
+            ReportMetaData metadata = new ReportMetaData();
+            metadata.setClazz(model);
+            metadata.setClusterType(annotation.clusterType());
+            metadata.setReportName(annotation.reportName());
+            metadata.setTableName("eventmesh_dashboard." + table);
+            metadata.setComment(annotation.comment());
+            metadata.setReportViewType(annotation.defaultViewType());
+            this.createReportHandler(metadata, fields);
+        });
+        this.setClazzToTableName(modelTables);
     }
 
     @Override
@@ -76,32 +108,54 @@ public class RocketMQIotdbReportEngine extends IotDBReportEngine {
 
     @Override
     public void createReport(String tableName) {
-        requireSampleTable(tableName);
-        this.execute("create table if not exists eventmesh_dashboard.rocketmq_broker_sample ("
-            + "organization_id string tag, clusters_id string tag, runtime_id string tag, metric_id string tag, "
-            + "topic_key_id string tag, group_key_id string tag, queue_key_id string tag, window_id string tag, family_id string tag, "
-            + "value double field, value_long int64 field)");
+        if ("*".equals(tableName)) {
+            tableFields.keySet().forEach(this::createReport);
+            return;
+        }
+        requireModelTable(tableName);
+        this.execute(this.getReportMetaHandlerMap().get(tableName).createTable());
+        // Existing metric tables may predate the added measurements; add columns without changing historical rows.
+        try (Connection connection = this.sampleDataSource.getConnection(); Statement statement = connection.createStatement();
+            ResultSet columns = statement.executeQuery("describe eventmesh_dashboard." + tableName)) {
+            Set<String> existing = new HashSet<>();
+            while (columns.next()) {
+                existing.add(columns.getString(1).toLowerCase(java.util.Locale.ROOT));
+            }
+            for (Field field : tableFields.get(tableName)) {
+                String column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
+                if (!existing.contains(column)) {
+                    String type = field.getName().endsWith("Id") || field.getType() == String.class ? "string"
+                        : field.getType() == Float.class ? "float" : "int64";
+                    String category = field.getName().endsWith("Id") ? "tag"
+                        : field.getName().startsWith("value") ? "field" : "attribute";
+                    this.execute("alter table eventmesh_dashboard." + tableName + " add column if not exists "
+                        + column + " " + type + " " + category);
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Cannot extend report table " + tableName, e);
+        }
     }
 
     @Override
     public void batchInsert(String tableName, List<Object> rows) {
-        requireSampleTable(tableName);
-        insertBrokerSamples(rows);
+        requireModelTable(tableName);
+        insertReports(tableName, rows);
     }
 
     @Override
     public CompletableFuture<List<Map<String, Object>>> query(SingleGeneralReportDO query) {
-        requireSampleTable(query.getReportName());
+        requireModelTable(query.getReportName());
         try {
-            return CompletableFuture.supplyAsync(() -> queryBrokerSamples(query), sampleQueryExecutor);
+            return CompletableFuture.supplyAsync(() -> queryReports(query), sampleQueryExecutor);
         } catch (RuntimeException e) {
             return CompletableFuture.failedFuture(e);
         }
     }
 
-    private void requireSampleTable(String tableName) {
-        if (!"rocketmq_broker_sample".equals(tableName)) {
-            throw new IllegalArgumentException("This engine stores RocketMQ Broker samples only");
+    private void requireModelTable(String tableName) {
+        if (!tableFields.containsKey(tableName)) {
+            throw new IllegalArgumentException("Unknown RocketMQ report table: " + tableName);
         }
     }
 
@@ -113,50 +167,54 @@ public class RocketMQIotdbReportEngine extends IotDBReportEngine {
             return thread;
         }, new ThreadPoolExecutor.AbortPolicy());
 
-    private void insertBrokerSamples(List<Object> rows) {
-        // IoTDB 2.0.3 table writes use executeStatementV2; legacy JDBC executeBatch can acknowledge without inserting.
+    private void insertReports(String tableName, List<Object> rows) {
+        List<Field> fields = tableFields.get(tableName);
+        String columns = String.join(",", fields.stream()
+            .map(field -> CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName())).toList());
+        String tuple = "(" + String.join(",", Collections.nCopies(fields.size(), "?")) + ")";
+        // IoTDB table-aware execute is required; legacy JDBC executeBatch may acknowledge without storing rows.
         for (int start = 0; start < rows.size(); start += 256) {
             List<Object> batch = rows.subList(start, Math.min(rows.size(), start + 256));
-            String placeholders = String.join(",", Collections.nCopies(batch.size(), "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
-            String statementSql = "insert into eventmesh_dashboard.rocketmq_broker_sample (time, organization_id, clusters_id, runtime_id, "
-                + "metric_id, topic_key_id, group_key_id, queue_key_id, window_id, family_id, value, value_long) values " + placeholders;
+            String statementSql = "insert into eventmesh_dashboard." + tableName + " (" + columns + ") values "
+                + String.join(",", Collections.nCopies(batch.size(), tuple));
             try (Connection connection = this.sampleDataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(statementSql)) {
                 int index = 0;
-                for (Object object : batch) {
-                    RocketmqBrokerSample row = (RocketmqBrokerSample) object;
-                    statement.setLong(++index, row.getTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-                    statement.setString(++index, String.valueOf(row.getOrganizationId()));
-                    statement.setString(++index, String.valueOf(row.getClustersId()));
-                    statement.setString(++index, String.valueOf(row.getRuntimeId()));
-                    statement.setString(++index, row.getMetricId().replace("'", "''"));
-                    statement.setString(++index, row.getTopicKeyId().replace("'", "''"));
-                    statement.setString(++index, row.getGroupKeyId().replace("'", "''"));
-                    statement.setString(++index, row.getQueueKeyId().replace("'", "''"));
-                    statement.setString(++index, row.getWindowId().replace("'", "''"));
-                    statement.setString(++index, row.getFamilyId().replace("'", "''"));
-                    statement.setDouble(++index, row.getValue());
-                    if (row.getValueLong() == null) {
-                        statement.setNull(++index, Types.BIGINT);
-                    } else {
-                        statement.setLong(++index, row.getValueLong());
+                for (Object row : batch) {
+                    if (!tableModels.get(tableName).isInstance(row)) {
+                        throw new IllegalArgumentException("Report model does not match table " + tableName);
+                    }
+                    for (Field field : fields) {
+                        Object value = field.get(row);
+                        ++index;
+                        if (value == null) {
+                            statement.setNull(index, field.getType() == Long.class && !field.getName().endsWith("Id")
+                                ? Types.BIGINT : field.getType() == Float.class ? Types.FLOAT : Types.VARCHAR);
+                        } else if (value instanceof LocalDateTime time) {
+                            statement.setLong(index, time.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+                        } else if (field.getName().endsWith("Id") || value instanceof String) {
+                            statement.setString(index, value.toString().replace("'", "''"));
+                        } else {
+                            statement.setObject(index, value);
+                        }
                     }
                 }
                 statement.execute();
-            } catch (SQLException e) {
-                throw new IllegalStateException("IoTDB metric batch failed", e);
+            } catch (SQLException | IllegalAccessException e) {
+                throw new IllegalStateException("IoTDB report batch failed: " + tableName, e);
             }
         }
     }
 
-    private List<Map<String, Object>> queryBrokerSamples(SingleGeneralReportDO query) {
+    private List<Map<String, Object>> queryReports(SingleGeneralReportDO query) {
         if (query.getStartTime() == null || query.getEndTime() == null || !query.getStartTime().isBefore(query.getEndTime())) {
             throw new IllegalArgumentException("A valid metric time range is required");
         }
         if (query.getSelectFun() != null || query.getInterval() != null) {
-            throw new UnsupportedOperationException("Broker samples currently support raw observations only");
+            throw new UnsupportedOperationException("Reports currently support raw observations only");
         }
-        StringBuilder sqlBuilder = new StringBuilder("select * from eventmesh_dashboard.rocketmq_broker_sample where time >= ? and time < ?");
+        StringBuilder sqlBuilder = new StringBuilder("select * from eventmesh_dashboard.")
+            .append(query.getReportName()).append(" where time >= ? and time < ?");
         List<Object> args = new ArrayList<>();
         args.add(query.getStartTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         args.add(query.getEndTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());

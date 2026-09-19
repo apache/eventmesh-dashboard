@@ -48,7 +48,7 @@ public class RocketMQMetricsConfiguration {
         RocketMQIotdbReportEngine engine = new RocketMQIotdbReportEngine();
         engine.setReportEngineConfig(config);
         engine.init();
-        engine.createReport("rocketmq_broker_sample");
+        engine.createReport("*");
         return engine;
     }
 

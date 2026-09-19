@@ -30,6 +30,14 @@ import lombok.EqualsAndHashCode;
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_throughput_in_total",
     defaultViewType = ReportViewType.COUNTER, tableName = "rocketmq_throughput_in_total",
     comment = "消息生产流入服务端的吞吐量")
+/** Supplementary rate/position fields are gauges; unverified cumulative values remain null. */
 public class RocketmqThroughputInTotal extends SubscribeLongValue {
+
+
+    private String topicKeyId;
+
+    private String windowId;
+
+    private Float valueBytesRate;
 
 }

@@ -22,9 +22,20 @@ import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_storage_flush_behind_bytes",
     defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_storage_flush_behind_bytes",
-    comment = "刷盘落后大小")
+    comment = "Broker运行状态，value为刷盘积压字节")
 public class RocketmqStorageFlushBehindBytes extends RuntimeLongValue {
+
+    private Long valueReachable;
+
+    private Long valueStoredBytes;
+
+    private Long valueBootTimestamp;
 
 }

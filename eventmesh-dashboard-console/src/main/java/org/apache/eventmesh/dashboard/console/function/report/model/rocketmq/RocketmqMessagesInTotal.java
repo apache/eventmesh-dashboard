@@ -31,9 +31,22 @@ import lombok.EqualsAndHashCode;
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_messages_in_total",
     defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_messages_in_total",
     comment = "消息生产数量")
+/** Supplementary rate/position fields are gauges; unverified cumulative values remain null. */
 public class RocketmqMessagesInTotal extends TopicLongValue {
 
     private String messageType;
 
+
+
+    private String topicKeyId;
+
+    private String windowId;
+
+    private Float valueRate;
+
+    private Float valueRuntimeRate;
+
+
+    private Float valueBrokerRate;
 
 }

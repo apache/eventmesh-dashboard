@@ -31,7 +31,9 @@ import org.apache.eventmesh.dashboard.console.function.report.collect.AbstractCo
 import org.apache.eventmesh.dashboard.console.function.report.collect.CollectContext;
 import org.apache.eventmesh.dashboard.console.function.report.collect.DataSyncHandler.DataSyncHandlerWrapper;
 import org.apache.eventmesh.dashboard.console.function.report.collect.RestoreData;
-import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqBrokerSample;
+import org.apache.eventmesh.dashboard.console.function.report.collect.RocketMQMetricModels;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
+import org.apache.eventmesh.dashboard.console.mapstruct.report.RocketMQMetricMapper;
 import org.apache.eventmesh.dashboard.core.remoting.Remoting2Manage;
 import org.apache.eventmesh.dashboard.service.remoting.MetricsRemotingService;
 
@@ -114,7 +116,7 @@ public class RocketMQCollect extends AbstractCollect {
         String clusterName = this.getClusterMetadata().getName();
         String runtimeName = this.getRuntimeMetadata().getName();
         Map<String, CompletableFuture<List<MetricSample>>> families = service.collectAsync(context.getFamily(), context.getDeadlineMillis());
-        List<CompletableFuture<List<RocketmqBrokerSample>>> completed = new ArrayList<>();
+        List<CompletableFuture<List<RuntimeId>>> completed = new ArrayList<>();
         families.forEach((family, future) -> {
             long start = System.nanoTime();
             completed.add(future.orTimeout(Math.max(1, context.getDeadlineMillis() - System.currentTimeMillis()),
@@ -139,35 +141,17 @@ public class RocketMQCollect extends AbstractCollect {
                         observations.add(new MetricSample(
                             "collection_last_success_ms", "", "", "", "", lastSuccess.get(family)));
                     }
-                    List<RocketmqBrokerSample> rows =
-                        new ArrayList<>();
-                    for (MetricSample sample : observations) {
-                        RocketmqBrokerSample row =
-                            new RocketmqBrokerSample();
-                        row.setOrganizationId(organization);
-                        row.setClustersId(cluster);
-                        row.setClustersName(clusterName);
-                        row.setRuntimeId(runtime);
-                        row.setRuntimeName(runtimeName);
-                        row.setTime(context.getSampleTime());
-                        row.setMetricId(sample.getMetric());
-                        row.setTopicKeyId(sample.getTopic());
-                        row.setGroupKeyId(sample.getGroup());
-                        row.setQueueKeyId(sample.getQueue());
-                        row.setWindowId(sample.getWindow());
-                        row.setFamilyId(family);
-                        row.setValue(sample.getValue().doubleValue());
-                        if (sample.getValue() instanceof Long || sample.getValue() instanceof Integer) {
-                            row.setValueLong(sample.getValue().longValue());
-                        }
-                        rows.add(row);
+                    List<RuntimeId> rows = RocketMQMetricModels.toReports(observations, family);
+                    for (RuntimeId row : rows) {
+                        RocketMQMetricMapper.INSTANCE.fillMetadata(context, organization, cluster, clusterName,
+                            runtime, runtimeName, row);
                     }
                     return rows;
                 }, PROCESSING));
         });
         CompletableFuture<RestoreData> result =
             CompletableFuture.completedFuture(new RestoreData());
-        for (CompletableFuture<List<RocketmqBrokerSample>> family : completed) {
+        for (CompletableFuture<List<RuntimeId>> family : completed) {
             result = result.thenCombine(family, (data, rows) -> {
                 rows.forEach(data::setData);
                 return data;

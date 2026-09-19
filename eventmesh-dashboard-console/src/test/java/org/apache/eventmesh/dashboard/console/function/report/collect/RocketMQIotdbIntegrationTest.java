@@ -90,7 +90,7 @@ class RocketMQIotdbIntegrationTest {
         engineConfig.setEngineAddress(System.getProperty("iotdb.address", "127.0.0.1:6667"));
         engine.setReportEngineConfig(engineConfig);
         engine.init();
-        engine.createReport("rocketmq_broker_sample");
+        engine.createReport("*");
         ReportHandlerManage reports = new ReportHandlerManage();
         reports.setReportEngine(engine);
         org.springframework.context.annotation.AnnotationConfigApplicationContext collectionContext =
@@ -186,15 +186,19 @@ class RocketMQIotdbIntegrationTest {
                 MetricFamily.values())
                 .map(manager::collectAsync).toArray(CompletableFuture<?>[]::new)).get(15, TimeUnit.SECONDS);
             SingleGeneralReportDO query = new SingleGeneralReportDO();
-            query.setReportName("rocketmq_broker_sample");
             query.setReportType("gauge");
             query.setOrganizationId(cluster.getOrganizationId());
             query.setRuntimeId(runtime.getId());
             query.setStartTime(start);
             query.setEndTime(LocalDateTime.now().plusSeconds(1));
-            List<Map<String, Object>> rows = reports.queryResultIsMap(List.of(query)).get("gauge");
+            List<Map<String, Object>> rows = this.readReports(reports, query);
             this.logCollectedMetrics("正常实例", runtime.getId(), rows);
             Assertions.assertFalse(rows.isEmpty());
+            for (String table : List.of("rocketmq_topic_number", "rocketmq_consumer_group_number", "rocketmq_producer_offset",
+                "rocketmq_storage_flush_behind_bytes", "rocketmq_storage_dispatch_behind_bytes", "rocketmq_messages_in_total",
+                "rocketmq_messages_out_total", "rocketmq_throughput_in_total", "rocketmq_throughput_out_total")) {
+                Assertions.assertTrue(rows.stream().anyMatch(row -> table.equals(row.get("report_table"))), table);
+            }
             List<Map<String, Object>> offsets = rows.stream().filter(row -> "queue_max_offset".equals(row.get("metric_id"))
                 && topic.equals(row.get("topic_key_id"))).toList();
             Assertions.assertEquals(2, offsets.size(), rows.toString());
@@ -202,7 +206,10 @@ class RocketMQIotdbIntegrationTest {
             List<Map<String, Object>> lag = rows.stream().filter(row -> "offset_lag".equals(row.get("metric_id"))
                 && topic.equals(row.get("topic_key_id")) && topic.equals(row.get("group_key_id"))).toList();
             Assertions.assertEquals(2, lag.size());
-            lag.forEach(row -> Assertions.assertEquals(1L, ((Number) row.get("value_long")).longValue()));
+            lag.forEach(row -> {
+                Assertions.assertInstanceOf(Long.class, row.get("value"));
+                Assertions.assertEquals(1L, ((Number) row.get("value")).longValue());
+            });
             Assertions.assertTrue(rows.stream().anyMatch(row -> "topic_put_nums_tps".equals(row.get("metric_id"))
                 && topic.equals(row.get("topic_key_id"))));
             Assertions.assertTrue(rows.stream().anyMatch(row -> "connection_count".equals(row.get("metric_id"))
@@ -216,7 +223,7 @@ class RocketMQIotdbIntegrationTest {
             Assertions.assertTrue(rows.stream().filter(row -> "collection_failures".equals(row.get("metric_id")))
                 .allMatch(row -> ((Number) row.get("value")).doubleValue() == 0), rows.toString());
             query.setRuntimeId(unavailable.getId());
-            List<Map<String, Object>> missing = reports.queryResultIsMap(List.of(query)).get("gauge");
+            List<Map<String, Object>> missing = this.readReports(reports, query);
             this.logCollectedMetrics("不可达实例", unavailable.getId(), missing);
             Assertions.assertFalse(missing.isEmpty());
             Assertions.assertTrue(missing.stream().anyMatch(row -> "broker_reachable".equals(row.get("metric_id"))
@@ -239,6 +246,55 @@ class RocketMQIotdbIntegrationTest {
         }
     }
 
+    private List<Map<String, Object>> readReports(ReportHandlerManage reports, SingleGeneralReportDO query) {
+        List<Map<String, Object>> result = new java.util.ArrayList<>();
+        RocketMQMetricModels.models().forEach(factory -> {
+            Class<?> model = factory.get().getClass();
+            String table = RocketMQMetricModels.table(model);
+            query.setReportName(table);
+            List<Map<String, Object>> rows = reports.queryResultIsMap(List.of(query)).get("gauge");
+            log.info("【分表回读】实例={}，表={}，实际行数={}", query.getRuntimeId(), table, rows.size());
+            if ("rocketmq_messages_out_total".equals(table)) {
+                rows.stream().filter(row -> row.get("value_consumer_offset") != null).forEach(row -> {
+                    Assertions.assertNotNull(row.get("value_consumer_offset"));
+                    Assertions.assertNotNull(row.get("value_broker_offset"));
+                    Assertions.assertNotNull(row.get("value_offset_lag"));
+                    Assertions.assertNotNull(row.get("value_offset_negative"));
+                });
+            }
+            if ("rocketmq_producer_offset".equals(table)) {
+                rows.stream().filter(row -> row.get("value") != null).forEach(row -> {
+                    Assertions.assertNotNull(row.get("value"));
+                    Assertions.assertNotNull(row.get("value_min_offset"));
+                    Assertions.assertNotNull(row.get("value_last_update_time"));
+                });
+            }
+            if (List.of("rocketmq_messages_in_total", "rocketmq_messages_out_total",
+                "rocketmq_throughput_in_total", "rocketmq_throughput_out_total").contains(table)) {
+                rows.forEach(row -> Assertions.assertNull(row.get("value"), "Window rates must not populate cumulative values"));
+            }
+            rows.forEach(row -> RocketMQMetricModels.bindings().forEach((metric, binding) -> {
+                if (binding.factory().get().getClass() != model) {
+                    return;
+                }
+                String column = com.google.common.base.CaseFormat.LOWER_CAMEL.to(
+                    com.google.common.base.CaseFormat.LOWER_UNDERSCORE, binding.fieldName());
+                Object value = row.get(column);
+                if (value != null) {
+                    Map<String, Object> observation = new java.util.HashMap<>(row);
+                    observation.put("value", value);
+                    observation.put("metric_id", metric);
+                    observation.put("report_table", table);
+                    if ("broker_stored_bytes_total".equals(metric)) {
+                        observation.put("window_id", row.get("value_boot_timestamp"));
+                    }
+                    result.add(observation);
+                }
+            }));
+        });
+        return result;
+    }
+
     /** Print persisted observations, retaining exact integer values and every resource/window dimension. */
     private void logCollectedMetrics(String target, Long runtimeId, List<Map<String, Object>> rows) {
         List<String> metrics = rows.stream().map(row -> String.valueOf(row.get("metric_id"))).distinct().sorted().toList();
@@ -253,10 +309,11 @@ class RocketMQIotdbIntegrationTest {
             .thenComparing(row -> String.valueOf(row.get("window_id"))))
             .forEach(row -> {
                 String metric = String.valueOf(row.get("metric_id"));
-                Object value = row.get("value_long") == null ? row.get("value") : row.get("value_long");
-                log.info("【采集指标】目标={}，实例={}，采样时间={}，分类={}，指标={}（{}），Topic={}，Group={}，Queue={}，窗口={}，数值={}",
+                Object value = row.get("value");
+                log.info("【采集指标】目标={}，实例={}，采样时间={}，分类={}，指标={}（{}），表={}，Topic={}，Group={}，Queue={}，窗口={}，数值={}",
                     target, runtimeId, row.get("time"), row.get("family_id"), metric, this.metricDescription(metric),
-                    row.get("topic_key_id"), row.get("group_key_id"), row.get("queue_key_id"), row.get("window_id"), value);
+                    row.get("report_table"), row.get("topic_key_id"), row.get("group_key_id"), row.get("queue_key_id"),
+                    row.get("window_id"), value);
             });
         if ("不可达实例".equals(target)) {
             log.info("【失败隔离】实例={}：仅记录可达性和采集自监控；连接数、位点、速率缺失，不补零。", runtimeId);
