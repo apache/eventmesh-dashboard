@@ -18,8 +18,8 @@
 package org.apache.eventmesh.dashboard.console.mapstruct.report;
 
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset;
-import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerGroupNumber;
-import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqMessagesOutTotal;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerConnectionNumber;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerOffset;
 
 import org.apache.rocketmq.remoting.protocol.admin.OffsetWrapper;
 import org.apache.rocketmq.remoting.protocol.admin.TopicOffset;
@@ -29,7 +29,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-/** Converts Broker samples into existing reporting models without changing cumulative value semantics. */
+/** 将 Broker 采样转换为语义对应的报表模型，由模型注解指定目标表。 */
 @Mapper
 public interface RocketMQCollectMapper {
     RocketMQCollectMapper INSTANCE = Mappers.getMapper(RocketMQCollectMapper.class);
@@ -37,7 +37,7 @@ public interface RocketMQCollectMapper {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "groupKeyId", source = "group")
     @Mapping(target = "valueConnectionCount", source = "count")
-    RocketmqConsumerGroupNumber connections(String group, long count);
+    RocketmqConsumerConnectionNumber connections(String group, long count);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "topicKeyId", source = "topic")
@@ -64,6 +64,6 @@ public interface RocketMQCollectMapper {
     @Mapping(target = "valueConsumerOffset", source = "offset.consumerOffset")
     @Mapping(target = "valueBrokerOffset", source = "offset.brokerOffset")
     @Mapping(target = "valueOffsetLag", expression = "java(Math.max(0L, offset.getBrokerOffset() - offset.getConsumerOffset()))")
-    RocketmqMessagesOutTotal consumerOffset(String topic, String group, String queue, OffsetWrapper offset);
+    RocketmqConsumerOffset consumerOffset(String topic, String group, String queue, OffsetWrapper offset);
 
 }

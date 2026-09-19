@@ -19,6 +19,13 @@ package org.apache.eventmesh.dashboard.console.function.report.collect.exporter;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
+import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData;
+import org.apache.eventmesh.dashboard.console.function.report.iotdb.IotDBReportMetaHandler;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerConnectionNumber;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerOffset;
+import org.apache.eventmesh.dashboard.console.mapstruct.report.RocketMQCollectMapper;
 import org.apache.eventmesh.dashboard.core.function.SDK.ConfigManage;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKManage;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
@@ -60,6 +67,121 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 
 public class RocketMQCollectTest {
+    @Test
+    public void mapsConsumerSamplesToDedicatedModels() {
+        var offset = new org.apache.rocketmq.remoting.protocol.admin.OffsetWrapper();
+        offset.setBrokerOffset(9007199254740993L);
+        offset.setConsumerOffset(9007199254740991L);
+        RocketmqConsumerOffset row = RocketMQCollectMapper.INSTANCE.consumerOffset("orders", "buyers", "3", offset);
+        Assertions.assertEquals("orders", row.getTopicKeyId());
+        Assertions.assertEquals("orders", row.getTopicName());
+        Assertions.assertEquals("buyers", row.getGroupKeyId());
+        Assertions.assertEquals("buyers", row.getGroupName());
+        Assertions.assertEquals("3", row.getQueueKeyId());
+        Assertions.assertEquals(9007199254740993L, row.getValueBrokerOffset());
+        Assertions.assertEquals(9007199254740991L, row.getValueConsumerOffset());
+        Assertions.assertEquals(2L, row.getValueOffsetLag());
+        offset.setConsumerOffset(9007199254740994L);
+        Assertions.assertEquals(0L,
+            RocketMQCollectMapper.INSTANCE.consumerOffset("orders", "buyers", "3", offset).getValueOffsetLag());
+        RocketmqConsumerConnectionNumber connections = RocketMQCollectMapper.INSTANCE.connections("buyers", 2L);
+        Assertions.assertEquals("buyers", connections.getGroupKeyId());
+        Assertions.assertEquals(2L, connections.getValueConnectionCount());
+        Assertions.assertEquals(0L, RocketMQCollectMapper.INSTANCE.connections("buyers", 0L).getValueConnectionCount());
+    }
+
+    @Test
+    public void dedicatedModelsDescribeSeparateGaugeTables() {
+        assertReportTable(RocketmqConsumerOffset.class, "rocketmq_consumer_offset",
+            List.of("topic_key_id", "group_key_id", "queue_key_id"),
+            List.of("value_consumer_offset", "value_broker_offset", "value_offset_lag"));
+        assertReportTable(RocketmqConsumerConnectionNumber.class, "rocketmq_consumer_connection_number",
+            List.of("group_key_id"), List.of("value_connection_count"));
+    }
+
+    private void assertReportTable(Class<?> model, String table, List<String> tags, List<String> measurements) {
+        ReportMeta annotation = model.getAnnotation(ReportMeta.class);
+        Assertions.assertNotNull(annotation);
+        Assertions.assertEquals(table, annotation.tableName());
+        Assertions.assertEquals(table, annotation.reportName());
+        Assertions.assertEquals(ReportViewType.GAUGE, annotation.defaultViewType());
+        var metadata = new ReportMetaData();
+        metadata.setClazz(model);
+        metadata.setTableName(annotation.tableName());
+        metadata.setComment(annotation.comment());
+        var handler = new IotDBReportMetaHandler();
+        handler.setReportMeta(metadata);
+        handler.setFieldList(org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList(model));
+        String ddl = handler.createTable();
+        Assertions.assertTrue(ddl.startsWith("create table if not exists " + table + " "));
+        tags.forEach(tag -> Assertions.assertTrue(ddl.contains(tag + " string  tag"), ddl));
+        measurements.forEach(field -> Assertions.assertTrue(ddl.contains(field + " int64  field"), ddl));
+        Assertions.assertTrue(ddl.contains("runtime_id string  tag"), ddl);
+    }
+
+    @Test
+    public void handsConsumerSamplesToParentUnderDedicatedClasses() throws Exception {
+        DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
+        SDKManage sdk = Mockito.mock(SDKManage.class);
+        RuntimeMetadata runtime = runtime();
+        Mockito.when(sdk.getClient(SDKTypeEnum.ADMIN, runtime.getUnique())).thenReturn(client);
+        AtomicInteger connectionRequests = new AtomicInteger();
+        Mockito.doAnswer(invocation -> {
+            RemotingCommand request = invocation.getArgument(0);
+            InvokeCallback callback = invocation.getArgument(2);
+            byte[] body;
+            switch (request.getCode()) {
+                case RequestCode.GET_ALL_TOPIC_CONFIG:
+                    body = "{\"topicConfigTable\":{\"orders\":{},\"payments\":{}}}".getBytes(StandardCharsets.UTF_8);
+                    break;
+                case RequestCode.GET_TOPIC_STATS_INFO:
+                    body = RemotingSerializable.encode(new org.apache.rocketmq.remoting.protocol.admin.TopicStatsTable());
+                    break;
+                case RequestCode.QUERY_TOPIC_CONSUME_BY_WHO:
+                    body = "{\"groupList\":[\"buyers\"]}".getBytes(StandardCharsets.UTF_8);
+                    break;
+                case RequestCode.GET_CONSUMER_CONNECTION_LIST:
+                    connectionRequests.incrementAndGet();
+                    body = "{\"connectionSet\":[]}".getBytes(StandardCharsets.UTF_8);
+                    break;
+                case RequestCode.GET_CONSUME_STATS:
+                    var header = (org.apache.rocketmq.remoting.protocol.header.GetConsumeStatsRequestHeader) request.readCustomHeader();
+                    var stats = new org.apache.rocketmq.remoting.protocol.admin.ConsumeStats();
+                    var offset = new org.apache.rocketmq.remoting.protocol.admin.OffsetWrapper();
+                    offset.setBrokerOffset(3L);
+                    offset.setConsumerOffset(2L);
+                    stats.getOffsetTable().put(new org.apache.rocketmq.common.message.MessageQueue(header.getTopic(), "broker", 0), offset);
+                    body = RemotingSerializable.encode(stats);
+                    break;
+                default:
+                    throw new AssertionError("Unexpected request " + request.getCode());
+            }
+            reply(callback, ResponseCode.SUCCESS, body);
+            return null;
+        }).when(client).invokeAsync(Mockito.any(), Mockito.anyLong(), Mockito.any());
+        var wrapper = Mockito.mock(org.apache.eventmesh.dashboard.console.function.report.collect.DataSyncHandler.DataSyncHandlerWrapper.class);
+        try (var mocked = Mockito.mockStatic(SDKManage.class)) {
+            mocked.when(SDKManage::getInstance).thenReturn(sdk);
+            collector(runtime).collect(0, wrapper);
+        }
+        var capture = org.mockito.ArgumentCaptor.forClass(org.apache.eventmesh.dashboard.console.function.report.collect.RestoreData.class);
+        Mockito.verify(wrapper).sync(capture.capture());
+        var models = capture.getValue().getDataMap();
+        Assertions.assertEquals(Set.of(RocketmqConsumerOffset.class, RocketmqConsumerConnectionNumber.class,
+            org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class), models.keySet());
+        Assertions.assertEquals(2, models.get(RocketmqConsumerOffset.class).size());
+        models.get(RocketmqConsumerOffset.class).stream().map(RocketmqConsumerOffset.class::cast).forEach(row -> {
+            Assertions.assertEquals("buyers", row.getGroupKeyId());
+            Assertions.assertEquals(2L, row.getValueConsumerOffset());
+            Assertions.assertEquals(3L, row.getValueBrokerOffset());
+            Assertions.assertEquals(1L, row.getValueOffsetLag());
+            Assertions.assertEquals(runtime.getId(), row.getRuntimeId());
+            Assertions.assertEquals(7L, row.getOrganizationId());
+        });
+        Assertions.assertEquals(1, connectionRequests.get());
+        Assertions.assertEquals(1, models.get(RocketmqConsumerConnectionNumber.class).size());
+    }
+
     @Test
     public void waitsForNestedRequestsThenHandsModelsToParent() throws Exception {
         DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
@@ -217,6 +339,16 @@ public class RocketMQCollectTest {
     @Test
     public void collectsFromRealBrokerThroughCallbacks() throws Exception {
         Assumptions.assumeTrue(Boolean.getBoolean("rocketmq.collect.live"));
+        collectFromRealBroker(false);
+    }
+
+    @Test
+    public void collectsFromRealBrokerAndReadsBackIotdbTables() throws Exception {
+        Assumptions.assumeTrue(Boolean.getBoolean("rocketmq.collect.iotdb.live"));
+        collectFromRealBroker(true);
+    }
+
+    private void collectFromRealBroker(boolean verifyIotdb) throws Exception {
         RuntimeMetadata runtime = runtime();
         AbstractSimpleCreateSDKConfig config = ConfigManage.getInstance()
             .getSimpleCreateSdkConfig(runtime.getClusterType(), SDKTypeEnum.ADMIN);
@@ -291,9 +423,13 @@ public class RocketMQCollectTest {
             Assertions.assertTrue(positions.stream().map(row ->
                 (org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset) row)
                 .anyMatch(row -> topic.equals(row.getTopicKeyId()) && Long.valueOf(3).equals(row.getValue())));
-            var consumers = models.get(org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqMessagesOutTotal.class);
+            Assertions.assertTrue(models.containsKey(RocketmqConsumerConnectionNumber.class));
+            var connectionRows = models.get(RocketmqConsumerConnectionNumber.class);
+            Assertions.assertTrue(connectionRows.stream().map(RocketmqConsumerConnectionNumber.class::cast)
+                .anyMatch(row -> topic.equals(row.getGroupKeyId()) && row.getValueConnectionCount() > 0));
+            var consumers = models.get(org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerOffset.class);
             Assertions.assertTrue(consumers.stream().map(row ->
-                (org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqMessagesOutTotal) row)
+                (org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerOffset) row)
                 .anyMatch(row -> topic.equals(row.getTopicKeyId()) && topic.equals(row.getGroupKeyId())
                     && Long.valueOf(2).equals(row.getValueConsumerOffset()) && Long.valueOf(1).equals(row.getValueOffsetLag())));
             long deadline = System.currentTimeMillis() + 15000;
@@ -313,6 +449,9 @@ public class RocketMQCollectTest {
             Assertions.assertTrue(logs.messages.stream().anyMatch(message -> message.contains("指标=offset_lag")
                 && message.contains("Topic=" + topic) && message.endsWith("数值=1")));
             Assertions.assertFalse(logs.messages.stream().anyMatch(message -> message.contains("collection failed")), "Callback decoding failed");
+            if (verifyIotdb) {
+                verifyIotdbTables(models, runtime, topic);
+            }
         } finally {
             logger.detachAppender(logs);
             logs.stop();
@@ -326,6 +465,93 @@ public class RocketMQCollectTest {
             } finally {
                 real.shutdown();
                 SDKManage.getInstance().deleteClient(null, runtime.getUnique());
+            }
+        }
+    }
+
+    /** 使用真实报表引擎建表和写入，再通过独立 JDBC 连接读回本次采集的数据。 */
+    private void verifyIotdbTables(java.util.Map<Class<?>, List<Object>> models, RuntimeMetadata runtime, String topic) throws Exception {
+        var engine = new org.apache.eventmesh.dashboard.console.function.report.iotdb.IotDBReportEngine();
+        Class.forName("org.apache.iotdb.jdbc.IoTDBDriver");
+        String address = System.getProperty("rocketmq.collect.iotdb.address", "127.0.0.1:6667");
+        String database = "collect_test_" + java.util.UUID.randomUUID().toString().replace("-", "");
+        String url = "jdbc:iotdb://" + address + "/" + database + "?sql_dialect=table";
+        var tables = java.util.Map.<Class<?>, String>of(
+            RocketmqConsumerOffset.class, "rocketmq_consumer_offset",
+            RocketmqConsumerConnectionNumber.class, "rocketmq_consumer_connection_number");
+        engine.setClazzToTableName(tables);
+        try {
+            // 使用独立测试库，避免同名历史表结构影响测试；建表及写入仍调用现有报表引擎。
+            try (var connection = java.sql.DriverManager.getConnection(
+                "jdbc:iotdb://" + address + "/?sql_dialect=table", "root", "root");
+                var statement = connection.createStatement()) {
+                statement.execute("create database " + database);
+            }
+            var source = new com.alibaba.druid.pool.DruidDataSource();
+            org.apache.commons.lang3.reflect.FieldUtils.writeField(engine, "dataSource", source, true);
+            source.setUrl(url);
+            source.setDriverClassName("org.apache.iotdb.jdbc.IoTDBDriver");
+            source.setUsername("root");
+            source.setPassword("root");
+            source.setMaxActive(2);
+            source.setMaxWait(5000);
+            source.init();
+            for (var entry : tables.entrySet()) {
+                Class<?> model = entry.getKey();
+                ReportMeta annotation = model.getAnnotation(ReportMeta.class);
+                var metadata = new ReportMetaData();
+                metadata.setClazz(model);
+                metadata.setTableName(annotation.tableName());
+                metadata.setReportName(annotation.reportName());
+                metadata.setComment(annotation.comment());
+                var fields = org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList(model);
+                engine.createReportHandler(metadata, fields);
+                engine.createReport(entry.getValue());
+            }
+            var rows = new java.util.HashMap<Class<?>, List<Object>>();
+            rows.put(RocketmqConsumerOffset.class, models.get(RocketmqConsumerOffset.class).stream()
+                .filter(row -> topic.equals(((RocketmqConsumerOffset) row).getTopicKeyId())).toList());
+            rows.put(RocketmqConsumerConnectionNumber.class, models.get(RocketmqConsumerConnectionNumber.class).stream()
+                .filter(row -> topic.equals(((RocketmqConsumerConnectionNumber) row).getGroupKeyId())).toList());
+            Assertions.assertFalse(rows.get(RocketmqConsumerOffset.class).isEmpty());
+            Assertions.assertEquals(1, rows.get(RocketmqConsumerConnectionNumber.class).size());
+            engine.batchInsertByClass(rows);
+            try (var connection = java.sql.DriverManager.getConnection(
+                url, "root", "root");
+                var statement = connection.createStatement()) {
+                for (var entry : tables.entrySet()) {
+                    String sql = "select * from " + entry.getValue() + " where runtime_id = '" + runtime.getId() + "'";
+                    try (var result = statement.executeQuery(sql)) {
+                        int count = 0;
+                        boolean expectedSample = false;
+                        while (result.next()) {
+                            count++;
+                            Assertions.assertEquals("7", result.getString("organization_id"));
+                            Assertions.assertEquals(topic, result.getString("group_key_id"));
+                            Assertions.assertNotNull(result.getObject("time"));
+                            if (entry.getKey() == RocketmqConsumerOffset.class) {
+                                Assertions.assertEquals(topic, result.getString("topic_key_id"));
+                                expectedSample |= result.getLong("value_consumer_offset") == 2L
+                                    && result.getLong("value_broker_offset") == 3L && result.getLong("value_offset_lag") == 1L;
+                            } else {
+                                long expected = ((RocketmqConsumerConnectionNumber) rows.get(entry.getKey()).get(0)).getValueConnectionCount();
+                                Assertions.assertEquals(expected, result.getLong("value_connection_count"));
+                                expectedSample = expected > 0;
+                            }
+                        }
+                        Assertions.assertEquals(rows.get(entry.getKey()).size(), count, entry.getValue());
+                        Assertions.assertTrue(expectedSample, "Missing expected sample in " + entry.getValue());
+                        LoggerFactory.getLogger(RocketMQCollectTest.class).info(
+                            "IoTDB readback verified database={} table={} runtime={} topic={} rows={}",
+                            database, entry.getValue(), runtime.getId(), topic, count);
+                    }
+                }
+            }
+        } finally {
+            var source = (com.alibaba.druid.pool.DruidDataSource)
+                org.apache.commons.lang3.reflect.FieldUtils.readField(engine, "dataSource", true);
+            if (source != null) {
+                source.close();
             }
         }
     }
