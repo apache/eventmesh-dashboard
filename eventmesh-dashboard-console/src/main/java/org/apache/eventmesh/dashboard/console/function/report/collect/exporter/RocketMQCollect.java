@@ -82,111 +82,7 @@ public class RocketMQCollect extends AbstractCollect {
         }
         this.defaultRemotingClient = SDKManage.getInstance().getClient(SDKTypeEnum.ADMIN, this.runtimeUnique);
         CollectRound round = new CollectRound();
-        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ALL_TOPIC_CONFIG, null);
-        CollectCallback invokeCallback = new CollectCallback(round, request) {
-            @Override
-            protected void handleResponse(ResponseFuture responseFuture) {
-                TopicConfigSerializeWrapper topics =
-                    RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), TopicConfigSerializeWrapper.class);
-                Set<String> connectedGroups = ConcurrentHashMap.newKeySet();
-                for (String topic : topics.getTopicConfigTable().keySet()) {
-                    GetTopicStatsInfoRequestHeader topicHeader = new GetTopicStatsInfoRequestHeader();
-                    topicHeader.setTopic(topic);
-                    RemotingCommand topicRequest = RemotingCommand.createRequestCommand(RequestCode.GET_TOPIC_STATS_INFO, topicHeader);
-                    CollectCallback topicCallback = new CollectCallback(round, topicRequest) {
-                        @Override
-                        protected void handleResponse(ResponseFuture responseFuture) {
-                            TopicStatsTable stats =
-                                RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), TopicStatsTable.class);
-                            stats.getOffsetTable().forEach((queue, offset) -> {
-                                String queueId = String.valueOf(queue.getQueueId());
-                                round.rows.add(MAPPER.topicOffset(topic, queueId, offset));
-                                RocketMQCollect.this.metric("queue_min_offset", "队列最小位点", topic, "", queueId, offset.getMinOffset());
-                                RocketMQCollect.this.metric("queue_max_offset", "队列最大位点", topic, "", queueId, offset.getMaxOffset());
-                                RocketMQCollect.this.metric("queue_last_update_ms", "队列最后更新时间（毫秒）", topic, "", queueId,
-                                    offset.getLastUpdateTimestamp());
-                            });
-                            long min = stats.getOffsetTable().values().stream().mapToLong(offset -> offset.getMinOffset()).sum();
-                            long max = stats.getOffsetTable().values().stream().mapToLong(offset -> offset.getMaxOffset()).sum();
-                            long lastUpdate = stats.getOffsetTable().values().stream()
-                                .mapToLong(offset -> offset.getLastUpdateTimestamp()).max().orElse(0L);
-                            round.rows.add(MAPPER.aggregateOffset(topic, min, max, lastUpdate));
-                            RocketMQCollect.this.metric("topic_min_offset_sum", "Topic 最小位点之和", topic, "", "", min);
-                            RocketMQCollect.this.metric("topic_max_offset_sum", "Topic 最大位点之和", topic, "", "", max);
-                        }
-                    };
-                    executeSafely(topicCallback,
-                        () -> defaultRemotingClient.invokeAsync(topicRequest, topicCallback.timeoutMillis(), topicCallback));
-                    if (topic.startsWith(MixAll.DLQ_GROUP_TOPIC_PREFIX)) {
-                        continue;
-                    }
-                    QueryTopicConsumeByWhoRequestHeader groupHeader = new QueryTopicConsumeByWhoRequestHeader();
-                    groupHeader.setTopic(topic);
-                    RemotingCommand groupRequest = RemotingCommand.createRequestCommand(RequestCode.QUERY_TOPIC_CONSUME_BY_WHO, groupHeader);
-                    CollectCallback groupCallback = new CollectCallback(round, groupRequest) {
-                        @Override
-                        protected void handleResponse(ResponseFuture responseFuture) {
-                            GroupList groups = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), GroupList.class);
-                            for (String group : groups.getGroupList()) {
-                                if (connectedGroups.add(group)) {
-                                    GetConsumerConnectionListRequestHeader connectionHeader = new GetConsumerConnectionListRequestHeader();
-                                    connectionHeader.setConsumerGroup(group);
-                                    RemotingCommand connectionRequest = RemotingCommand.createRequestCommand(
-                                        RequestCode.GET_CONSUMER_CONNECTION_LIST, connectionHeader);
-                                    CollectCallback connectionCallback = new CollectCallback(round, connectionRequest) {
-                                        @Override
-                                        protected void handleResponse(ResponseFuture responseFuture) {
-                                            ConsumerConnection connections = RemotingSerializable.decode(
-                                                responseFuture.getResponseCommand().getBody(), ConsumerConnection.class);
-                                            round.rows.add(MAPPER.connections(group, connections.getConnectionSet().size()));
-                                            RocketMQCollect.this.metric("consumer_connection_count", "消费组连接数", "", group, "",
-                                                connections.getConnectionSet().size());
-                                            connections.getConnectionSet().forEach(connection -> log.info(
-                                                "RocketMQ connection runtime={} group={} clientId={} address={} language={} version={}",
-                                                runtimeUnique, group, connection.getClientId(), connection.getClientAddr(),
-                                                connection.getLanguage(), connection.getVersion()));
-                                        }
-                                    };
-                                    executeSafely(connectionCallback,
-                                        () -> defaultRemotingClient.invokeAsync(
-                                            connectionRequest, connectionCallback.timeoutMillis(), connectionCallback));
-                                }
-                                GetConsumeStatsRequestHeader consumeHeader = new GetConsumeStatsRequestHeader();
-                                consumeHeader.setTopic(topic);
-                                consumeHeader.setConsumerGroup(group);
-                                RemotingCommand consumeRequest = RemotingCommand.createRequestCommand(RequestCode.GET_CONSUME_STATS, consumeHeader);
-                                CollectCallback consumeCallback = new CollectCallback(round, consumeRequest) {
-                                    @Override
-                                    protected void handleResponse(ResponseFuture responseFuture) {
-                                        ConsumeStats stats = RemotingSerializable.decode(
-                                            responseFuture.getResponseCommand().getBody(), ConsumeStats.class);
-                                        stats.getOffsetTable().forEach((queue, offset) -> {
-                                            if (!topic.equals(queue.getTopic())) {
-                                                return;
-                                            }
-                                            String queueId = String.valueOf(queue.getQueueId());
-                                            round.rows.add(MAPPER.consumerOffset(topic, group, queueId, offset));
-                                            RocketMQCollect.this.metric("consumer_offset", "消费组已提交位点", topic, group, queueId,
-                                                offset.getConsumerOffset());
-                                            RocketMQCollect.this.metric("broker_offset", "Broker 位点", topic, group, queueId,
-                                                offset.getBrokerOffset());
-                                            RocketMQCollect.this.metric("offset_lag", "消费位点差", topic, group, queueId,
-                                                Math.max(0L, offset.getBrokerOffset() - offset.getConsumerOffset()));
-                                        });
-                                    }
-                                };
-                                executeSafely(consumeCallback,
-                                    () -> defaultRemotingClient.invokeAsync(consumeRequest, consumeCallback.timeoutMillis(), consumeCallback));
-                            }
-                        }
-                    };
-                    executeSafely(groupCallback,
-                        () -> defaultRemotingClient.invokeAsync(groupRequest, groupCallback.timeoutMillis(), groupCallback));
-                }
-            }
-        };
-        executeSafely(invokeCallback,
-            () -> this.defaultRemotingClient.invokeAsync(request, invokeCallback.timeoutMillis(), invokeCallback));
+        this.collectTopics(round);
         int phase = round.pending.arriveAndDeregister();
         try {
             round.pending.awaitAdvanceInterruptibly(phase, Math.max(1, round.deadline - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
@@ -205,6 +101,132 @@ public class RocketMQCollect extends AbstractCollect {
             row.setTime(round.sampleTime);
             this.setData(row);
         });
+    }
+
+    private void collectTopics(CollectRound round) {
+        RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ALL_TOPIC_CONFIG, null);
+        CollectCallback invokeCallback = new CollectCallback(round, request) {
+            @Override
+            protected void handleResponse(ResponseFuture responseFuture) {
+                TopicConfigSerializeWrapper topics =
+                    RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), TopicConfigSerializeWrapper.class);
+                for (String topic : topics.getTopicConfigTable().keySet()) {
+                    collectTopic(round, topic);
+                }
+            }
+        };
+        executeSafely(invokeCallback,
+            () -> this.defaultRemotingClient.invokeAsync(request, invokeCallback.timeoutMillis(), invokeCallback));
+    }
+
+    private void collectTopic(CollectRound round, String topic) {
+        this.collectTopicStats(round, topic);
+        if (!topic.startsWith(MixAll.DLQ_GROUP_TOPIC_PREFIX)) {
+            this.collectGroups(round, topic);
+        }
+    }
+
+    private void collectTopicStats(CollectRound round, String topic) {
+        GetTopicStatsInfoRequestHeader topicHeader = new GetTopicStatsInfoRequestHeader();
+        topicHeader.setTopic(topic);
+        RemotingCommand topicRequest = RemotingCommand.createRequestCommand(RequestCode.GET_TOPIC_STATS_INFO, topicHeader);
+        CollectCallback topicCallback = new CollectCallback(round, topicRequest) {
+            @Override
+            protected void handleResponse(ResponseFuture responseFuture) {
+                TopicStatsTable stats =
+                    RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), TopicStatsTable.class);
+                stats.getOffsetTable().forEach((queue, offset) -> {
+                    String queueId = String.valueOf(queue.getQueueId());
+                    round.rows.add(MAPPER.topicOffset(topic, queueId, offset));
+                    RocketMQCollect.this.metric("queue_min_offset", "队列最小位点", topic, "", queueId, offset.getMinOffset());
+                    RocketMQCollect.this.metric("queue_max_offset", "队列最大位点", topic, "", queueId, offset.getMaxOffset());
+                    RocketMQCollect.this.metric("queue_last_update_ms", "队列最后更新时间（毫秒）", topic, "", queueId,
+                        offset.getLastUpdateTimestamp());
+                });
+                long min = stats.getOffsetTable().values().stream().mapToLong(offset -> offset.getMinOffset()).sum();
+                long max = stats.getOffsetTable().values().stream().mapToLong(offset -> offset.getMaxOffset()).sum();
+                long lastUpdate = stats.getOffsetTable().values().stream()
+                    .mapToLong(offset -> offset.getLastUpdateTimestamp()).max().orElse(0L);
+                round.rows.add(MAPPER.aggregateOffset(topic, min, max, lastUpdate));
+                RocketMQCollect.this.metric("topic_min_offset_sum", "Topic 最小位点之和", topic, "", "", min);
+                RocketMQCollect.this.metric("topic_max_offset_sum", "Topic 最大位点之和", topic, "", "", max);
+            }
+        };
+        executeSafely(topicCallback,
+            () -> defaultRemotingClient.invokeAsync(topicRequest, topicCallback.timeoutMillis(), topicCallback));
+    }
+
+    private void collectGroups(CollectRound round, String topic) {
+        QueryTopicConsumeByWhoRequestHeader groupHeader = new QueryTopicConsumeByWhoRequestHeader();
+        groupHeader.setTopic(topic);
+        RemotingCommand groupRequest = RemotingCommand.createRequestCommand(RequestCode.QUERY_TOPIC_CONSUME_BY_WHO, groupHeader);
+        CollectCallback groupCallback = new CollectCallback(round, groupRequest) {
+            @Override
+            protected void handleResponse(ResponseFuture responseFuture) {
+                GroupList groups = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), GroupList.class);
+                for (String group : groups.getGroupList()) {
+                    if (round.connectedGroups.add(group)) {
+                        collectConnections(round, group);
+                    }
+                    collectConsumeStats(round, topic, group);
+                }
+            }
+        };
+        executeSafely(groupCallback,
+            () -> defaultRemotingClient.invokeAsync(groupRequest, groupCallback.timeoutMillis(), groupCallback));
+    }
+
+    private void collectConnections(CollectRound round, String group) {
+        GetConsumerConnectionListRequestHeader connectionHeader = new GetConsumerConnectionListRequestHeader();
+        connectionHeader.setConsumerGroup(group);
+        RemotingCommand connectionRequest = RemotingCommand.createRequestCommand(
+            RequestCode.GET_CONSUMER_CONNECTION_LIST, connectionHeader);
+        CollectCallback connectionCallback = new CollectCallback(round, connectionRequest) {
+            @Override
+            protected void handleResponse(ResponseFuture responseFuture) {
+                ConsumerConnection connections = RemotingSerializable.decode(
+                    responseFuture.getResponseCommand().getBody(), ConsumerConnection.class);
+                round.rows.add(MAPPER.connections(group, connections.getConnectionSet().size()));
+                RocketMQCollect.this.metric("consumer_connection_count", "消费组连接数", "", group, "",
+                    connections.getConnectionSet().size());
+                connections.getConnectionSet().forEach(connection -> log.info(
+                    "RocketMQ connection runtime={} group={} clientId={} address={} language={} version={}",
+                    runtimeUnique, group, connection.getClientId(), connection.getClientAddr(),
+                    connection.getLanguage(), connection.getVersion()));
+            }
+        };
+        executeSafely(connectionCallback,
+            () -> defaultRemotingClient.invokeAsync(
+                connectionRequest, connectionCallback.timeoutMillis(), connectionCallback));
+    }
+
+    private void collectConsumeStats(CollectRound round, String topic, String group) {
+        GetConsumeStatsRequestHeader consumeHeader = new GetConsumeStatsRequestHeader();
+        consumeHeader.setTopic(topic);
+        consumeHeader.setConsumerGroup(group);
+        RemotingCommand consumeRequest = RemotingCommand.createRequestCommand(RequestCode.GET_CONSUME_STATS, consumeHeader);
+        CollectCallback consumeCallback = new CollectCallback(round, consumeRequest) {
+            @Override
+            protected void handleResponse(ResponseFuture responseFuture) {
+                ConsumeStats stats = RemotingSerializable.decode(
+                    responseFuture.getResponseCommand().getBody(), ConsumeStats.class);
+                stats.getOffsetTable().forEach((queue, offset) -> {
+                    if (!topic.equals(queue.getTopic())) {
+                        return;
+                    }
+                    String queueId = String.valueOf(queue.getQueueId());
+                    round.rows.add(MAPPER.consumerOffset(topic, group, queueId, offset));
+                    RocketMQCollect.this.metric("consumer_offset", "消费组已提交位点", topic, group, queueId,
+                        offset.getConsumerOffset());
+                    RocketMQCollect.this.metric("broker_offset", "Broker 位点", topic, group, queueId,
+                        offset.getBrokerOffset());
+                    RocketMQCollect.this.metric("offset_lag", "消费位点差", topic, group, queueId,
+                        Math.max(0L, offset.getBrokerOffset() - offset.getConsumerOffset()));
+                });
+            }
+        };
+        executeSafely(consumeCallback,
+            () -> defaultRemotingClient.invokeAsync(consumeRequest, consumeCallback.timeoutMillis(), consumeCallback));
     }
 
     private static void executeSafely(InvokeCallback callback, RequestAction action) {
@@ -298,6 +320,7 @@ public class RocketMQCollect extends AbstractCollect {
 
     private static class CollectRound {
         private final Phaser pending = new Phaser(1);
+        private final Set<String> connectedGroups = ConcurrentHashMap.newKeySet();
         private final long deadline = System.currentTimeMillis() + 4000;
         private final LocalDateTime sampleTime = LocalDateTime.now();
         private final Queue<OrganizationId> rows = new ConcurrentLinkedQueue<>();
