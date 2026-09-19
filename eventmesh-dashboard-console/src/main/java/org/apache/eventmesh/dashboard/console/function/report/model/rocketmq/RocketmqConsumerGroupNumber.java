@@ -32,5 +32,8 @@ import lombok.EqualsAndHashCode;
     comment = "消费者组数量")
 public class RocketmqConsumerGroupNumber extends RuntimeLongValue {
 
-}
+    private String groupKeyId;
 
+    private Long valueConnectionCount;
+
+}

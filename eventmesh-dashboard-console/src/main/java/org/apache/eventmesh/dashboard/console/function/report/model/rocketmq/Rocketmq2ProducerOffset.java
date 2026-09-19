@@ -28,8 +28,20 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_producer_offset",
-    defaultViewType = ReportViewType.HISTOGRAM, tableName = "rocketmq_producer_offset",
+    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_producer_offset",
     comment = "topic offset")
 public class Rocketmq2ProducerOffset extends RuntimeLongValue {
+
+    private String topicKeyId;
+
+    private String queueKeyId;
+
+    private Long valueMinOffset;
+
+    private Long valueLastUpdateTime;
+
+    private Long valueMinOffsetSum;
+
+    private Long valueMaxOffsetSum;
 
 }
