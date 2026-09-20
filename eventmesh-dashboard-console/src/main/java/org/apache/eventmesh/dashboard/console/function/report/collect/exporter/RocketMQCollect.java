@@ -47,10 +47,11 @@ import org.apache.rocketmq.remoting.protocol.header.QueryTopicConsumeByWhoReques
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Phaser;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.Setter;
 
@@ -89,22 +90,20 @@ public class RocketMQCollect extends AbstractCollect {
      */
     private class TopicCollect {
         private final DefaultRemotingClient client = defaultRemotingClient;
-        private final Phaser pending = new Phaser(1);
+        private final AtomicInteger pending = new AtomicInteger();
+        private final CountDownLatch completed = new CountDownLatch(1);
         private final Set<String> connectedGroups = ConcurrentHashMap.newKeySet();
         private final long deadline = System.currentTimeMillis() + 4000;
         private final LocalDateTime sampleTime = LocalDateTime.now();
-        private boolean closed;
+        private volatile boolean closed;
 
         private void collect() {
             try {
                 this.collectTopics();
-                int phase = this.pending.arriveAndDeregister();
-                this.pending.awaitAdvanceInterruptibly(phase,
-                    Math.max(1, this.deadline - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
+                // 所有请求完成时计数归零并唤醒；超时则保留已采集的数据。
+                this.completed.await(Math.max(1, this.deadline - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            } catch (TimeoutException e) {
-                // 超时后保留已交付的指标，finally 关闭本轮以拒绝迟到响应。
             } finally {
                 this.close();
             }
@@ -121,7 +120,6 @@ public class RocketMQCollect extends AbstractCollect {
 
         private synchronized void close() {
             this.closed = true;
-            this.pending.forceTermination();
         }
 
         private void collectTopics() {
@@ -277,15 +275,15 @@ public class RocketMQCollect extends AbstractCollect {
         /** 统一处理请求发送、响应校验、异常和完成计数，具体响应由各采集回调解析。 */
         private abstract class CollectCallback implements InvokeCallback {
             private final RemotingCommand request;
-            private final boolean registered;
             private final AtomicBoolean finished = new AtomicBoolean();
 
             private CollectCallback(RemotingCommand request) {
                 this.request = request;
-                this.registered = TopicCollect.this.pending.register() >= 0;
+                // 请求发送前 +1；子请求先计数，父请求处理结束后才 -1。
+                TopicCollect.this.pending.incrementAndGet();
             }
 
-            // 所有请求共用发送异常处理；构造时已注册计数，响应处理结束后统一注销。
+            // 发送异常也进入失败回调，每个请求只扣减一次。
             protected final void execute() {
                 executeSafely(this,
                     () -> client.invokeAsync(this.request, this.timeoutMillis(), this));
@@ -293,7 +291,7 @@ public class RocketMQCollect extends AbstractCollect {
 
             private long timeoutMillis() throws TimeoutException {
                 long remaining = TopicCollect.this.deadline - System.currentTimeMillis();
-                if (!this.registered || TopicCollect.this.pending.isTerminated() || remaining <= 0) {
+                if (TopicCollect.this.closed || remaining <= 0) {
                     throw new TimeoutException("RocketMQ collection deadline reached");
                 }
                 return Math.min(3000, remaining);
@@ -305,7 +303,7 @@ public class RocketMQCollect extends AbstractCollect {
                     return;
                 }
                 try {
-                    if (TopicCollect.this.pending.isTerminated()) {
+                    if (TopicCollect.this.closed) {
                         return;
                     }
                     RemotingCommand response = responseFuture.getResponseCommand();
@@ -342,8 +340,9 @@ public class RocketMQCollect extends AbstractCollect {
             }
 
             private void completeRequest() {
-                if (this.registered) {
-                    TopicCollect.this.pending.arriveAndDeregister();
+                // 成功、失败都 -1；finished 防止重复回调重复扣减。
+                if (TopicCollect.this.pending.decrementAndGet() == 0) {
+                    TopicCollect.this.completed.countDown();
                 }
             }
 

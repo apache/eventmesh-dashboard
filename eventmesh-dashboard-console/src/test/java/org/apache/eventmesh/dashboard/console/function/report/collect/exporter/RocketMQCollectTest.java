@@ -520,7 +520,10 @@ public class RocketMQCollectTest {
         var engine = new org.apache.eventmesh.dashboard.console.function.report.iotdb.IotDBReportEngine();
         Class.forName("org.apache.iotdb.jdbc.IoTDBDriver");
         String address = System.getProperty("rocketmq.collect.iotdb.address", "127.0.0.1:6667");
-        String database = "collect_test_" + java.util.UUID.randomUUID().toString().replace("-", "");
+        String configuredDatabase = System.getProperty("rocketmq.collect.iotdb.database");
+        String database = configuredDatabase == null
+            ? "collect_test_" + java.util.UUID.randomUUID().toString().replace("-", "") : configuredDatabase;
+        Assertions.assertTrue(database.matches("collect_test_[a-z0-9_]+"), "Use a dedicated collection test database");
         String url = "jdbc:iotdb://" + address + "/" + database + "?sql_dialect=table";
         var tables = java.util.Map.<Class<?>, String>of(
             RocketmqConsumerOffset.class, "rocketmq_consumer_offset",
@@ -531,7 +534,7 @@ public class RocketMQCollectTest {
             try (var connection = java.sql.DriverManager.getConnection(
                 "jdbc:iotdb://" + address + "/?sql_dialect=table", "root", "root");
                 var statement = connection.createStatement()) {
-                statement.execute("create database " + database);
+                statement.execute("create database if not exists " + database);
             }
             var source = new com.alibaba.druid.pool.DruidDataSource();
             org.apache.commons.lang3.reflect.FieldUtils.writeField(engine, "dataSource", source, true);
@@ -598,6 +601,13 @@ public class RocketMQCollectTest {
                 org.apache.commons.lang3.reflect.FieldUtils.readField(engine, "dataSource", true);
             if (source != null) {
                 source.close();
+            }
+            if (configuredDatabase == null) {
+                try (var connection = java.sql.DriverManager.getConnection(
+                    "jdbc:iotdb://" + address + "/?sql_dialect=table", "root", "root");
+                    var statement = connection.createStatement()) {
+                    statement.execute("drop database if exists " + database);
+                }
             }
         }
     }
