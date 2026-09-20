@@ -87,7 +87,7 @@ class RocketMQOffsetIntegrationTest {
             ConfigManage.getInstance().getSimpleCreateSdkConfig(runtime.getClusterType(), SDKTypeEnum.ADMIN);
         NetAddress address = new NetAddress();
         address.setAddress(System.getProperty("rocketmq.broker.host", "127.0.0.1"));
-        address.setPort(Integer.getInteger("rocketmq.broker.port", 20911));
+        address.setPort(Integer.getInteger("rocketmq.broker.port", 21911));
         config.setNetAddress(address);
         SDKManage.getInstance().createClient(SDKTypeEnum.ADMIN, runtime, config, runtime.getClusterType());
         client = SDKManage.getInstance().getClient(SDKTypeEnum.ADMIN, runtime.getUnique());
