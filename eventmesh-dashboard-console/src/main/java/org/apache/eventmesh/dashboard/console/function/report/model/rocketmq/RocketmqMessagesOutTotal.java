@@ -38,4 +38,16 @@ public class RocketmqMessagesOutTotal extends SubscribeId {
 
     private Long maxOffset;
 
+    private String topicKeyId;
+
+    private String groupKeyId;
+
+    private String queueKeyId;
+
+    private Long valueConsumerOffset;
+
+    private Long valueBrokerOffset;
+
+    private Long valueOffsetLag;
+
 }

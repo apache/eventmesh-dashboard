@@ -20,19 +20,21 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportTag;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_consumer_group_number",
-    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_consumer_group_number",
-    comment = "消费者组数量")
-public class RocketmqConsumerGroupNumber extends RuntimeLongValue {
+@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_consumer_connection_number",
+    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_consumer_connection_number",
+    comment = "消费组在当前 Broker 上的连接数")
+public class RocketmqConsumerConnectionNumber extends RuntimeId {
 
-    private String groupKeyId;
+    @ReportTag
+    private String groupName;
 
     private Long valueConnectionCount;
 

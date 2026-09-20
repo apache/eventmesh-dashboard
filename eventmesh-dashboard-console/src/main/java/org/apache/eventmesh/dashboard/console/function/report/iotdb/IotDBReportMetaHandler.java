@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.function.report.iotdb;
 
 import org.apache.eventmesh.dashboard.console.function.report.annotation.AbstractReportMetaHandler;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportTag;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
@@ -155,7 +156,7 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
 
             if (Objects.equals(filedName, "time")) {
                 stringBuilder.append(" time");
-            } else if (filedName.endsWith("Id")) {
+            } else if (filedName.endsWith("Id") || field.isAnnotationPresent(ReportTag.class)) {
                 stringBuilder.append(" tag");
             } else if (filedName.startsWith("value") || field.getDeclaringClass() == this.reportMeta.getClazz()) {
                 stringBuilder.append(" field");
