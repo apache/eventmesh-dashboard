@@ -18,7 +18,6 @@
 package org.apache.eventmesh.dashboard.console.spring.support;
 
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
-import org.apache.eventmesh.dashboard.console.entity.base.BaseClusterIdEntity;
 import org.apache.eventmesh.dashboard.core.metadata.SyncMetadataCreateFactory;
 import org.apache.eventmesh.dashboard.core.remoting.RemotingServiceHandler;
 import org.apache.eventmesh.dashboard.core.remoting.jvm.AbstractJvmService;
