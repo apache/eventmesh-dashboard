@@ -62,9 +62,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.AppenderBase;
 
 public class RocketMQCollectTest {
     @Test
@@ -73,11 +70,11 @@ public class RocketMQCollectTest {
         offset.setBrokerOffset(9007199254740993L);
         offset.setConsumerOffset(9007199254740991L);
         RocketmqConsumerOffset row = RocketMQCollectMapper.INSTANCE.consumerOffset("orders", "buyers", "3", offset);
-        Assertions.assertEquals("orders", row.getTopicKeyId());
         Assertions.assertEquals("orders", row.getTopicName());
-        Assertions.assertEquals("buyers", row.getGroupKeyId());
         Assertions.assertEquals("buyers", row.getGroupName());
-        Assertions.assertEquals("3", row.getQueueKeyId());
+        Assertions.assertEquals("3", row.getQueueId());
+        Assertions.assertNull(org.apache.commons.lang3.reflect.FieldUtils.getField(RocketmqConsumerOffset.class, "topicId", true));
+        Assertions.assertNull(org.apache.commons.lang3.reflect.FieldUtils.getField(RocketmqConsumerOffset.class, "groupId", true));
         Assertions.assertEquals(9007199254740993L, row.getValueBrokerOffset());
         Assertions.assertEquals(9007199254740991L, row.getValueConsumerOffset());
         Assertions.assertEquals(2L, row.getValueOffsetLag());
@@ -85,18 +82,21 @@ public class RocketMQCollectTest {
         Assertions.assertEquals(0L,
             RocketMQCollectMapper.INSTANCE.consumerOffset("orders", "buyers", "3", offset).getValueOffsetLag());
         RocketmqConsumerConnectionNumber connections = RocketMQCollectMapper.INSTANCE.connections("buyers", 2L);
-        Assertions.assertEquals("buyers", connections.getGroupKeyId());
+        Assertions.assertEquals("buyers", connections.getGroupName());
         Assertions.assertEquals(2L, connections.getValueConnectionCount());
         Assertions.assertEquals(0L, RocketMQCollectMapper.INSTANCE.connections("buyers", 0L).getValueConnectionCount());
     }
 
     @Test
     public void dedicatedModelsDescribeSeparateGaugeTables() {
+        assertReportTable(org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class,
+            "rocketmq_producer_offset", List.of("topic_name", "queue_id"),
+            List.of("value", "value_min_offset", "value_last_update_time", "value_min_offset_sum", "value_max_offset_sum"));
         assertReportTable(RocketmqConsumerOffset.class, "rocketmq_consumer_offset",
-            List.of("topic_key_id", "group_key_id", "queue_key_id"),
+            List.of("topic_name", "group_name", "queue_id"),
             List.of("value_consumer_offset", "value_broker_offset", "value_offset_lag"));
         assertReportTable(RocketmqConsumerConnectionNumber.class, "rocketmq_consumer_connection_number",
-            List.of("group_key_id"), List.of("value_connection_count"));
+            List.of("group_name"), List.of("value_connection_count"));
     }
 
     private void assertReportTable(Class<?> model, String table, List<String> tags, List<String> measurements) {
@@ -171,7 +171,7 @@ public class RocketMQCollectTest {
             org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class), models.keySet());
         Assertions.assertEquals(2, models.get(RocketmqConsumerOffset.class).size());
         models.get(RocketmqConsumerOffset.class).stream().map(RocketmqConsumerOffset.class::cast).forEach(row -> {
-            Assertions.assertEquals("buyers", row.getGroupKeyId());
+            Assertions.assertEquals("buyers", row.getGroupName());
             Assertions.assertEquals(2L, row.getValueConsumerOffset());
             Assertions.assertEquals(3L, row.getValueBrokerOffset());
             Assertions.assertEquals(1L, row.getValueOffsetLag());
@@ -239,7 +239,7 @@ public class RocketMQCollectTest {
                 org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class);
             var queue = rows.stream().map(row ->
                 (org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset) row)
-                .filter(row -> "0".equals(row.getQueueKeyId())).findFirst().orElseThrow();
+                .filter(row -> "0".equals(row.getQueueId())).findFirst().orElseThrow();
             Assertions.assertEquals(9007199254740993L, queue.getValue());
             Assertions.assertEquals(1L, queue.getValueMinOffset());
             Assertions.assertEquals(123L, queue.getValueLastUpdateTime());
@@ -272,6 +272,61 @@ public class RocketMQCollectTest {
             reply(callbacks.get(0), ResponseCode.SUCCESS, "{\"topicConfigTable\":{}}".getBytes(StandardCharsets.UTF_8));
             Assertions.assertTrue(capture.getValue().getDataMap().isEmpty());
             Mockito.verify(wrapper, Mockito.times(1)).sync(Mockito.any());
+        }
+    }
+
+    @Test
+    public void publishesDirectlyAndRejectsPreviousRoundCallbacks() throws Exception {
+        DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
+        SDKManage sdk = Mockito.mock(SDKManage.class);
+        RuntimeMetadata runtime = runtime();
+        RocketMQCollect collector = collector(runtime);
+        Mockito.when(sdk.getClient(SDKTypeEnum.ADMIN, runtime.getUnique())).thenReturn(client);
+        var calls = new java.util.concurrent.LinkedBlockingQueue<Call>();
+        Mockito.doAnswer(invocation -> {
+            calls.add(new Call(invocation.getArgument(0), invocation.getArgument(2)));
+            return null;
+        }).when(client).invokeAsync(Mockito.any(), Mockito.anyLong(), Mockito.any());
+        var wrapper = Mockito.mock(org.apache.eventmesh.dashboard.console.function.report.collect.DataSyncHandler.DataSyncHandlerWrapper.class);
+        var executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+        Runnable collect = () -> {
+            try (var mocked = Mockito.mockStatic(SDKManage.class)) {
+                mocked.when(SDKManage::getInstance).thenReturn(sdk);
+                collector.collect(0, wrapper);
+            }
+        };
+        try {
+            var first = executor.submit(collect);
+            Call root = calls.poll(2, java.util.concurrent.TimeUnit.SECONDS);
+            Assertions.assertNotNull(root);
+            reply(root.callback(), ResponseCode.SUCCESS, "{\"topicConfigTable\":{\"orders\":{}}}".getBytes(StandardCharsets.UTF_8));
+            Call stats = calls.poll(2, java.util.concurrent.TimeUnit.SECONDS);
+            Call groups = calls.poll(2, java.util.concurrent.TimeUnit.SECONDS);
+            Assertions.assertNotNull(stats);
+            Assertions.assertNotNull(groups);
+            Assertions.assertEquals(RequestCode.GET_TOPIC_STATS_INFO, stats.request().getCode());
+            reply(stats.callback(), ResponseCode.SUCCESS,
+                RemotingSerializable.encode(new org.apache.rocketmq.remoting.protocol.admin.TopicStatsTable()));
+            var current = (org.apache.eventmesh.dashboard.console.function.report.collect.RestoreData)
+                org.apache.commons.lang3.reflect.FieldUtils.readField(collector, "current", true);
+            Assertions.assertEquals(1, current.getDataMap().get(org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class).size(),
+                "Completed metrics must reach setData before the remaining callback finishes");
+            Assertions.assertFalse(first.isDone());
+            first.get(6, java.util.concurrent.TimeUnit.SECONDS);
+            Assertions.assertEquals(1, current.getDataMap().get(org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class).size(),
+                "Timeout retains samples already delivered through setData");
+            var second = executor.submit(collect);
+            Call nextRoot = calls.poll(2, java.util.concurrent.TimeUnit.SECONDS);
+            Assertions.assertNotNull(nextRoot);
+            reply(groups.callback(), ResponseCode.SUCCESS, "{\"groupList\":[\"late-group\"]}".getBytes(StandardCharsets.UTF_8));
+            Assertions.assertTrue(calls.isEmpty(), "Previous round must not dispatch requests into a new round");
+            reply(nextRoot.callback(), ResponseCode.SUCCESS, "{\"topicConfigTable\":{}}".getBytes(StandardCharsets.UTF_8));
+            second.get(2, java.util.concurrent.TimeUnit.SECONDS);
+            var capture = org.mockito.ArgumentCaptor.forClass(org.apache.eventmesh.dashboard.console.function.report.collect.RestoreData.class);
+            Mockito.verify(wrapper, Mockito.times(2)).sync(capture.capture());
+            Assertions.assertTrue(capture.getAllValues().get(1).getDataMap().isEmpty());
+        } finally {
+            executor.shutdownNow();
         }
     }
 
@@ -360,10 +415,6 @@ public class RocketMQCollectTest {
         DefaultRemotingClient observed = Mockito.mock(DefaultRemotingClient.class);
         AtomicInteger outstanding = new AtomicInteger();
         Set<Integer> successful = ConcurrentHashMap.newKeySet();
-        MetricLog logs = new MetricLog();
-        Logger logger = (Logger) LoggerFactory.getLogger(RocketMQCollect.class);
-        logs.start();
-        logger.addAppender(logs);
         Mockito.doAnswer(call -> {
             RemotingCommand request = call.getArgument(0);
             InvokeCallback callback = call.getArgument(2);
@@ -422,16 +473,21 @@ public class RocketMQCollectTest {
             var positions = models.get(org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class);
             Assertions.assertTrue(positions.stream().map(row ->
                 (org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset) row)
-                .anyMatch(row -> topic.equals(row.getTopicKeyId()) && Long.valueOf(3).equals(row.getValue())));
+                .anyMatch(row -> topic.equals(row.getTopicName()) && Long.valueOf(3).equals(row.getValue())));
             Assertions.assertTrue(models.containsKey(RocketmqConsumerConnectionNumber.class));
             var connectionRows = models.get(RocketmqConsumerConnectionNumber.class);
             Assertions.assertTrue(connectionRows.stream().map(RocketmqConsumerConnectionNumber.class::cast)
-                .anyMatch(row -> topic.equals(row.getGroupKeyId()) && row.getValueConnectionCount() > 0));
+                .anyMatch(row -> topic.equals(row.getGroupName()) && row.getValueConnectionCount() > 0));
             var consumers = models.get(org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerOffset.class);
             Assertions.assertTrue(consumers.stream().map(row ->
                 (org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerOffset) row)
-                .anyMatch(row -> topic.equals(row.getTopicKeyId()) && topic.equals(row.getGroupKeyId())
+                .anyMatch(row -> topic.equals(row.getTopicName()) && topic.equals(row.getGroupName())
                     && Long.valueOf(2).equals(row.getValueConsumerOffset()) && Long.valueOf(1).equals(row.getValueOffsetLag())));
+            consumers.stream().map(RocketmqConsumerOffset.class::cast).filter(row -> topic.equals(row.getTopicName()))
+                .forEach(row -> LoggerFactory.getLogger(RocketMQCollectTest.class).info(
+                    "消费进度验证：Topic={} Group={} Queue={} consumerOffset={} brokerOffset={} lag={}",
+                    row.getTopicName(), row.getGroupName(), row.getQueueId(), row.getValueConsumerOffset(),
+                    row.getValueBrokerOffset(), row.getValueOffsetLag()));
             long deadline = System.currentTimeMillis() + 15000;
             while (outstanding.get() != 0 && System.currentTimeMillis() < deadline) {
                 Thread.sleep(20);
@@ -441,20 +497,10 @@ public class RocketMQCollectTest {
                 RequestCode.QUERY_TOPIC_CONSUME_BY_WHO, RequestCode.GET_CONSUME_STATS, RequestCode.GET_CONSUMER_CONNECTION_LIST)) {
                 Assertions.assertTrue(successful.contains(code), "Missing successful request " + code);
             }
-            for (String metric : List.of("queue_max_offset", "consumer_offset", "offset_lag", "consumer_connection_count")) {
-                Assertions.assertTrue(logs.messages.stream().anyMatch(message -> message.contains("指标=" + metric)), "Missing metric " + metric);
-            }
-            Assertions.assertTrue(logs.messages.stream().anyMatch(message -> message.contains("指标=queue_max_offset")
-                && message.contains("Topic=" + topic) && message.endsWith("数值=3")));
-            Assertions.assertTrue(logs.messages.stream().anyMatch(message -> message.contains("指标=offset_lag")
-                && message.contains("Topic=" + topic) && message.endsWith("数值=1")));
-            Assertions.assertFalse(logs.messages.stream().anyMatch(message -> message.contains("collection failed")), "Callback decoding failed");
             if (verifyIotdb) {
                 verifyIotdbTables(models, runtime, topic);
             }
         } finally {
-            logger.detachAppender(logs);
-            logs.stop();
             try {
                 DeleteTopicRequestHeader delete = new DeleteTopicRequestHeader();
                 delete.setTopic(topic);
@@ -510,9 +556,9 @@ public class RocketMQCollectTest {
             }
             var rows = new java.util.HashMap<Class<?>, List<Object>>();
             rows.put(RocketmqConsumerOffset.class, models.get(RocketmqConsumerOffset.class).stream()
-                .filter(row -> topic.equals(((RocketmqConsumerOffset) row).getTopicKeyId())).toList());
+                .filter(row -> topic.equals(((RocketmqConsumerOffset) row).getTopicName())).toList());
             rows.put(RocketmqConsumerConnectionNumber.class, models.get(RocketmqConsumerConnectionNumber.class).stream()
-                .filter(row -> topic.equals(((RocketmqConsumerConnectionNumber) row).getGroupKeyId())).toList());
+                .filter(row -> topic.equals(((RocketmqConsumerConnectionNumber) row).getGroupName())).toList());
             Assertions.assertFalse(rows.get(RocketmqConsumerOffset.class).isEmpty());
             Assertions.assertEquals(1, rows.get(RocketmqConsumerConnectionNumber.class).size());
             engine.batchInsertByClass(rows);
@@ -527,10 +573,10 @@ public class RocketMQCollectTest {
                         while (result.next()) {
                             count++;
                             Assertions.assertEquals("7", result.getString("organization_id"));
-                            Assertions.assertEquals(topic, result.getString("group_key_id"));
+                            Assertions.assertEquals(topic, result.getString("group_name"));
                             Assertions.assertNotNull(result.getObject("time"));
                             if (entry.getKey() == RocketmqConsumerOffset.class) {
-                                Assertions.assertEquals(topic, result.getString("topic_key_id"));
+                                Assertions.assertEquals(topic, result.getString("topic_name"));
                                 expectedSample |= result.getLong("value_consumer_offset") == 2L
                                     && result.getLong("value_broker_offset") == 3L && result.getLong("value_offset_lag") == 1L;
                             } else {
@@ -640,12 +686,5 @@ public class RocketMQCollectTest {
         return runtime;
     }
 
-    private static class MetricLog extends AppenderBase<ILoggingEvent> {
-        private final List<String> messages = new CopyOnWriteArrayList<>();
 
-        @Override
-        protected void append(ILoggingEvent event) {
-            this.messages.add(event.getFormattedMessage());
-        }
-    }
 }

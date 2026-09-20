@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportTag;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
 
 import lombok.Data;
@@ -32,9 +33,10 @@ import lombok.EqualsAndHashCode;
     comment = "topic offset")
 public class Rocketmq2ProducerOffset extends RuntimeLongValue {
 
-    private String topicKeyId;
+    @ReportTag
+    private String topicName;
 
-    private String queueKeyId;
+    private String queueId;
 
     private Long valueMinOffset;
 

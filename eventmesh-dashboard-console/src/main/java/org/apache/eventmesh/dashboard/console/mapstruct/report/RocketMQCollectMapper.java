@@ -35,32 +35,30 @@ public interface RocketMQCollectMapper {
     RocketMQCollectMapper INSTANCE = Mappers.getMapper(RocketMQCollectMapper.class);
 
     @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "groupKeyId", source = "group")
+    @Mapping(target = "groupName", source = "group")
     @Mapping(target = "valueConnectionCount", source = "count")
     RocketmqConsumerConnectionNumber connections(String group, long count);
 
     @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "topicKeyId", source = "topic")
-    @Mapping(target = "queueKeyId", source = "queue")
+    @Mapping(target = "topicName", source = "topic")
+    @Mapping(target = "queueId", source = "queue")
     @Mapping(target = "value", source = "offset.maxOffset")
     @Mapping(target = "valueMinOffset", source = "offset.minOffset")
     @Mapping(target = "valueLastUpdateTime", source = "offset.lastUpdateTimestamp")
     Rocketmq2ProducerOffset topicOffset(String topic, String queue, TopicOffset offset);
 
     @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "topicKeyId", source = "topic")
-    @Mapping(target = "queueKeyId", constant = "")
+    @Mapping(target = "topicName", source = "topic")
+    @Mapping(target = "queueId", constant = "")
     @Mapping(target = "valueMinOffsetSum", source = "min")
     @Mapping(target = "valueMaxOffsetSum", source = "max")
     @Mapping(target = "valueLastUpdateTime", source = "lastUpdate")
     Rocketmq2ProducerOffset aggregateOffset(String topic, long min, long max, long lastUpdate);
 
     @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "topicKeyId", source = "topic")
     @Mapping(target = "topicName", source = "topic")
-    @Mapping(target = "groupKeyId", source = "group")
     @Mapping(target = "groupName", source = "group")
-    @Mapping(target = "queueKeyId", source = "queue")
+    @Mapping(target = "queueId", source = "queue")
     @Mapping(target = "valueConsumerOffset", source = "offset.consumerOffset")
     @Mapping(target = "valueBrokerOffset", source = "offset.brokerOffset")
     @Mapping(target = "valueOffsetLag", expression = "java(Math.max(0L, offset.getBrokerOffset() - offset.getConsumerOffset()))")

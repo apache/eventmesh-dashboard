@@ -20,7 +20,8 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.not.SubscribeId;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportTag;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,13 +31,15 @@ import lombok.EqualsAndHashCode;
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_consumer_offset",
     defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_consumer_offset",
     comment = "消费组队列位点及位点差")
-public class RocketmqConsumerOffset extends SubscribeId {
+public class RocketmqConsumerOffset extends RuntimeId {
 
-    private String topicKeyId;
+    @ReportTag
+    private String topicName;
 
-    private String groupKeyId;
+    @ReportTag
+    private String groupName;
 
-    private String queueKeyId;
+    private String queueId;
 
     private Long valueConsumerOffset;
 

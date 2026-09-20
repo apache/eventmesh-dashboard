@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportTag;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
 
 import lombok.Data;
@@ -32,7 +33,8 @@ import lombok.EqualsAndHashCode;
     comment = "消费组在当前 Broker 上的连接数")
 public class RocketmqConsumerConnectionNumber extends RuntimeId {
 
-    private String groupKeyId;
+    @ReportTag
+    private String groupName;
 
     private Long valueConnectionCount;
 
