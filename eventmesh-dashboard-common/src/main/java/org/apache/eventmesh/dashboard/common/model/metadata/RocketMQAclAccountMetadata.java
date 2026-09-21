@@ -18,30 +18,38 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
+import java.util.List;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-/** User account metadata. Passwords are write-only in RocketMQ query results. */
+/** ACL 1.0 complete account configuration, used only for RPC and never persisted by console mappers. */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class InstanceUserMetadata extends BaseRuntimeIdBase {
+public class RocketMQAclAccountMetadata extends AclMetadata {
 
-    private String userName;
+    private String accessKey;
 
     @ToString.Exclude
-    private String password;
+    private String secretKey;
 
-    /** RocketMQ: Normal or Super; required explicitly for creation. */
-    private String userType;
+    private Boolean admin;
 
-    /** RocketMQ: enable or disable; required explicitly for creation. */
-    private String userStatus;
+    /** Empty string explicitly disables the account whitelist. This is not ACL 2.0 sourceIps. */
+    private String whiteRemoteAddress;
+
+    private String defaultTopicPerm;
+
+    private String defaultGroupPerm;
+
+    /** Complete lists of name=DENY/PUB/SUB/PUB|SUB rules; empty lists remove explicit rules. */
+    private List<String> topicPerms;
+
+    private List<String> groupPerms;
 
     @Override
     public String nodeUnique() {
-        return this.userName;
+        return "RocketMQAclV1:" + this.accessKey;
     }
 }

@@ -23,5 +23,12 @@ import lombok.Data;
 @Data
 public class ResetOffsetResponse {
 
+    private String topic;
+
+    private String brokerName;
+
+    private Integer partitionId;
+
     private Long offset;
+
 }

@@ -21,6 +21,8 @@ package org.apache.eventmesh.dashboard.service.remoting;
 import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
 import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
 import org.apache.eventmesh.dashboard.common.model.remoting.user.CreateUserRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.user.CreateUserResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.user.DeleteUserResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.user.DeleterUserRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.user.GetUserRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.user.GetUserResult;
@@ -30,12 +32,17 @@ import org.apache.eventmesh.dashboard.common.model.remoting.user.GetUserResult;
  */
 public interface UserRemotingService {
 
-    @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
-    CreateUserRequest createInstanceUser(CreateUserRequest request);
+    @RemotingServiceMethodMapper(RemotingActionType.ADD)
+    CreateUserResult createInstanceUser(CreateUserRequest request) throws Exception;
+
+    @RemotingServiceMethodMapper(RemotingActionType.UPDATE)
+    default CreateUserResult updateInstanceUser(CreateUserRequest request) throws Exception {
+        throw new UnsupportedOperationException("User update is not implemented for this middleware");
+    }
 
     @RemotingServiceMethodMapper(RemotingActionType.DELETE)
-    DeleterUserRequest deleteInstanceUser(DeleterUserRequest request);
+    DeleteUserResult deleteInstanceUser(DeleterUserRequest request) throws Exception;
 
     @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
-    GetUserResult getInstanceUser(GetUserRequest request);
+    GetUserResult getInstanceUser(GetUserRequest request) throws Exception;
 }

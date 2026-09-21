@@ -16,11 +16,12 @@
  */
 
 
-package org.apache.eventmesh.dashboard.common.model.remoting.offset;
+package org.apache.eventmesh.dashboard.common.model.remoting.client;
 
+import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 
 import java.util.List;
 
-public class ResetOffsetResult extends GlobalResult<List<ResetOffsetResponse>> {
+public class GetClientsResult extends GlobalResult<List<ClientMetadata>> {
 }

@@ -20,6 +20,8 @@ package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 
+import java.util.List;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -44,8 +46,25 @@ public class AclMetadata extends BaseRuntimeIdBase {
     private Integer patternType;
 
 
+    /** RocketMQ ACL 2.0 policy entry fields; not persisted by the existing console schema. */
+    private String policyType;
+
+    private List<String> actions;
+
+    /** Required on writes: an explicit empty list means no source-IP restriction. */
+    private List<String> sourceIps;
+
     @Override
     public String nodeUnique() {
-        return this.principal;
+        if (this.actions == null && this.policyType == null) {
+            return this.principal;
+        }
+        // One entry per subject, policy and resource, regardless of its current permissions.
+        return part(this.principal) + part(this.policyType == null ? "Custom" : this.policyType)
+            + part(this.resourceType) + part(this.resourceName);
+    }
+
+    private String part(String value) {
+        return value == null ? "-1:" : value.length() + ":" + value;
     }
 }

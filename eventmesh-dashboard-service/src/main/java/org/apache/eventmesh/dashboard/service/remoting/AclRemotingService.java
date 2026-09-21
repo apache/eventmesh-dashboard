@@ -33,11 +33,11 @@ import org.apache.eventmesh.dashboard.common.model.remoting.acl.GetAclsResult;
 public interface AclRemotingService {
 
     @RemotingServiceMethodMapper({RemotingActionType.ADD, RemotingActionType.UPDATE})
-    CreateAclResult createAcl(CreateAclRequest createAclRequest);
+    CreateAclResult createAcl(CreateAclRequest createAclRequest) throws Exception;
 
     @RemotingServiceMethodMapper(RemotingActionType.DELETE)
-    DeleteAclResult deleteAcl(DeleteAclRequest deleteAclRequest);
+    DeleteAclResult deleteAcl(DeleteAclRequest deleteAclRequest) throws Exception;
 
     @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
-    GetAclsResult getAllAcls(GetAcls2Request getAclsRequest);
+    GetAclsResult getAllAcls(GetAcls2Request getAclsRequest) throws Exception;
 }

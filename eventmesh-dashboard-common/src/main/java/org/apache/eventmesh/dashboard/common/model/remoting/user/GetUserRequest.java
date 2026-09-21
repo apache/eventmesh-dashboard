@@ -18,11 +18,8 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.user;
 
-import org.apache.eventmesh.dashboard.common.enums.StoreType;
+import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 
-public class GetUserRequest {
-
-    private StoreType serviceType;
-
-    private String serviceAddress;
+public class GetUserRequest extends AbstractGlobal2Request<InstanceUserMetadata> {
 }

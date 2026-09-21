@@ -18,9 +18,11 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.subscription;
 
-import java.util.concurrent.CompletableFuture;
+import org.apache.eventmesh.dashboard.common.model.metadata.GroupMemberMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 
-public class GetSubscriptionResult {
+import java.util.List;
 
-    CompletableFuture<GetSubscriptionResponse> responseFuture;
+/** Subscription relationships reported by the selected runtime, directly in data. */
+public class GetSubscriptionResult extends GlobalResult<List<GroupMemberMetadata>> {
 }
