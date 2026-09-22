@@ -20,17 +20,27 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportTag;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeFloatValue;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/** 客户端消费平均耗时，毫秒；沿用客户端分钟窗口及小时窗口回退语义。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_consumer_group_number",
-    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_consumer_group_number",
-    comment = "当前 Broker 配置的消费组总数，包含系统组和离线组")
-public class RocketmqConsumerGroupNumber extends RuntimeLongValue {
+@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_consumer_process_time",
+    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_consumer_process_time",
+    comment = "客户端消费平均耗时，毫秒；沿用客户端分钟窗口及小时窗口回退语义")
+public class RocketmqConsumerProcessTime extends RuntimeFloatValue {
 
+    @ReportTag
+    private String topicName;
+
+    @ReportTag
+    private String groupName;
+
+    @ReportTag
+    private String clientId;
 
 }

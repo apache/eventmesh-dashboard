@@ -24,7 +24,7 @@ import org.apache.eventmesh.dashboard.console.function.report.model.base.Runtime
 
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_topic_number",
     defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_topic_number",
-    comment = "主题数量")
+    comment = "当前 Broker 配置的 Topic 总数，包含系统、重试和死信 Topic")
 public class RocketmqTopicNumber extends RuntimeLongValue {
 
 }

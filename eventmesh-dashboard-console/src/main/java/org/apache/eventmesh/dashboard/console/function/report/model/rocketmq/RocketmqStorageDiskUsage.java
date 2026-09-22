@@ -20,17 +20,24 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportTag;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeFloatValue;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/** 存储文件系统使用率，范围 0 到 1；commitlog 汇总为各路径最小值。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_consumer_group_number",
-    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_consumer_group_number",
-    comment = "当前 Broker 配置的消费组总数，包含系统组和离线组")
-public class RocketmqConsumerGroupNumber extends RuntimeLongValue {
+@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_storage_disk_usage",
+    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_storage_disk_usage",
+    comment = "存储文件系统使用率，范围 0 到 1；commitlog 汇总为各路径最小值")
+public class RocketmqStorageDiskUsage extends RuntimeFloatValue {
 
+    @ReportTag
+    private String storeType;
+
+    @ReportTag
+    private String path;
 
 }

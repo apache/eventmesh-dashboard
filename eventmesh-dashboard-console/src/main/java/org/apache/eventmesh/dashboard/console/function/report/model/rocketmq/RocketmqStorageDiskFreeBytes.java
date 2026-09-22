@@ -25,12 +25,12 @@ import org.apache.eventmesh.dashboard.console.function.report.model.base.Runtime
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/** Broker 存储根目录所在文件系统剩余字节数，格式化容量还原的近似值。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_consumer_group_number",
-    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_consumer_group_number",
-    comment = "当前 Broker 配置的消费组总数，包含系统组和离线组")
-public class RocketmqConsumerGroupNumber extends RuntimeLongValue {
-
+@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_storage_disk_free_bytes",
+    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_storage_disk_free_bytes",
+    comment = "Broker 存储根目录所在文件系统剩余字节数，格式化容量还原的近似值")
+public class RocketmqStorageDiskFreeBytes extends RuntimeLongValue {
 
 }

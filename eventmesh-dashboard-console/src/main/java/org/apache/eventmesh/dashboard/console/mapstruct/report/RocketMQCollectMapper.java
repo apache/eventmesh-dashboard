@@ -21,11 +21,21 @@ import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Roc
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqBrokerMessagesIn;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqBrokerMessagesOut;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerConnectionNumber;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerFailedTps;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerGroupNumber;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerLagLatency;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerOffset;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerProcessTime;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerSuccessTps;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqGroupMessagesOut;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDiskFreeBytes;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDiskUsage;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDispatchBehindBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageFlushBehindBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageMessageReserveTime;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqThreadPoolWartermark;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqTopicMessagesIn;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqTopicNumber;
 
 import org.apache.rocketmq.remoting.protocol.admin.OffsetWrapper;
 import org.apache.rocketmq.remoting.protocol.admin.TopicOffset;
@@ -98,5 +108,72 @@ public interface RocketMQCollectMapper {
     @Mapping(target = "poolName", source = "pool")
     @Mapping(target = "value", source = "size")
     RocketmqThreadPoolWartermark threadPool(String pool, long size);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "value", source = "count")
+    RocketmqTopicNumber topicNumber(Long count);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "value", source = "count")
+    RocketmqConsumerGroupNumber groupNumber(Long count);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "topicName", source = "topic")
+    @Mapping(target = "window", source = "window")
+    @Mapping(target = "valueWindowCount", source = "count")
+    @Mapping(target = "value", source = "rate")
+    RocketmqTopicMessagesIn topicMessages(String topic, String window, long count, float rate);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "topicName", source = "topic")
+    @Mapping(target = "groupName", source = "group")
+    @Mapping(target = "window", source = "window")
+    @Mapping(target = "valueWindowCount", source = "count")
+    @Mapping(target = "value", source = "rate")
+    RocketmqGroupMessagesOut groupMessages(String topic, String group, String window, long count, float rate);
+
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "topicName", source = "topicName")
+    @Mapping(target = "groupName", source = "groupName")
+    @Mapping(target = "queueId", source = "queueId")
+    @Mapping(target = "value", source = "value")
+    RocketmqConsumerLagLatency consumerLag(String topicName, String groupName, String queueId, Long value);
+
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "topicName", source = "topicName")
+    @Mapping(target = "groupName", source = "groupName")
+    @Mapping(target = "clientId", source = "clientId")
+    @Mapping(target = "value", source = "value")
+    RocketmqConsumerSuccessTps consumerSuccess(String topicName, String groupName, String clientId, Float value);
+
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "topicName", source = "topicName")
+    @Mapping(target = "groupName", source = "groupName")
+    @Mapping(target = "clientId", source = "clientId")
+    @Mapping(target = "value", source = "value")
+    RocketmqConsumerFailedTps consumerFailed(String topicName, String groupName, String clientId, Float value);
+
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "topicName", source = "topicName")
+    @Mapping(target = "groupName", source = "groupName")
+    @Mapping(target = "clientId", source = "clientId")
+    @Mapping(target = "value", source = "value")
+    RocketmqConsumerProcessTime consumerProcessTime(String topicName, String groupName, String clientId, Float value);
+
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "storeType", source = "storeType")
+    @Mapping(target = "path", source = "path")
+    @Mapping(target = "value", source = "value")
+    RocketmqStorageDiskUsage diskUsage(String storeType, String path, Float value);
+
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "value", source = "value")
+    RocketmqStorageDiskFreeBytes diskFreeBytes(Long value);
 
 }

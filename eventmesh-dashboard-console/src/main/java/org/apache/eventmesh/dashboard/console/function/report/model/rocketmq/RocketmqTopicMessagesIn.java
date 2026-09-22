@@ -20,17 +20,27 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportTag;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeFloatValue;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/** Topic 滚动窗口写入消息数和 TPS，非生命周期累计量；继承的 value 单位为消息数/秒。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_consumer_group_number",
-    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_consumer_group_number",
-    comment = "当前 Broker 配置的消费组总数，包含系统组和离线组")
-public class RocketmqConsumerGroupNumber extends RuntimeLongValue {
+@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_topic_messages_in",
+    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_topic_messages_in",
+    comment = "Topic 滚动窗口写入消息数和 TPS，非生命周期累计量")
+public class RocketmqTopicMessagesIn extends RuntimeFloatValue {
 
+    @ReportTag
+    private String topicName;
+
+    @ReportTag
+    private String window;
+
+    /** 滚动采样窗口内的消息数，不是进程累计计数。 */
+    private Long valueWindowCount;
 
 }

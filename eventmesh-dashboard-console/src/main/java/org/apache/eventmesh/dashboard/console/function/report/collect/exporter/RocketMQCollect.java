@@ -21,7 +21,6 @@ import org.apache.eventmesh.dashboard.common.annotation.ClusterTypeMark;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.console.function.report.collect.AbstractCollect;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.OrganizationId;
 import org.apache.eventmesh.dashboard.console.mapstruct.report.RocketMQCollectMapper;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKManage;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
@@ -39,9 +38,12 @@ import org.apache.rocketmq.remoting.protocol.admin.TopicStatsTable;
 import org.apache.rocketmq.remoting.protocol.body.ConsumerConnection;
 import org.apache.rocketmq.remoting.protocol.body.GroupList;
 import org.apache.rocketmq.remoting.protocol.body.TopicConfigSerializeWrapper;
+import org.apache.rocketmq.remoting.protocol.header.GetAllSubscriptionGroupRequestHeader;
 import org.apache.rocketmq.remoting.protocol.header.GetConsumeStatsRequestHeader;
 import org.apache.rocketmq.remoting.protocol.header.GetConsumerConnectionListRequestHeader;
+import org.apache.rocketmq.remoting.protocol.header.GetConsumerRunningInfoRequestHeader;
 import org.apache.rocketmq.remoting.protocol.header.GetTopicStatsInfoRequestHeader;
+import org.apache.rocketmq.remoting.protocol.header.QueryConsumeTimeSpanRequestHeader;
 import org.apache.rocketmq.remoting.protocol.header.QueryTopicConsumeByWhoRequestHeader;
 import org.apache.rocketmq.remoting.protocol.header.ViewBrokerStatsDataRequestHeader;
 
@@ -49,7 +51,7 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -69,6 +71,8 @@ import lombok.Setter;
 public class RocketMQCollect extends AbstractCollect {
     private static final RocketMQCollectMapper MAPPER = RocketMQCollectMapper.INSTANCE;
     private static final Pattern BYTE_COUNT = Pattern.compile("([0-9]+(?:\\.[0-9]+)?)\\s*(B|[KMGTPE]iB)");
+
+    private static final Pattern DISK_CAPACITY = Pattern.compile("Total : (.+), Free : (.+)\\.");
 
     private String runtimeUnique;
 
@@ -93,17 +97,16 @@ public class RocketMQCollect extends AbstractCollect {
     /**
      * 一轮采集流程：
      * 1. 先注册 Topic 和 Broker 两个方向的根请求，再分别启动，统一管理请求计数。
-     * 2. TopicCollect 采集位点、消费组连接和消费进度；死信 Topic 只采集位点。
-     * 3. BrokerCollect 采集消息统计和运行状态；两个方向共用本轮写入保护，不额外缓存结果。
+     * 2. TopicCollect 采集 Topic 总数、位点、积压时间、消息统计及客户端处理指标；死信 Topic 不查询消费组。
+     * 3. BrokerCollect 采集配置消费组总数、消息统计和运行状态；响应直接调用父类 setData。
      * 4. 等待所有异步请求完成后返回，父类再统一交付本轮数据。
-     * 5. 超时或中断时保留已经采集的数据，关闭本轮写入，拒绝迟到回调。
+     * 5. 超时或中断时保留已经采集的数据，关闭本轮，拒绝尚未开始处理的迟到回调。
      */
     private class CollectRound {
         private final DefaultRemotingClient client = defaultRemotingClient;
         private final AtomicInteger pending = new AtomicInteger();
         private final CountDownLatch completed = new CountDownLatch(1);
         private final long deadline = System.currentTimeMillis() + 4000;
-        private final LocalDateTime sampleTime = LocalDateTime.now();
         private volatile boolean closed;
 
         private void executeAndAwait() {
@@ -122,20 +125,11 @@ public class RocketMQCollect extends AbstractCollect {
             }
         }
 
-        // 父类的结果容器不是线程安全的；写入和关闭共用锁，保证返回后不会再写入父类。
-        private synchronized void setData(OrganizationId data) {
-            if (this.closed || System.currentTimeMillis() >= this.deadline) {
-                return;
-            }
-            data.setTime(this.sampleTime);
-            RocketMQCollect.this.setData(data);
-        }
-
-        private synchronized void close() {
+        private void close() {
             this.closed = true;
         }
 
-        /** Topic 方向：发现 Topic，采集队列位点和消费组数据，连接查询按消费组去重。 */
+        /** 采集 Topic 总数、生产和消费位点、积压量及时间、消息统计、消费组连接数和客户端处理指标。 */
         private class TopicCollect {
             private final Set<String> connectedGroups = ConcurrentHashMap.newKeySet();
             private final TopicsCallback topics =
@@ -147,9 +141,19 @@ public class RocketMQCollect extends AbstractCollect {
 
             private void collectTopic(String topic) {
                 this.collectTopicStats(topic);
+                this.collectMessages(topic, null);
                 if (!topic.startsWith(MixAll.DLQ_GROUP_TOPIC_PREFIX)) {
                     this.collectGroups(topic);
                 }
+            }
+
+            /** 原生统计键：写入按 Topic，取出按 Topic@消费组。 */
+            private void collectMessages(String topic, String group) {
+                ViewBrokerStatsDataRequestHeader header = new ViewBrokerStatsDataRequestHeader();
+                header.setStatsName(group == null ? "TOPIC_PUT_NUMS" : "GROUP_GET_NUMS");
+                header.setStatsKey(group == null ? topic : topic + "@" + group);
+                new MessageStatsCallback(RemotingCommand.createRequestCommand(RequestCode.VIEW_BROKER_STATS_DATA, header),
+                    topic, group).execute();
             }
 
             private void collectTopicStats(String topic) {
@@ -192,9 +196,33 @@ public class RocketMQCollect extends AbstractCollect {
                 protected void handleResponse(ResponseFuture responseFuture) {
                     TopicConfigSerializeWrapper topics =
                         RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), TopicConfigSerializeWrapper.class);
+                    // 缺少列表不是零；仅对成功返回的完整配置表计数。
+                    Map<?, ?> body = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), Map.class);
+                    if (body == null || !(body.get("topicConfigTable") instanceof Map<?, ?>)) {
+                        return;
+                    }
+                    RocketMQCollect.this.setData(MAPPER.topicNumber((long) topics.getTopicConfigTable().size()));
                     for (String topic : topics.getTopicConfigTable().keySet()) {
                         collectTopic(topic);
                     }
+                }
+            }
+
+            private class MessageStatsCallback extends WindowStatsCallback {
+                private final String topic;
+                private final String group;
+
+                private MessageStatsCallback(RemotingCommand request, String topic, String group) {
+                    super(request);
+                    this.topic = topic;
+                    this.group = group;
+                }
+
+                @Override
+                protected void recordWindow(String window, long count, float rate) {
+                    RocketMQCollect.this.setData(this.group == null
+                        ? MAPPER.topicMessages(this.topic, window, count, rate)
+                        : MAPPER.groupMessages(this.topic, this.group, window, count, rate));
                 }
             }
 
@@ -214,14 +242,14 @@ public class RocketMQCollect extends AbstractCollect {
                     stats.getOffsetTable().forEach((queue, offset) -> {
                         String queueId = String.valueOf(queue.getQueueId());
 
-                        CollectRound.this.setData(MAPPER.topicOffset(topic, queueId, offset));
+                        RocketMQCollect.this.setData(MAPPER.topicOffset(topic, queueId, offset));
                     });
                     long min = stats.getOffsetTable().values().stream().mapToLong(offset -> offset.getMinOffset()).sum();
                     long max = stats.getOffsetTable().values().stream().mapToLong(offset -> offset.getMaxOffset()).sum();
                     long lastUpdate = stats.getOffsetTable().values().stream()
                         .mapToLong(offset -> offset.getLastUpdateTimestamp()).max().orElse(0L);
 
-                    CollectRound.this.setData(MAPPER.aggregateOffset(topic, min, max, lastUpdate));
+                    RocketMQCollect.this.setData(MAPPER.aggregateOffset(topic, min, max, lastUpdate));
                 }
             }
 
@@ -242,6 +270,7 @@ public class RocketMQCollect extends AbstractCollect {
                             collectConnections(group);
                         }
                         collectConsumeStats(topic, group);
+                        collectMessages(topic, group);
                     }
                 }
             }
@@ -260,7 +289,91 @@ public class RocketMQCollect extends AbstractCollect {
                     ConsumerConnection connections = RemotingSerializable.decode(
                         responseFuture.getResponseCommand().getBody(), ConsumerConnection.class);
 
-                    CollectRound.this.setData(MAPPER.connections(group, connections.getConnectionSet().size()));
+                    RocketMQCollect.this.setData(MAPPER.connections(group, connections.getConnectionSet().size()));
+                    // 每个在线客户端分别采样，不把 Broker 取消息 TPS 当成处理成功 TPS。
+                    Set<String> clients = ConcurrentHashMap.newKeySet();
+                    connections.getConnectionSet().forEach(connection -> {
+                        String clientId = connection.getClientId();
+                        if (clientId != null && !clientId.isBlank() && clients.add(clientId)) {
+                            GetConsumerRunningInfoRequestHeader header = new GetConsumerRunningInfoRequestHeader();
+                            header.setConsumerGroup(this.group);
+                            header.setClientId(clientId);
+                            header.setJstackEnable(false);
+                            new ClientStatsCallback(RemotingCommand.createRequestCommand(
+                                RequestCode.GET_CONSUMER_RUNNING_INFO, header), this.group, clientId).execute();
+                        }
+                    });
+                }
+            }
+
+            /** 按 Topic、消费组和客户端采集消费成功 TPS、失败 TPS 和平均处理耗时。 */
+            private class ClientStatsCallback extends CollectCallback {
+                private final String group;
+                private final String clientId;
+
+                private ClientStatsCallback(RemotingCommand request, String group, String clientId) {
+                    super(request);
+                    this.group = group;
+                    this.clientId = clientId;
+                }
+
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) {
+                    Map<?, ?> body = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), Map.class);
+                    if (body == null || !(body.get("statusTable") instanceof Map<?, ?> statuses)) {
+                        return;
+                    }
+                    statuses.forEach((key, value) -> {
+                        if (!(key instanceof String topic) || !(value instanceof Map<?, ?> status)) {
+                            return;
+                        }
+                        Float success = nonnegativeFloat(status.get("consumeOKTPS"));
+                        Float failed = nonnegativeFloat(status.get("consumeFailedTPS"));
+                        Float elapsed = nonnegativeFloat(status.get("consumeRT"));
+                        if (success != null) {
+                            RocketMQCollect.this.setData(MAPPER.consumerSuccess(topic, this.group, this.clientId, success));
+                        }
+                        if (failed != null) {
+                            RocketMQCollect.this.setData(MAPPER.consumerFailed(topic, this.group, this.clientId, failed));
+                        }
+                        if (elapsed != null) {
+                            RocketMQCollect.this.setData(MAPPER.consumerProcessTime(topic, this.group, this.clientId, elapsed));
+                        }
+                    });
+                }
+            }
+
+            /** 采集各 Topic、消费组和队列中最早未消费消息的积压时间。 */
+            private class LagCallback extends CollectCallback {
+                private final String topic;
+                private final String group;
+
+                private LagCallback(RemotingCommand request, String topic, String group) {
+                    super(request);
+                    this.topic = topic;
+                    this.group = group;
+                }
+
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) {
+                    Map<?, ?> body = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), Map.class);
+                    if (body == null || !(body.get("consumeTimeSpanSet") instanceof List<?> spans)) {
+                        return;
+                    }
+                    for (Object item : spans) {
+                        if (!(item instanceof Map<?, ?> span) || !(span.get("messageQueue") instanceof Map<?, ?> queue)
+                            || !this.topic.equals(queue.get("topic"))) {
+                            continue;
+                        }
+                        Long queueId = nonnegativeLong(queue.get("queueId"));
+                        Long delay = nonnegativeLong(span.get("delayTime"));
+                        Long earliest = nonnegativeLong(span.get("minTimeStamp"));
+                        // 位点已过期或未初始化时，原生接口可能用 -1 时间戳计算出近似当前纪元的延迟。
+                        if (queueId != null && delay != null && earliest != null && earliest > 0
+                            && delay <= System.currentTimeMillis() - earliest) {
+                            RocketMQCollect.this.setData(MAPPER.consumerLag(this.topic, this.group, queueId.toString(), delay));
+                        }
+                    }
                 }
             }
 
@@ -285,20 +398,45 @@ public class RocketMQCollect extends AbstractCollect {
                         }
                         String queueId = String.valueOf(queue.getQueueId());
 
-                        CollectRound.this.setData(MAPPER.consumerOffset(topic, group, queueId, offset));
+                        RocketMQCollect.this.setData(MAPPER.consumerOffset(topic, group, queueId, offset));
                     });
+                    if (!stats.getOffsetTable().isEmpty()) {
+                        QueryConsumeTimeSpanRequestHeader header = new QueryConsumeTimeSpanRequestHeader();
+                        header.setTopic(this.topic);
+                        header.setGroup(this.group);
+                        new LagCallback(RemotingCommand.createRequestCommand(RequestCode.QUERY_CONSUME_TIME_SPAN, header),
+                            this.topic, this.group).execute();
+                    }
                 }
             }
         }
 
-        /** Broker 采集与 Topic 采集共用本轮计数、截止时间和写入锁，不单独交付数据。 */
+        /** 采集消费组总数、Broker 消息统计、存储积压、消息保留时间、磁盘使用率及剩余空间、线程池队列长度。 */
         private class BrokerCollect {
             private final BrokerConfigCallback config = new BrokerConfigCallback();
             private final BrokerRuntimeCallback runtime = new BrokerRuntimeCallback();
+            private final GroupCountCallback groups = new GroupCountCallback();
 
             private void start() {
                 this.config.execute();
                 this.runtime.execute();
+                this.groups.execute();
+            }
+
+            /** 采集 Broker 配置的消费组总数。 */
+            private class GroupCountCallback extends CollectCallback {
+                private GroupCountCallback() {
+                    super(RemotingCommand.createRequestCommand(RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG,
+                        new GetAllSubscriptionGroupRequestHeader()));
+                }
+
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) {
+                    Map<?, ?> body = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), Map.class);
+                    if (body != null && body.get("subscriptionGroupTable") instanceof Map<?, ?> groups) {
+                        RocketMQCollect.this.setData(MAPPER.groupNumber((long) groups.size()));
+                    }
+                }
             }
 
             private void collectStats(String cluster, boolean incoming) {
@@ -308,7 +446,7 @@ public class RocketMQCollect extends AbstractCollect {
                 new BrokerStatsCallback(RemotingCommand.createRequestCommand(RequestCode.VIEW_BROKER_STATS_DATA, header), incoming).execute();
             }
 
-            /** 步骤一：统计键使用 Broker 配置中的集群名，仍然只查询当前实例。 */
+            /** 步骤一：获取 Broker 所属集群名，启动消息写入和取出统计采集。 */
             private class BrokerConfigCallback extends CollectCallback {
                 private BrokerConfigCallback() {
                     super(RemotingCommand.createRequestCommand(RequestCode.GET_BROKER_CONFIG, null));
@@ -327,8 +465,8 @@ public class RocketMQCollect extends AbstractCollect {
                 }
             }
 
-            /** 步骤二：分别保存分钟、小时、日窗口的消息计数和速率，不能当成生命周期累计量。 */
-            private class BrokerStatsCallback extends CollectCallback {
+            /** 步骤二：采集分钟、小时、日窗口的消息写入和取出数量及 TPS。 */
+            private class BrokerStatsCallback extends WindowStatsCallback {
                 private final boolean incoming;
 
                 private BrokerStatsCallback(RemotingCommand request, boolean incoming) {
@@ -337,31 +475,13 @@ public class RocketMQCollect extends AbstractCollect {
                 }
 
                 @Override
-                protected void handleResponse(ResponseFuture responseFuture) {
-                    Map<?, ?> stats = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), Map.class);
-                    this.collectWindow(stats, "statsMinute", "minute");
-                    this.collectWindow(stats, "statsHour", "hour");
-                    this.collectWindow(stats, "statsDay", "day");
-                }
-
-                private void collectWindow(Map<?, ?> stats, String key, String window) {
-                    if (stats == null || !(stats.get(key) instanceof Map<?, ?> sample)) {
-                        return;
-                    }
-                    if (!(sample.get("sum") instanceof Number) || !(sample.get("tps") instanceof Number rate)) {
-                        return;
-                    }
-                    Long count = nonnegativeLong(sample.get("sum"));
-                    float tps = rate.floatValue();
-                    if (count == null || !Float.isFinite(tps) || rate.doubleValue() < 0) {
-                        return;
-                    }
-                    CollectRound.this.setData(this.incoming
-                        ? MAPPER.brokerMessagesIn(window, count, tps) : MAPPER.brokerMessagesOut(window, count, tps));
+                protected void recordWindow(String window, long count, float rate) {
+                    RocketMQCollect.this.setData(this.incoming
+                        ? MAPPER.brokerMessagesIn(window, count, rate) : MAPPER.brokerMessagesOut(window, count, rate));
                 }
             }
 
-            /** 步骤三：按真实运行字段采集存储与线程池状态，缺失或无效字段不补零。 */
+            /** 步骤三：采集存储分发和刷盘积压、消息保留时间、磁盘使用率及剩余空间、线程池队列长度。 */
             private class BrokerRuntimeCallback extends CollectCallback {
                 private BrokerRuntimeCallback() {
                     super(RemotingCommand.createRequestCommand(RequestCode.GET_BROKER_RUNTIME_INFO, null));
@@ -375,18 +495,54 @@ public class RocketMQCollect extends AbstractCollect {
                     }
                     Long dispatch = nonnegativeLong(table.get("dispatchBehindBytes"));
                     if (dispatch != null) {
-                        CollectRound.this.setData(MAPPER.dispatchBytes(dispatch));
+                        RocketMQCollect.this.setData(MAPPER.dispatchBytes(dispatch));
                     }
                     this.collectFlush(table);
+                    this.collectDisk(table);
                     Long earliest = nonnegativeLong(table.get("earliestMessageTimeStamp"));
                     long now = System.currentTimeMillis();
                     if (earliest != null && earliest > 0 && earliest <= now) {
-                        CollectRound.this.setData(MAPPER.reserveTime(now - earliest));
+                        RocketMQCollect.this.setData(MAPPER.reserveTime(now - earliest));
                     }
                     for (String pool : new String[] {"send", "pull", "litePull", "query", "ack"}) {
                         this.collectThreadPool(table, pool, pool + "ThreadPoolQueueSize");
                     }
                     this.collectThreadPool(table, "endTransaction", "EndTransactionQueueSize");
+                }
+
+                private void collectDisk(Map<?, ?> table) {
+                    table.forEach((key, value) -> {
+                        if (!(key instanceof String name)) {
+                            return;
+                        }
+                        String type;
+                        String path = "";
+                        if (name.equals("commitLogDiskRatio")) {
+                            type = "commitlog_min";
+                        } else if (name.startsWith("commitLogDiskRatio_")) {
+                            type = "commitlog";
+                            path = name.substring("commitLogDiskRatio_".length());
+                        } else if (name.equals("consumeQueueDiskRatio")) {
+                            type = "consumequeue";
+                        } else {
+                            return;
+                        }
+                        Float ratio = nonnegativeFloat(value);
+                        if (ratio != null && ratio <= 1) {
+                            RocketMQCollect.this.setData(MAPPER.diskUsage(type, path, ratio));
+                        }
+                    });
+                    Object capacity = table.get("commitLogDirCapacity");
+                    if (capacity instanceof String text) {
+                        Matcher matcher = DISK_CAPACITY.matcher(text.trim());
+                        if (matcher.matches()) {
+                            Long total = byteCount(matcher.group(1));
+                            Long free = byteCount(matcher.group(2));
+                            if (total != null && total > 0 && free != null && free <= total) {
+                                RocketMQCollect.this.setData(MAPPER.diskFreeBytes(free));
+                            }
+                        }
+                    }
                 }
 
                 private void collectFlush(Map<?, ?> table) {
@@ -395,27 +551,15 @@ public class RocketMQCollect extends AbstractCollect {
                     Long commit = table.containsKey("remainHowManyDataToCommit")
                         ? byteCount(table.get("remainHowManyDataToCommit")) : Long.valueOf(0L);
                     if (flush != null && commit != null && flush <= Long.MAX_VALUE - commit) {
-                        CollectRound.this.setData(MAPPER.flushBytes(flush + commit));
+                        RocketMQCollect.this.setData(MAPPER.flushBytes(flush + commit));
                     }
                 }
 
                 private void collectThreadPool(Map<?, ?> table, String pool, String key) {
                     Long size = nonnegativeLong(table.get(key));
                     if (size != null) {
-                        CollectRound.this.setData(MAPPER.threadPool(pool, size));
+                        RocketMQCollect.this.setData(MAPPER.threadPool(pool, size));
                     }
-                }
-            }
-
-            private Long nonnegativeLong(Object value) {
-                if (value == null) {
-                    return null;
-                }
-                try {
-                    long number = Long.parseLong(value.toString());
-                    return number >= 0 ? number : null;
-                } catch (NumberFormatException e) {
-                    return null;
                 }
             }
 
@@ -437,6 +581,64 @@ public class RocketMQCollect extends AbstractCollect {
                     return null;
                 }
             }
+        }
+
+        private Long nonnegativeLong(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                long number = Long.parseLong(value.toString());
+                return number >= 0 ? number : null;
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+
+        private Float nonnegativeFloat(Object value) {
+            if (value == null) {
+                return null;
+            }
+            try {
+                double number = Double.parseDouble(value.toString());
+                float result = (float) number;
+                return number >= 0 && Float.isFinite(result) ? result : null;
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+
+        /** 解析 Broker、Topic 和消费组的分钟、小时、日消息统计窗口。 */
+        private abstract class WindowStatsCallback extends CollectCallback {
+            private WindowStatsCallback(RemotingCommand request) {
+                super(request);
+            }
+
+            @Override
+            protected final void handleResponse(ResponseFuture responseFuture) {
+                Map<?, ?> stats = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), Map.class);
+                this.collectWindow(stats, "statsMinute", "minute");
+                this.collectWindow(stats, "statsHour", "hour");
+                this.collectWindow(stats, "statsDay", "day");
+            }
+
+            private void collectWindow(Map<?, ?> stats, String key, String window) {
+                if (stats == null || !(stats.get(key) instanceof Map<?, ?> sample)
+                    || !(sample.get("sum") instanceof Number count) || !(sample.get("tps") instanceof Number rate)) {
+                    return;
+                }
+                try {
+                    long value = Long.parseLong(count.toString());
+                    float tps = rate.floatValue();
+                    if (value >= 0 && Float.isFinite(tps) && rate.doubleValue() >= 0) {
+                        this.recordWindow(window, value, tps);
+                    }
+                } catch (NumberFormatException e) {
+                    // 小数、溢出或格式无效的消息数不参与采集。
+                }
+            }
+
+            protected abstract void recordWindow(String window, long count, float rate);
         }
 
         /** 统一处理请求发送、响应校验、异常和完成计数，具体响应由各采集回调解析。 */

@@ -29,11 +29,21 @@ import org.apache.eventmesh.dashboard.console.function.report.model.base.Runtime
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqBrokerMessagesIn;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqBrokerMessagesOut;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerConnectionNumber;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerFailedTps;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerGroupNumber;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerLagLatency;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerOffset;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerProcessTime;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerSuccessTps;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqGroupMessagesOut;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDiskFreeBytes;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDiskUsage;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDispatchBehindBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageFlushBehindBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageMessageReserveTime;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqThreadPoolWartermark;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqTopicMessagesIn;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqTopicNumber;
 import org.apache.eventmesh.dashboard.console.mapstruct.report.RocketMQCollectMapper;
 import org.apache.eventmesh.dashboard.core.function.SDK.ConfigManage;
 import org.apache.eventmesh.dashboard.core.function.SDK.SDKManage;
@@ -187,7 +197,7 @@ public class RocketMQCollectTest {
         Mockito.verify(wrapper).sync(capture.capture());
         var models = capture.getValue().getDataMap();
         Assertions.assertEquals(Set.of(RocketmqConsumerOffset.class, RocketmqConsumerConnectionNumber.class,
-            org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class), models.keySet());
+            org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class, RocketmqTopicNumber.class), models.keySet());
         Assertions.assertEquals(2, models.get(RocketmqConsumerOffset.class).size());
         models.get(RocketmqConsumerOffset.class).stream().map(RocketmqConsumerOffset.class::cast).forEach(row -> {
             Assertions.assertEquals("buyers", row.getGroupName());
@@ -352,7 +362,7 @@ public class RocketMQCollectTest {
             second.get(2, java.util.concurrent.TimeUnit.SECONDS);
             var capture = org.mockito.ArgumentCaptor.forClass(org.apache.eventmesh.dashboard.console.function.report.collect.RestoreData.class);
             Mockito.verify(wrapper, Mockito.times(2)).sync(capture.capture());
-            Assertions.assertTrue(capture.getAllValues().get(1).getDataMap().isEmpty());
+            Assertions.assertEquals(0L, rows(capture.getAllValues().get(1).getDataMap(), RocketmqTopicNumber.class).get(0).getValue());
         } finally {
             executor.shutdownNow();
         }
@@ -360,7 +370,10 @@ public class RocketMQCollectTest {
 
     /** Offset regressions deliberately keep their callback queues independent of the new Broker roots. */
     private boolean failBrokerRoot(RemotingCommand request, InvokeCallback callback) {
-        if (request.getCode() == RequestCode.GET_BROKER_CONFIG || request.getCode() == RequestCode.GET_BROKER_RUNTIME_INFO) {
+        if (request.getCode() == RequestCode.GET_BROKER_CONFIG || request.getCode() == RequestCode.GET_BROKER_RUNTIME_INFO
+            || request.getCode() == RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG
+            || request.getCode() == RequestCode.VIEW_BROKER_STATS_DATA
+            || request.getCode() == RequestCode.QUERY_CONSUME_TIME_SPAN) {
             callback.operationFail(new IllegalStateException("Broker roots disabled in offset-only regression"));
             return true;
         }
@@ -484,6 +497,8 @@ public class RocketMQCollectTest {
             if (request.getCode() == RequestCode.GET_ALL_TOPIC_CONFIG) {
                 topicRoots.incrementAndGet();
                 callback.operationFail(new IllegalStateException("first root fails inline"));
+            } else if (request.getCode() == RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG) {
+                callback.operationFail(new IllegalStateException("Group count unavailable"));
             } else if (request.getCode() == RequestCode.GET_BROKER_CONFIG) {
                 configRoots.incrementAndGet();
                 reply(callback, ResponseCode.SUCCESS, "brokerClusterName=cluster-A\nbrokerName=wrong-key\n".getBytes(StandardCharsets.UTF_8));
@@ -654,8 +669,8 @@ public class RocketMQCollectTest {
                     callback.operationFail(new IllegalStateException("No runtime or consumers"));
             }
         });
-        Assertions.assertEquals(Set.of(org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class),
-            models.keySet(), "Topic positions must never become Broker message counts or rates");
+        Assertions.assertEquals(Set.of(org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class,
+            RocketmqTopicNumber.class), models.keySet(), "Topic positions must never become Broker message counts or rates");
         var offsets = rows(models, org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class);
         Assertions.assertEquals(2, offsets.size());
         Assertions.assertTrue(offsets.stream().anyMatch(row -> Long.valueOf(999L).equals(row.getValueMaxOffsetSum())));
@@ -751,6 +766,108 @@ public class RocketMQCollectTest {
         Assertions.assertTrue(collectRuntime(Map.of("putTps", "1 2 3", "getTps", "4 5 6",
             "dispatchBehind", "9", "flushBehindBytes", "9", "endTransactionThreadPoolQueueSize", "9")).isEmpty(),
             "Unknown keys and runtime throughput cannot substitute for native Broker statistics");
+    }
+
+    @Test
+    public void filtersInvalidLagTimestampsAndRetainsZeroBacklog() throws Exception {
+        long now = System.currentTimeMillis();
+        for (long delay : new long[] {0, 100, -1, now + 1}) {
+            var models = collectMock((request, callback) -> {
+                switch (request.getCode()) {
+                    case RequestCode.GET_ALL_TOPIC_CONFIG -> reply(callback, ResponseCode.SUCCESS,
+                        "{\"topicConfigTable\":{\"orders\":{}}}".getBytes(StandardCharsets.UTF_8));
+                    case RequestCode.QUERY_TOPIC_CONSUME_BY_WHO -> reply(callback, ResponseCode.SUCCESS,
+                        "{\"groupList\":[\"buyers\"]}".getBytes(StandardCharsets.UTF_8));
+                    case RequestCode.GET_CONSUME_STATS -> {
+                        var stats = new org.apache.rocketmq.remoting.protocol.admin.ConsumeStats();
+                        var offset = new org.apache.rocketmq.remoting.protocol.admin.OffsetWrapper();
+                        offset.setBrokerOffset(3L);
+                        offset.setConsumerOffset(2L);
+                        stats.getOffsetTable().put(new org.apache.rocketmq.common.message.MessageQueue("orders", "broker", 0), offset);
+                        reply(callback, ResponseCode.SUCCESS, RemotingSerializable.encode(stats));
+                    }
+                    case RequestCode.QUERY_CONSUME_TIME_SPAN -> {
+                        byte[] body = RemotingSerializable.encode(Map.of("consumeTimeSpanSet", List.of(
+                            Map.of("messageQueue", Map.of("topic", "orders", "queueId", 0), "delayTime", delay, "minTimeStamp", now - 1000),
+                            Map.of("messageQueue", Map.of("topic", "orders", "queueId", 1), "delayTime", 0, "minTimeStamp", -1),
+                            Map.of("messageQueue", Map.of("topic", "another", "queueId", 0), "delayTime", 0, "minTimeStamp", now - 1000))));
+                        reply(callback, ResponseCode.SUCCESS, body);
+                        reply(callback, ResponseCode.SUCCESS, body);
+                    }
+                    default -> callback.operationFail(new IllegalStateException("Other requests unavailable"));
+                }
+            });
+            if (delay >= 0 && delay <= 100) {
+                var rows = rows(models, RocketmqConsumerLagLatency.class);
+                Assertions.assertEquals(1, rows.size(), "Duplicate callbacks must not duplicate samples");
+                Assertions.assertEquals(delay, rows.get(0).getValue());
+                Assertions.assertEquals("buyers", rows.get(0).getGroupName());
+                Assertions.assertEquals("0", rows.get(0).getQueueId());
+            } else {
+                Assertions.assertFalse(models.containsKey(RocketmqConsumerLagLatency.class));
+            }
+        }
+    }
+
+    @Test
+    public void collectsDiskRatiosAndApproximateFreeBytesWithoutInventingMissingValues() throws Exception {
+        var models = collectRuntime(Map.of("commitLogDiskRatio", "0.75", "commitLogDiskRatio_/store/a", "0.75",
+            "consumeQueueDiskRatio", "0", "commitLogDirCapacity", "Total : 10 GiB, Free : 2.5 GiB."));
+        Assertions.assertEquals(3, rows(models, RocketmqStorageDiskUsage.class).size());
+        Assertions.assertEquals(2684354560L, rows(models, RocketmqStorageDiskFreeBytes.class).get(0).getValue());
+        var path = rows(models, RocketmqStorageDiskUsage.class).stream().filter(row -> row.getStoreType().equals("commitlog"))
+            .findFirst().orElseThrow();
+        Assertions.assertEquals("/store/a", path.getPath());
+        Assertions.assertEquals(0.75f, path.getValue());
+        for (String value : List.of("-1", "NaN", "Infinity", "1.5", "missing")) {
+            Assertions.assertTrue(collectRuntime(Map.of("commitLogDiskRatio", value)).isEmpty());
+        }
+        for (String value : List.of("Total : 1 GiB, Free : 2 GiB.", "Total : 0 B, Free : 0 B.", "unknown")) {
+            Assertions.assertTrue(collectRuntime(Map.of("commitLogDirCapacity", value)).isEmpty());
+        }
+        Assertions.assertEquals(0L, rows(collectRuntime(Map.of("commitLogDirCapacity", "Total : 1 GiB, Free : 0 B.")),
+            RocketmqStorageDiskFreeBytes.class).get(0).getValue());
+    }
+
+    @Test
+    public void collectsClientMetricsPerClientAndSkipsUnavailableValues() throws Exception {
+        for (boolean available : List.of(true, false)) {
+            AtomicInteger requests = new AtomicInteger();
+            var models = collectMock((request, callback) -> {
+                switch (request.getCode()) {
+                    case RequestCode.GET_ALL_TOPIC_CONFIG -> reply(callback, ResponseCode.SUCCESS,
+                        "{\"topicConfigTable\":{\"orders\":{},\"payments\":{}}}".getBytes(StandardCharsets.UTF_8));
+                    case RequestCode.QUERY_TOPIC_CONSUME_BY_WHO -> reply(callback, ResponseCode.SUCCESS,
+                        "{\"groupList\":[\"buyers\"]}".getBytes(StandardCharsets.UTF_8));
+                    case RequestCode.GET_CONSUMER_CONNECTION_LIST -> reply(callback, ResponseCode.SUCCESS,
+                        "{\"connectionSet\":[{\"clientId\":\"a\"},{\"clientId\":\"b\"}]}".getBytes(StandardCharsets.UTF_8));
+                    case RequestCode.GET_CONSUMER_RUNNING_INFO -> {
+                        requests.incrementAndGet();
+                        if (available) {
+                            reply(callback, ResponseCode.SUCCESS, RemotingSerializable.encode(Map.of("statusTable", Map.of(
+                                "orders", Map.of("consumeOKTPS", 2.5, "consumeFailedTPS", 0, "consumeRT", 12.25),
+                                "payments", Map.of("consumeOKTPS", -1, "consumeRT", "NaN")))));
+                        } else {
+                            callback.operationFail(new IllegalStateException("Client disconnected"));
+                            callback.operationFail(new IllegalStateException("Duplicate failure notification"));
+                        }
+                    }
+                    default -> callback.operationFail(new IllegalStateException("Not needed for this case"));
+                }
+            });
+            Assertions.assertEquals(2, requests.get(), "Shared group is queried once; each client has one request");
+            if (available) {
+                var success = rows(models, RocketmqConsumerSuccessTps.class);
+                Assertions.assertEquals(Set.of("a", "b"), success.stream().map(RocketmqConsumerSuccessTps::getClientId)
+                    .collect(java.util.stream.Collectors.toSet()));
+                Assertions.assertTrue(success.stream().allMatch(row -> row.getValue() == 2.5f && row.getTopicName().equals("orders")));
+                Assertions.assertEquals(2, rows(models, RocketmqConsumerFailedTps.class).size());
+                Assertions.assertEquals(0f, rows(models, RocketmqConsumerFailedTps.class).get(0).getValue());
+                Assertions.assertEquals(12.25f, rows(models, RocketmqConsumerProcessTime.class).get(0).getValue());
+            } else {
+                Assertions.assertFalse(models.containsKey(RocketmqConsumerSuccessTps.class));
+            }
+        }
     }
 
     private Map<Class<?>, List<Object>> collectStatsBody(String body) throws Exception {
@@ -855,9 +972,14 @@ public class RocketMQCollectTest {
                                 successful.add(request.getCode());
                                 if (request.getCode() == RequestCode.VIEW_BROKER_STATS_DATA) {
                                     var header = (ViewBrokerStatsDataRequestHeader) request.readCustomHeader();
-                                    brokerResponses.put(header.getStatsName(), future.getResponseCommand().getBody());
+                                    brokerResponses.put(header.getStatsName() + ":" + header.getStatsKey(), future.getResponseCommand().getBody());
+                                    if (header.getStatsName().startsWith("BROKER_")) {
+                                        brokerResponses.put(header.getStatsName(), future.getResponseCommand().getBody());
+                                    }
                                 } else if (request.getCode() == RequestCode.GET_BROKER_CONFIG
-                                    || request.getCode() == RequestCode.GET_BROKER_RUNTIME_INFO) {
+                                    || request.getCode() == RequestCode.GET_BROKER_RUNTIME_INFO
+                                    || request.getCode() == RequestCode.GET_ALL_TOPIC_CONFIG
+                                    || request.getCode() == RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG) {
                                     brokerResponses.put(Integer.toString(request.getCode()), future.getResponseCommand().getBody());
                                 }
                             }
@@ -900,7 +1022,8 @@ public class RocketMQCollectTest {
                 org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class,
                 RocketmqConsumerOffset.class, RocketmqConsumerConnectionNumber.class, RocketmqBrokerMessagesIn.class,
                 RocketmqBrokerMessagesOut.class, RocketmqStorageDispatchBehindBytes.class, RocketmqStorageFlushBehindBytes.class,
-                RocketmqStorageMessageReserveTime.class, RocketmqThreadPoolWartermark.class), models.keySet(),
+                RocketmqStorageMessageReserveTime.class, RocketmqThreadPoolWartermark.class, RocketmqTopicNumber.class,
+                RocketmqConsumerGroupNumber.class, RocketmqTopicMessagesIn.class, RocketmqGroupMessagesOut.class, RocketmqConsumerLagLatency.class, RocketmqConsumerSuccessTps.class, RocketmqConsumerFailedTps.class, RocketmqConsumerProcessTime.class, RocketmqStorageDiskUsage.class, RocketmqStorageDiskFreeBytes.class), models.keySet(),
                 "Only existing Topic/consumer measurements and approved Broker stats/runtime measurements are collected");
             var requests = org.mockito.ArgumentCaptor.forClass(RemotingCommand.class);
             Mockito.verify(observed, Mockito.atLeastOnce()).invokeAsync(requests.capture(), Mockito.anyLong(), Mockito.any());
@@ -910,7 +1033,8 @@ public class RocketMQCollectTest {
                 Assertions.assertTrue(Set.of(RequestCode.GET_ALL_TOPIC_CONFIG, RequestCode.GET_TOPIC_STATS_INFO,
                     RequestCode.QUERY_TOPIC_CONSUME_BY_WHO, RequestCode.GET_CONSUMER_CONNECTION_LIST,
                     RequestCode.GET_CONSUME_STATS, RequestCode.GET_BROKER_CONFIG, RequestCode.VIEW_BROKER_STATS_DATA,
-                    RequestCode.GET_BROKER_RUNTIME_INFO).contains(request.getCode()), "Unexpected collection family");
+                    RequestCode.GET_BROKER_RUNTIME_INFO, RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG,
+                    RequestCode.QUERY_CONSUME_TIME_SPAN, RequestCode.GET_CONSUMER_RUNNING_INFO).contains(request.getCode()), "Unexpected collection family");
                 if (request.getCode() == RequestCode.GET_CONSUME_STATS) {
                     var header = (org.apache.rocketmq.remoting.protocol.header.GetConsumeStatsRequestHeader) request.readCustomHeader();
                     Assertions.assertNotNull(header.getTopic(), "Consumer query must be scoped to its Topic");
@@ -941,10 +1065,34 @@ public class RocketMQCollectTest {
             Assertions.assertEquals(0, outstanding.get(), "All callbacks must finish");
             for (int code : List.of(RequestCode.GET_ALL_TOPIC_CONFIG, RequestCode.GET_TOPIC_STATS_INFO,
                 RequestCode.QUERY_TOPIC_CONSUME_BY_WHO, RequestCode.GET_CONSUME_STATS, RequestCode.GET_CONSUMER_CONNECTION_LIST,
-                RequestCode.GET_BROKER_CONFIG, RequestCode.GET_BROKER_RUNTIME_INFO, RequestCode.VIEW_BROKER_STATS_DATA)) {
+                RequestCode.GET_BROKER_CONFIG, RequestCode.GET_BROKER_RUNTIME_INFO, RequestCode.VIEW_BROKER_STATS_DATA,
+                RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG)) {
                 Assertions.assertTrue(successful.contains(code), "Missing successful request " + code);
             }
             assertLiveBrokerModels(models, runtime, brokerResponses, runtimeBefore.get(), runtimeAfter.get());
+            assertScopeModels(models, brokerResponses, topic);
+            Assertions.assertTrue(successful.contains(RequestCode.GET_CONSUMER_RUNNING_INFO));
+            Assertions.assertTrue(successful.contains(RequestCode.QUERY_CONSUME_TIME_SPAN));
+            var successfulClient = rows(models, RocketmqConsumerSuccessTps.class).stream()
+                .filter(row -> row.getTopicName().equals(topic) && row.getClientId().equals(topic)).findFirst().orElseThrow();
+            Assertions.assertEquals(topic, successfulClient.getGroupName());
+            Assertions.assertEquals(2.5f, successfulClient.getValue());
+            Assertions.assertEquals(0.5f, rows(models, RocketmqConsumerFailedTps.class).stream()
+                .filter(row -> row.getTopicName().equals(topic)).findFirst().orElseThrow().getValue());
+            Assertions.assertEquals(12.25f, rows(models, RocketmqConsumerProcessTime.class).stream()
+                .filter(row -> row.getTopicName().equals(topic)).findFirst().orElseThrow().getValue());
+            var lag = rows(models, RocketmqConsumerLagLatency.class).stream()
+                .filter(row -> row.getTopicName().equals(topic)).findFirst().orElseThrow();
+            Assertions.assertEquals("0", lag.getQueueId());
+            Assertions.assertTrue(lag.getValue() >= 0 && lag.getValue() < 30000);
+            var nativeRuntime = (Map<?, ?>) RemotingSerializable.decode(
+                brokerResponses.get(Integer.toString(RequestCode.GET_BROKER_RUNTIME_INFO)), Map.class).get("table");
+            for (var disk : rows(models, RocketmqStorageDiskUsage.class)) {
+                String key = disk.getStoreType().equals("commitlog") ? "commitLogDiskRatio_" + disk.getPath()
+                    : disk.getStoreType().equals("commitlog_min") ? "commitLogDiskRatio" : "consumeQueueDiskRatio";
+                Assertions.assertEquals(Float.parseFloat(nativeRuntime.get(key).toString()), disk.getValue());
+            }
+
             var nativeConfig = new java.util.Properties();
             nativeConfig.load(new java.io.StringReader(new String(
                 brokerResponses.get(Integer.toString(RequestCode.GET_BROKER_CONFIG)), StandardCharsets.UTF_8)));
@@ -952,7 +1100,9 @@ public class RocketMQCollectTest {
                 Assertions.assertEquals(1L, requests.getAllValues().stream().filter(request -> request.getCode() == code).count());
             }
             var statsRequests = requests.getAllValues().stream()
-                .filter(request -> request.getCode() == RequestCode.VIEW_BROKER_STATS_DATA).toList();
+                .filter(request -> request.getCode() == RequestCode.VIEW_BROKER_STATS_DATA)
+                .filter(request -> ((ViewBrokerStatsDataRequestHeader) request.readCustomHeader()).getStatsName().startsWith("BROKER_"))
+                .toList();
             Assertions.assertEquals(2, statsRequests.size());
             Set<String> names = new java.util.HashSet<>();
             for (RemotingCommand request : statsRequests) {
@@ -980,6 +1130,114 @@ public class RocketMQCollectTest {
     }
 
     /** Compare live observations with the exact response bodies, not with a later fluctuating Broker query. */
+    @Test
+    public void countsConfiguredResourcesAndScopesMessageStats() throws Exception {
+        Set<String> statsKeys = new java.util.HashSet<>();
+        AtomicInteger groupRequests = new AtomicInteger();
+        var models = collectMock((request, callback) -> {
+            switch (request.getCode()) {
+                case RequestCode.GET_ALL_TOPIC_CONFIG:
+                    reply(callback, ResponseCode.SUCCESS,
+                        "{\"topicConfigTable\":{\"orders\":{},\"payments\":{},\"%DLQ%buyers\":{}}}".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG:
+                    groupRequests.incrementAndGet();
+                    reply(callback, ResponseCode.SUCCESS,
+                        "{\"subscriptionGroupTable\":{\"buyers\":{},\"offline\":{},\"system\":{}}}".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case RequestCode.QUERY_TOPIC_CONSUME_BY_WHO:
+                    reply(callback, ResponseCode.SUCCESS, "{\"groupList\":[\"buyers\"]}".getBytes(StandardCharsets.UTF_8));
+                    break;
+                case RequestCode.VIEW_BROKER_STATS_DATA:
+                    var header = (ViewBrokerStatsDataRequestHeader) request.readCustomHeader();
+                    Assertions.assertTrue(statsKeys.add(header.getStatsName() + ":" + header.getStatsKey()));
+                    reply(callback, ResponseCode.SUCCESS,
+                        ("{\"statsMinute\":{\"sum\":9007199254740993,\"tps\":1.5},"
+                            + "\"statsHour\":{\"sum\":0,\"tps\":0},\"statsDay\":{\"sum\":-1,\"tps\":1}}")
+                            .getBytes(StandardCharsets.UTF_8));
+                    callback.operationFail(new IllegalStateException("duplicate"));
+                    break;
+                default:
+                    callback.operationFail(new IllegalStateException("Unrelated data unavailable"));
+            }
+        });
+        Assertions.assertEquals(3L, rows(models, RocketmqTopicNumber.class).get(0).getValue());
+        Assertions.assertEquals(3L, rows(models, RocketmqConsumerGroupNumber.class).get(0).getValue());
+        Assertions.assertEquals(1, groupRequests.get());
+        Assertions.assertEquals(Set.of("TOPIC_PUT_NUMS:orders", "TOPIC_PUT_NUMS:payments", "TOPIC_PUT_NUMS:%DLQ%buyers",
+            "GROUP_GET_NUMS:orders@buyers", "GROUP_GET_NUMS:payments@buyers"), statsKeys);
+        Assertions.assertEquals(6, rows(models, RocketmqTopicMessagesIn.class).size());
+        Assertions.assertEquals(4, rows(models, RocketmqGroupMessagesOut.class).size());
+        rows(models, RocketmqGroupMessagesOut.class).forEach(row -> {
+            Assertions.assertEquals("buyers", row.getGroupName());
+            Assertions.assertEquals("minute".equals(row.getWindow()) ? 9007199254740993L : 0L, row.getValueWindowCount());
+            Assertions.assertEquals("minute".equals(row.getWindow()) ? 1.5F : 0F, row.getValue());
+            Assertions.assertNotNull(row.getRuntimeId());
+        });
+    }
+
+    @Test
+    public void missingConfigurationIsNotZeroButEmptyConfigurationIsZero() throws Exception {
+        for (String body : List.of("{}", "{\"topicConfigTable\":null,\"subscriptionGroupTable\":null}", "not-json")) {
+            var models = collectMock((request, callback) -> {
+                if (request.getCode() == RequestCode.GET_ALL_TOPIC_CONFIG || request.getCode() == RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG) {
+                    reply(callback, ResponseCode.SUCCESS, body.getBytes(StandardCharsets.UTF_8));
+                } else {
+                    callback.operationFail(new IllegalStateException("Unavailable"));
+                }
+            });
+            Assertions.assertTrue(models.isEmpty(), body);
+        }
+        var empty = collectMock((request, callback) -> {
+            if (request.getCode() == RequestCode.GET_ALL_TOPIC_CONFIG || request.getCode() == RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG) {
+                reply(callback, ResponseCode.SUCCESS,
+                    "{\"topicConfigTable\":{},\"subscriptionGroupTable\":{}}".getBytes(StandardCharsets.UTF_8));
+            } else {
+                callback.operationFail(new IllegalStateException("Unavailable"));
+            }
+        });
+        Assertions.assertEquals(0L, rows(empty, RocketmqTopicNumber.class).get(0).getValue());
+        Assertions.assertEquals(0L, rows(empty, RocketmqConsumerGroupNumber.class).get(0).getValue());
+    }
+
+    @Test
+    public void scopedModelsHaveNameAndWindowTagsAndGaugeSemantics() {
+        assertReportTable(RocketmqTopicNumber.class, "rocketmq_topic_number", List.of("runtime_id"), List.of("value"));
+        assertReportTable(RocketmqConsumerGroupNumber.class, "rocketmq_consumer_group_number", List.of("runtime_id"), List.of("value"));
+        assertReportTable(RocketmqTopicMessagesIn.class, "rocketmq_topic_messages_in",
+            List.of("topic_name", "window"), List.of("value_window_count"), List.of("value"));
+        assertReportTable(RocketmqGroupMessagesOut.class, "rocketmq_group_messages_out",
+            List.of("topic_name", "group_name", "window"), List.of("value_window_count"), List.of("value"));
+        var row = RocketMQCollectMapper.INSTANCE.groupMessages("orders", "buyers", "minute", 9007199254740993L, 1.5F);
+        Assertions.assertEquals("orders", row.getTopicName());
+        Assertions.assertEquals("buyers", row.getGroupName());
+        Assertions.assertEquals(9007199254740993L, row.getValueWindowCount());
+        Assertions.assertEquals(1.5F, row.getValue());
+    }
+
+    private void assertScopeModels(Map<Class<?>, List<Object>> models, Map<String, byte[]> responses, String topic) {
+        Map<?, ?> topics = RemotingSerializable.decode(responses.get(Integer.toString(RequestCode.GET_ALL_TOPIC_CONFIG)), Map.class);
+        Map<?, ?> groups = RemotingSerializable.decode(responses.get(Integer.toString(RequestCode.GET_ALL_SUBSCRIPTIONGROUP_CONFIG)), Map.class);
+        Assertions.assertEquals((long) ((Map<?, ?>) topics.get("topicConfigTable")).size(), rows(models, RocketmqTopicNumber.class).get(0).getValue());
+        Assertions.assertEquals((long) ((Map<?, ?>) groups.get("subscriptionGroupTable")).size(),
+            rows(models, RocketmqConsumerGroupNumber.class).get(0).getValue());
+        var incoming = rows(models, RocketmqTopicMessagesIn.class).stream().filter(row -> topic.equals(row.getTopicName())).toList();
+        var outgoing = rows(models, RocketmqGroupMessagesOut.class).stream().filter(row -> topic.equals(row.getTopicName())
+            && topic.equals(row.getGroupName())).toList();
+        Assertions.assertEquals(3, incoming.size());
+        Assertions.assertEquals(3, outgoing.size());
+        for (Object row : java.util.stream.Stream.concat(incoming.stream(), outgoing.stream()).toList()) {
+            boolean in = row instanceof RocketmqTopicMessagesIn;
+            String window = in ? ((RocketmqTopicMessagesIn) row).getWindow() : ((RocketmqGroupMessagesOut) row).getWindow();
+            long count = in ? ((RocketmqTopicMessagesIn) row).getValueWindowCount() : ((RocketmqGroupMessagesOut) row).getValueWindowCount();
+            String key = in ? "TOPIC_PUT_NUMS:" + topic : "GROUP_GET_NUMS:" + topic + "@" + topic;
+            Map<?, ?> wire = RemotingSerializable.decode(responses.get(key), Map.class);
+            Map<?, ?> sample = (Map<?, ?>) wire.get(Map.of("minute", "statsMinute", "hour", "statsHour", "day", "statsDay").get(window));
+            Assertions.assertEquals(Long.parseLong(sample.get("sum").toString()), count);
+            Assertions.assertEquals(((Number) sample.get("tps")).floatValue(), ((RuntimeFloatValue) row).getValue());
+        }
+    }
+
     private void assertLiveBrokerModels(Map<Class<?>, List<Object>> models, RuntimeMetadata runtime,
         Map<String, byte[]> responses, long before, long after) {
         Map<String, String> windows = Map.of("minute", "statsMinute", "hour", "statsHour", "day", "statsDay");
@@ -1066,7 +1324,7 @@ public class RocketMQCollectTest {
             ? "collect_test_" + java.util.UUID.randomUUID().toString().replace("-", "") : configuredDatabase;
         Assertions.assertTrue(database.matches("collect_test_[a-z0-9_]+"), "Use a dedicated collection test database");
         String url = "jdbc:iotdb://" + address + "/" + database + "?sql_dialect=table";
-        var tables = java.util.Map.<Class<?>, String>of(
+        var tables = new java.util.HashMap<Class<?>, String>(java.util.Map.<Class<?>, String>of(
             RocketmqConsumerOffset.class, "rocketmq_consumer_offset",
             RocketmqConsumerConnectionNumber.class, "rocketmq_consumer_connection_number",
             RocketmqBrokerMessagesIn.class, "rocketmq_broker_messages_in",
@@ -1074,7 +1332,17 @@ public class RocketMQCollectTest {
             RocketmqStorageDispatchBehindBytes.class, "rocketmq_storage_dispatch_behind_bytes",
             RocketmqStorageFlushBehindBytes.class, "rocketmq_storage_flush_behind_bytes",
             RocketmqStorageMessageReserveTime.class, "rocketmq_storage_message_reserve_time",
-            RocketmqThreadPoolWartermark.class, "rocketmq_thread_pool_wartermark");
+            RocketmqThreadPoolWartermark.class, "rocketmq_thread_pool_wartermark"));
+        tables.put(RocketmqTopicNumber.class, "rocketmq_topic_number");
+        tables.put(RocketmqConsumerGroupNumber.class, "rocketmq_consumer_group_number");
+        tables.put(RocketmqTopicMessagesIn.class, "rocketmq_topic_messages_in");
+        tables.put(RocketmqGroupMessagesOut.class, "rocketmq_group_messages_out");
+        tables.put(RocketmqConsumerLagLatency.class, "rocketmq_consumer_lag_latency");
+        tables.put(RocketmqConsumerSuccessTps.class, "rocketmq_consumer_success_tps");
+        tables.put(RocketmqConsumerFailedTps.class, "rocketmq_consumer_failed_tps");
+        tables.put(RocketmqConsumerProcessTime.class, "rocketmq_consumer_process_time");
+        tables.put(RocketmqStorageDiskUsage.class, "rocketmq_storage_disk_usage");
+        tables.put(RocketmqStorageDiskFreeBytes.class, "rocketmq_storage_disk_free_bytes");
         engine.setClazzToTableName(tables);
         try {
             // 使用独立测试库，避免同名历史表结构影响测试；建表及写入仍调用现有报表引擎。
@@ -1146,6 +1414,24 @@ public class RocketMQCollectTest {
                                 long expected = ((RocketmqConsumerConnectionNumber) rows.get(entry.getKey()).get(0)).getValueConnectionCount();
                                 Assertions.assertEquals(expected, result.getLong("value_connection_count"));
                                 expectedSample = expected == 1;
+                            } else if (entry.getKey() == RocketmqTopicMessagesIn.class || entry.getKey() == RocketmqGroupMessagesOut.class) {
+                                String observedTopic = result.getString("topic_name");
+                                String window = result.getString("window");
+                                String group = entry.getKey() == RocketmqGroupMessagesOut.class ? result.getString("group_name") : "";
+                                Object expected = rows.get(entry.getKey()).stream().filter(row -> {
+                                    if (row instanceof RocketmqTopicMessagesIn incoming) {
+                                        return observedTopic.equals(incoming.getTopicName()) && window.equals(incoming.getWindow());
+                                    }
+                                    RocketmqGroupMessagesOut outgoing = (RocketmqGroupMessagesOut) row;
+                                    return observedTopic.equals(outgoing.getTopicName()) && window.equals(outgoing.getWindow())
+                                        && group.equals(outgoing.getGroupName());
+                                }).findFirst().orElseThrow();
+                                long countValue = expected instanceof RocketmqTopicMessagesIn incoming
+                                    ? incoming.getValueWindowCount() : ((RocketmqGroupMessagesOut) expected).getValueWindowCount();
+                                Assertions.assertEquals(countValue, result.getLong("value_window_count"));
+                                Assertions.assertEquals(((RuntimeFloatValue) expected).getValue(), result.getFloat("value"));
+                                Assertions.assertTrue(dimensions.add(observedTopic + ":" + group + ":" + window));
+                                expectedSample = true;
                             } else {
                                 String dimension = assertBrokerReadback(result, entry.getKey(), rows.get(entry.getKey()));
                                 Assertions.assertTrue(dimensions.add(dimension), "Duplicate persisted dimension " + dimension);
@@ -1177,6 +1463,31 @@ public class RocketMQCollectTest {
     }
 
     private String assertBrokerReadback(java.sql.ResultSet result, Class<?> model, List<Object> expectedRows) throws Exception {
+        if (Set.of(RocketmqConsumerLagLatency.class, RocketmqConsumerSuccessTps.class, RocketmqConsumerFailedTps.class, RocketmqConsumerProcessTime.class, RocketmqStorageDiskUsage.class, RocketmqStorageDiskFreeBytes.class).contains(model)) {
+            var tags = org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList(model).stream()
+                .filter(field -> field.isAnnotationPresent(ReportTag.class)).toList();
+            List<Object> matches = new java.util.ArrayList<>();
+            for (Object row : expectedRows) {
+                boolean match = true;
+                for (var tag : tags) {
+                    String column = tag.getName().replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase(java.util.Locale.ROOT);
+                    Object value = org.apache.commons.lang3.reflect.FieldUtils.readField(tag, row, true);
+                    match &= java.util.Objects.equals(value == null ? null : value.toString(), result.getString(column));
+                }
+                if (match) {
+                    matches.add(row);
+                }
+            }
+            Assertions.assertEquals(1, matches.size());
+            Object row = matches.get(0);
+            if (row instanceof RuntimeFloatValue numeric) {
+                Assertions.assertEquals(numeric.getValue(), result.getFloat("value"));
+            } else {
+                Assertions.assertEquals(((RuntimeLongValue) row).getValue(), result.getLong("value"));
+            }
+            Assertions.assertFalse(result.wasNull());
+            return row.toString();
+        }
         String dimension = "broker";
         Object expected;
         if (model == RocketmqBrokerMessagesIn.class || model == RocketmqBrokerMessagesOut.class) {
@@ -1210,6 +1521,21 @@ public class RocketMQCollectTest {
     }
 
     private void prepareBroker(DefaultRemotingClient client, String topic) throws Exception {
+        // 真实 Broker 转发请求到已注册连接；客户端响应采用固定测试样本，不代表业务压力测试。
+        client.registerProcessor(RequestCode.GET_CONSUMER_RUNNING_INFO, new org.apache.rocketmq.remoting.netty.NettyRequestProcessor() {
+            @Override
+            public RemotingCommand processRequest(io.netty.channel.ChannelHandlerContext context, RemotingCommand request) {
+                RemotingCommand response = RemotingCommand.createResponseCommand(ResponseCode.SUCCESS, null);
+                response.setBody(RemotingSerializable.encode(Map.of("statusTable", Map.of(topic,
+                    Map.of("consumeOKTPS", 2.5, "consumeFailedTPS", 0.5, "consumeRT", 12.25)))));
+                return response;
+            }
+
+            @Override
+            public boolean rejectRequest() {
+                return false;
+            }
+        }, null);
         CreateTopicRequestHeader create = new CreateTopicRequestHeader();
         create.setTopic(topic);
         create.setDefaultTopic("TBW102");
@@ -1257,6 +1583,7 @@ public class RocketMQCollectTest {
         consumer.getSubscriptionDataSet().add(org.apache.rocketmq.remoting.protocol.filter.FilterAPI.buildSubscriptionData(topic, "*"));
         heartbeat.getConsumerDataSet().add(consumer);
         RemotingCommand consumerBeat = RemotingCommand.createRequestCommand(RequestCode.HEART_BEAT, null);
+        consumerBeat.setVersion(org.apache.rocketmq.common.MQVersion.CURRENT_VERSION);
         consumerBeat.setBody(RemotingSerializable.encode(heartbeat));
         assertSuccess(client.invokeSync(consumerBeat, 3000));
         org.apache.rocketmq.remoting.protocol.header.PullMessageRequestHeader pull =
