@@ -18,8 +18,14 @@
 package org.apache.eventmesh.dashboard.console.mapstruct.report;
 
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqBrokerMessagesIn;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqBrokerMessagesOut;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerConnectionNumber;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerOffset;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDispatchBehindBytes;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageFlushBehindBytes;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageMessageReserveTime;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqThreadPoolWartermark;
 
 import org.apache.rocketmq.remoting.protocol.admin.OffsetWrapper;
 import org.apache.rocketmq.remoting.protocol.admin.TopicOffset;
@@ -63,5 +69,34 @@ public interface RocketMQCollectMapper {
     @Mapping(target = "valueBrokerOffset", source = "offset.brokerOffset")
     @Mapping(target = "valueOffsetLag", expression = "java(Math.max(0L, offset.getBrokerOffset() - offset.getConsumerOffset()))")
     RocketmqConsumerOffset consumerOffset(String topic, String group, String queue, OffsetWrapper offset);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "window", source = "window")
+    @Mapping(target = "valueWindowCount", source = "count")
+    @Mapping(target = "value", source = "rate")
+    RocketmqBrokerMessagesIn brokerMessagesIn(String window, long count, float rate);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "window", source = "window")
+    @Mapping(target = "valueWindowCount", source = "count")
+    @Mapping(target = "value", source = "rate")
+    RocketmqBrokerMessagesOut brokerMessagesOut(String window, long count, float rate);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "value", source = "bytes")
+    RocketmqStorageDispatchBehindBytes dispatchBytes(Long bytes);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "value", source = "bytes")
+    RocketmqStorageFlushBehindBytes flushBytes(Long bytes);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "value", source = "age")
+    RocketmqStorageMessageReserveTime reserveTime(Long age);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "poolName", source = "pool")
+    @Mapping(target = "value", source = "size")
+    RocketmqThreadPoolWartermark threadPool(String pool, long size);
 
 }

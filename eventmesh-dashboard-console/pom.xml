@@ -255,6 +255,7 @@
                         <configuration>
                             <testIncludes combine.self="override">
                                 <testInclude>**/RocketMQCollectTest.java</testInclude>
+                                <testInclude>**/DataSyncHandlerTest.java</testInclude>
                             </testIncludes>
                         </configuration>
                     </plugin>
@@ -265,6 +266,7 @@
                             <testFailureIgnore>false</testFailureIgnore>
                             <includes>
                                 <include>**/RocketMQCollectTest.java</include>
+                                <include>**/DataSyncHandlerTest.java</include>
                             </includes>
                         </configuration>
                     </plugin>

@@ -117,6 +117,7 @@ public class ReportHandlerManage {
     @Getter
     private final Map<String, ReportMetaData> aggregationMetaDataMap = new HashMap<>();
     @Setter
+    @Getter
     private ReportEngine reportEngine;
     @Setter
     private ReportConfig reportConfig;

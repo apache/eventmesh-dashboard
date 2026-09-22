@@ -43,8 +43,15 @@ import org.apache.rocketmq.remoting.protocol.header.GetConsumeStatsRequestHeader
 import org.apache.rocketmq.remoting.protocol.header.GetConsumerConnectionListRequestHeader;
 import org.apache.rocketmq.remoting.protocol.header.GetTopicStatsInfoRequestHeader;
 import org.apache.rocketmq.remoting.protocol.header.QueryTopicConsumeByWhoRequestHeader;
+import org.apache.rocketmq.remoting.protocol.header.ViewBrokerStatsDataRequestHeader;
 
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -52,6 +59,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.Setter;
 
@@ -59,6 +68,7 @@ import lombok.Setter;
     ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE, ClusterType.STORAGE_ROCKETMQ_BROKER_RAFT})
 public class RocketMQCollect extends AbstractCollect {
     private static final RocketMQCollectMapper MAPPER = RocketMQCollectMapper.INSTANCE;
+    private static final Pattern BYTE_COUNT = Pattern.compile("([0-9]+(?:\\.[0-9]+)?)\\s*(B|[KMGTPE]iB)");
 
     private String runtimeUnique;
 
@@ -99,7 +109,11 @@ public class RocketMQCollect extends AbstractCollect {
 
         private void collect() {
             try {
-                this.collectTopics();
+                // 先注册所有根请求，避免同步回调在后续请求注册前让计数归零。
+                TopicsCallback topics = new TopicsCallback(RemotingCommand.createRequestCommand(RequestCode.GET_ALL_TOPIC_CONFIG, null));
+                BrokerCollect broker = new BrokerCollect();
+                topics.execute();
+                broker.collect();
                 // 所有请求完成时计数归零并唤醒；超时则保留已采集的数据。
                 this.completed.await(Math.max(1, this.deadline - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
@@ -120,11 +134,6 @@ public class RocketMQCollect extends AbstractCollect {
 
         private synchronized void close() {
             this.closed = true;
-        }
-
-        private void collectTopics() {
-            RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ALL_TOPIC_CONFIG, null);
-            new TopicsCallback(request).execute();
         }
 
         private void collectTopic(String topic) {
@@ -272,6 +281,154 @@ public class RocketMQCollect extends AbstractCollect {
             }
         }
 
+        /** Broker 采集与 Topic 采集共用本轮计数、截止时间和写入锁，不单独交付数据。 */
+        private class BrokerCollect {
+            private final BrokerConfigCallback config = new BrokerConfigCallback();
+            private final BrokerRuntimeCallback runtime = new BrokerRuntimeCallback();
+
+            private void collect() {
+                this.config.execute();
+                this.runtime.execute();
+            }
+
+            private void collectStats(String cluster, boolean incoming) {
+                ViewBrokerStatsDataRequestHeader header = new ViewBrokerStatsDataRequestHeader();
+                header.setStatsName(incoming ? "BROKER_PUT_NUMS" : "BROKER_GET_NUMS");
+                header.setStatsKey(cluster);
+                new BrokerStatsCallback(RemotingCommand.createRequestCommand(RequestCode.VIEW_BROKER_STATS_DATA, header), incoming).execute();
+            }
+
+            /** 步骤一：统计键使用 Broker 配置中的集群名，仍然只查询当前实例。 */
+            private class BrokerConfigCallback extends CollectCallback {
+                private BrokerConfigCallback() {
+                    super(RemotingCommand.createRequestCommand(RequestCode.GET_BROKER_CONFIG, null));
+                }
+
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) throws Exception {
+                    Properties properties = new Properties();
+                    properties.load(new StringReader(new String(responseFuture.getResponseCommand().getBody(), StandardCharsets.UTF_8)));
+                    String cluster = properties.getProperty("brokerClusterName");
+                    if (cluster == null || cluster.isBlank()) {
+                        return;
+                    }
+                    collectStats(cluster, true);
+                    collectStats(cluster, false);
+                }
+            }
+
+            /** 步骤二：分别保存分钟、小时、日窗口的消息计数和速率，不能当成生命周期累计量。 */
+            private class BrokerStatsCallback extends CollectCallback {
+                private final boolean incoming;
+
+                private BrokerStatsCallback(RemotingCommand request, boolean incoming) {
+                    super(request);
+                    this.incoming = incoming;
+                }
+
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) {
+                    Map<?, ?> stats = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), Map.class);
+                    this.collectWindow(stats, "statsMinute", "minute");
+                    this.collectWindow(stats, "statsHour", "hour");
+                    this.collectWindow(stats, "statsDay", "day");
+                }
+
+                private void collectWindow(Map<?, ?> stats, String key, String window) {
+                    if (stats == null || !(stats.get(key) instanceof Map<?, ?> sample)) {
+                        return;
+                    }
+                    if (!(sample.get("sum") instanceof Number) || !(sample.get("tps") instanceof Number rate)) {
+                        return;
+                    }
+                    Long count = nonnegativeLong(sample.get("sum"));
+                    float tps = rate.floatValue();
+                    if (count == null || !Float.isFinite(tps) || rate.doubleValue() < 0) {
+                        return;
+                    }
+                    TopicCollect.this.setData(this.incoming
+                        ? MAPPER.brokerMessagesIn(window, count, tps) : MAPPER.brokerMessagesOut(window, count, tps));
+                }
+            }
+
+            /** 步骤三：按真实运行字段采集存储与线程池状态，缺失或无效字段不补零。 */
+            private class BrokerRuntimeCallback extends CollectCallback {
+                private BrokerRuntimeCallback() {
+                    super(RemotingCommand.createRequestCommand(RequestCode.GET_BROKER_RUNTIME_INFO, null));
+                }
+
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) {
+                    Map<?, ?> response = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), Map.class);
+                    if (response == null || !(response.get("table") instanceof Map<?, ?> table)) {
+                        return;
+                    }
+                    Long dispatch = nonnegativeLong(table.get("dispatchBehindBytes"));
+                    if (dispatch != null) {
+                        TopicCollect.this.setData(MAPPER.dispatchBytes(dispatch));
+                    }
+                    this.collectFlush(table);
+                    Long earliest = nonnegativeLong(table.get("earliestMessageTimeStamp"));
+                    long now = System.currentTimeMillis();
+                    if (earliest != null && earliest > 0 && earliest <= now) {
+                        TopicCollect.this.setData(MAPPER.reserveTime(now - earliest));
+                    }
+                    for (String pool : new String[] {"send", "pull", "litePull", "query", "ack"}) {
+                        this.collectThreadPool(table, pool, pool + "ThreadPoolQueueSize");
+                    }
+                    this.collectThreadPool(table, "endTransaction", "EndTransactionQueueSize");
+                }
+
+                private void collectFlush(Map<?, ?> table) {
+                    Long flush = byteCount(table.get("remainHowManyDataToFlush"));
+                    // 启用暂存池时，原生刷盘积压还包括待提交字节；字段缺席表示未启用该分支。
+                    Long commit = table.containsKey("remainHowManyDataToCommit")
+                        ? byteCount(table.get("remainHowManyDataToCommit")) : Long.valueOf(0L);
+                    if (flush != null && commit != null && flush <= Long.MAX_VALUE - commit) {
+                        TopicCollect.this.setData(MAPPER.flushBytes(flush + commit));
+                    }
+                }
+
+                private void collectThreadPool(Map<?, ?> table, String pool, String key) {
+                    Long size = nonnegativeLong(table.get(key));
+                    if (size != null) {
+                        TopicCollect.this.setData(MAPPER.threadPool(pool, size));
+                    }
+                }
+            }
+
+            private Long nonnegativeLong(Object value) {
+                if (value == null) {
+                    return null;
+                }
+                try {
+                    long number = Long.parseLong(value.toString());
+                    return number >= 0 ? number : null;
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+
+            private Long byteCount(Object value) {
+                if (!(value instanceof String text)) {
+                    return null;
+                }
+                Matcher matcher = BYTE_COUNT.matcher(text.trim());
+                if (!matcher.matches()) {
+                    return null;
+                }
+                String unit = matcher.group(2);
+                int exponent = "B".equals(unit) ? 0 : "KMGTPE".indexOf(unit.charAt(0)) + 1;
+                try {
+                    // Broker 已将二进制字节数格式化并舍入，此处只能还原近似值，不能声称字节级精确。
+                    return new BigDecimal(matcher.group(1)).multiply(BigDecimal.valueOf(1024).pow(exponent))
+                        .setScale(0, RoundingMode.HALF_UP).longValueExact();
+                } catch (ArithmeticException e) {
+                    return null;
+                }
+            }
+        }
+
         /** 统一处理请求发送、响应校验、异常和完成计数，具体响应由各采集回调解析。 */
         private abstract class CollectCallback implements InvokeCallback {
             private final RemotingCommand request;
@@ -310,7 +467,7 @@ public class RocketMQCollect extends AbstractCollect {
                     if (response == null) {
                         throw new IllegalStateException("Missing RocketMQ response");
                     }
-                    if (response.getCode() != ResponseCode.SUCCESS) {
+                    if (response.getCode() != ResponseCode.SUCCESS || response.getBody() == null || response.getBody().length == 0) {
                         return;
                     }
                     this.handleResponse(responseFuture);
@@ -346,7 +503,7 @@ public class RocketMQCollect extends AbstractCollect {
                 }
             }
 
-            protected abstract void handleResponse(ResponseFuture responseFuture);
+            protected abstract void handleResponse(ResponseFuture responseFuture) throws Exception;
         }
 
 

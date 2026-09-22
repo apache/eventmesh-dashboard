@@ -20,11 +20,24 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportTag;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeFloatValue;
 
-@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_storage_message_reserve_time",
-    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_storage_message_reserve_time",
-    comment = "当前时间与最早保留消息存储时间之差（毫秒），非配置的保留时长")
-public class RocketmqStorageMessageReserveTime extends RuntimeLongValue {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/** Broker 原生滚动采样窗口的取出消息数及消息 TPS；继承的 value 为消息数/秒，不代表消费确认。 */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_broker_messages_out",
+    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_broker_messages_out",
+    comment = "Broker 滚动采样窗口取出消息数及消息 TPS（消息数/秒），非消费确认数")
+public class RocketmqBrokerMessagesOut extends RuntimeFloatValue {
+
+    @ReportTag
+    private String window;
+
+    /** 滚动采样窗口内的取出消息数，不是累计计数或已确认消费数。 */
+    private Long valueWindowCount;
 
 }

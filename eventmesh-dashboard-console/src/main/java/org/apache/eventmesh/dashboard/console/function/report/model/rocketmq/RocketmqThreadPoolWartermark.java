@@ -20,11 +20,20 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
+import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportTag;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_thread_pool_wartermark",
     defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_thread_pool_wartermark",
-    comment = "线程池排队数")
+    comment = "线程池当前队列长度，非历史最大值")
 public class RocketmqThreadPoolWartermark extends RuntimeLongValue {
+
+    @ReportTag
+    private String poolName;
 
 }

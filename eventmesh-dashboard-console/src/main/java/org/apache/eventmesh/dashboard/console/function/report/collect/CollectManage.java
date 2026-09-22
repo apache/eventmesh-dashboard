@@ -164,6 +164,7 @@ public class CollectManage {
 
     public void init() {
         this.dataSyncHandler.setPaddingService(paddingService);
+        this.dataSyncHandler.setReportEngine(this.reportHandlerManage.getReportEngine());
     }
 
     public void collect() {
