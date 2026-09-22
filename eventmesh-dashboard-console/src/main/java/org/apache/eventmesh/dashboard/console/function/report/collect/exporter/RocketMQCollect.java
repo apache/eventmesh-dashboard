@@ -87,33 +87,32 @@ public class RocketMQCollect extends AbstractCollect {
             return;
         }
         this.defaultRemotingClient = SDKManage.getInstance().getClient(SDKTypeEnum.ADMIN, this.runtimeUnique);
-        new TopicCollect().collect();
+        new CollectRound().executeAndAwait();
     }
 
     /**
-     * Topic 采集流程：
-     * 1. 查询 Broker 上的 Topic 列表，逐个启动位点采集和消费组发现。
-     * 2. 死信 Topic 只采集位点；普通 Topic 继续查询消费组连接和消费进度。
-     * 3. 连接查询按消费组去重，响应转换为模型后直接调用 setData，不额外缓存结果。
+     * 一轮采集流程：
+     * 1. 先注册 Topic 和 Broker 两个方向的根请求，再分别启动，统一管理请求计数。
+     * 2. TopicCollect 采集位点、消费组连接和消费进度；死信 Topic 只采集位点。
+     * 3. BrokerCollect 采集消息统计和运行状态；两个方向共用本轮写入保护，不额外缓存结果。
      * 4. 等待所有异步请求完成后返回，父类再统一交付本轮数据。
      * 5. 超时或中断时保留已经采集的数据，关闭本轮写入，拒绝迟到回调。
      */
-    private class TopicCollect {
+    private class CollectRound {
         private final DefaultRemotingClient client = defaultRemotingClient;
         private final AtomicInteger pending = new AtomicInteger();
         private final CountDownLatch completed = new CountDownLatch(1);
-        private final Set<String> connectedGroups = ConcurrentHashMap.newKeySet();
         private final long deadline = System.currentTimeMillis() + 4000;
         private final LocalDateTime sampleTime = LocalDateTime.now();
         private volatile boolean closed;
 
-        private void collect() {
+        private void executeAndAwait() {
             try {
                 // 先注册所有根请求，避免同步回调在后续请求注册前让计数归零。
-                TopicsCallback topics = new TopicsCallback(RemotingCommand.createRequestCommand(RequestCode.GET_ALL_TOPIC_CONFIG, null));
+                TopicCollect topics = new TopicCollect();
                 BrokerCollect broker = new BrokerCollect();
-                topics.execute();
-                broker.collect();
+                topics.start();
+                broker.start();
                 // 所有请求完成时计数归零并唤醒；超时则保留已采集的数据。
                 this.completed.await(Math.max(1, this.deadline - System.currentTimeMillis()), TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
@@ -136,148 +135,159 @@ public class RocketMQCollect extends AbstractCollect {
             this.closed = true;
         }
 
-        private void collectTopic(String topic) {
-            this.collectTopicStats(topic);
-            if (!topic.startsWith(MixAll.DLQ_GROUP_TOPIC_PREFIX)) {
-                this.collectGroups(topic);
-            }
-        }
+        /** Topic 方向：发现 Topic，采集队列位点和消费组数据，连接查询按消费组去重。 */
+        private class TopicCollect {
+            private final Set<String> connectedGroups = ConcurrentHashMap.newKeySet();
+            private final TopicsCallback topics =
+                new TopicsCallback(RemotingCommand.createRequestCommand(RequestCode.GET_ALL_TOPIC_CONFIG, null));
 
-        private void collectTopicStats(String topic) {
-            GetTopicStatsInfoRequestHeader topicHeader = new GetTopicStatsInfoRequestHeader();
-            topicHeader.setTopic(topic);
-            RemotingCommand topicRequest = RemotingCommand.createRequestCommand(RequestCode.GET_TOPIC_STATS_INFO, topicHeader);
-            new TopicStatsCallback(topicRequest, topic).execute();
-        }
-
-        private void collectGroups(String topic) {
-            QueryTopicConsumeByWhoRequestHeader groupHeader = new QueryTopicConsumeByWhoRequestHeader();
-            groupHeader.setTopic(topic);
-            RemotingCommand groupRequest = RemotingCommand.createRequestCommand(RequestCode.QUERY_TOPIC_CONSUME_BY_WHO, groupHeader);
-            new GroupsCallback(groupRequest, topic).execute();
-        }
-
-        private void collectConnections(String group) {
-            GetConsumerConnectionListRequestHeader connectionHeader = new GetConsumerConnectionListRequestHeader();
-            connectionHeader.setConsumerGroup(group);
-            RemotingCommand connectionRequest = RemotingCommand.createRequestCommand(
-                RequestCode.GET_CONSUMER_CONNECTION_LIST, connectionHeader);
-            new ConnectionsCallback(connectionRequest, group).execute();
-        }
-
-        private void collectConsumeStats(String topic, String group) {
-            GetConsumeStatsRequestHeader consumeHeader = new GetConsumeStatsRequestHeader();
-            consumeHeader.setTopic(topic);
-            consumeHeader.setConsumerGroup(group);
-            RemotingCommand consumeRequest = RemotingCommand.createRequestCommand(RequestCode.GET_CONSUME_STATS, consumeHeader);
-            new ConsumeStatsCallback(consumeRequest, topic, group).execute();
-        }
-
-        /** 步骤一：解析 Broker 的 Topic 列表，逐个启动采集。 */
-        private class TopicsCallback extends CollectCallback {
-            private TopicsCallback(RemotingCommand request) {
-                super(request);
+            private void start() {
+                this.topics.execute();
             }
 
-            @Override
-            protected void handleResponse(ResponseFuture responseFuture) {
-                TopicConfigSerializeWrapper topics =
-                    RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), TopicConfigSerializeWrapper.class);
-                for (String topic : topics.getTopicConfigTable().keySet()) {
-                    collectTopic(topic);
+            private void collectTopic(String topic) {
+                this.collectTopicStats(topic);
+                if (!topic.startsWith(MixAll.DLQ_GROUP_TOPIC_PREFIX)) {
+                    this.collectGroups(topic);
                 }
             }
-        }
 
-        /** 步骤二：采集队列位点，并计算 Topic 汇总位点。 */
-        private class TopicStatsCallback extends CollectCallback {
-            private final String topic;
-
-            private TopicStatsCallback(RemotingCommand request, String topic) {
-                super(request);
-                this.topic = topic;
+            private void collectTopicStats(String topic) {
+                GetTopicStatsInfoRequestHeader topicHeader = new GetTopicStatsInfoRequestHeader();
+                topicHeader.setTopic(topic);
+                RemotingCommand topicRequest = RemotingCommand.createRequestCommand(RequestCode.GET_TOPIC_STATS_INFO, topicHeader);
+                new TopicStatsCallback(topicRequest, topic).execute();
             }
 
-            @Override
-            protected void handleResponse(ResponseFuture responseFuture) {
-                TopicStatsTable stats =
-                    RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), TopicStatsTable.class);
-                stats.getOffsetTable().forEach((queue, offset) -> {
-                    String queueId = String.valueOf(queue.getQueueId());
-
-                    TopicCollect.this.setData(MAPPER.topicOffset(topic, queueId, offset));
-                });
-                long min = stats.getOffsetTable().values().stream().mapToLong(offset -> offset.getMinOffset()).sum();
-                long max = stats.getOffsetTable().values().stream().mapToLong(offset -> offset.getMaxOffset()).sum();
-                long lastUpdate = stats.getOffsetTable().values().stream()
-                    .mapToLong(offset -> offset.getLastUpdateTimestamp()).max().orElse(0L);
-
-                TopicCollect.this.setData(MAPPER.aggregateOffset(topic, min, max, lastUpdate));
-            }
-        }
-
-        /** 步骤三：发现 Topic 对应的消费组，启动连接与消费进度采集。 */
-        private class GroupsCallback extends CollectCallback {
-            private final String topic;
-
-            private GroupsCallback(RemotingCommand request, String topic) {
-                super(request);
-                this.topic = topic;
+            private void collectGroups(String topic) {
+                QueryTopicConsumeByWhoRequestHeader groupHeader = new QueryTopicConsumeByWhoRequestHeader();
+                groupHeader.setTopic(topic);
+                RemotingCommand groupRequest = RemotingCommand.createRequestCommand(RequestCode.QUERY_TOPIC_CONSUME_BY_WHO, groupHeader);
+                new GroupsCallback(groupRequest, topic).execute();
             }
 
-            @Override
-            protected void handleResponse(ResponseFuture responseFuture) {
-                GroupList groups = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), GroupList.class);
-                for (String group : groups.getGroupList()) {
-                    if (TopicCollect.this.connectedGroups.add(group)) {
-                        collectConnections(group);
+            private void collectConnections(String group) {
+                GetConsumerConnectionListRequestHeader connectionHeader = new GetConsumerConnectionListRequestHeader();
+                connectionHeader.setConsumerGroup(group);
+                RemotingCommand connectionRequest = RemotingCommand.createRequestCommand(
+                    RequestCode.GET_CONSUMER_CONNECTION_LIST, connectionHeader);
+                new ConnectionsCallback(connectionRequest, group).execute();
+            }
+
+            private void collectConsumeStats(String topic, String group) {
+                GetConsumeStatsRequestHeader consumeHeader = new GetConsumeStatsRequestHeader();
+                consumeHeader.setTopic(topic);
+                consumeHeader.setConsumerGroup(group);
+                RemotingCommand consumeRequest = RemotingCommand.createRequestCommand(RequestCode.GET_CONSUME_STATS, consumeHeader);
+                new ConsumeStatsCallback(consumeRequest, topic, group).execute();
+            }
+
+            /** 步骤一：解析 Broker 的 Topic 列表，逐个启动采集。 */
+            private class TopicsCallback extends CollectCallback {
+                private TopicsCallback(RemotingCommand request) {
+                    super(request);
+                }
+
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) {
+                    TopicConfigSerializeWrapper topics =
+                        RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), TopicConfigSerializeWrapper.class);
+                    for (String topic : topics.getTopicConfigTable().keySet()) {
+                        collectTopic(topic);
                     }
-                    collectConsumeStats(topic, group);
                 }
             }
-        }
 
-        /** 步骤四：采集消费组连接数；同一消费组每轮只查询一次。 */
-        private class ConnectionsCallback extends CollectCallback {
-            private final String group;
+            /** 步骤二：采集队列位点，并计算 Topic 汇总位点。 */
+            private class TopicStatsCallback extends CollectCallback {
+                private final String topic;
 
-            private ConnectionsCallback(RemotingCommand request, String group) {
-                super(request);
-                this.group = group;
+                private TopicStatsCallback(RemotingCommand request, String topic) {
+                    super(request);
+                    this.topic = topic;
+                }
+
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) {
+                    TopicStatsTable stats =
+                        RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), TopicStatsTable.class);
+                    stats.getOffsetTable().forEach((queue, offset) -> {
+                        String queueId = String.valueOf(queue.getQueueId());
+
+                        CollectRound.this.setData(MAPPER.topicOffset(topic, queueId, offset));
+                    });
+                    long min = stats.getOffsetTable().values().stream().mapToLong(offset -> offset.getMinOffset()).sum();
+                    long max = stats.getOffsetTable().values().stream().mapToLong(offset -> offset.getMaxOffset()).sum();
+                    long lastUpdate = stats.getOffsetTable().values().stream()
+                        .mapToLong(offset -> offset.getLastUpdateTimestamp()).max().orElse(0L);
+
+                    CollectRound.this.setData(MAPPER.aggregateOffset(topic, min, max, lastUpdate));
+                }
             }
 
-            @Override
-            protected void handleResponse(ResponseFuture responseFuture) {
-                ConsumerConnection connections = RemotingSerializable.decode(
-                    responseFuture.getResponseCommand().getBody(), ConsumerConnection.class);
+            /** 步骤三：发现 Topic 对应的消费组，启动连接与消费进度采集。 */
+            private class GroupsCallback extends CollectCallback {
+                private final String topic;
 
-                TopicCollect.this.setData(MAPPER.connections(group, connections.getConnectionSet().size()));
-            }
-        }
+                private GroupsCallback(RemotingCommand request, String topic) {
+                    super(request);
+                    this.topic = topic;
+                }
 
-        /** 步骤五：采集 Topic 与消费组对应的队列位点和积压量。 */
-        private class ConsumeStatsCallback extends CollectCallback {
-            private final String topic;
-            private final String group;
-
-            private ConsumeStatsCallback(RemotingCommand request, String topic, String group) {
-                super(request);
-                this.topic = topic;
-                this.group = group;
-            }
-
-            @Override
-            protected void handleResponse(ResponseFuture responseFuture) {
-                ConsumeStats stats = RemotingSerializable.decode(
-                    responseFuture.getResponseCommand().getBody(), ConsumeStats.class);
-                stats.getOffsetTable().forEach((queue, offset) -> {
-                    if (!topic.equals(queue.getTopic())) {
-                        return;
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) {
+                    GroupList groups = RemotingSerializable.decode(responseFuture.getResponseCommand().getBody(), GroupList.class);
+                    for (String group : groups.getGroupList()) {
+                        if (TopicCollect.this.connectedGroups.add(group)) {
+                            collectConnections(group);
+                        }
+                        collectConsumeStats(topic, group);
                     }
-                    String queueId = String.valueOf(queue.getQueueId());
+                }
+            }
 
-                    TopicCollect.this.setData(MAPPER.consumerOffset(topic, group, queueId, offset));
-                });
+            /** 步骤四：采集消费组连接数；同一消费组每轮只查询一次。 */
+            private class ConnectionsCallback extends CollectCallback {
+                private final String group;
+
+                private ConnectionsCallback(RemotingCommand request, String group) {
+                    super(request);
+                    this.group = group;
+                }
+
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) {
+                    ConsumerConnection connections = RemotingSerializable.decode(
+                        responseFuture.getResponseCommand().getBody(), ConsumerConnection.class);
+
+                    CollectRound.this.setData(MAPPER.connections(group, connections.getConnectionSet().size()));
+                }
+            }
+
+            /** 步骤五：采集 Topic 与消费组对应的队列位点和积压量。 */
+            private class ConsumeStatsCallback extends CollectCallback {
+                private final String topic;
+                private final String group;
+
+                private ConsumeStatsCallback(RemotingCommand request, String topic, String group) {
+                    super(request);
+                    this.topic = topic;
+                    this.group = group;
+                }
+
+                @Override
+                protected void handleResponse(ResponseFuture responseFuture) {
+                    ConsumeStats stats = RemotingSerializable.decode(
+                        responseFuture.getResponseCommand().getBody(), ConsumeStats.class);
+                    stats.getOffsetTable().forEach((queue, offset) -> {
+                        if (!topic.equals(queue.getTopic())) {
+                            return;
+                        }
+                        String queueId = String.valueOf(queue.getQueueId());
+
+                        CollectRound.this.setData(MAPPER.consumerOffset(topic, group, queueId, offset));
+                    });
+                }
             }
         }
 
@@ -286,7 +296,7 @@ public class RocketMQCollect extends AbstractCollect {
             private final BrokerConfigCallback config = new BrokerConfigCallback();
             private final BrokerRuntimeCallback runtime = new BrokerRuntimeCallback();
 
-            private void collect() {
+            private void start() {
                 this.config.execute();
                 this.runtime.execute();
             }
@@ -346,7 +356,7 @@ public class RocketMQCollect extends AbstractCollect {
                     if (count == null || !Float.isFinite(tps) || rate.doubleValue() < 0) {
                         return;
                     }
-                    TopicCollect.this.setData(this.incoming
+                    CollectRound.this.setData(this.incoming
                         ? MAPPER.brokerMessagesIn(window, count, tps) : MAPPER.brokerMessagesOut(window, count, tps));
                 }
             }
@@ -365,13 +375,13 @@ public class RocketMQCollect extends AbstractCollect {
                     }
                     Long dispatch = nonnegativeLong(table.get("dispatchBehindBytes"));
                     if (dispatch != null) {
-                        TopicCollect.this.setData(MAPPER.dispatchBytes(dispatch));
+                        CollectRound.this.setData(MAPPER.dispatchBytes(dispatch));
                     }
                     this.collectFlush(table);
                     Long earliest = nonnegativeLong(table.get("earliestMessageTimeStamp"));
                     long now = System.currentTimeMillis();
                     if (earliest != null && earliest > 0 && earliest <= now) {
-                        TopicCollect.this.setData(MAPPER.reserveTime(now - earliest));
+                        CollectRound.this.setData(MAPPER.reserveTime(now - earliest));
                     }
                     for (String pool : new String[] {"send", "pull", "litePull", "query", "ack"}) {
                         this.collectThreadPool(table, pool, pool + "ThreadPoolQueueSize");
@@ -385,14 +395,14 @@ public class RocketMQCollect extends AbstractCollect {
                     Long commit = table.containsKey("remainHowManyDataToCommit")
                         ? byteCount(table.get("remainHowManyDataToCommit")) : Long.valueOf(0L);
                     if (flush != null && commit != null && flush <= Long.MAX_VALUE - commit) {
-                        TopicCollect.this.setData(MAPPER.flushBytes(flush + commit));
+                        CollectRound.this.setData(MAPPER.flushBytes(flush + commit));
                     }
                 }
 
                 private void collectThreadPool(Map<?, ?> table, String pool, String key) {
                     Long size = nonnegativeLong(table.get(key));
                     if (size != null) {
-                        TopicCollect.this.setData(MAPPER.threadPool(pool, size));
+                        CollectRound.this.setData(MAPPER.threadPool(pool, size));
                     }
                 }
             }
@@ -437,7 +447,7 @@ public class RocketMQCollect extends AbstractCollect {
             private CollectCallback(RemotingCommand request) {
                 this.request = request;
                 // 请求发送前 +1；子请求先计数，父请求处理结束后才 -1。
-                TopicCollect.this.pending.incrementAndGet();
+                CollectRound.this.pending.incrementAndGet();
             }
 
             // 发送异常也进入失败回调，每个请求只扣减一次。
@@ -447,8 +457,8 @@ public class RocketMQCollect extends AbstractCollect {
             }
 
             private long timeoutMillis() throws TimeoutException {
-                long remaining = TopicCollect.this.deadline - System.currentTimeMillis();
-                if (TopicCollect.this.closed || remaining <= 0) {
+                long remaining = CollectRound.this.deadline - System.currentTimeMillis();
+                if (CollectRound.this.closed || remaining <= 0) {
                     throw new TimeoutException("RocketMQ collection deadline reached");
                 }
                 return Math.min(3000, remaining);
@@ -460,7 +470,7 @@ public class RocketMQCollect extends AbstractCollect {
                     return;
                 }
                 try {
-                    if (TopicCollect.this.closed) {
+                    if (CollectRound.this.closed) {
                         return;
                     }
                     RemotingCommand response = responseFuture.getResponseCommand();
@@ -498,8 +508,8 @@ public class RocketMQCollect extends AbstractCollect {
 
             private void completeRequest() {
                 // 成功、失败都 -1；finished 防止重复回调重复扣减。
-                if (TopicCollect.this.pending.decrementAndGet() == 0) {
-                    TopicCollect.this.completed.countDown();
+                if (CollectRound.this.pending.decrementAndGet() == 0) {
+                    CollectRound.this.completed.countDown();
                 }
             }
 
