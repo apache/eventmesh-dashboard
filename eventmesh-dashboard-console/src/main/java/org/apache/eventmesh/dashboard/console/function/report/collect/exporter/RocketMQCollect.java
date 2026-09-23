@@ -327,14 +327,11 @@ public class RocketMQCollect extends AbstractCollect {
                         if (!(key instanceof String topic) || !(value instanceof Map<?, ?> status)) {
                             return;
                         }
-                        Float success = nonnegativeFloat(status.get("consumeOKTPS"));
-                        Float failed = nonnegativeFloat(status.get("consumeFailedTPS"));
-                        Float elapsed = nonnegativeFloat(status.get("consumeRT"));
-                        success = success == null ? 0f : success;
+                        Float success = nonnegativeFloatOrZero(status.get("consumeOKTPS"));
+                        Float failed = nonnegativeFloatOrZero(status.get("consumeFailedTPS"));
+                        Float elapsed = nonnegativeFloatOrZero(status.get("consumeRT"));
                         RocketMQCollect.this.setData(MAPPER.consumerSuccess(topic, this.group, this.clientId, success));
-                        failed = failed == null ? 0f : failed;
                         RocketMQCollect.this.setData(MAPPER.consumerFailed(topic, this.group, this.clientId, failed));
-                        elapsed = elapsed == null ? 0f : elapsed;
                         RocketMQCollect.this.setData(MAPPER.consumerProcessTime(topic, this.group, this.clientId, elapsed));
                     });
                 }
@@ -602,6 +599,11 @@ public class RocketMQCollect extends AbstractCollect {
             } catch (NumberFormatException e) {
                 return null;
             }
+        }
+
+        private Float nonnegativeFloatOrZero(Object value) {
+            Float result = this.nonnegativeFloat(value);
+            return result == null ? 0f : result;
         }
 
         private Float nonnegativeFloat(Object value) {
