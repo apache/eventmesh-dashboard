@@ -330,15 +330,18 @@ public class RocketMQCollect extends AbstractCollect {
                         Float success = nonnegativeFloat(status.get("consumeOKTPS"));
                         Float failed = nonnegativeFloat(status.get("consumeFailedTPS"));
                         Float elapsed = nonnegativeFloat(status.get("consumeRT"));
-                        if (success != null) {
-                            RocketMQCollect.this.setData(MAPPER.consumerSuccess(topic, this.group, this.clientId, success));
+                        if (success == null) {
+                            success = 0f;
                         }
-                        if (failed != null) {
-                            RocketMQCollect.this.setData(MAPPER.consumerFailed(topic, this.group, this.clientId, failed));
+                        RocketMQCollect.this.setData(MAPPER.consumerSuccess(topic, this.group, this.clientId, success));
+                        if (failed == null) {
+                            failed = 0f;
                         }
-                        if (elapsed != null) {
-                            RocketMQCollect.this.setData(MAPPER.consumerProcessTime(topic, this.group, this.clientId, elapsed));
+                        RocketMQCollect.this.setData(MAPPER.consumerFailed(topic, this.group, this.clientId, failed));
+                        if (elapsed == null) {
+                            elapsed = 0f;
                         }
+                        RocketMQCollect.this.setData(MAPPER.consumerProcessTime(topic, this.group, this.clientId, elapsed));
                     });
                 }
             }

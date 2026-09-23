@@ -941,10 +941,10 @@ public class RocketMQCollectTest {
             RocketmqStorageDiskFreeBytes.class).get(0).getValue());
     }
 
-    /** 验证逐客户端采集成功 TPS、失败 TPS 和处理耗时，并跳过不可用值。 */
+    /** 验证逐客户端采集成功 TPS、失败 TPS 和处理耗时，并将缺失或非法字段补零。 */
     @Test
     @DisplayName("逐客户端消费指标采集")
-    public void collectsClientMetricsPerClientAndSkipsUnavailableValues() throws Exception {
+    public void collectsClientMetricsPerClientAndDefaultsUnavailableFieldsToZero() throws Exception {
         for (boolean available : List.of(true, false)) {
             AtomicInteger requests = new AtomicInteger();
             var models = collectMock((request, callback) -> {
@@ -974,10 +974,16 @@ public class RocketMQCollectTest {
                 var success = rows(models, RocketmqConsumerSuccessTps.class);
                 Assertions.assertEquals(Set.of("a", "b"), success.stream().map(RocketmqConsumerSuccessTps::getClientId)
                     .collect(java.util.stream.Collectors.toSet()));
-                Assertions.assertTrue(success.stream().allMatch(row -> row.getValue() == 2.5f && row.getTopicName().equals("orders")));
-                Assertions.assertEquals(2, rows(models, RocketmqConsumerFailedTps.class).size());
-                Assertions.assertEquals(0f, rows(models, RocketmqConsumerFailedTps.class).get(0).getValue());
-                Assertions.assertEquals(12.25f, rows(models, RocketmqConsumerProcessTime.class).get(0).getValue());
+                Assertions.assertEquals(4, success.size());
+                Assertions.assertTrue(success.stream().allMatch(row ->
+                    row.getValue() == (row.getTopicName().equals("orders") ? 2.5f : 0f)));
+                var failed = rows(models, RocketmqConsumerFailedTps.class);
+                Assertions.assertEquals(4, failed.size());
+                Assertions.assertTrue(failed.stream().allMatch(row -> row.getValue() == 0f));
+                var elapsed = rows(models, RocketmqConsumerProcessTime.class);
+                Assertions.assertEquals(4, elapsed.size());
+                Assertions.assertTrue(elapsed.stream().allMatch(row ->
+                    row.getValue() == (row.getTopicName().equals("orders") ? 12.25f : 0f)));
             } else {
                 Assertions.assertFalse(models.containsKey(RocketmqConsumerSuccessTps.class));
             }
