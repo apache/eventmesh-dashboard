@@ -28,11 +28,14 @@ import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Roc
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerProcessTime;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerSuccessTps;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqGroupMessagesOut;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqMessagesInTotal;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqMessagesOutTotal;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDiskFreeBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDiskUsage;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDispatchBehindBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageFlushBehindBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageMessageReserveTime;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqThroughputInTotal;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqThreadPoolWartermark;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqTopicMessagesIn;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqTopicNumber;
@@ -116,6 +119,18 @@ public interface RocketMQCollectMapper {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "value", source = "count")
     RocketmqConsumerGroupNumber groupNumber(Long count);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "value", source = "value")
+    RocketmqMessagesInTotal messagesInTotal(Long value);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "value", source = "value")
+    RocketmqMessagesOutTotal messagesOutTotal(Long value);
+
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "value", source = "value")
+    RocketmqThroughputInTotal throughputInTotal(Long value);
 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "topicName", source = "topic")

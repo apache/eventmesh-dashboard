@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.not.TopicId.TopicLongValue;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,9 +29,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_messages_in_total",
-    defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_messages_in_total",
-    comment = "消息生产数量")
-public class RocketmqMessagesInTotal extends TopicLongValue {
+    defaultViewType = ReportViewType.COUNTER, tableName = "rocketmq_messages_in_total",
+    comment = "Broker 启动以来接收的消息数")
+public class RocketmqMessagesInTotal extends RuntimeLongValue {
 
     private String messageType;
 

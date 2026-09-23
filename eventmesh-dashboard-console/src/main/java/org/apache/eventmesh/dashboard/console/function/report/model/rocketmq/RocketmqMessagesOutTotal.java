@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.not.SubscribeId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,25 +29,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_messages_out_total",
     defaultViewType = ReportViewType.COUNTER, tableName = "rocketmq_messages_out_total",
-    comment = "已就绪消息量")
-public class RocketmqMessagesOutTotal extends SubscribeId {
-
-    private Long topicNum;
-
-    private Long minOffset;
-
-    private Long maxOffset;
-
-    private String topicKeyId;
-
-    private String groupKeyId;
-
-    private String queueKeyId;
-
-    private Long valueConsumerOffset;
-
-    private Long valueBrokerOffset;
-
-    private Long valueOffsetLag;
+    comment = "Broker 启动以来从存储读取的消息条数")
+public class RocketmqMessagesOutTotal extends RuntimeLongValue {
 
 }

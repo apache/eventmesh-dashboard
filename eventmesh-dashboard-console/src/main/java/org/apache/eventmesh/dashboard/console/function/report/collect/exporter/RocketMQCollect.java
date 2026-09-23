@@ -493,6 +493,18 @@ public class RocketMQCollect extends AbstractCollect {
                     if (response == null || !(response.get("table") instanceof Map<?, ?> table)) {
                         return;
                     }
+                    Long messagesIn = nonnegativeLong(table.get("msgPutTotalTodayNow"));
+                    if (messagesIn != null) {
+                        RocketMQCollect.this.setData(MAPPER.messagesInTotal(messagesIn));
+                    }
+                    Long bytesIn = nonnegativeLong(table.get("putMessageSizeTotal"));
+                    if (bytesIn != null) {
+                        RocketMQCollect.this.setData(MAPPER.throughputInTotal(bytesIn));
+                    }
+                    Long messagesOut = nonnegativeLong(table.get("msgGetTotalTodayNow"));
+                    if (messagesOut != null) {
+                        RocketMQCollect.this.setData(MAPPER.messagesOutTotal(messagesOut));
+                    }
                     Long dispatch = nonnegativeLong(table.get("dispatchBehindBytes"));
                     if (dispatch != null) {
                         RocketMQCollect.this.setData(MAPPER.dispatchBytes(dispatch));
