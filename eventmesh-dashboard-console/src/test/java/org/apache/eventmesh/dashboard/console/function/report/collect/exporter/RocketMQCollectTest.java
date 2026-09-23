@@ -36,11 +36,14 @@ import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Roc
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerProcessTime;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqConsumerSuccessTps;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqGroupMessagesOut;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqMessagesInTotal;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqMessagesOutTotal;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDiskFreeBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDiskUsage;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDispatchBehindBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageFlushBehindBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageMessageReserveTime;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqThroughputInTotal;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqThreadPoolWartermark;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqTopicMessagesIn;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqTopicNumber;
@@ -79,13 +82,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 
 
 public class RocketMQCollectTest {
+    /** 验证消费位点、积压量和连接数正确映射到独立模型，并保留大整数精度。 */
     @Test
+    @DisplayName("消费位点与连接数映射")
     public void mapsConsumerSamplesToDedicatedModels() {
         var offset = new org.apache.rocketmq.remoting.protocol.admin.OffsetWrapper();
         offset.setBrokerOffset(9007199254740993L);
@@ -108,7 +114,9 @@ public class RocketMQCollectTest {
         Assertions.assertEquals(0L, RocketMQCollectMapper.INSTANCE.connections("buyers", 0L).getValueConnectionCount());
     }
 
+    /** 验证生产位点、消费位点和连接数使用各自的 GAUGE 表及字段。 */
     @Test
+    @DisplayName("生产位点、消费位点和连接数表结构")
     public void dedicatedModelsDescribeSeparateGaugeTables() {
         assertReportTable(org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Rocketmq2ProducerOffset.class,
             "rocketmq_producer_offset", List.of("topic_name", "queue_id"),
@@ -118,6 +126,76 @@ public class RocketMQCollectTest {
             List.of("value_consumer_offset", "value_broker_offset", "value_offset_lag"));
         assertReportTable(RocketmqConsumerConnectionNumber.class, "rocketmq_consumer_connection_number",
             List.of("group_name"), List.of("value_connection_count"));
+    }
+
+    /** 模拟 Broker 运行状态响应，验证三项启动以来累计值和实例 ID。 */
+    @Test
+    @DisplayName("Broker 启动以来累计值采集")
+    public void collectsBrokerLifetimeCountersFromRuntimeResponse() throws Exception {
+        Map<Class<?>, List<Object>> models = collectRuntime(Map.of(
+            "msgPutTotalTodayNow", "12345",
+            "putMessageSizeTotal", "67890",
+            "msgGetTotalTodayNow", "23456"));
+
+        RocketmqMessagesInTotal messagesIn = rows(models, RocketmqMessagesInTotal.class).get(0);
+        Assertions.assertEquals(12345L, messagesIn.getValue());
+        Assertions.assertNotNull(messagesIn.getRuntimeId());
+        RocketmqThroughputInTotal bytesIn = rows(models, RocketmqThroughputInTotal.class).get(0);
+        Assertions.assertEquals(67890L, bytesIn.getValue());
+        Assertions.assertEquals(messagesIn.getRuntimeId(), bytesIn.getRuntimeId());
+        RocketmqMessagesOutTotal messagesOut = rows(models, RocketmqMessagesOutTotal.class).get(0);
+        Assertions.assertEquals(23456L, messagesOut.getValue());
+        Assertions.assertEquals(messagesIn.getRuntimeId(), messagesOut.getRuntimeId());
+    }
+
+    /** 验证合法零值会保留，缺失或非法的累计值不会生成指标。 */
+    @Test
+    @DisplayName("累计值的零值、缺失值与非法值")
+    public void keepsZeroCountersAndSkipsMissingOrInvalidRuntimeValues() throws Exception {
+        Map<Class<?>, List<Object>> zeros = collectRuntime(Map.of(
+            "msgPutTotalTodayNow", "0",
+            "putMessageSizeTotal", "0",
+            "msgGetTotalTodayNow", "0"));
+        Assertions.assertEquals(0L, rows(zeros, RocketmqMessagesInTotal.class).get(0).getValue());
+        Assertions.assertEquals(0L, rows(zeros, RocketmqThroughputInTotal.class).get(0).getValue());
+        Assertions.assertEquals(0L, rows(zeros, RocketmqMessagesOutTotal.class).get(0).getValue());
+
+        Map<Class<?>, List<Object>> invalid = collectRuntime(Map.of(
+            "msgPutTotalTodayNow", "-1",
+            "putMessageSizeTotal", "NaN",
+            "msgGetTotalTodayNow", "not-a-number"));
+        Assertions.assertFalse(invalid.containsKey(RocketmqMessagesInTotal.class));
+        Assertions.assertFalse(invalid.containsKey(RocketmqThroughputInTotal.class));
+        Assertions.assertFalse(invalid.containsKey(RocketmqMessagesOutTotal.class));
+
+        Map<Class<?>, List<Object>> missing = collectRuntime(Map.of());
+        Assertions.assertFalse(missing.containsKey(RocketmqMessagesInTotal.class));
+        Assertions.assertFalse(missing.containsKey(RocketmqThroughputInTotal.class));
+        Assertions.assertFalse(missing.containsKey(RocketmqMessagesOutTotal.class));
+    }
+
+    /** 验证三项累计指标是按实例区分的 COUNTER，数值字段为 int64。 */
+    @Test
+    @DisplayName("累计指标的 COUNTER 表结构")
+    public void lifetimeCountersHaveRuntimeScopedCounterSchemas() {
+        for (Class<?> model : List.of(RocketmqMessagesInTotal.class, RocketmqThroughputInTotal.class,
+            RocketmqMessagesOutTotal.class)) {
+            ReportMeta annotation = model.getAnnotation(ReportMeta.class);
+            Assertions.assertNotNull(annotation);
+            Assertions.assertEquals(ReportViewType.COUNTER, annotation.defaultViewType());
+            var metadata = new ReportMetaData();
+            metadata.setClazz(model);
+            metadata.setTableName(annotation.tableName());
+            metadata.setComment(annotation.comment());
+            var handler = new IotDBReportMetaHandler();
+            handler.setReportMeta(metadata);
+            handler.setFieldList(org.apache.commons.lang3.reflect.FieldUtils.getAllFieldsList(model));
+            String ddl = handler.createTable();
+            Assertions.assertTrue(ddl.contains("runtime_id string  tag"), ddl);
+            Assertions.assertTrue(ddl.contains("value int64  field"), ddl);
+            Assertions.assertFalse(ddl.contains("topic_name"), ddl);
+            Assertions.assertFalse(ddl.contains("group_name"), ddl);
+        }
     }
 
     private void assertReportTable(Class<?> model, String table, List<String> tags, List<String> measurements) {
@@ -145,7 +223,9 @@ public class RocketMQCollectTest {
         Assertions.assertTrue(ddl.contains("runtime_id string  tag"), ddl);
     }
 
+    /** 模拟消费响应，验证消费位点和连接数以独立模型交给父采集器。 */
     @Test
+    @DisplayName("消费指标按独立模型交付")
     public void handsConsumerSamplesToParentUnderDedicatedClasses() throws Exception {
         DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
         SDKManage sdk = Mockito.mock(SDKManage.class);
@@ -211,7 +291,9 @@ public class RocketMQCollectTest {
         Assertions.assertEquals(1, models.get(RocketmqConsumerConnectionNumber.class).size());
     }
 
+    /** 验证 Topic 的嵌套异步请求结束后，父采集器才交付本轮结果。 */
     @Test
+    @DisplayName("等待嵌套请求完成再交付")
     public void waitsForNestedRequestsThenHandsModelsToParent() throws Exception {
         DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
         SDKManage sdk = Mockito.mock(SDKManage.class);
@@ -282,7 +364,9 @@ public class RocketMQCollectTest {
         }
     }
 
+    /** 验证采集超时后到达的回调不会继续写入本轮结果。 */
     @Test
+    @DisplayName("超时后的回调不写入结果")
     public void timeoutDoesNotLetLateCallbacksWriteIntoParent() throws Exception {
         DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
         SDKManage sdk = Mockito.mock(SDKManage.class);
@@ -310,7 +394,9 @@ public class RocketMQCollectTest {
         }
     }
 
+    /** 验证当前轮回调直接交付数据，上一轮迟到回调不会污染下一轮。 */
     @Test
+    @DisplayName("直接交付并隔离前一轮回调")
     public void publishesDirectlyAndRejectsPreviousRoundCallbacks() throws Exception {
         DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
         SDKManage sdk = Mockito.mock(SDKManage.class);
@@ -402,7 +488,9 @@ public class RocketMQCollectTest {
         return collector;
     }
 
+    /** 验证发送请求失败时，采集轮次能结束而不等待回调。 */
     @Test
+    @DisplayName("请求发送失败时结束采集")
     public void sendFailureFinishesRoundWithoutWaitingForCallback() throws Exception {
         DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
         SDKManage sdk = Mockito.mock(SDKManage.class);
@@ -421,7 +509,9 @@ public class RocketMQCollectTest {
         }
     }
 
+    /** 验证发送过程被中断后，线程的中断标志得到保留。 */
     @Test
+    @DisplayName("发送中断后保留中断标志")
     public void interruptedSendRestoresInterruptFlag() throws Exception {
         DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
         SDKManage sdk = Mockito.mock(SDKManage.class);
@@ -441,7 +531,9 @@ public class RocketMQCollectTest {
         }
     }
 
+    /** 验证 Broker 窗口速率、累计条数和运行状态数值转换不丢失大整数精度。 */
     @Test
+    @DisplayName("Broker 速率和运行状态数值映射")
     public void mapsBrokerRatesAndRuntimeValuesWithoutLosingLongPrecision() {
         long exact = 9007199254740993L;
         var incoming = RocketMQCollectMapper.INSTANCE.brokerMessagesIn("minute", exact, 1.25F);
@@ -460,7 +552,9 @@ public class RocketMQCollectTest {
         Assertions.assertEquals(exact, pool.getValue());
     }
 
+    /** 验证 Broker 窗口、线程池标签以及整数和浮点数字段类型。 */
     @Test
+    @DisplayName("Broker 窗口与线程池表结构")
     public void brokerModelsDescribeWindowPoolAndNumericColumnTypes() throws Exception {
         assertReportTable(RocketmqBrokerMessagesIn.class, "rocketmq_broker_messages_in", List.of("window"),
             List.of("value_window_count"), List.of("value"));
@@ -479,7 +573,9 @@ public class RocketMQCollectTest {
         Assertions.assertTrue(RuntimeLongValue.class.isAssignableFrom(RocketmqStorageMessageReserveTime.class));
     }
 
+    /** 验证根请求先注册，同步失败和后续 Broker 统计子请求都正确计入采集轮次。 */
     @Test
+    @DisplayName("根请求注册与 Broker 子请求等待")
     public void registersAllRootsBeforeSynchronousFailureAndWaitsForNestedBrokerStats() throws Exception {
         DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
         SDKManage sdk = Mockito.mock(SDKManage.class);
@@ -549,7 +645,9 @@ public class RocketMQCollectTest {
         }
     }
 
+    /** 验证 Broker 统计使用原生集群名查询，保留零值窗口和精确累计条数。 */
     @Test
+    @DisplayName("Broker 原生集群键与窗口统计")
     public void brokerStatsUseNativeClusterKeyAndKeepZeroWindowsAndExactCounts() throws Exception {
         Set<String> names = new java.util.HashSet<>();
         var models = collectMock((request, callback) -> {
@@ -588,7 +686,9 @@ public class RocketMQCollectTest {
         Assertions.assertEquals(Float.valueOf(0.5F), outgoing.get(0).getValue());
     }
 
+    /** 验证非法窗口不会抹掉有效窗口，缺失窗口不会被补成零值。 */
     @Test
+    @DisplayName("非法 Broker 窗口隔离")
     public void invalidBrokerWindowsDoNotEraseValidWindowsOrInventZeros() throws Exception {
         List<String> invalid = List.of("null", "{}", "[]", "\"invalid\"", "{\"sum\":1}", "{\"tps\":1}",
             "{\"sum\":-1,\"tps\":1}", "{\"sum\":1.5,\"tps\":1}", "{\"sum\":9223372036854775808,\"tps\":1}",
@@ -615,7 +715,9 @@ public class RocketMQCollectTest {
         Assertions.assertTrue(collectStatsBody("{}").isEmpty(), "Missing windows are not zero-valued observations");
     }
 
+    /** 验证集群名或统计数据不可用时，不会用位点推算 Broker 消息速率。 */
     @Test
+    @DisplayName("Broker 统计缺失时不推算速率")
     public void unavailableBrokerStatsAndClusterNameNeverProduceOffsetDerivedRates() throws Exception {
         for (String config : List.of("", "brokerName=not-a-cluster\n", "brokerClusterName=   \n")) {
             AtomicInteger statsRequests = new AtomicInteger();
@@ -676,7 +778,9 @@ public class RocketMQCollectTest {
         Assertions.assertTrue(offsets.stream().anyMatch(row -> Long.valueOf(999L).equals(row.getValueMaxOffsetSum())));
     }
 
+    /** 验证运行状态原生字段、精确字节数及各线程池维度。 */
     @Test
+    @DisplayName("Broker 运行状态原生字段解析")
     public void runtimeUsesNativeKeysAndPreservesExactBytesAndAllPoolDimensions() throws Exception {
         long earliest = System.currentTimeMillis() - 60000;
         long before = System.currentTimeMillis();
@@ -714,7 +818,9 @@ public class RocketMQCollectTest {
             "endTransaction", 9007199254740993L), pools);
     }
 
+    /** 验证待刷盘字节的单位换算和取整，并拒绝溢出或格式错误。 */
     @Test
+    @DisplayName("待刷盘字节单位与异常值")
     public void flushBytesParseNativeUnitsRoundAndRejectOverflowOrMalformedCommit() throws Exception {
         Map<String, Long> accepted = Map.ofEntries(Map.entry("0 B", 0L), Map.entry("0.5 B", 1L),
             Map.entry("9007199254740993 B", 9007199254740993L), Map.entry("9223372036854775807 B", Long.MAX_VALUE),
@@ -745,7 +851,9 @@ public class RocketMQCollectTest {
         }
     }
 
+    /** 验证单个运行状态字段错误不会影响其他指标，也不会采用替代字段伪造结果。 */
     @Test
+    @DisplayName("运行状态错误字段隔离")
     public void malformedRuntimeFieldsDoNotEraseOtherMeasurementsOrUseFallbacks() throws Exception {
         for (String invalid : List.of("-1", "1.5", "NaN", "9223372036854775808", "")) {
             var models = collectRuntime(Map.of("dispatchBehindBytes", invalid, "sendThreadPoolQueueSize", invalid,
@@ -768,7 +876,9 @@ public class RocketMQCollectTest {
             "Unknown keys and runtime throughput cannot substitute for native Broker statistics");
     }
 
+    /** 验证消费积压时间过滤非法时间戳，并保留合法的零积压。 */
     @Test
+    @DisplayName("消费积压时间与零积压")
     public void filtersInvalidLagTimestampsAndRetainsZeroBacklog() throws Exception {
         long now = System.currentTimeMillis();
         for (long delay : new long[] {0, 100, -1, now + 1}) {
@@ -809,7 +919,9 @@ public class RocketMQCollectTest {
         }
     }
 
+    /** 验证磁盘使用率和近似剩余字节采集，缺失或非法值保持缺失。 */
     @Test
+    @DisplayName("磁盘使用率与剩余空间采集")
     public void collectsDiskRatiosAndApproximateFreeBytesWithoutInventingMissingValues() throws Exception {
         var models = collectRuntime(Map.of("commitLogDiskRatio", "0.75", "commitLogDiskRatio_/store/a", "0.75",
             "consumeQueueDiskRatio", "0", "commitLogDirCapacity", "Total : 10 GiB, Free : 2.5 GiB."));
@@ -829,7 +941,9 @@ public class RocketMQCollectTest {
             RocketmqStorageDiskFreeBytes.class).get(0).getValue());
     }
 
+    /** 验证逐客户端采集成功 TPS、失败 TPS 和处理耗时，并跳过不可用值。 */
     @Test
+    @DisplayName("逐客户端消费指标采集")
     public void collectsClientMetricsPerClientAndSkipsUnavailableValues() throws Exception {
         for (boolean available : List.of(true, false)) {
             AtomicInteger requests = new AtomicInteger();
@@ -932,13 +1046,17 @@ public class RocketMQCollectTest {
             ? ((RocketmqBrokerMessagesIn) row).getValueWindowCount() : ((RocketmqBrokerMessagesOut) row).getValueWindowCount();
     }
 
+    /** 连接真实 Broker，验证原生请求、异步回调和采集模型；需开启 rocketmq.collect.live。 */
     @Test
+    @DisplayName("真实 Broker 请求与回调采集")
     public void collectsFromRealBrokerThroughCallbacks() throws Exception {
         Assumptions.assumeTrue(Boolean.getBoolean("rocketmq.collect.live"));
         collectFromRealBroker(false);
     }
 
+    /** 连接真实 Broker 采集指标，写入独立测试库并从 IoTDB 回读；需开启 rocketmq.collect.iotdb.live。 */
     @Test
+    @DisplayName("真实 Broker 采集及 IoTDB 回读")
     public void collectsFromRealBrokerAndReadsBackIotdbTables() throws Exception {
         Assumptions.assumeTrue(Boolean.getBoolean("rocketmq.collect.iotdb.live"));
         collectFromRealBroker(true);
@@ -1129,8 +1247,9 @@ public class RocketMQCollectTest {
         }
     }
 
-    /** Compare live observations with the exact response bodies, not with a later fluctuating Broker query. */
+    /** 验证配置中的 Topic、消费组总数，以及按 Topic 和消费组区分的消息窗口统计。 */
     @Test
+    @DisplayName("资源总数与分范围消息统计")
     public void countsConfiguredResourcesAndScopesMessageStats() throws Exception {
         Set<String> statsKeys = new java.util.HashSet<>();
         AtomicInteger groupRequests = new AtomicInteger();
@@ -1176,7 +1295,9 @@ public class RocketMQCollectTest {
         });
     }
 
+    /** 验证配置查询失败不生成零值，成功返回空配置时生成零值。 */
     @Test
+    @DisplayName("缺失配置与空配置的零值语义")
     public void missingConfigurationIsNotZeroButEmptyConfigurationIsZero() throws Exception {
         for (String body : List.of("{}", "{\"topicConfigTable\":null,\"subscriptionGroupTable\":null}", "not-json")) {
             var models = collectMock((request, callback) -> {
@@ -1200,7 +1321,9 @@ public class RocketMQCollectTest {
         Assertions.assertEquals(0L, rows(empty, RocketmqConsumerGroupNumber.class).get(0).getValue());
     }
 
+    /** 验证 Topic 和消费组指标使用名称与窗口标签，并保持 GAUGE 语义。 */
     @Test
+    @DisplayName("Topic 与消费组指标表结构")
     public void scopedModelsHaveNameAndWindowTagsAndGaugeSemantics() {
         assertReportTable(RocketmqTopicNumber.class, "rocketmq_topic_number", List.of("runtime_id"), List.of("value"));
         assertReportTable(RocketmqConsumerGroupNumber.class, "rocketmq_consumer_group_number", List.of("runtime_id"), List.of("value"));

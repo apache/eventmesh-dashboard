@@ -32,8 +32,4 @@ import lombok.EqualsAndHashCode;
     defaultViewType = ReportViewType.COUNTER, tableName = "rocketmq_messages_in_total",
     comment = "Broker 启动以来接收的消息数")
 public class RocketmqMessagesInTotal extends RuntimeLongValue {
-
-    private String messageType;
-
-
 }

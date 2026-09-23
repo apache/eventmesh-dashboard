@@ -35,8 +35,8 @@ import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.Roc
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageDispatchBehindBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageFlushBehindBytes;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqStorageMessageReserveTime;
-import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqThroughputInTotal;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqThreadPoolWartermark;
+import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqThroughputInTotal;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqTopicMessagesIn;
 import org.apache.eventmesh.dashboard.console.function.report.model.rocketmq.RocketmqTopicNumber;
 
