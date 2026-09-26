@@ -55,8 +55,8 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
                 <if test='runtimeId != null'>
                     and runtime_id = #{runtimeId}
                 </if>
-                <if test='topicName != null'>
-                    and topic_name like concat('%' , #{topicName},'%')
+                <if test='name != null'>
+                    and topic_name like concat('%' , #{name},'%')
                 </if>
         </script>
         """)

@@ -21,6 +21,9 @@ package org.apache.eventmesh.dashboard.console.entity.function;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -43,7 +46,9 @@ public class ConfigEntity extends BaseRuntimeIdEntity {
 
     private String configType;
 
-    private String configName;
+    @JsonProperty("configName")
+    @JsonAlias("name")
+    private String name;
 
     private String configValue;
 

@@ -40,7 +40,7 @@ public class TopicIdPadding extends AbstractPadding<ClusterId, TopicMetadata> {
             }
             return data.getRuntimeId();
         });
-        this.setKeyFunction(TopicMetadata::getTopicName);
+        this.setKeyFunction(TopicMetadata::getName);
     }
 
     @Override

@@ -76,7 +76,7 @@ public class TopicServiceImpl implements TopicService {
         topicEntity = this.selectTopicById(topicEntity);
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
         groupMemberEntity.setClusterId(topicEntity.getClusterId());
-        groupMemberEntity.setTopicName(topicEntity.getTopicName());
+        groupMemberEntity.setTopicName(topicEntity.getName());
         List<String> groupNamelist = new ArrayList<>();
         ArrayList<TopicDetailGroupVO> topicDetailGroupVOList = new ArrayList<>();
         TopicEntity finalTopicEntity = topicEntity;
@@ -125,7 +125,7 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public void addTopic(TopicEntity topicEntity) {
         GroupMemberEntity groupMemberEntity = new GroupMemberEntity();
-        groupMemberEntity.setTopicName(topicEntity.getTopicName());
+        groupMemberEntity.setTopicName(topicEntity.getName());
         //groupMemberMapper.updateMemberByTopic(groupMemberEntity);
         topicMapper.insertTopic(topicEntity);
     }
@@ -158,7 +158,7 @@ public class TopicServiceImpl implements TopicService {
 
 
     public TopicEntity setSearchCriteria(GetTopicListDTO getTopicListDTO, TopicEntity topicEntity) {
-        topicEntity.setTopicName(getTopicListDTO.getTopicName());
+        topicEntity.setName(getTopicListDTO.getTopicName());
         return topicEntity;
     }
 

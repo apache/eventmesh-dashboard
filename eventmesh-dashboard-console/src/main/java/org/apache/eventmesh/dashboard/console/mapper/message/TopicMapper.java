@@ -41,7 +41,7 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
 
     @Select("""
             <script>
-                select * from topic where cluster_id
+                select *, topic_name AS name from topic where cluster_id
                     <foreach item='item' index='index' open='in(' separator=',' close=')'>
                             #{item.id}
                     </foreach>
@@ -55,9 +55,9 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
 
     @Select("""
         <script>
-            select * from topic where cluster_id =#{topicEntity.clusterId} and status=1
-                <if test='topicEntity.topicName!=null'>
-                    and topic_name like concat('%',#{topicEntity.topicName},'%')
+            select *, topic_name AS name from topic where cluster_id =#{topicEntity.clusterId} and status=1
+                <if test='topicEntity.name!=null'>
+                    and topic_name like concat('%',#{topicEntity.name},'%')
                 </if>
                 and status=1
         </script>
@@ -65,14 +65,14 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     List<TopicEntity> queryTopicsToFrontByClusterId(@Param("topicEntity") TopicEntity topicEntity);
 
 
-    @Select("SELECT * FROM topic WHERE cluster_id=#{clusterId} and status = 1")
+    @Select("SELECT *, topic_name AS name FROM topic WHERE cluster_id=#{clusterId} and status = 1")
     List<TopicEntity> selectTopicByCluster(TopicEntity topicEntity);
 
 
-    @Select("SELECT * FROM topic WHERE status=1")
+    @Select("SELECT *, topic_name AS name FROM topic WHERE status=1")
     List<TopicEntity> selectAll();
 
-    @Select("SELECT * FROM topic WHERE id=#{id}")
+    @Select("SELECT *, topic_name AS name FROM topic WHERE id=#{id}")
     TopicEntity queryTopicById(TopicEntity topicEntity);
 
 
@@ -112,7 +112,7 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
                         <if test='c.runtimeId ==null'>
                             0,
                         </if>
-                        #{c.topicName},#{c.topicType},#{c.readQueueNum},#{c.writeQueueNum},#{c.replicationFactor}
+                        #{c.name},#{c.topicType},#{c.readQueueNum},#{c.writeQueueNum},#{c.replicationFactor}
                             ,#{c.order},#{c.description},#{c.createProgress},#{c.retentionMs})
                </foreach>
         </script>
@@ -123,7 +123,7 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     @Insert("""
         insert into topic (cluster_id,runtime_id,topic_name,topic_type, read_queue_num, write_queue_num, replication_factor, 
                            `order` , description, create_progress,retention_ms)
-                   values (#{clusterId},#{runtimeId},#{topicName},#{topicType},#{readQueueNum},#{writeQueueNum},#{replicationFactor}
+                   values (#{clusterId},#{runtimeId},#{name},#{topicType},#{readQueueNum},#{writeQueueNum},#{replicationFactor}
                             ,#{order},#{description},#{createProgress},#{retentionMs})
         on duplicate key update status = 1
         """)
@@ -144,7 +144,7 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     @Override
     @Select("""
             <script>
-            select * from topic where
+            select *, topic_name AS name from topic where
                 <if test="runtimeId != null">
                     runtime_id=#{runtimeId}
                 </if>

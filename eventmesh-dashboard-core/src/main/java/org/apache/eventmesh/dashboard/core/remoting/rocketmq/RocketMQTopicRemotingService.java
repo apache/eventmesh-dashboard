@@ -58,8 +58,8 @@ public class RocketMQTopicRemotingService extends AbstractRocketMQRemotingServic
         TopicMetadata topicMetadata = createTopicRequest.getMetaData();
 
         CreateTopicRequestHeader requestHeader = new CreateTopicRequestHeader();
-        requestHeader.setTopic(topicMetadata.getTopicName());
-        requestHeader.setDefaultTopic(topicMetadata.getTopicName());
+        requestHeader.setTopic(topicMetadata.getName());
+        requestHeader.setDefaultTopic(topicMetadata.getName());
         requestHeader.setReadQueueNums(topicMetadata.getReadQueueNum());
         requestHeader.setWriteQueueNums(topicMetadata.getWriteQueueNum());
         // 下面的参数是否定义到 数据库表里面
@@ -81,7 +81,7 @@ public class RocketMQTopicRemotingService extends AbstractRocketMQRemotingServic
     public DeleteTopicResult deleteTopic(DeleteTopicRequest deleteTopicRequest) throws Exception {
         TopicMetadata topicMetadata = deleteTopicRequest.getMetaData();
         DeleteTopicRequestHeader requestHeader = new DeleteTopicRequestHeader();
-        requestHeader.setTopic(topicMetadata.getTopicName());
+        requestHeader.setTopic(topicMetadata.getName());
         return this.invokeSync(RequestCode.DELETE_TOPIC_IN_BROKER, requestHeader, new DeleteTopicResult());
     }
 
@@ -91,7 +91,7 @@ public class RocketMQTopicRemotingService extends AbstractRocketMQRemotingServic
             List<TopicMetadata> topicMetadataList = new ArrayList<>();
             o.getTopicConfigTable().forEach((key, value) -> {
                 TopicMetadata topicMetadata = new TopicMetadata();
-                topicMetadata.setTopicName(value.getTopicName());
+                topicMetadata.setName(value.getTopicName());
                 topicMetadata.setReadQueueNum(value.getReadQueueNums());
                 topicMetadata.setWriteQueueNum(value.getWriteQueueNums());
                 topicMetadata.setTopicFilterType(value.getTopicFilterType().name());
