@@ -65,7 +65,7 @@ public class ConfigServiceImpl implements ConfigService {
             ConfigEntity config = new ConfigEntity();
             config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
-            config.setConfigName(n.getConfigName());
+            config.setName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
             config.setAlreadyUpdate(n.getAlreadyUpdate());
             configMapper.updateConfig(config);
@@ -79,7 +79,7 @@ public class ConfigServiceImpl implements ConfigService {
             ConfigEntity config = new ConfigEntity();
             config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
-            config.setConfigName(n.getConfigName());
+            config.setName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
             config.setAlreadyUpdate(n.getAlreadyUpdate());
             configMapper.updateConfig(config);
@@ -93,7 +93,7 @@ public class ConfigServiceImpl implements ConfigService {
             ConfigEntity config = new ConfigEntity();
             config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
-            config.setConfigName(n.getConfigName());
+            config.setName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
             config.setAlreadyUpdate(n.getAlreadyUpdate());
             configMapper.updateConfig(config);
@@ -107,7 +107,7 @@ public class ConfigServiceImpl implements ConfigService {
             ConfigEntity config = new ConfigEntity();
             config.setInstanceType(null);
             config.setInstanceId(updateConfigsLog.getInstanceId());
-            config.setConfigName(n.getConfigName());
+            config.setName(n.getConfigName());
             config.setConfigValue(n.getConfigValue());
             config.setAlreadyUpdate(n.getAlreadyUpdate());
             configMapper.updateConfig(config);

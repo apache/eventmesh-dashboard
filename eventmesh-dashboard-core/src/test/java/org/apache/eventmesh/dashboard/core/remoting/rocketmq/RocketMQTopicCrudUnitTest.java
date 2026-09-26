@@ -86,7 +86,7 @@ class RocketMQTopicCrudUnitTest {
     void createTopic() throws Exception {
         log.info("【真实创建】创建主题并查询验证");
         TopicMetadata metadata = new TopicMetadata();
-        metadata.setTopicName(topicName);
+        metadata.setName(topicName);
         metadata.setReadQueueNum(4);
         metadata.setWriteQueueNum(4);
         metadata.setOrder(0);
@@ -111,7 +111,7 @@ class RocketMQTopicCrudUnitTest {
         TopicMetadata previous = queryTargetTopic();
         logConfig("更新前", previous);
         TopicMetadata metadata = new TopicMetadata();
-        metadata.setTopicName(topicName);
+        metadata.setName(topicName);
         metadata.setReadQueueNum(8);
         metadata.setWriteQueueNum(8);
         // Topic upsert requires a full configuration; pass through the existing flags explicitly.
@@ -142,9 +142,9 @@ class RocketMQTopicCrudUnitTest {
         assertSuccess("查询", result);
         Assertions.assertNotNull(result.getData(), "查询成功时应返回主题列表");
         log.info("查询结果：共 {} 个主题，耗时 {} 毫秒", result.getData().size(), elapsedMillis);
-        result.getData().stream().sorted(Comparator.comparing(TopicMetadata::getTopicName))
+        result.getData().stream().sorted(Comparator.comparing(TopicMetadata::getName))
             .forEach(topic -> logConfig("主题配置", topic));
-        boolean exists = result.getData().stream().anyMatch(topic -> topicName.equals(topic.getTopicName()));
+        boolean exists = result.getData().stream().anyMatch(topic -> topicName.equals(topic.getName()));
         log.info("目标主题={}，是否存在={}", topicName, exists ? "是" : "否");
     }
 
@@ -153,13 +153,13 @@ class RocketMQTopicCrudUnitTest {
     void deleteTopic() throws Exception {
         log.info("【真实删除】删除当前 Broker 的主题配置：{}", topicName);
         TopicMetadata metadata = new TopicMetadata();
-        metadata.setTopicName(topicName);
+        metadata.setName(topicName);
         DeleteTopicRequest request = new DeleteTopicRequest();
         request.setMetaData(metadata);
         assertSuccess("删除", service.deleteTopic(request));
         GetTopicsResult result = service.getAllTopics(new GetTopics2Request());
         assertSuccess("删除后查询", result);
-        boolean exists = result.getData().stream().anyMatch(topic -> topicName.equals(topic.getTopicName()));
+        boolean exists = result.getData().stream().anyMatch(topic -> topicName.equals(topic.getName()));
         log.info("删除后检查：主题={}，是否仍存在={}", topicName, exists ? "是" : "否");
         Assertions.assertFalse(exists, "删除后主题不应继续出现在 Broker 配置中");
     }
@@ -167,7 +167,7 @@ class RocketMQTopicCrudUnitTest {
     private TopicMetadata queryTargetTopic() throws Exception {
         GetTopicsResult result = service.getAllTopics(new GetTopics2Request());
         assertSuccess("读取目标主题配置", result);
-        return result.getData().stream().filter(topic -> topicName.equals(topic.getTopicName())).findFirst()
+        return result.getData().stream().filter(topic -> topicName.equals(topic.getName())).findFirst()
             .orElseThrow(() -> new AssertionError("主题 " + topicName + " 不存在，请先运行 createTopic"));
     }
 
@@ -181,7 +181,7 @@ class RocketMQTopicCrudUnitTest {
 
     private void logConfig(String stage, TopicMetadata topic) {
         log.info("{}：主题={}，读队列数={}，写队列数={}，顺序消息={}，过滤类型={}，主题属性={}",
-            stage, topic.getTopicName(), topic.getReadQueueNum(), topic.getWriteQueueNum(),
+            stage, topic.getName(), topic.getReadQueueNum(), topic.getWriteQueueNum(),
             Integer.valueOf(1).equals(topic.getOrder()) ? "是" : "否", topic.getTopicFilterType(), topic.getTopicConfig());
     }
 

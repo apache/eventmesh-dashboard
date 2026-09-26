@@ -128,7 +128,7 @@ public class CollectManageTest {
         topicMetadata.setId(1L);
         topicMetadata.setClusterId(1L);
         topicMetadata.setRuntimeId(1L);
-        topicMetadata.setTopicName("1");
+        topicMetadata.setName("1");
         topicMetadata.setStatus(1L);
         topicMetadata.setIsDelete(1);
         topicMetadata.setClusterType(clusterMetadata.getClusterType());

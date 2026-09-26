@@ -22,6 +22,9 @@ import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -32,7 +35,9 @@ public class TopicEntity extends BaseRuntimeIdEntity {
 
     private String topicType;
 
-    private String topicName;
+    @JsonProperty("topicName")
+    @JsonAlias("name")
+    private String name;
 
 
     /**

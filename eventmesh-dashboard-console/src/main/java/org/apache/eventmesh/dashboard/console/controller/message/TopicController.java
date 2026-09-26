@@ -102,7 +102,7 @@ public class TopicController {
         topicService.queryRuntimeByBaseSyncEntity(
             this.clusterAndRuntimeDomain.queryClusterInSync(QueryClusterInSyncDO.create(topicEntity.getClusterId(), () -> {
                 TopicEntity entity = new TopicEntity();
-                entity.setTopicName(topicEntity.getTopicName());
+                entity.setName(topicEntity.getName());
                 return entity;
             })));
         return null;
@@ -118,7 +118,7 @@ public class TopicController {
         return topicService.deleteTopicByRuntimeIdAndTopicName(
             this.clusterAndRuntimeDomain.queryClusterInSync(QueryClusterInSyncDO.create(topicEntity.getClusterId(), () -> {
                 TopicEntity entity = new TopicEntity();
-                entity.setTopicName(topicEntity.getTopicName());
+                entity.setName(topicEntity.getName());
                 return entity;
             })));
     }
