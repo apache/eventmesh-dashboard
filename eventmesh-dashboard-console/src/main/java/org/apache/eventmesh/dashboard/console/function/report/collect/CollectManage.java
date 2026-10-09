@@ -22,7 +22,7 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.CollectType;
-import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
+import org.apache.eventmesh.dashboard.common.model.base.BaseOrganizationBase;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
@@ -318,11 +318,11 @@ public class CollectManage {
         }
     }
 
-    private String createCollectKey(BaseClusterIdBase base) {
+    private String createCollectKey(BaseOrganizationBase base) {
         return base.getClass().getSimpleName() + "-" + base.getId();
     }
 
-    private void deleteCollect(BaseClusterIdBase base) {
+    private void deleteCollect(BaseOrganizationBase base) {
         if (Objects.isNull(base)) {
             return;
         }

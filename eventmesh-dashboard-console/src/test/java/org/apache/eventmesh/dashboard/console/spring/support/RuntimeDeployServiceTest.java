@@ -139,7 +139,7 @@ public class RuntimeDeployServiceTest {
         List<ConfigEntity> configEntityList = new ArrayList<>();
         for (int i = 1; i <= 30; i++) {
             ConfigEntity configEntity = new ConfigEntity();
-            configEntity.setConfigName("config" + i);
+            configEntity.setName("config" + i);
             configEntity.setConfigValue("config" + i);
             configEntityList.add(configEntity);
         }

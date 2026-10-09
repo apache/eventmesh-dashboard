@@ -87,7 +87,7 @@ class KafkaTopicSyncTest {
         Assertions.assertNotNull(topics);
         Assertions.assertEquals(1, topics.size());
         TopicMetadata topic = Assertions.assertInstanceOf(TopicMetadata.class, topics.get(0));
-        Assertions.assertEquals("sync-topic", topic.getTopicName());
+        Assertions.assertEquals("sync-topic", topic.getName());
         Assertions.assertEquals(1, topic.getWriteQueueNum());
         Mockito.verify(client).listTopics(ArgumentMatchers.any(ListTopicsOptions.class));
         log.info("【模拟验证通过】控制台映射完成 {} Topic 查询，未连接真实 Broker", clusterType);
@@ -111,7 +111,7 @@ class KafkaTopicSyncTest {
         stubDescription(client);
         TopicMetadata topic = new TopicMetadata();
         topic.setId(1L);
-        topic.setTopicName("sync-topic");
+        topic.setName("sync-topic");
         topic.setWriteQueueNum(2);
 
         handler.handleAll(List.of(), List.of(topic), List.of(topic), List.of(topic));

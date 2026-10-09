@@ -96,13 +96,13 @@ public class TopicController {
     @PostMapping("queryTopicListById")
     public TopicEntity queryTopicById(@Validated @RequestBody RuntimeIdDTO runtimeIdDTO) {
         TopicEntity topicEntity = topicService.selectTopicById(TopicControllerMapper.INSTANCE.queryTopicListById(runtimeIdDTO));
-        if (this.clusterAbilityService.isCapByEntity(topicEntity)) {
+        if (this.clusterAbilityService.isCap(topicEntity.getClusterType())) {
             return topicEntity;
         }
         topicService.queryRuntimeByBaseSyncEntity(
             this.clusterAndRuntimeDomain.queryClusterInSync(QueryClusterInSyncDO.create(topicEntity.getClusterId(), () -> {
                 TopicEntity entity = new TopicEntity();
-                entity.setTopicName(topicEntity.getTopicName());
+                entity.setName(topicEntity.getName());
                 return entity;
             })));
         return null;
@@ -111,14 +111,14 @@ public class TopicController {
     @GetMapping("deleteTopic")
     public Integer deleteTopic(@Validated @RequestBody IdDTO idDTO) {
         TopicEntity topicEntity = this.topicService.selectTopicById(TopicControllerMapper.INSTANCE.deleteTopic(idDTO));
-        if (this.clusterAbilityService.isCapByEntity(topicEntity)) {
+        if (this.clusterAbilityService.isCap(topicEntity.getClusterType())) {
             return this.topicService.deleteTopicById(topicEntity);
         }
 
         return topicService.deleteTopicByRuntimeIdAndTopicName(
             this.clusterAndRuntimeDomain.queryClusterInSync(QueryClusterInSyncDO.create(topicEntity.getClusterId(), () -> {
                 TopicEntity entity = new TopicEntity();
-                entity.setTopicName(topicEntity.getTopicName());
+                entity.setName(topicEntity.getName());
                 return entity;
             })));
     }
@@ -148,7 +148,7 @@ public class TopicController {
             public void handler(ClusterMetadata clusterDO) {
                 TopicEntity topicEntity = TopicControllerMapper.INSTANCE.createTopic(createTopicDTO);
                 createTopicList.add(topicEntity);
-                topicEntity.setClusterId(clusterDO.getClusterId());
+                topicEntity.setClusterId(clusterDO.getId());
                 topicEntity.setClusterType(clusterDO.getClusterType());
                 topicEntity.setRuntimeId(0L);
                 adaptationMetadataTypeWrapper.get(clusterDO.getClusterType(), "create").adaptation(topicEntity, createTopicDTO);

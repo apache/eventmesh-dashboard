@@ -117,6 +117,9 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
      *      还需要反向 tree
      */
     public List<ClusterTreeVO> queryClusterTree(ClusterAndRuntimeOfRelationshipDO data) {
+        if (Objects.isNull(data.getClusterEntity())) {
+            return List.of();
+        }
         Map<Long, ClusterTreeVO> clusterIdMap = data.getClusterEntityList().stream().collect(Collectors.toMap(ClusterEntity::getId,
             ClusterEntityMapstruct.INSTANCE::toClusterTreeVO));
 
@@ -127,7 +130,9 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
                         Collectors.toList())));
 
         Map<Long, List<ClusterTreeVO>> clusterRelationshipListByClusterIdGroupMap =
-            data.getClusterRelationshipEntityList().stream().collect(Collectors.groupingBy(ClusterRelationshipEntity::getClusterId,
+            data.getClusterRelationshipEntityList().stream()
+                .filter(value -> clusterIdMap.containsKey(value.getRelationshipId()))
+                .collect(Collectors.groupingBy(ClusterRelationshipEntity::getClusterId,
                 Collectors.mapping(value -> clusterIdMap.get(value.getRelationshipId()), Collectors.toList())
             ));
 
@@ -139,7 +144,7 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
             }
         });
 
-        return clusterRelationshipListByClusterIdGroupMap.get(data.getClusterEntity().getId());
+        return clusterRelationshipListByClusterIdGroupMap.getOrDefault(data.getClusterEntity().getId(), List.of());
     }
 
     /**
@@ -296,11 +301,14 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
 
         private List<ClusterEntity> capClusterList = new ArrayList<>();
 
-        private List<RuntimeEntity> runtimeList;
+        private List<RuntimeEntity> runtimeList = new ArrayList<>();
 
         private void base(boolean isSync) {
             if (Objects.nonNull(clusterEntity)) {
                 this.clusterEntity = clusterService.queryClusterById(clusterEntity);
+                if (Objects.isNull(this.clusterEntity)) {
+                    return;
+                }
                 this.clusterType = clusterEntity.getClusterType();
                 ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterEntity.getClusterType());
                 if (clusterFramework.isCAP() && isSync) {
@@ -347,7 +355,7 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
 
         public GetClusterInSyncReturnDO sync() {
             this.base(true);
-            if (this.clusterType.isRuntime()) {
+            if (Objects.nonNull(this.clusterType) && this.clusterType.isRuntime()) {
                 ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterEntity.getClusterType());
                 if (clusterFramework.isCAP()) {
                     this.capClusterList = List.of(this.clusterEntity);
@@ -370,6 +378,9 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
             Map<Long, ClusterEntity> clusterEntityMap =
                 this.clusterEntityList.stream().collect(Collectors.toMap(ClusterEntity::getId, Function.identity()));
 
+            if (Objects.nonNull(this.clusterEntity)) {
+                clusterEntityMap.put(this.clusterEntity.getId(), this.clusterEntity);
+            }
             Map<Long, List<RuntimeEntity>> runtimeListByClusterIdMap = new HashMap<>();
             Map<Long, List<ClusterEntity>> clusterListByClusterIdMap = new HashMap<>();
             this.clusterRelationshipEntityList.forEach(relation -> {
@@ -381,28 +392,21 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
                 clusterAndRuntimeOfRelationshipDO.getClusterRelationshipTripleList().add(triple);
 
                 if (relationshipClusterEntity.getClusterType().isRuntime()) {
-                    runtimeListByClusterIdMap.computeIfAbsent(relationshipClusterEntity.getClusterId(), k -> {
+                    runtimeListByClusterIdMap.computeIfAbsent(relationshipClusterEntity.getId(), k -> {
                         List<RuntimeEntity> runtimeEntityList = new ArrayList<>();
                         clusterAndRuntimeOfRelationshipDO.getRuntimeEntityPairList().add(Pair.of(relationshipClusterEntity, runtimeEntityList));
                         return runtimeEntityList;
                     });
                 }
-                clusterListByClusterIdMap.computeIfAbsent(mainClusterEntity.getClusterId(), k -> {
+                clusterListByClusterIdMap.computeIfAbsent(mainClusterEntity.getId(), k -> {
                     List<ClusterEntity> clusterEntityList = new ArrayList<>();
                     clusterAndRuntimeOfRelationshipDO.getClusterEntityPairleList().add(Pair.of(mainClusterEntity, clusterEntityList));
                     return clusterEntityList;
-                });
-            });
-
-            this.clusterEntityList.forEach(clusterEntity -> {
-                List<ClusterEntity> list = clusterListByClusterIdMap.get(clusterEntity.getId());
-                if (Objects.nonNull(list)) {
-                    list.add(clusterEntity);
-                }
+                }).add(relationshipClusterEntity);
             });
 
             this.runtimeList.forEach(runtimeEntity -> {
-                List<RuntimeEntity> list = runtimeListByClusterIdMap.get(runtimeEntity.getId());
+                List<RuntimeEntity> list = runtimeListByClusterIdMap.get(runtimeEntity.getClusterId());
                 if (Objects.nonNull(list)) {
                     list.add(runtimeEntity);
                 }
@@ -524,12 +528,21 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
 
 
         private void queryClusterByRelationship() {
+            if (this.clusterRelationshipEntityList.isEmpty()) {
+                return;
+            }
             List<ClusterEntity> clsuterEnttiyList = this.clusterRelationshipEntityList.stream().map(value -> {
                 ClusterEntity entity = new ClusterEntity();
                 entity.setId(value.getRelationshipId());
                 return entity;
             }).toList();
             this.clusterEntityList = clusterService.queryClusterListByClusterList(clsuterEnttiyList);
+            Set<Long> visibleClusterIds = this.clusterEntityList.stream().map(ClusterEntity::getId).collect(Collectors.toSet());
+            if (Objects.nonNull(this.clusterEntity)) {
+                visibleClusterIds.add(this.clusterEntity.getId());
+            }
+            this.clusterRelationshipEntityList.removeIf(relationship -> !visibleClusterIds.contains(relationship.getClusterId())
+                || !visibleClusterIds.contains(relationship.getRelationshipId()));
         }
 
         private void queryClusterRelationship() {
@@ -551,13 +564,10 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
                     clusterRelationshipEntity.setRelationshipId(value.getId());
                 });
             }
-            for (; ; ) {
+            while (!relationshipEntityList.isEmpty()) {
                 List<Long> idList = relationshipEntityList.stream().map(ClusterRelationshipEntity::getRelationshipId).toList();
                 queryListByClusterIdAndTypeDO.setClusterIdList(idList);
                 relationshipEntityList = clusterRelationshipService.queryListByClusterIdListAndType(queryListByClusterIdAndTypeDO);
-                if (relationshipEntityList.isEmpty()) {
-                    break;
-                }
                 this.clusterRelationshipEntityList.addAll(relationshipEntityList);
             }
             if (Objects.isNull(this.syncClusterTypeList)) {

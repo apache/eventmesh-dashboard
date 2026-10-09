@@ -52,7 +52,7 @@ public class RocketMQBrokerAddressService extends AbstractAddressService {
         addressServiceResult.setCheckSuccess(true);
 
         ConfigEntity configEntity = new ConfigEntity();
-        configEntity.setConfigName("namesrvAddr");
+        configEntity.setName("namesrvAddr");
         configEntity.setDescription("用户调用地址：");
         configEntity.setConfigValue(hostAddress.toString());
 

@@ -259,7 +259,7 @@ public class BuildDataService {
                 topicEntity.setClusterId(this.clusterId);
                 topicEntity.setRuntimeId(0L);
                 topicEntity.setTopicType("test-data");
-                topicEntity.setTopicName("cluster-" + this.clusterId + ".topic-" + i);
+                topicEntity.setName("cluster-" + this.clusterId + ".topic-" + i);
 
                 if (Objects.equals(baseSyncEntity.getClusterType(), ClusterType.STORAGE_ROCKETMQ_BROKER_MAIN_SLAVE) ||
                     Objects.equals(baseSyncEntity.getClusterType(), ClusterType.STORAGE_ROCKETMQ_BROKER_RAFT)) {
@@ -280,7 +280,7 @@ public class BuildDataService {
                 }
                 topicEntity.setAttributes("");
 
-                topicEntity.setDescription(topicEntity.getTopicName());
+                topicEntity.setDescription(topicEntity.getName());
                 topicEntity.setCreateProgress(1);
                 topicEntity.setRetentionMs(-1L);
 
@@ -319,7 +319,7 @@ public class BuildDataService {
                     groupMemberEntity.setOrganizationId(groupEntity.getOrganizationId());
                     groupMemberEntity.setClusterId(groupEntity.getClusterId());
                     groupMemberEntity.setGroupName(groupEntity.getName());
-                    groupMemberEntity.setTopicName(topicEntity.getTopicName());
+                    groupMemberEntity.setTopicName(topicEntity.getName());
                     groupMemberEntity.setEventMeshUser("11111");
                     groupMemberEntity.setStatus(1L);
                     groupMemberEntityList.add(groupMemberEntity);
@@ -352,7 +352,7 @@ public class BuildDataService {
                 configEntity.setInstanceType(metadataType);
                 configEntity.setInstanceId(id);
                 configEntity.setConfigType("test-data");
-                configEntity.setConfigName("config~" + "id~" + id + "~index~" + i);
+                configEntity.setName("config~" + "id~" + id + "~index~" + i);
                 configEntity.setConfigValue(String.valueOf(i));
                 configEntity.setConfigValueType("number");
                 configEntity.setConfigValueRange("{num}");

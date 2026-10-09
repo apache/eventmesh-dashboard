@@ -26,6 +26,7 @@ import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
 import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
@@ -174,7 +175,7 @@ public class Remoting2Manage {
         if (baseSyncBase instanceof ClusterMetadata) {
             remotingService.clusterId = baseSyncBase.getId();
         } else {
-            remotingService.clusterId = baseSyncBase.getClusterId();
+            remotingService.clusterId = ((RuntimeMetadata) baseSyncBase).getClusterId();
             remotingService.runtimeId = baseSyncBase.getId();
         }
         return remotingService;

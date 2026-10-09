@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.common.model.base;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType.FirstToWhom;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.ReplicationType;
 import org.apache.eventmesh.dashboard.common.enums.SyncErrorType;
 
@@ -30,8 +31,10 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public abstract class BaseSyncBase extends BaseClusterIdBase {
+public abstract class BaseSyncBase extends BaseOrganizationBase {
 
+
+    private ClusterType clusterType;
 
     private ClusterTrusteeshipType trusteeshipType;
 

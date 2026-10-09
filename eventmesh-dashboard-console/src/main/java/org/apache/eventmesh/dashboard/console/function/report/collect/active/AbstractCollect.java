@@ -61,9 +61,9 @@ public abstract class AbstractCollect<C> extends AbstractClientInfo<C> implement
         private ClusterMetadata clusterMetadata;
 
         public Long padding(D data) {
-            data.setClustersId(clusterMetadata.getClusterId());
+            data.setClustersId(clusterMetadata.getId());
             data.setClustersName(clusterMetadata.getName());
-            return clusterMetadata.getClusterId();
+            return clusterMetadata.getId();
         }
 
 

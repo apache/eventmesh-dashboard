@@ -39,7 +39,7 @@ public interface ClusterRelationshipMapper {
 
     @Select("""
         <script>
-            select *  from cluster_relationship where cluster_id = #{clusterId}
+            select *  from cluster_relationship where status=1 and is_delete=0 and cluster_id = #{clusterId}
                 <if test = "clusterTypeList != null">
                      and relationship_type in
                      <foreach item='item' index='index' collection='relationshipTypeList'  open="(" separator=',' close=")">
@@ -47,7 +47,7 @@ public interface ClusterRelationshipMapper {
                     </foreach>
                 </if>
            union all
-            select *  from cluster_relationship where relationship_id = #{clusterId}
+            select *  from cluster_relationship where status=1 and is_delete=0 and relationship_id = #{clusterId}
                 <if test = "clusterTypeList != null">
                      and cluster_type in
                      <foreach item='item' index='index' collection='clusterTypeList'  open="(" separator=',' close=")">
@@ -61,7 +61,7 @@ public interface ClusterRelationshipMapper {
 
     @Select("""
         <script>
-            select *  from cluster_relationship where cluster_id = #{clusterId}
+            select *  from cluster_relationship where status=1 and is_delete=0 and cluster_id = #{clusterId}
                 <if test = "relationshipTypeList != null">
                      and relationship_type in
                      <foreach item='item' index='index' collection='relationshipTypeList'  open="(" separator=',' close=")">
@@ -74,7 +74,7 @@ public interface ClusterRelationshipMapper {
 
     @Select("""
         <script>
-            select *  from cluster_relationship where relationship_id
+            select *  from cluster_relationship where status=1 and is_delete=0 and relationship_id
                 <foreach collection='clusterIdList' item='item' index='index' open='in(' separator=',' close=')'>
                     #{item}
                 </foreach>
@@ -91,7 +91,7 @@ public interface ClusterRelationshipMapper {
 
     @Select("""
         <script>
-            select *  from cluster_relationship where cluster_id
+            select *  from cluster_relationship where status=1 and is_delete=0 and cluster_id
                 <foreach collection='clusterIdList' item='item' index='index' open='in(' separator=',' close=')'>
                     #{item}
                 </foreach>
@@ -120,15 +120,15 @@ public interface ClusterRelationshipMapper {
     List<ClusterAndRelationshipEntity> queryClusterAndRelationshipEntityListByClusterId(ClusterRelationshipEntity clusterRelationshipEntity);
 
 
-    @Select(" select * from cluster_relationship where update_time > #{updateTime} and status in(1, 2 ,3)")
+    @Select(" select * from cluster_relationship where update_time >= #{updateTime}")
     List<ClusterRelationshipEntity> queryNewlyIncreased(ClusterRelationshipEntity clusterRelationshipEntity);
 
 
-    @Select(" select * from cluster_relationship where status = 1")
+    @Select(" select * from cluster_relationship where status = 1 and is_delete=0")
     List<ClusterRelationshipEntity> queryAll(ClusterRelationshipEntity clusterRelationshipEntity);
 
     @Select("""
-            select * from cluster_relationship where id = #{id}
+            select * from cluster_relationship where status=1 and is_delete=0 and id = #{id}
         """)
     ClusterRelationshipEntity queryById(ClusterRelationshipEntity clusterRelationshipEntity);
 

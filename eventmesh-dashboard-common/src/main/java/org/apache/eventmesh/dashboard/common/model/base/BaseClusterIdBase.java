@@ -20,8 +20,6 @@ package org.apache.eventmesh.dashboard.common.model.base;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 
-import java.util.Objects;
-
 public abstract class BaseClusterIdBase extends BaseOrganizationBase {
 
     private Long clusterId;
@@ -42,18 +40,6 @@ public abstract class BaseClusterIdBase extends BaseOrganizationBase {
 
     public void setClusterType(ClusterType clusterType) {
         this.clusterType = clusterType;
-    }
-
-    public boolean isDelete() {
-        return this.getStatus() == 0;
-    }
-
-    public boolean isUpdate() {
-        return !this.isDelete() && !this.isInsert();
-    }
-
-    public boolean isInsert() {
-        return Objects.equals(this.getUpdateTime(), this.getCreateTime());
     }
 
 }

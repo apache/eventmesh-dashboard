@@ -44,7 +44,7 @@ public class CollectExporterTest {
 
         ClusterMetadata clusterMetadata = new ClusterMetadata();
         clusterMetadata.setOrganizationId(1L);
-        clusterMetadata.setClusterId(2L);
+        clusterMetadata.setId(2L);
         clusterMetadata.setName("test");
         collectExporter.setClusterMetadata(clusterMetadata);
 

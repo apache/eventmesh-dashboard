@@ -69,7 +69,7 @@ public class KafkaTopicRemotingService extends AbstractKafkaRemotingService impl
             throw new IllegalArgumentException("replicationFactor must be between 1 and 32767");
         }
         Map<String, String> configs = this.validateConfigs(topic.getTopicConfig());
-        NewTopic newTopic = new NewTopic(topic.getTopicName(), Optional.of(this.partitionCount(topic)),
+        NewTopic newTopic = new NewTopic(topic.getName(), Optional.of(this.partitionCount(topic)),
             Optional.ofNullable(topic.getReplicationFactor()).map(Integer::shortValue));
         newTopic.configs(configs);
         this.await(this.getClient().createTopics(List.of(newTopic), new CreateTopicsOptions().timeoutMs(OPERATION_TIMEOUT_MS)).all());
@@ -81,7 +81,7 @@ public class KafkaTopicRemotingService extends AbstractKafkaRemotingService impl
     @Override
     public DeleteTopicResult deleteTopic(DeleteTopicRequest request) throws Exception {
         TopicMetadata topic = this.requireTopic(request == null ? null : request.getMetaData());
-        this.await(this.getClient().deleteTopics(List.of(topic.getTopicName()), new DeleteTopicsOptions().timeoutMs(OPERATION_TIMEOUT_MS)).all());
+        this.await(this.getClient().deleteTopics(List.of(topic.getName()), new DeleteTopicsOptions().timeoutMs(OPERATION_TIMEOUT_MS)).all());
         DeleteTopicResult result = new DeleteTopicResult();
         result.setCode(200);
         return result;
@@ -99,11 +99,11 @@ public class KafkaTopicRemotingService extends AbstractKafkaRemotingService impl
             throw new IllegalArgumentException("Specify partitionCount or at least one config to update");
         }
         Map<String, TopicDescription> descriptions = this.await(this.getClient()
-            .describeTopics(List.of(topic.getTopicName()), new DescribeTopicsOptions().timeoutMs(OPERATION_TIMEOUT_MS)).allTopicNames());
-        TopicDescription current = Objects.isNull(descriptions) ? null : descriptions.get(topic.getTopicName());
-        if (Objects.isNull(current) || !Objects.equals(current.name(), topic.getTopicName())
+            .describeTopics(List.of(topic.getName()), new DescribeTopicsOptions().timeoutMs(OPERATION_TIMEOUT_MS)).allTopicNames());
+        TopicDescription current = Objects.isNull(descriptions) ? null : descriptions.get(topic.getName());
+        if (Objects.isNull(current) || !Objects.equals(current.name(), topic.getName())
             || Objects.isNull(current.partitions()) || current.partitions().isEmpty()) {
-            throw new IllegalStateException("Kafka topic description is incomplete: " + topic.getTopicName());
+            throw new IllegalStateException("Kafka topic description is incomplete: " + topic.getName());
         }
         if (topic.getReplicationFactor() != null && current.partitions().stream()
             .anyMatch(partition -> partition.replicas().size() != topic.getReplicationFactor())) {
@@ -114,11 +114,11 @@ public class KafkaTopicRemotingService extends AbstractKafkaRemotingService impl
             throw new IllegalArgumentException("Kafka partitions cannot shrink from " + currentCount + " to " + targetCount);
         }
         boolean expand = Objects.nonNull(targetCount) && targetCount > currentCount;
-        Map<String, NewPartitions> partitions = expand ? Map.of(topic.getTopicName(), NewPartitions.increaseTo(targetCount)) : Map.of();
+        Map<String, NewPartitions> partitions = expand ? Map.of(topic.getName(), NewPartitions.increaseTo(targetCount)) : Map.of();
         List<AlterConfigOp> operations = new ArrayList<>();
         configs.forEach((key, value) -> operations.add(new AlterConfigOp(new ConfigEntry(key, value), AlterConfigOp.OpType.SET)));
         Map<ConfigResource, Collection<AlterConfigOp>> changes =
-            Map.of(new ConfigResource(ConfigResource.Type.TOPIC, topic.getTopicName()), operations);
+            Map.of(new ConfigResource(ConfigResource.Type.TOPIC, topic.getName()), operations);
         // 两类修改分别预校验，避免已知非法配置造成不可逆的分区扩容。
         if (expand) {
             this.await(this.getClient().createPartitions(partitions,
@@ -136,7 +136,7 @@ public class KafkaTopicRemotingService extends AbstractKafkaRemotingService impl
                 this.await(this.getClient().incrementalAlterConfigs(changes, new AlterConfigsOptions().timeoutMs(OPERATION_TIMEOUT_MS)).all());
             } catch (Exception e) {
                 if (expand) {
-                    throw new IllegalStateException("Topic " + topic.getTopicName() + " expanded to " + targetCount
+                    throw new IllegalStateException("Topic " + topic.getName() + " expanded to " + targetCount
                         + " partitions, but configuration update did not complete successfully; re-query before retrying", e);
                 }
                 throw e;
@@ -151,7 +151,7 @@ public class KafkaTopicRemotingService extends AbstractKafkaRemotingService impl
         if (Objects.isNull(topic)) {
             throw new IllegalArgumentException("Topic metadata is required");
         }
-        String name = topic.getTopicName();
+        String name = topic.getName();
         if (Objects.isNull(name) || name.isEmpty() || name.length() > 249 || name.equals(".") || name.equals("..")
             || !name.matches("[a-zA-Z0-9._-]+")) {
             throw new IllegalArgumentException("Invalid Kafka topic name");
@@ -221,7 +221,7 @@ public class KafkaTopicRemotingService extends AbstractKafkaRemotingService impl
                         throw new IllegalStateException("Kafka topic description is incomplete: " + name);
                     }
                     TopicMetadata topic = new TopicMetadata();
-                    topic.setTopicName(name);
+                    topic.setName(name);
                     // Kafka 的读写使用同一组分区；其余未查询的配置保持为空。
                     topic.setReadQueueNum(description.partitions().size());
                     topic.setWriteQueueNum(description.partitions().size());

@@ -462,7 +462,7 @@ class KafkaAdminServicesTest {
         ConfigMetadata entry = new ConfigMetadata();
         entry.setInstanceType(type);
         entry.setInstanceName(target);
-        entry.setConfigName("retention.ms");
+        entry.setName("retention.ms");
         entry.setConfigValue("60000");
         return entry;
     }
@@ -473,7 +473,7 @@ class KafkaAdminServicesTest {
         request.setNode(query.getNode());
         request.setConfigObjectName(query.getConfigObjectName());
         ConfigMetadata metadata = new ConfigMetadata();
-        metadata.setConfigName(name);
+        metadata.setName(name);
         metadata.setConfigValue(value);
         request.setMetaData(metadata);
         return request;

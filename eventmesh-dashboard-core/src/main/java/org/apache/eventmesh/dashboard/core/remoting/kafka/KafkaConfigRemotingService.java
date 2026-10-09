@@ -84,7 +84,7 @@ public class KafkaConfigRemotingService extends AbstractKafkaRemotingService imp
                 converted.setInstanceType(resource.type() == ConfigResource.Type.TOPIC ? MetadataType.TOPIC
                     : resource.name().isEmpty() ? MetadataType.CLUSTER : MetadataType.RUNTIME);
                 converted.setInstanceName(resource.name());
-                converted.setConfigName(entry.name());
+                converted.setName(entry.name());
                 converted.setConfigValue(entry.isSensitive() ? null : entry.value());
                 converted.setSensitive(entry.isSensitive());
                 converted.setReadOnly(entry.isReadOnly());
@@ -133,7 +133,7 @@ public class KafkaConfigRemotingService extends AbstractKafkaRemotingService imp
                 throw new IllegalArgumentException("incrementConfig must contain ConfigMetadata");
             }
             ConfigMetadata config = (ConfigMetadata) entry;
-            String key = config.getConfigName();
+            String key = config.getName();
             if (key == null || key.isBlank() || !key.equals(key.trim())
                 || operation == AlterConfigOp.OpType.SET && config.getConfigValue() == null) {
                 throw new IllegalArgumentException("Config keys must be nonblank and SET values must be non-null");

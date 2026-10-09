@@ -168,7 +168,7 @@ public class AgentActionController {
             ClusterEntity tmpClusterEntity = clusterEntity;
             // TODO 这个有一个问题，这些配置地址，是写入 cluster ，还是 写入 runtime, 写入 cluster
             List<ConfigEntity> configEntityList = addressServiceResult.getConfigEntities().stream().filter((value) -> {
-                if (Objects.isNull(value.getConfigName())) {
+                if (Objects.isNull(value.getName())) {
                     return false;
                 } else {
                     value.setInstanceId(tmpClusterEntity.getId());
@@ -202,7 +202,7 @@ public class AgentActionController {
         queryConfigConfigList.forEach(value -> {
             List<ConfigEntity> configEntityList = this.configService.queryByInstanceId(value);
             configEntityList.forEach(config -> {
-                configMap.put(config.getConfigName(), config.getConfigValue());
+                configMap.put(config.getName(), config.getConfigValue());
             });
         });
 

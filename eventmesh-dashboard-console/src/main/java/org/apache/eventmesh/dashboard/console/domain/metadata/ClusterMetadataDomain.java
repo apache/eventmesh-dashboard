@@ -99,8 +99,8 @@ public class ClusterMetadataDomain {
     }
 
     public void setMainCluster(ClusterEntity clusterEntity) {
-        this.colonyDO = ColonyDO.create(ClusterEntityDO.class, clusterEntity);
-        this.colonyDO.setClusterId(clusterEntity.getClusterId());
+        this.colonyDO = ColonyDO.create(ClusterEntityDO.class, this.createClusterBaseDO(clusterEntity));
+        this.colonyDO.setClusterId(clusterEntity.getId());
         this.colonyDO.setClusterType(clusterEntity.getClusterType());
         this.colonyDO.setSuperiorId(-0L);
     }

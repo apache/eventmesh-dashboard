@@ -53,7 +53,7 @@ public class TopicEntityMapperTest {
         TopicEntity topicEntity = new TopicEntity();
         topicEntity.setClusterId(1L);
         topicEntity.setRuntimeId(2L);
-        topicEntity.setTopicName("test-" + nameIndex.getAndIncrement());
+        topicEntity.setName("test-" + nameIndex.getAndIncrement());
         topicEntity.setTopicType("topicType");
         topicEntity.setWriteQueueNum(8);
         topicEntity.setReadQueueNum(8);
