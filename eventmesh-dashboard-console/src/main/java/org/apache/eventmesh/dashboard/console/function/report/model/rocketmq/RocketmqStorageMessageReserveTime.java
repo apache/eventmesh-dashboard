@@ -20,11 +20,11 @@ package org.apache.eventmesh.dashboard.console.function.report.model.rocketmq;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.function.report.ReportViewType;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId.RuntimeLongValue;
 
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_storage_message_reserve_time",
     defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_storage_message_reserve_time",
-    comment = "储存层消息保存时间")
-public class RocketmqStorageMessageReserveTime extends RuntimeId {
+    comment = "当前时间与最早保留消息存储时间之差（毫秒），非配置的保留时长")
+public class RocketmqStorageMessageReserveTime extends RuntimeLongValue {
 
 }

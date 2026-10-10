@@ -29,8 +29,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @ReportMeta(clusterType = ClusterType.STORAGE_ROCKETMQ, reportName = "rocketmq_consumer_group_number",
     defaultViewType = ReportViewType.GAUGE, tableName = "rocketmq_consumer_group_number",
-    comment = "消费者组数量")
+    comment = "当前 Broker 配置的消费组总数，包含系统组和离线组")
 public class RocketmqConsumerGroupNumber extends RuntimeLongValue {
 
-}
 
+}
