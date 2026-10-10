@@ -228,6 +228,81 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>kafka-topic-sync-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <testIncludes combine.self="override">
+                                <testInclude>**/KafkaTopicSyncTest.java</testInclude>
+                                <testInclude>**/KafkaGroupConfigSyncTest.java</testInclude>
+                                <testInclude>**/KafkaMappingContractTest.java</testInclude>
+                                <testInclude>**/KafkaGroupConfigLiveTest.java</testInclude>
+                            </testIncludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <testFailureIgnore>false</testFailureIgnore>
+                            <includes combine.self="override">
+                                <include>**/KafkaTopicSyncTest.java</include>
+                                <include>**/KafkaGroupConfigSyncTest.java</include>
+                                <include>**/KafkaMappingContractTest.java</include>
+                                <include>**/KafkaGroupConfigLiveTest.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>kafka-sync-mutation</id>
+            <properties>
+                <kafka.mutation.dir>${project.build.directory}/pit-reports/kafka-sync</kafka.mutation.dir>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <version>1.17.4</version>
+                        <configuration>
+                            <crossModule>true</crossModule>
+                            <targetClasses>
+                                <param>org.apache.eventmesh.dashboard.common.model.DatabaseAndMetadataMapper</param>
+                                <param>org.apache.eventmesh.dashboard.core.metadata.MetadataSyncManage</param>
+                                <param>org.apache.eventmesh.dashboard.console.spring.support.metadata.DatabaseAndMetadataType</param>
+                            </targetClasses>
+                            <targetTests>
+                                <param>org.apache.eventmesh.dashboard.console.spring.support.metadata.KafkaMappingContractTest</param>
+                                <param>org.apache.eventmesh.dashboard.console.spring.support.metadata.KafkaTopicSyncTest</param>
+                                <param>org.apache.eventmesh.dashboard.console.spring.support.metadata.KafkaGroupConfigSyncTest</param>
+                            </targetTests>
+                            <mutators><mutator>DEFAULTS</mutator></mutators>
+                            <threads>1</threads>
+                            <outputFormats><param>XML</param></outputFormats>
+                            <timestampedReports>false</timestampedReports>
+                            <reportsDirectory>${kafka.mutation.dir}</reportsDirectory>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.pitest</groupId>
+                                <artifactId>pitest-junit5-plugin</artifactId>
+                                <version>1.2.2</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>

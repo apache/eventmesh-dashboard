@@ -33,6 +33,11 @@ public class AddConfigRequest extends AbstractGlobal2Request<ConfigMetadata> {
 
     private ConfigType configType = ConfigType.NODE;
 
+    /** Same target selectors as GetConfigRequest; an empty node selects Kafka broker defaults. */
+    private String node;
+
+    private String configObjectName;
+
     private List<Object> incrementConfig;
 
     private List<Object> fullConfig;

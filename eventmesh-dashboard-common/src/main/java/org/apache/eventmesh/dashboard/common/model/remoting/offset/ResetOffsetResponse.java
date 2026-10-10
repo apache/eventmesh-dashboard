@@ -31,4 +31,17 @@ public class ResetOffsetResponse {
 
     private Long offset;
 
+    /** Optional per-partition outcome; UNKNOWN requires a fresh query before retrying. */
+    private Status status;
+
+    private String errorCode;
+
+    private String errorMessage;
+
+    private Throwable throwable;
+
+    public enum Status {
+        SUCCESS, FAILED, UNKNOWN
+    }
+
 }

@@ -18,7 +18,11 @@
 
 package org.apache.eventmesh.dashboard.common.model;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
+
+import java.util.Map;
+import java.util.Objects;
 
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +38,16 @@ public class DatabaseAndMetadataMapper {
 
     private Class<?> metadataHandlerClass;
 
+    private Map<ClusterType, Class<?>> metadataHandlerClassByClusterType;
+
     private ConvertMetaData<?, ?> convertMetaData;
+
+    public Class<?> resolveMetadataHandlerClass(ClusterType clusterType) {
+        if (Objects.isNull(clusterType) || Objects.isNull(this.metadataHandlerClassByClusterType)) {
+            return this.metadataHandlerClass;
+        }
+        return this.metadataHandlerClassByClusterType.getOrDefault(clusterType, this.metadataHandlerClass);
+    }
 
 
 }

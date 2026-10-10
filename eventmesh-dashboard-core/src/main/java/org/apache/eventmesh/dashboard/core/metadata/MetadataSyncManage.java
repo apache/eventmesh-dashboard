@@ -286,7 +286,7 @@ public class MetadataSyncManage {
         metadataSyncConfig.setDataBasesHandler(syncMetadataCreateFactory.createDataMetadataHandler(baseSyncBase));
 
         DataMetadataHandler<BaseClusterIdBase> object = remoting2Manage.createDataMetadataHandler(
-            syncMetadataCreateFactory.getDatabaseAndMetadataMapper().getMetadataHandlerClass(), baseSyncBase);
+            syncMetadataCreateFactory.getDatabaseAndMetadataMapper().resolveMetadataHandlerClass(baseSyncBase.getClusterType()), baseSyncBase);
         metadataSyncConfig.setClusterService(object);
         metadataSyncConfig.setBaseSyncBase(baseSyncBase);
         metadataSyncConfig.setMetadataType(metadataType);

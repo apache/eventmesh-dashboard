@@ -42,9 +42,25 @@ public class ConfigMetadata extends BaseRuntimeIdBase {
 
     private Long instanceId;
 
+    /** Remote target name supplied by the caller or a remote query; instanceId remains a Dashboard database ID.
+     * TOPIC: topic name; RUNTIME: broker ID text; CLUSTER: empty string for broker defaults.
+     * This field is not persisted by the current console schema.
+     */
+    private String instanceName;
+
+    /** Optional remote attributes; not persisted by the current console schema. */
+    private Boolean sensitive;
+
+    private Boolean readOnly;
+
+    private String source;
+
 
     @Override
     public String nodeUnique() {
+        if (this.instanceType != null && this.instanceName != null) {
+            return this.instanceType.name() + ":" + this.instanceName.length() + ":" + this.instanceName + ":" + this.configName;
+        }
         return this.configName;
     }
 }
