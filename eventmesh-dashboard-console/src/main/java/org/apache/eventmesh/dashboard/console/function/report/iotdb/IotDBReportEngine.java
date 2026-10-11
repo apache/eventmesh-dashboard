@@ -25,6 +25,9 @@ import org.apache.eventmesh.dashboard.console.function.report.model.SingleGenera
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.SystemMetaObject;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -33,16 +36,20 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
@@ -56,6 +63,10 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("SqlSourceToSinkFlow")
 @Slf4j
 public class IotDBReportEngine extends AbstractReportEngine {
+
+    private static final Set<String> QUERY_FUNCTIONS = Set.of("sum", "avg", "min", "max", "count");
+
+    private static final Pattern QUERY_INTERVAL = Pattern.compile("[1-9][0-9]*(ms|s|m|h|d|w|mo|y)");
 
     /**
      *
@@ -218,10 +229,13 @@ public class IotDBReportEngine extends AbstractReportEngine {
     @Override
     public CompletableFuture<List<Map<String, Object>>> query(SingleGeneralReportDO singleGeneralReportDO) {
         return CompletableFuture.supplyAsync(() -> {
-            String sql = this.buildSql(singleGeneralReportDO.getReportName(), singleGeneralReportDO.getReportType(), singleGeneralReportDO);
+            // 查询模板改为参数占位符后必须绑定值，避免条件丢失或字符串拼接改变 SQL 语义。
+            validateQuery(singleGeneralReportDO);
+            BoundSql sql = this.buildSqlSource(singleGeneralReportDO.getReportName(), singleGeneralReportDO.getReportType())
+                .getBoundSql(singleGeneralReportDO);
             try (Connection connection = this.dataSource.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)) {
-                connection.isReadOnly();
+                PreparedStatement ps = connection.prepareStatement(sql.getSql())) {
+                bindQuery(ps, sql, singleGeneralReportDO);
                 try (ResultSet rs = ps.executeQuery()) {
                     List<Map<String, Object>> list = new ArrayList<>();
                     ResultSetMetaData metaData = rs.getMetaData();
@@ -242,6 +256,32 @@ public class IotDBReportEngine extends AbstractReportEngine {
             }
         });
 
+    }
+
+    /** 只有函数名和时间间隔需要作为 SQL 语法展开，限定其格式，其他条件全部绑定参数。 */
+    private void validateQuery(SingleGeneralReportDO query) {
+        if (query.getSelectFun() != null && !QUERY_FUNCTIONS.contains(query.getSelectFun().toLowerCase(Locale.ROOT))) {
+            throw new IllegalArgumentException("Unsupported report aggregation function");
+        }
+        if (query.getInterval() != null && !QUERY_INTERVAL.matcher(query.getInterval()).matches()) {
+            throw new IllegalArgumentException("Invalid report time interval");
+        }
+    }
+
+    /** IoTDB 的资源 ID 列是 STRING，时间按本地应用时区转换为 JDBC Timestamp。 */
+    private void bindQuery(PreparedStatement statement, BoundSql sql, SingleGeneralReportDO query) throws SQLException {
+        MetaObject parameters = SystemMetaObject.forObject(query);
+        for (int index = 0; index < sql.getParameterMappings().size(); index++) {
+            String property = sql.getParameterMappings().get(index).getProperty();
+            Object value = parameters.getValue(property);
+            if (value instanceof LocalDateTime timestamp) {
+                statement.setTimestamp(index + 1, Timestamp.valueOf(timestamp));
+            } else if (property.endsWith("Id")) {
+                statement.setString(index + 1, value.toString());
+            } else {
+                statement.setObject(index + 1, value);
+            }
+        }
     }
 
     @Override

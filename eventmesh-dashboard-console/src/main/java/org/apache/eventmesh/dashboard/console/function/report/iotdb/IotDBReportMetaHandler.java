@@ -22,9 +22,8 @@ import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportT
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.base.CaseFormat;
@@ -48,7 +47,9 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
             if (field.getName().endsWith("Id") || !(Number.class.isAssignableFrom(field.getType()))) {
                 stringBuilder.append("'${item.").append(field.getName()).append("}'");
             } else {
-                stringBuilder.append("${item.").append(field.getName()).append("}");
+                // 未采集到的指标不代表零值，写入 SQL NULL，避免生成空数值槽位。
+                stringBuilder.append("<choose><when test='item.").append(field.getName()).append(" != null'>")
+                    .append("${item.").append(field.getName()).append("}</when><otherwise>NULL</otherwise></choose>");
             }
 
             stringBuilder.append(",");
@@ -59,73 +60,53 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
 
     @Override
     public String query(String type) {
-        Map<String, Field> map = new HashMap<>();
-        this.fieldList.forEach(field -> {
-            map.put(field.getName(), field);
-        });
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("select ")
-            .append("\r\n  <if test='_parameter.interval != null'> date_bin(${_parameter.interval}, time) as time , </if>")
-            .append("\r\n  <if test='_parameter.interval == null'> time ,</if> ");
-        stringBuilder.append("\r\n  <trim prefix=' ' prefixOverrides=','>");
-        this.fieldList.forEach(field -> {
-            String filedName = field.getName();
-            if (Objects.equals(filedName, "time")) {
-                return;
+        // 原查询在 ID/名称之间重复插入逗号，且对普通明细使用聚合；统一分隔符并区分明细和聚合。
+        StringBuilder sql = new StringBuilder("select ");
+        sql.append("<choose><when test='_parameter.interval != null'>")
+            .append("date_bin(${_parameter.interval}, time) as time")
+            .append("</when><otherwise>time</otherwise></choose>");
+        StringJoiner tags = new StringJoiner(", ");
+        for (Field field : this.fieldList) {
+            String name = field.getName();
+            if (Objects.equals(name, "time")) {
+                continue;
             }
-            String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
-            if (filedName.startsWith("value")) {
-                stringBuilder.append("\r\n    <if test='_parameter.selectFun == null'>,").append(key).append("</if>")
-                    .append("\r\n    <if test='_parameter.selectFun != null'> ,${_parameter.selectFun}(").append(key).append(")</if>");
-            } else if (key.endsWith("_id")) {
-                stringBuilder.append("\r\n    ");
-                stringBuilder.append("<if test='_parameter.").append(filedName).append("!=null'>  ,")
-                    .append(key).append(',');
-                String typeField = filedName.replace("Id", "Type");
-                if (map.containsKey(typeField)) {
-                    stringBuilder.append(",").append(key.replace("id", "type"));
+            String column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
+            sql.append(", ");
+            if (name.endsWith("Id") || field.isAnnotationPresent(ReportTag.class)) {
+                // Kafka 名称和分区号也是维度；聚合时保留全部标签，避免混合不同 Topic、Group 和分区。
+                sql.append(column);
+                tags.add(column);
+            } else {
+                sql.append("<choose><when test='_parameter.selectFun != null'>");
+                if (name.startsWith("value")) {
+                    sql.append("${_parameter.selectFun}(").append(column).append(")");
+                } else {
+                    sql.append("last_by(").append(column).append(", time)");
                 }
-                String nameField = filedName.replace("Id", "Name");
-                if (map.containsKey(nameField)) {
-                    //  last_by 函数可以解决 attribute类型字段 必须 与 group by 保持一致的问题
-                    stringBuilder.append(",")
-                        .append("last_by(").append(key.replace("id", "name"))
-                        .append(")").append(",");
-                }
-                stringBuilder.append("  </if>");
+                sql.append(" as ").append(column).append("</when><otherwise>")
+                    .append(column).append("</otherwise></choose>");
             }
-        });
-        stringBuilder.append("\r\n  </trim>");
-        stringBuilder.append("\r\nfrom ").append(this.reportMeta.getTableName()).append("\r\n where \r\n")
-            .append(" time &gt; ${startTime} and time &lt; ${endTime}  \r\n");
-        this.fieldList.forEach(field -> {
-            String filedName = field.getName();
-            if (filedName.endsWith("Id")) {
-                String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
-                stringBuilder.append("\r\n    <if test='_parameter.")
-                    .append(field.getName())
-                    .append("!=null'>")
-                    .append("   and  ")
-                    .append(key)
-                    .append("='${_parameter.")
-                    .append(field.getName())
-                    .append("}'   </if>");
+        }
+        // 非聚合查询直接返回属性；聚合查询使用双参数 last_by，所有列只在一处添加分隔符。
+        sql.append(" from ").append(this.reportMeta.getTableName())
+            .append(" where time &gt; #{startTime} and time &lt; #{endTime}");
+        for (Field field : this.fieldList) {
+            String name = field.getName();
+            if (name.endsWith("Id")) {
+                String column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
+                sql.append(" <if test='_parameter.").append(name).append(" != null'> and ")
+                    .append(column).append("=#{").append(name).append("}</if>");
             }
-        });
-        stringBuilder.append("\r\n  <if test='_parameter.selectFun != null'> ");
-        stringBuilder.append("\r\n group by time, \r\n  <trim prefix=' ' prefixOverrides=','>");
-        this.fieldList.forEach(field -> {
-            String filedName = field.getName();
-            String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
-            if (filedName.endsWith("Id")) {
-                stringBuilder.append(AbstractReportMetaHandler.lineAndTabString);
-                stringBuilder.append("<if test='_parameter.").append(filedName).append("!=null'>,")
-                    .append(key).append(" , ");
-                stringBuilder.append("  </if>");
-            }
-        });
-        stringBuilder.append("\r\n  </trim>").append("\r\n  </if>");
-        return stringBuilder.toString();
+        }
+        sql.append(" <if test='_parameter.selectFun != null'> group by ")
+            .append("<choose><when test='_parameter.interval != null'>date_bin(${_parameter.interval}, time)")
+            .append("</when><otherwise>time</otherwise></choose>");
+        if (tags.length() > 0) {
+            sql.append(", ").append(tags);
+        }
+        sql.append("</if>");
+        return sql.toString();
     }
 
     @Override
