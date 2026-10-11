@@ -31,6 +31,7 @@ import org.apache.eventmesh.dashboard.common.utils.RowMapperUtil;
 import org.apache.eventmesh.dashboard.console.function.report.ReportHandlerManage;
 import org.apache.eventmesh.dashboard.console.function.report.collect.DataSyncHandler.DataSyncHandlerWrapper;
 import org.apache.eventmesh.dashboard.console.function.report.collect.exporter.CollectExporter;
+import org.apache.eventmesh.dashboard.console.function.report.collect.exporter.KafkaCollectRegistrar;
 import org.apache.eventmesh.dashboard.console.function.report.collect.padding.PaddingService;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.Time;
 
@@ -148,6 +149,9 @@ public class CollectManage {
      */
     private final Map<Long, CollectMetadata> collectMetadataMap = new ConcurrentHashMap<>();
 
+    private final KafkaCollectRegistrar kafkaCollectRegistrar =
+        new KafkaCollectRegistrar(clusterMetadataMap, executeingCollectMap);
+
 
     private final SyncAndHandlerData syncAndHandlerData = new SyncAndHandlerData();
 
@@ -213,6 +217,10 @@ public class CollectManage {
         // clusterId , runtimeMetadata list
         // 需要全部缓存，因为 collect 可以从 普罗米修斯修改成 eventmesh
         runtimeMetadataList.forEach(runtimeMetadata -> {
+            // Kafka 的节点任务由专用注册器维护，沿用原有流程处理其他类型。
+            if (this.kafkaCollectRegistrar.supports(runtimeMetadata.getClusterType())) {
+                return;
+            }
             //TODO 需要识别是否是 启动状态
             if (runtimeMetadata.isDelete()) {
                 runtimeMetadataMap.get(runtimeMetadata.getClusterId()).remove(runtimeMetadata.getName());
@@ -242,6 +250,11 @@ public class CollectManage {
         });
 
         collectMetadataList.forEach(collectMetadata -> {
+            // Kafka 主动采集使用独立的配置缓存，避免按节点重复创建集群级 Admin 任务。
+            if (Objects.equals(collectMetadata.getCollectType(), CollectType.EVENTMESH)
+                && this.kafkaCollectRegistrar.supportsConfiguration(collectMetadata)) {
+                return;
+            }
             if (collectMetadata.isDelete() || collectMetadata.getStatus() == 2) {
                 this.deleteByCollectMetadata(collectMetadata);
                 return;
@@ -257,6 +270,7 @@ public class CollectManage {
                 executeingCollectMap.put(key, collect);
             }
         });
+        this.kafkaCollectRegistrar.refresh(clusterMetadataList, runtimeMetadataList, collectMetadataList);
     }
 
     /**
@@ -265,8 +279,14 @@ public class CollectManage {
      *     2. 删除 runtime collect
      *     3. 删除 cluster collect
      * </pre>
+     * Kafka 节点不在通用缓存中，由专用注册器清理 Admin 和 JMX 任务后返回，保留节点缓存供重新启用。
      */
     public void deleteByCollectMetadata(CollectMetadata collectMetadata) {
+        if (Objects.equals(collectMetadata.getCollectType(), CollectType.EVENTMESH)
+            && this.kafkaCollectRegistrar.supportsConfiguration(collectMetadata)) {
+            this.kafkaCollectRegistrar.remove(collectMetadata.getClusterId());
+            return;
+        }
         this.collectMetadataMap.remove(collectMetadata.getClusterId());
         if (Objects.equals(collectMetadata.getCollectType(), CollectType.PROMETHEUS)) {
             this.deleteCollect(collectMetadata);
