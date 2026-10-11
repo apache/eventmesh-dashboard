@@ -142,12 +142,17 @@ public class ReportHandlerManage {
         this.collectManage.setReportHandlerManage(this);
         this.collectManage.init();
 
-        //this.metadataDataManage.init(this.reportConfig.getUrl(), this.reportConfig.getUsername(), this.reportConfig.getPassword());
-        scheduledExecutorService.scheduleAtFixedRate(this.collectManage::collect, 5, 5, TimeUnit.SECONDS);
-        scheduledExecutorService.scheduleAtFixedRate(this.collectManage::syncData, 5, 100, TimeUnit.MINUTES);
-
-        this.buildDeleteDataTask();
+        // 首轮采集现在立即加载配置，先完成建表，避免新环境在表创建前尝试写入。
         this.ddlHandler();
+        this.startCollection();
+        this.buildDeleteDataTask();
+    }
+
+    /** 启动前加载采集配置；后续按秒刷新，节点与配置变更无需等待百分钟。 */
+    private void startCollection() {
+        this.collectManage.syncData();
+        scheduledExecutorService.scheduleAtFixedRate(this.collectManage::collect, 5, 5, TimeUnit.SECONDS);
+        scheduledExecutorService.scheduleWithFixedDelay(this.collectManage::syncData, 5, 5, TimeUnit.SECONDS);
     }
 
     /** 将应用数据源传给采集管理器，修复配置加载阶段没有数据源的问题。 */
@@ -159,14 +164,19 @@ public class ReportHandlerManage {
         Map<String, CompletableFuture<List<Map<String, Object>>>> completableFutures = new HashMap<>(singleGeneralReportDOList.size());
         singleGeneralReportDOList.forEach(reportDO -> {
             CompletableFuture<List<Map<String, Object>>> completableFuture = reportEngine.query(reportDO);
-            completableFutures.put(reportDO.getReportType(), completableFuture);
+            // 同一类型下可以查询多个报表，使用报表名避免覆盖并与 Controller 的取值一致。
+            completableFutures.put(reportDO.getReportName(), completableFuture);
         });
         Map<String, List<Map<String, Object>>> resultMap = new HashMap<>(singleGeneralReportDOList.size());
         completableFutures.forEach((key, completableFuture) -> {
             try {
                 List<Map<String, Object>> singleData = completableFuture.get();
                 resultMap.put(key, singleData);
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
+                // 原来包装异常会丢失中断信号，保留状态使调用方能够取消查询。
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
                 throw new RuntimeException(e);
             }
         });

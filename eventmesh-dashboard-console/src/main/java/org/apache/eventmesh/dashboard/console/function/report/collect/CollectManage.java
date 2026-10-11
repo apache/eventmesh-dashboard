@@ -171,14 +171,23 @@ public class CollectManage {
         this.dataSyncHandler.setReportEngine(this.reportHandlerManage.getReportEngine());
     }
 
+    /**
+     * 提交本轮采集任务，使用同一份固定列表确定完成计数与提交任务集合。
+     * 元数据刷新会并发增删任务，ConcurrentHashMap 无法保证先读取 size、再遍历时取得相同的任务集合。
+     * 若完成计数大于提交数，本轮无法归零入库；若完成计数小于提交数，则可能在全部任务完成前提前入库。
+     * 这里只复制采集器引用，不保证复制期间任务表的原子快照。
+     */
     public void collect() {
-        if (this.executeingCollectMap.isEmpty()) {
+        List<Collect> collectors = new ArrayList<>(this.executeingCollectMap.values());
+        if (collectors.isEmpty()) {
             log.info("Not executed because there is no collector to be executed ");
             return;
         }
-        DataSyncHandlerWrapper wrapper = dataSyncHandler.getDataSyncHandlerWrapper(executeingCollectMap.size());
-        this.executeingCollectMap.forEach(
-            (clusterId, exporter) -> this.threadPoolExecutor.execute(() -> exporter.collect(wrapper.getIndex(), wrapper)));
+        DataSyncHandlerWrapper wrapper = dataSyncHandler.getDataSyncHandlerWrapper(collectors.size());
+        collectors.forEach(exporter -> {
+            int index = wrapper.getIndex();
+            this.threadPoolExecutor.execute(() -> exporter.collect(index, wrapper));
+        });
     }
 
     public void syncData() {

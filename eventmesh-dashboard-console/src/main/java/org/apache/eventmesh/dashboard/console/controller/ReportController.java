@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,10 +41,12 @@ public class ReportController {
 
     @RequestMapping("reportByHome")
     public Map<String, List<Map<String, Object>>> reportByHome(@RequestBody MultiGeneralReportDO multiGeneralReportDO) {
-        //
         List<SingleGeneralReportDO> singleGeneralReportDOList = new ArrayList<>();
         multiGeneralReportDO.getReportNameList().forEach(reportName -> {
             SingleGeneralReportDO singleGeneralReportDO = new SingleGeneralReportDO();
+            // 原来仅创建空对象，批查会因缺少报表名触发空指针；复制过滤条件并逐个设置名称。
+            BeanUtils.copyProperties(multiGeneralReportDO, singleGeneralReportDO);
+            singleGeneralReportDO.setReportName(reportName);
             singleGeneralReportDOList.add(singleGeneralReportDO);
         });
         return reportHandlerManage.queryResultIsMap(singleGeneralReportDOList);
