@@ -28,4 +28,7 @@ public class GetOffsetRequest {
 
     private String groupName;
 
+    /** Optional exact topic filter. The target Broker comes from the managed client. */
+    private String topic;
+
 }

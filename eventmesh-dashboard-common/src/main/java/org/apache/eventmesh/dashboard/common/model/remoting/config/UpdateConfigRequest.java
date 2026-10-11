@@ -23,6 +23,6 @@ import org.apache.eventmesh.dashboard.common.model.remoting.RemotingOperate;
 public class UpdateConfigRequest extends AddConfigRequest {
 
     {
-        remotingOperate = RemotingOperate.DELETE;
+        remotingOperate = RemotingOperate.UPDATE;
     }
 }

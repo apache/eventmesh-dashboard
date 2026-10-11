@@ -19,6 +19,9 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.config;
 
 
+import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,9 +30,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class GetConfigRequest {
+public class GetConfigRequest extends AbstractGlobal2Request<ConfigMetadata> {
 
-    private ConfigType configType;
+    private ConfigType configType = ConfigType.NODE;
 
     private String node;
 

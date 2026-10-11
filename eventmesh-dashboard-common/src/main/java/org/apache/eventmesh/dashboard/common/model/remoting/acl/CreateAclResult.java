@@ -18,6 +18,7 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.acl;
 
-public class CreateAclResult {
+import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
 
+public class CreateAclResult extends BaseGlobalResult {
 }

@@ -244,6 +244,67 @@
     </build>
     <profiles>
         <profile>
+            <id>kafka-sync-quality</id>
+            <properties>
+                <jacocoArgLine></jacocoArgLine>
+                <kafka.quality.dir>${maven.multiModuleProjectDirectory}/eventmesh-dashboard-console/target/dev-crew/kafka-sync</kafka.quality.dir>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.13</version>
+                        <configuration>
+                            <propertyName>jacocoArgLine</propertyName>
+                            <destFile>${kafka.quality.dir}/coverage/unit-${project.artifactId}.exec</destFile>
+                            <append>false</append>
+                            <dataFile>${kafka.quality.dir}/coverage/merged.exec</dataFile>
+                            <outputDirectory>${kafka.quality.dir}/coverage/${project.artifactId}</outputDirectory>
+                            <formats><format>XML</format></formats>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>kafka-sync-coverage</id>
+                                <goals><goal>prepare-agent</goal></goals>
+                            </execution>
+                            <execution>
+                                <id>kafka-sync-merge</id>
+                                <goals><goal>merge</goal></goals>
+                                <configuration>
+                                    <destFile>${kafka.quality.dir}/coverage/merged.exec</destFile>
+                                    <fileSets>
+                                        <fileSet>
+                                            <directory>${kafka.quality.dir}/coverage</directory>
+                                            <includes><include>unit-*.exec</include></includes>
+                                        </fileSet>
+                                    </fileSets>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>kafka-sync-report</id>
+                                <goals><goal>report</goal></goals>
+                                <configuration>
+                                    <includes>
+                                        <include>org/apache/eventmesh/dashboard/common/model/DatabaseAndMetadataMapper.class</include>
+                                        <include>org/apache/eventmesh/dashboard/core/metadata/MetadataSyncManage.class</include>
+                                        <include>org/apache/eventmesh/dashboard/console/spring/support/metadata/DatabaseAndMetadataType.class</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>-Xmx1024m @{jacocoArgLine}</argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>release</id>
             <build>
                 <plugins>

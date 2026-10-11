@@ -23,5 +23,25 @@ import lombok.Data;
 @Data
 public class ResetOffsetResponse {
 
+    private String topic;
+
+    private String brokerName;
+
+    private Integer partitionId;
+
     private Long offset;
+
+    /** Optional per-partition outcome; UNKNOWN requires a fresh query before retrying. */
+    private Status status;
+
+    private String errorCode;
+
+    private String errorMessage;
+
+    private Throwable throwable;
+
+    public enum Status {
+        SUCCESS, FAILED, UNKNOWN
+    }
+
 }

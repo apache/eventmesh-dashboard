@@ -18,6 +18,7 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.user;
 
-public class CreateUserResult {
+import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
 
+public class CreateUserResult extends BaseGlobalResult {
 }

@@ -18,6 +18,17 @@
 
 package org.apache.eventmesh.dashboard.core.function.SDK.config;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class CreateRemotingConfig extends AbstractSimpleCreateSDKConfig {
+
+    private AclVersion aclVersion = AclVersion.V2;
+
+    public enum AclVersion {
+        V1, V2
+    }
 
 }

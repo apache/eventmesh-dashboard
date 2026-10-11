@@ -34,8 +34,10 @@ public class GroupMemberMetadata extends BaseRuntimeIdBase {
 
     private String topicName;
 
+    /** Length-prefixed group name keeps different group/topic pairs distinct during synchronization. */
     @Override
     public String nodeUnique() {
-        return "";
+        return this.groupName == null || this.topicName == null ? null
+            : this.groupName.length() + ":" + this.groupName + this.topicName;
     }
 }

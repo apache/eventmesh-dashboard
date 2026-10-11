@@ -18,7 +18,20 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.offset;
 
+import lombok.Data;
+
+@Data
 public class GetOffsetResponse {
 
+    private String topic;
+
+    private String brokerName;
+
+    private Integer partitionId;
+
     private Long offset;
+
+    private Long brokerOffset;
+
+    private Long lastTimestamp;
 }

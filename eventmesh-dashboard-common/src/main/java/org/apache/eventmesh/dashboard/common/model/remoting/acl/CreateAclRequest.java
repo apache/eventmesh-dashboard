@@ -18,8 +18,8 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.acl;
 
-public class CreateAclRequest {
+import org.apache.eventmesh.dashboard.common.model.metadata.AclMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 
-    //acl is included in runtime config
-    private String runtimeAddress;
+public class CreateAclRequest extends AbstractGlobal2Request<AclMetadata> {
 }

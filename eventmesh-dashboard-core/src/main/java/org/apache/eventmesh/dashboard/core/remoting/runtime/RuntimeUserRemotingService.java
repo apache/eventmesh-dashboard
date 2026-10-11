@@ -19,6 +19,8 @@
 package org.apache.eventmesh.dashboard.core.remoting.runtime;
 
 import org.apache.eventmesh.dashboard.common.model.remoting.user.CreateUserRequest;
+import org.apache.eventmesh.dashboard.common.model.remoting.user.CreateUserResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.user.DeleteUserResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.user.DeleterUserRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.user.GetUserRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.user.GetUserResult;
@@ -28,12 +30,12 @@ import org.apache.eventmesh.dashboard.service.remoting.UserRemotingService;
 public class RuntimeUserRemotingService extends AbstractRuntimeRemotingService implements UserRemotingService {
 
     @Override
-    public CreateUserRequest createInstanceUser(CreateUserRequest request) {
+    public CreateUserResult createInstanceUser(CreateUserRequest request) {
         return null;
     }
 
     @Override
-    public DeleterUserRequest deleteInstanceUser(DeleterUserRequest request) {
+    public DeleteUserResult deleteInstanceUser(DeleterUserRequest request) {
         return null;
     }
 

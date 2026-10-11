@@ -19,8 +19,7 @@
 package org.apache.eventmesh.dashboard.common.model.remoting.user;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 
-public class CreateUserRequest {
-
-    private InstanceUserMetadata instanceUserMetadata;
+public class CreateUserRequest extends AbstractGlobal2Request<InstanceUserMetadata> {
 }

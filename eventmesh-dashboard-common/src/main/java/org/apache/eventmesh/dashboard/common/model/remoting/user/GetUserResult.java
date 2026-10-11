@@ -18,12 +18,10 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.user;
 
-import java.util.concurrent.CompletableFuture;
+import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.GlobalResult;
 
-import lombok.Data;
+import java.util.List;
 
-@Data
-public class GetUserResult {
-
-    private CompletableFuture<GetUserResponse> getUserResponseCompletableFuture;
+public class GetUserResult extends GlobalResult<List<InstanceUserMetadata>> {
 }

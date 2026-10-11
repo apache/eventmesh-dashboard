@@ -20,10 +20,9 @@ package org.apache.eventmesh.dashboard.service.remoting;
 
 
 import org.apache.eventmesh.dashboard.common.annotation.RemotingServiceMethodMapper;
-import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
 import org.apache.eventmesh.dashboard.common.model.remoting.RemotingActionType;
+import org.apache.eventmesh.dashboard.common.model.remoting.client.GetClientsResult;
 
-import java.util.List;
 
 /**
  * A remoting service for client operations. Not implemented in eventmesh by now
@@ -31,5 +30,5 @@ import java.util.List;
 public interface ClientRemotingService {
 
     @RemotingServiceMethodMapper(RemotingActionType.QUEUE_ALL)
-    List<ClientMetadata> getClientList();
+    GetClientsResult getClientList() throws Exception;
 }

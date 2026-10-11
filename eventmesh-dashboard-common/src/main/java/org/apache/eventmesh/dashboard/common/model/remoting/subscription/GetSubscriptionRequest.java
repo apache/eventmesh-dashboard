@@ -18,10 +18,9 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.subscription;
 
-public class GetSubscriptionRequest {
+import org.apache.eventmesh.dashboard.common.model.metadata.GroupMemberMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 
-    Integer page;
-    Integer size;
-    String dataId;
-    String group;
+/** Optional groupName/topicName filters in metaData; absent metadata requests all relationships. */
+public class GetSubscriptionRequest extends AbstractGlobal2Request<GroupMemberMetadata> {
 }

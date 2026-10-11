@@ -48,6 +48,9 @@ public class TopicMetadata extends BaseRuntimeIdBase {
 
     private String topicConfig;
 
+    /** Replica count, matching the existing TopicEntity field; null on creation uses the broker default. */
+    private Integer replicationFactor;
+
 
     @Override
     public String nodeUnique() {

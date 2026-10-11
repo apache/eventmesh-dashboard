@@ -29,7 +29,7 @@ import org.apache.eventmesh.dashboard.common.model.remoting.offset.ResetOffsetRe
 public interface OffsetRemotingService {
 
 
-    GetOffsetResult getOffset(GetOffsetRequest getOffsetRequest);
+    GetOffsetResult getOffset(GetOffsetRequest getOffsetRequest) throws Exception;
 
-    ResetOffsetResult resetOffset(ResetOffsetRequest resetOffsetRequest);
+    ResetOffsetResult resetOffset(ResetOffsetRequest resetOffsetRequest) throws Exception;
 }

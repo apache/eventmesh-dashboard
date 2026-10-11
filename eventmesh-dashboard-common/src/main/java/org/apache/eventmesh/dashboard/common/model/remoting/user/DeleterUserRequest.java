@@ -18,6 +18,8 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.user;
 
-public class DeleterUserRequest {
+import org.apache.eventmesh.dashboard.common.model.metadata.InstanceUserMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.AbstractGlobal2Request;
 
+public class DeleterUserRequest extends AbstractGlobal2Request<InstanceUserMetadata> {
 }

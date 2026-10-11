@@ -18,6 +18,7 @@
 
 package org.apache.eventmesh.dashboard.console.spring.support.metadata;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.common.model.DatabaseAndMetadataMapper;
 import org.apache.eventmesh.dashboard.console.service.metadata.ClientDataMetadataHandler;
@@ -45,6 +46,8 @@ import org.apache.eventmesh.dashboard.service.remoting.MetaRuntimeRemotingServic
 import org.apache.eventmesh.dashboard.service.remoting.TopicOffsetRemotingService;
 import org.apache.eventmesh.dashboard.service.remoting.TopicRemotingService;
 
+import java.util.Map;
+
 import lombok.Getter;
 
 
@@ -55,7 +58,11 @@ public enum DatabaseAndMetadataType {
         .metadataHandlerClass(MetaRuntimeRemotingService.class).convertMetaData(RuntimeConvertMetaData.INSTANCE).build()),
 
     TOPIC(DatabaseAndMetadataMapper.builder().metaType(MetadataType.TOPIC).databaseHandlerClass(TopicDataMetadataHandler.class)
-        .metadataHandlerClass(TopicRemotingService.class).convertMetaData(TopicConvertMetaData.INSTANCE).build()),
+        .metadataHandlerClass(TopicRemotingService.class)
+        .metadataHandlerClassByClusterType(Map.of(
+            ClusterType.STORAGE_KAFKA_BROKER, org.apache.eventmesh.dashboard.service.remoting.kafka.TopicRemotingService.class,
+            ClusterType.STORAGE_KAFKA_RAFT, org.apache.eventmesh.dashboard.service.remoting.kafka.TopicRemotingService.class))
+        .convertMetaData(TopicConvertMetaData.INSTANCE).build()),
 
 
     TOPIC_OFFSET(DatabaseAndMetadataMapper.builder().metaType(MetadataType.TOPIC_OFFSET).databaseHandlerClass(TopicOffsetDataMetadataHandler.class)
@@ -66,13 +73,21 @@ public enum DatabaseAndMetadataType {
             .metadataHandlerClass(ConsumeOffsetRemotingService.class).convertMetaData(ConsumeOffsetConvertMetaData.INSTANCE).build()),
 
     GROUP(DatabaseAndMetadataMapper.builder().metaType(MetadataType.GROUP).databaseHandlerClass(GroupDataMetadataHandler.class)
-        .metadataHandlerClass(GroupRemotingService.class).convertMetaData(GroupConvertMetaData.INSTANCE).build()),
+        .metadataHandlerClass(GroupRemotingService.class)
+        .metadataHandlerClassByClusterType(Map.of(
+            ClusterType.STORAGE_KAFKA_BROKER, org.apache.eventmesh.dashboard.service.remoting.kafka.GroupRemotingService.class,
+            ClusterType.STORAGE_KAFKA_RAFT, org.apache.eventmesh.dashboard.service.remoting.kafka.GroupRemotingService.class))
+        .convertMetaData(GroupConvertMetaData.INSTANCE).build()),
 
     GROUP_MEMBER(DatabaseAndMetadataMapper.builder().metaType(MetadataType.GROUP_MEMBER).databaseHandlerClass(GroupMemberDataMetadataHandler.class)
         .metadataHandlerClass(GroupMemberRemotingService.class).convertMetaData(GroupMemberConvertMetaData.INSTANCE).build()),
 
     CONFIG(DatabaseAndMetadataMapper.builder().metaType(MetadataType.CONFIG).databaseHandlerClass(ConfigDataMetadataHandler.class)
-        .metadataHandlerClass(ConfigRemotingService.class).convertMetaData(ConfigConvertMetaData.INSTANCE).build()),
+        .metadataHandlerClass(ConfigRemotingService.class)
+        .metadataHandlerClassByClusterType(Map.of(
+            ClusterType.STORAGE_KAFKA_BROKER, org.apache.eventmesh.dashboard.service.remoting.kafka.ConfigRemotingService.class,
+            ClusterType.STORAGE_KAFKA_RAFT, org.apache.eventmesh.dashboard.service.remoting.kafka.ConfigRemotingService.class))
+        .convertMetaData(ConfigConvertMetaData.INSTANCE).build()),
 
     CLIENT(DatabaseAndMetadataMapper.builder().metaType(MetadataType.CLIENT).databaseHandlerClass(ClientDataMetadataHandler.class)
         .metadataHandlerClass(ClientRemotingService.class).convertMetaData(ConfigConvertMetaData.INSTANCE).build()),

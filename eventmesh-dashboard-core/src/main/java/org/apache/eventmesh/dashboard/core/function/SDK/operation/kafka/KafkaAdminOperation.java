@@ -26,7 +26,9 @@ import org.apache.eventmesh.dashboard.core.function.SDK.SDKTypeEnum;
 import org.apache.eventmesh.dashboard.core.function.SDK.config.CreateKakfaConfig;
 
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 
+import java.util.Objects;
 import java.util.Properties;
 
 @SDKMetadata(clusterType = {ClusterType.STORAGE_KAFKA_BROKER, ClusterType.STORAGE_KAFKA_RAFT}, remotingType = RemotingType.KAFKA, sdkTypeEnum = {
@@ -35,9 +37,13 @@ public class KafkaAdminOperation extends AbstractSDKOperation<AdminClient, Creat
 
     @Override
     public AdminClient createClient(CreateKakfaConfig clientConfig) throws Exception {
+        if (Objects.isNull(clientConfig) || Objects.isNull(clientConfig.getNetAddresses())
+            || clientConfig.getNetAddresses().length == 0) {
+            throw new IllegalArgumentException("Kafka bootstrap addresses are required");
+        }
         Properties props = new Properties();
-        AdminClient adminClient = AdminClient.create(props);
-        return adminClient;
+        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, String.join(",", clientConfig.getNetAddresses()));
+        return AdminClient.create(props);
     }
 
     @Override

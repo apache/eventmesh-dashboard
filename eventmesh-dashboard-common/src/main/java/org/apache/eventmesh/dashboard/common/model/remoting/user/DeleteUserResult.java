@@ -18,6 +18,7 @@
 
 package org.apache.eventmesh.dashboard.common.model.remoting.user;
 
-public class DeleteUserResult {
+import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
 
+public class DeleteUserResult extends BaseGlobalResult {
 }

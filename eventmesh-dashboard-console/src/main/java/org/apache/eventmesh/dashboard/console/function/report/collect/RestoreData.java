@@ -20,9 +20,10 @@ package org.apache.eventmesh.dashboard.console.function.report.collect;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -42,12 +43,12 @@ public class RestoreData {
     private int index;
 
     @Getter
-    private Map<Class<?>, List<Object>> dataMap = new HashMap<>();
+    private Map<Class<?>, List<Object>> dataMap = new ConcurrentHashMap<>();
 
 
     public void setData(Object data) {
         Class<?> clazz = data.getClass();
-        dataMap.computeIfAbsent(clazz, k -> new ArrayList<>()).add(data);
+        dataMap.computeIfAbsent(clazz, k -> Collections.synchronizedList(new ArrayList<>())).add(data);
     }
 
     public void restore() {

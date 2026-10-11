@@ -22,8 +22,7 @@ import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.common.model.remoting.BaseGlobalResult;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.AddConfigRequest;
 import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigRequest;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
-import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
+import org.apache.eventmesh.dashboard.common.model.remoting.config.GetConfigResult;
 import org.apache.eventmesh.dashboard.service.remoting.ConfigRemotingService;
 
 
@@ -35,12 +34,12 @@ public class JvmConfigRemotingService extends AbstractJvmRemotingService impleme
     }
 
     @Override
-    public GetTopicsResult getConfig(GetConfigRequest getConfigRequest) {
+    public GetConfigResult getConfig(GetConfigRequest getConfigRequest) {
         return null;
     }
 
     @Override
-    public GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest) {
+    public GetConfigResult getAllConfigs(GetConfigRequest getConfigRequest) {
         return null;
     }
 
