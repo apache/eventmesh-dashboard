@@ -34,6 +34,10 @@ import java.util.List;
 @Mapper
 public interface AclMapper {
 
+    /** Resource 21 belongs to the independent RocketMQ RPC path. */
+    @Select("SELECT * FROM acl WHERE resource_type != 21 OR resource_type IS NULL")
+    List<AclEntity> selectKafkaSnapshot();
+
     @Insert({"""
             <script>
                INSERT INTO acl (cluster_Id, pattern, operation, permission_Type, host, resource_Type, resource_Name, pattern_Type) value

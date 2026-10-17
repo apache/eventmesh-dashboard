@@ -18,16 +18,14 @@
 
 package org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster;
 
-import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.model.ClusterRequestDTO;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class QueryRelationClusterByClusterIdAndTypeDTO extends ClusterIdDTO {
+public class QueryRelationClusterByClusterIdAndTypeDTO extends ClusterRequestDTO {
 
 
-    private ClusterType clusterType;
 }

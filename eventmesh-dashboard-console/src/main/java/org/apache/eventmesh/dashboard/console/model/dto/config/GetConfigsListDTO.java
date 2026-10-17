@@ -35,7 +35,7 @@ public class GetConfigsListDTO {
 
     private MetadataType instanceType;
 
-    private String configName;
+    private String name;
 
     private Integer isModify;
 

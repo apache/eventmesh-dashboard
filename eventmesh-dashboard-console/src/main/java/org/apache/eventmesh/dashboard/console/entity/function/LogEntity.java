@@ -23,20 +23,14 @@ import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import java.sql.Timestamp;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class LogEntity extends BaseRuntimeIdEntity {
-
-    private Long id;
-
-    private Long clusterId;
 
     private String operationType;
 
@@ -52,5 +46,19 @@ public class LogEntity extends BaseRuntimeIdEntity {
     private String operationUser;
 
     private String result;
+
+    /** Preserves the existing constructor while storing identity fields in the superclass. */
+    public LogEntity(Long id, Long clusterId, String operationType, String targetType, Integer state, String content,
+        Timestamp endTime, String operationUser, String result) {
+        this.setId(id);
+        this.setClusterId(clusterId);
+        this.operationType = operationType;
+        this.targetType = targetType;
+        this.state = state;
+        this.content = content;
+        this.endTime = endTime;
+        this.operationUser = operationUser;
+        this.result = result;
+    }
 
 }

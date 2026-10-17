@@ -29,8 +29,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class AclMetadata extends BaseRuntimeIdBase {
 
-    private Long clusterId;
-
     private String principal;
 
     private Integer operation;

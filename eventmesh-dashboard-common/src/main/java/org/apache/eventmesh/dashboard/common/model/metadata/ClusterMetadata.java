@@ -18,8 +18,6 @@
 
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
-import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
-import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
 
 import lombok.Data;
@@ -30,10 +28,6 @@ import lombok.EqualsAndHashCode;
 public class ClusterMetadata extends BaseSyncBase {
 
     private String name;
-
-    private ClusterTrusteeshipType trusteeshipType;
-
-    private ClusterType clusterType;
 
     private String registryAddress;
 
@@ -57,6 +51,6 @@ public class ClusterMetadata extends BaseSyncBase {
 
     @Override
     public String nodeUnique() {
-        return this.getClusterId().toString();
+        return this.getId().toString();
     }
 }

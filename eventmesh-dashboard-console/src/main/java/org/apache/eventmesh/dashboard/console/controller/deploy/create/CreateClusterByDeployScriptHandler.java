@@ -139,7 +139,7 @@ public class CreateClusterByDeployScriptHandler implements UpdateHandler<CreateC
 
     private void createRuntimeEntity(ClusterEntity clusterEntity, ReplicationType replicationType, int index) {
         RuntimeEntity runtimeEntity = new RuntimeEntity();
-        runtimeEntity.setClusterId(clusterEntity.getClusterId());
+        runtimeEntity.setClusterId(clusterEntity.getId());
         runtimeEntity.setClusterType(clusterEntity.getClusterType());
         runtimeEntity.setDeployScriptId(clusterEntity.getDeployScriptId());
         runtimeEntity.setResourcesConfigId(clusterEntity.getResourcesConfigId());

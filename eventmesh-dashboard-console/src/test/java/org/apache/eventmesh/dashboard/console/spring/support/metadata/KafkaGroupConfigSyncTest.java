@@ -85,7 +85,7 @@ class KafkaGroupConfigSyncTest {
         ConfigMetadata metadata = new ConfigMetadata();
         metadata.setInstanceType(MetadataType.TOPIC);
         metadata.setInstanceName("console-config-target-diagnostic");
-        metadata.setConfigName("retention.ms");
+        metadata.setName("retention.ms");
         metadata.setConfigValue("180000");
 
         ConfigMetadata restored = ConfigConvertMetaData.INSTANCE.toMetaData(ConfigConvertMetaData.INSTANCE.toEntity(metadata));
@@ -162,7 +162,7 @@ class KafkaGroupConfigSyncTest {
         ConfigMetadata config = Assertions.assertInstanceOf(ConfigMetadata.class, configs.get(0));
         Assertions.assertEquals(MetadataType.TOPIC, config.getInstanceType());
         Assertions.assertEquals("sync-topic", config.getInstanceName());
-        Assertions.assertEquals("retention.ms", config.getConfigName());
+        Assertions.assertEquals("retention.ms", config.getName());
         Assertions.assertEquals("60000", config.getConfigValue());
         handler.handleAll(List.of(), List.of(config), List.of(), List.of());
         config.setConfigValue("90000");

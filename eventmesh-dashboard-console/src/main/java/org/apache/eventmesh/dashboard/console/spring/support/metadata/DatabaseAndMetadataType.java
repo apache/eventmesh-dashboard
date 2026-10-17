@@ -21,15 +21,21 @@ package org.apache.eventmesh.dashboard.console.spring.support.metadata;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.common.model.DatabaseAndMetadataMapper;
+import org.apache.eventmesh.dashboard.console.service.metadata.AclDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.ClientDataMetadataHandler;
+import org.apache.eventmesh.dashboard.console.service.metadata.ClusterRelationshipDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.ConfigDataMetadataHandler;
+import org.apache.eventmesh.dashboard.console.service.metadata.ConnectionDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.ConsumeOffsetDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.GroupDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.GroupMemberDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.RuntimeDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.TopicDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.TopicOffsetDataMetadataHandler;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.AclConvertMetaData;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ClusterRelationshipConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ConfigConvertMetaData;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ConnectionConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ConsumeOffsetConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.GroupConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.GroupMemberConvertMetaData;
@@ -94,6 +100,16 @@ public enum DatabaseAndMetadataType {
 
     NET_CONNECT(DatabaseAndMetadataMapper.builder().metaType(MetadataType.NET_CONNECT).databaseHandlerClass(ClientDataMetadataHandler.class)
         .metadataHandlerClass(ClientRemotingService.class).convertMetaData(NetConnectionMetaData.INSTANCE).build()),
+
+    ACL(DatabaseAndMetadataMapper.builder().metaType(MetadataType.ACL).databaseHandlerClass(AclDataMetadataHandler.class)
+        .snapshotHandlerClass(KafkaAclSnapshotHandler.class).convertMetaData(AclConvertMetaData.INSTANCE).build()),
+
+    CONNECTION(DatabaseAndMetadataMapper.builder().metaType(MetadataType.CONNECTION).databaseHandlerClass(ConnectionDataMetadataHandler.class)
+        .snapshotHandlerClass(ConnectionSnapshotHandler.class).convertMetaData(ConnectionConvertMetaData.INSTANCE).build()),
+
+    CLUSTER_RELATIONSHIP(DatabaseAndMetadataMapper.builder().metaType(MetadataType.CLUSTER_RELATIONSHIP)
+        .databaseHandlerClass(ClusterRelationshipDataMetadataHandler.class)
+        .snapshotHandlerClass(ClusterRelationshipSnapshotHandler.class).convertMetaData(ClusterRelationshipConvertMetaData.INSTANCE).build()),
 
     ;
 

@@ -40,7 +40,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
 
     @Select("""
-             select * from config where cluster_id
+             select * from config where status!=0 and is_delete=0 and cluster_id
                  <foreach item='item' index='index' open='in(' separator=',' close=')'>
                     #{item.id}
                  </foreach>
@@ -51,7 +51,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
     @Select("""
         <script>
             <foreach item='item' index='index' separator=' union all '>
-                 select * from config where
+                 select * from config where status!=0 and is_delete=0 and
                                 instance_id = #{instanceId}
                             and instance_type = #{instanceType}
                             and config_name = #{configName}
@@ -61,7 +61,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
     List<ConfigEntity> queryByRuntimeIdAndConfigName(List<ConfigEntity> configEntityLists);
 
     @Select("""
-        select * from config where instance_id
+        select * from config where status!=0 and is_delete=0 and instance_id
              <foreach item='item' index='index' open='in(' separator=',' close=')'>
                 #{item.id}
              </foreach>
@@ -72,7 +72,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
     @Select("""
         <script>
-        select * from config where
+        select * from config where status!=0 and is_delete=0 and
             instance_id = #{instanceId} and instance_type = #{instanceType}
             <if test='isModify != null'>
                 and is_modify = #{isModify}
@@ -88,10 +88,10 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
     List<ConfigEntity> getConfigsToFrontWithDynamic(ConfigEntity configEntity);
 
 
-    @Select("SELECT * FROM config WHERE status=1 AND is_default=0")
+    @Select("SELECT * FROM config WHERE status!=0 and is_delete=0 and status=1 AND is_default=0")
     List<ConfigEntity> selectAll();
 
-    @Select("select * from config where instance_type=#{instanceType} and instance_id=#{instanceId}")
+    @Select("select * from config where status!=0 and is_delete=0 and instance_type=#{instanceType} and instance_id=#{instanceId}")
     List<ConfigEntity> selectConfigsByInstance(ConfigEntity configEntity);
 
 
@@ -153,16 +153,17 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
             + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
     void updateConfig(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE instance_type=#{instanceType} AND instance_id=#{instanceId} AND is_default=0")
+    @Select("SELECT * FROM config WHERE status!=0 and is_delete=0 and instance_type=#{instanceType} AND instance_id=#{instanceId} AND is_default=0")
     List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE cluster_id=-1 AND business_type=#{businessType} AND instance_type=#{instanceType} AND is_default=1")
+    @Select("SELECT * FROM config WHERE status!=0 and is_delete=0 and cluster_id=-1 AND business_type=#{businessType} "
+            + "AND instance_type=#{instanceType} AND is_default=1")
     List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE is_default=1")
+    @Select("SELECT * FROM config WHERE status!=0 and is_delete=0 and is_default=1")
     List<ConfigEntity> selectAllDefaultConfig();
 
-    @Select("SELECT * FROM config WHERE cluster_id=#{clusterId} AND instance_type=#{instanceType} "
+    @Select("SELECT * FROM config WHERE status!=0 and is_delete=0 and cluster_id=#{clusterId} AND instance_type=#{instanceType} "
             + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
     ConfigEntity selectByUnique(ConfigEntity configEntity);
 
@@ -178,7 +179,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
     @Override
     @Select("""
-            select * from config where update_time >= #{updateTime} and status != 0
+            select * from config where update_time >= #{updateTime}
         """)
     List<ConfigEntity> syncGet(ConfigEntity topicEntity);
 }

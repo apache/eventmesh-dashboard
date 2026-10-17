@@ -38,9 +38,9 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
 
 
     @Select("""
-            select *  from `group` where name in(
-                select group_name from group_member where topic_name  = (
-                    select topic.topic_name from topic where id=#{id}
+            select *  from `group` where is_delete=0 and name in(
+                select group_name from group_member where is_delete=0 and topic_name  = (
+                    select topic.topic_name from topic where is_delete=0 and id=#{id}
                 )
             )
         """)
@@ -48,9 +48,9 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
 
     @Select("""
         <script>
-            select * from group where
+            select * from `group` where is_delete=0
                 <if test='clusterId!=null'>
-                    cluster_id =#{clusterId}
+                    and cluster_id =#{clusterId}
                 </if>
                 <if test='runtimeId != null'>
                     and runtime_id = #{runtimeId}
@@ -63,15 +63,15 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
     List<GroupEntity> queryClusterOrRuntimeGroupByClusterId(TopicEntity topicEntity);
 
 
-    @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND type=0 ")
+    @Select("SELECT * FROM `group` WHERE is_delete=0 and cluster_id=#{clusterId} AND name=#{name} AND type=0 ")
     GroupEntity selectGroupByNameAndClusterId(GroupEntity groupEntity);
 
 
-    @Select("SELECT COUNT(*) FROM `group` WHERE cluster_id=#{clusterId} AND type=0")
+    @Select("SELECT COUNT(*) FROM `group` WHERE is_delete=0 and cluster_id=#{clusterId} AND type=0")
     Integer getConsumerNumByCluster(GroupEntity groupEntity);
 
 
-    @Select("SELECT * FROM `group` WHERE status=1")
+    @Select("SELECT * FROM `group` WHERE is_delete=0 and status=1")
     List<GroupEntity> selectAll();
 
     @Update("UPDATE `group` SET member_count=#{memberCount},"
@@ -83,10 +83,10 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer deleteGroup(GroupEntity groupEntity);
 
-    @Select("SELECT * FROM `group` WHERE cluster_id=#{clusterId} AND name=#{name} AND status=1")
+    @Select("SELECT * FROM `group` WHERE is_delete=0 and cluster_id=#{clusterId} AND name=#{name} AND status=1")
     GroupEntity selectGroupByUnique(GroupEntity groupEntity);
 
-    @Select("SELECT * FROM `group` WHERE id=#{id} AND status=1")
+    @Select("SELECT * FROM `group` WHERE is_delete=0 and id=#{id} AND status=1")
     GroupEntity selectGroupById(GroupEntity groupEntity);
 
     @Select({
@@ -97,9 +97,9 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
         "           cluster_id=#{clusterId}",
         "       </if>",
         "       <if test='name != null'>",
-        "           name LIKE concat('%',#{name},'%')",
+        "           AND name LIKE concat('%',#{name},'%')",
         "       </if>",
-        "       AND status=1",
+        "       AND status=1 AND is_delete=0",
         "   </where>",
         "</script>"})
     List<GroupEntity> selectGroup(GroupEntity groupEntity);
@@ -138,7 +138,7 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
 
     @Override
     @Select("""
-            select * from group where update_time >= #{updateTime} and status != 0
+            select * from `group` where update_time >= #{updateTime}
         """)
     List<GroupEntity> syncGet(GroupEntity topicEntity);
 }

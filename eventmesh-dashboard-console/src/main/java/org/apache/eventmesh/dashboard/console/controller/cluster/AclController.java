@@ -50,8 +50,8 @@ public class AclController {
     }
 
     @PostMapping("/selectAcl")
-    public void selectAcl(@RequestBody AclEntity aclEntity) {
-        this.aclService.selectById(aclEntity);
+    public AclEntity selectAcl(@RequestBody AclEntity aclEntity) {
+        return this.aclService.selectById(aclEntity);
     }
 
 }

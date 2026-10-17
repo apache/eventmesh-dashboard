@@ -102,7 +102,7 @@ class KafkaTopicIntegrationTest {
             GetTopicsResult result = null;
             for (int attempt = 0; attempt < 20; attempt++) {
                 result = service.getAllTopics(new GetTopics2Request());
-                if (result.getData().stream().map(TopicMetadata::getTopicName).collect(Collectors.toSet()).containsAll(names)) {
+                if (result.getData().stream().map(TopicMetadata::getName).collect(Collectors.toSet()).containsAll(names)) {
                     break;
                 }
                 Thread.sleep(200);
@@ -130,14 +130,14 @@ class KafkaTopicIntegrationTest {
     }
 
     private void assertTopics(List<TopicMetadata> topics, List<String> names) {
-        Map<String, TopicMetadata> byName = topics.stream().collect(Collectors.toMap(TopicMetadata::getTopicName, topic -> topic));
+        Map<String, TopicMetadata> byName = topics.stream().collect(Collectors.toMap(TopicMetadata::getName, topic -> topic));
         Assertions.assertTrue(byName.keySet().containsAll(names), "查询结果应包含本次创建的两个主题");
         for (int i = 0; i < names.size(); i++) {
             TopicMetadata topic = byName.get(names.get(i));
             Assertions.assertEquals(i == 0 ? 1 : 3, topic.getReadQueueNum());
             Assertions.assertEquals(topic.getReadQueueNum(), topic.getWriteQueueNum());
             Assertions.assertNull(topic.getRetentionMs());
-            log.info("【结果】主题={}，读分区={}，写分区={}", topic.getTopicName(), topic.getReadQueueNum(), topic.getWriteQueueNum());
+            log.info("【结果】主题={}，读分区={}，写分区={}", topic.getName(), topic.getReadQueueNum(), topic.getWriteQueueNum());
         }
     }
 }

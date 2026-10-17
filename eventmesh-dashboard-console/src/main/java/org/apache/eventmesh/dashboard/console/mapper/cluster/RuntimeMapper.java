@@ -42,7 +42,7 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
 
     @Select("""
         <script>
-            select * from runtime where cluster_id =#{runtimeEntity.clusterId}
+            select * from runtime where is_delete=0 and cluster_id =#{runtimeEntity.clusterId}
                 <if test='runtimeEntity.host!=null'>
                     and host like CONCAT('%',#{runtimeEntity.host},'%')
                 </if>
@@ -53,7 +53,7 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
 
     @Select("""
         <script>
-            select * from runtime where cluster_id
+            select * from runtime where is_delete=0 and cluster_id
                 <foreach collection='list' item='item' index='index'  open='in(' separator=',' close=')'>
                     #{item.id}
                 </foreach>
@@ -67,9 +67,9 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
      */
     @Select("""
         <script>
-            select * from runtime where cluster_id in(
-                select relationship_id from cluster_relationship where cluster_id in (
-                    select cluster_id from cluster_relationship where relationship_id = #{followClusterId}
+            select * from runtime where is_delete=0 and cluster_id in(
+                select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id in (
+                    select cluster_id from cluster_relationship where status=1 and is_delete=0 and relationship_id = #{followClusterId}
                   )
                  <if test='queryClusterTypeList!=null'>
                  and relationship_type in
@@ -95,10 +95,11 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
      */
     @Select("""
             <script>
-                select * from runtime where cluster_id in(
-                    select relationship_id from cluster_relationship where cluster_id in(
-                        select relationship_id from cluster_relationship where cluster_id in(
-                          select cluster_id from cluster_relationship where relationship_id = #{followClusterId} and cluster_type= #{mainClusterType}
+                select * from runtime where is_delete=0 and cluster_id in(
+                    select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id in(
+                        select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id in(
+                          select cluster_id from cluster_relationship where status=1 and is_delete=0 and relationship_id = #{followClusterId}
+                            and cluster_type= #{mainClusterType}
                         )
                         and relationship_type in
                          <foreach collection='storageClusterTypeList' item='item' index='index' open="(" separator=',' close=")">
@@ -119,7 +120,7 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
 
     @Select("""
         <script>
-            select * from runtime where cluster_id in
+            select * from runtime where is_delete=0 and cluster_id in
             <foreach collection='list' item='item' index='index' open="(" separator=',' close=")">
                #{item.id}
             </foreach>
@@ -128,21 +129,21 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
     List<RuntimeEntity> queryRuntimeByClusterId(List<ClusterEntity> clusterEntityList);
 
 
-    @Select("select * from runtime where cluster_id=#{clusterid} and status=1")
+    @Select("select * from runtime where cluster_id=#{clusterid} and status=1 and is_delete=0")
     List<RuntimeEntity> selectRuntimeByCluster(RuntimeEntity runtimeEntity);
 
 
-    @Select("select COUNT(*) from runtime where cluster_id=#{clusterId} AND status=1 and is_delete = 0")
+    @Select("select COUNT(*) from runtime where cluster_id=#{clusterId} AND status=1 and is_delete=0")
     Integer getRuntimeNumByCluster(RuntimeEntity runtimeEntity);
 
-    @Select("select * from runtime where update_time >= #{updateTime} and status=1 and is_delete = 0")
+    @Select("select * from runtime where update_time >= #{updateTime}")
     List<RuntimeEntity> queryByUpdateTime(RuntimeEntity runtimeEntity);
 
 
-    @Select("select * from runtime where id=#{id} and status=1")
+    @Select("select * from runtime where id=#{id} and status=1 and is_delete=0")
     RuntimeEntity queryRuntimeEntityById(RuntimeEntity runtimeEntity);
 
-    @Select("select * from runtime where status=1")
+    @Select("select * from runtime where status=1 and is_delete=0")
     List<RuntimeEntity> queryAll();
 
 

@@ -61,7 +61,7 @@ import lombok.extern.slf4j.Slf4j;
  * 怎么把 SyncMetadataManage 合进来
  */
 @Slf4j
-public class MetadataSyncManage {
+public class MetadataSyncManage implements AutoCloseable {
 
 
     private final ThreadPoolExecutor dbThreadPoolExecutor = new ThreadPoolExecutor(10, 10, 20, TimeUnit.SECONDS, new LinkedBlockingDeque<>(),
@@ -112,6 +112,9 @@ public class MetadataSyncManage {
     private ColonyDO<ClusterDO> colonyDO;
 
 
+    @Setter
+    private List<SnapshotMetadataHandler<?>> snapshotMetadataHandlerList = List.of();
+
     private Integer period;
 
 
@@ -127,42 +130,30 @@ public class MetadataSyncManage {
     @SuppressWarnings("unchecked")
     public void init(Integer initialDelay, Integer period, Map<Class<?>, DatabaseAndMetadataMapper> databaseAndMetadataMapperMap) {
 
-        dataMetadataHandlerList.forEach((v) -> {
-            Class<?> clazz = v.getClass();
-            DatabaseAndMetadataMapper databaseAndMetadataMapper = databaseAndMetadataMapperMap.get(clazz);
-            if (Objects.isNull(databaseAndMetadataMapper)) {
-                String className = clazz.getName();
-                className = className.substring(0, className.indexOf("$$"));
-                try {
-                    clazz = Class.forName(className);
-                    databaseAndMetadataMapper = databaseAndMetadataMapperMap.get(clazz);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+        for (DatabaseAndMetadataMapper mapping : databaseAndMetadataMapperMap.values()) {
+            DataMetadataHandler<Object> source = this.dataMetadataHandlerList.stream()
+                .filter(mapping.getDatabaseHandlerClass()::isInstance).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Missing database handler: " + mapping.getDatabaseHandlerClass()));
+            SyncMetadataCreateFactory factory = new SyncMetadataCreateFactory();
+            factory.setDataMetadataHandler(source);
+            factory.setConvertMetaData((ConvertMetaData<Object, BaseClusterIdBase>) mapping.getConvertMetaData());
+            factory.setMetadataType(mapping.getMetaType());
+            factory.setDatabaseAndMetadataMapper(mapping);
+            factory.setColonyDO(this.colonyDO);
+            if (Objects.nonNull(mapping.getSnapshotHandlerClass())) {
+                SnapshotMetadataHandler<?> target = this.snapshotMetadataHandlerList.stream()
+                    .filter(mapping.getSnapshotHandlerClass()::isInstance).findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Missing snapshot handler: " + mapping.getSnapshotHandlerClass()));
+                factory.setSnapshotMetadataHandler((SnapshotMetadataHandler<BaseClusterIdBase>) target);
             }
-            if (Objects.isNull(databaseAndMetadataMapper)) {
-                log.error("can not find databaseAndMetadataMapper for class {}", v);
-                return;
-            }
-            SyncMetadataCreateFactory syncMetadataCreateFactory = new SyncMetadataCreateFactory();
-            syncMetadataCreateFactory.setDataMetadataHandler(v);
-            syncMetadataCreateFactory.setConvertMetaData((ConvertMetaData<Object, BaseClusterIdBase>) databaseAndMetadataMapper.getConvertMetaData());
-            syncMetadataCreateFactory.setMetadataType(databaseAndMetadataMapper.getMetaType());
-            syncMetadataCreateFactory.setDatabaseAndMetadataMapper(databaseAndMetadataMapper);
-            syncMetadataCreateFactory.setColonyDO(colonyDO);
-
-            log.info("#sync type {} , isReadOnly {} databaseAndMetadataMapper class:{}",
-                databaseAndMetadataMapper.getMetaType(),
-                databaseAndMetadataMapper.getMetaType().isReadOnly(),
-                databaseAndMetadataMapper.getDatabaseHandlerClass().getSimpleName());
-            syncMetadataCreateFactoryMap.put(databaseAndMetadataMapper.getMetaType(), syncMetadataCreateFactory);
-        });
+            this.syncMetadataCreateFactoryMap.put(mapping.getMetaType(), factory);
+        }
         this.period = period;
         // TODO 测试时候，可以关闭
         scheduledExecutorService.scheduleAtFixedRate(this::run, initialDelay, period, TimeUnit.MILLISECONDS);
     }
 
-    public void run() {
+    public synchronized void run() {
         final long startTime = System.currentTimeMillis();
         int index = atomicInteger.incrementAndGet();
         if (log.isTraceEnabled()) {
@@ -216,6 +207,10 @@ public class MetadataSyncManage {
         ClusterSyncMetadata clusterSyncMetadata = ClusterSyncMetadataEnum.getClusterSyncMetadata(baseSyncBase.getClusterType());
         List<MetadataType> metadataTypeList = clusterSyncMetadata.getMetadataTypeList();
         metadataTypeList.forEach((value -> {
+            SyncMetadataCreateFactory factory = this.syncMetadataCreateFactoryMap.get(value);
+            if (Objects.isNull(factory) || Objects.nonNull(factory.getDatabaseAndMetadataMapper().getSnapshotHandlerClass())) {
+                return;
+            }
             // build MetadataSyncResult
             MetadataSyncResult metadataSyncResult = createMetadataSyncResult(metadataSyncResultList, value, baseSyncBase);
             // build MetadataSyncConfig 是 io out 组织配置类
@@ -293,6 +288,13 @@ public class MetadataSyncManage {
         return metadataSyncConfig;
     }
 
+
+    @Override
+    public void close() {
+        this.scheduledExecutorService.shutdownNow();
+        this.dbThreadPoolExecutor.shutdownNow();
+        this.threadPoolExecutor.shutdownNow();
+    }
 
     @Data
     public static class MetadataSyncConfig {

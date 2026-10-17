@@ -37,13 +37,13 @@ import java.util.Map;
 @Mapper
 public interface ClusterMapper {
 
-    @Select("select * from cluster where id=#{id} and status=1")
+    @Select("select * from cluster where id=#{id} and status=1 and is_delete=0")
     ClusterEntity queryByClusterId(ClusterEntity cluster);
 
 
     @Select("""
         <script>
-            select *  from cluster where id
+            select *  from cluster where is_delete=0 and id
             <foreach collection='list' item='item'  index='index' open='in(' separator=',' close=')'>
                 #{item.id}
             </foreach>
@@ -52,15 +52,15 @@ public interface ClusterMapper {
     List<ClusterEntity> queryClusterListByClusterList(List<ClusterEntity> clusterEntityList);
 
     @Select("""
-        select * from cluster where organization_id =#{organizationId}  and cluster_type=#{clusterType}
+        select * from cluster where is_delete=0 and organization_id =#{organizationId}  and cluster_type=#{clusterType}
         """)
     List<ClusterEntity> queryClusterByOrganizationIdAndType(ClusterEntity clusterEntity);
 
 
     @Select("""
         <script>
-        select * from cluster where id in(
-            select relationship_id from cluster_relationship where cluster_id=#{id}
+        select * from cluster where is_delete=0 and id in(
+            select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id=#{id}
                <if test="clusterType != null and clusterType != ''">
                  and cluster_type = #{clusterType}
                </if>
@@ -71,8 +71,8 @@ public interface ClusterMapper {
 
     @Select("""
         <script>
-        select * from cluster where id in(
-            select relationship_id from cluster_relationship where cluster_id in
+        select * from cluster where is_delete=0 and id in(
+            select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id in
                 <foreach item='item' index='index' open='(' separator=',' close=')'>
                             #{item.id}
                 </foreach>
@@ -85,9 +85,9 @@ public interface ClusterMapper {
 
     @Select("""
             <script>
-                select * from cluster where id in(
-                    select relationship_id from cluster_relationship where cluster_id in(
-                        select relationship_id from cluster_relationship where cluster_id=#{id}
+                select * from cluster where is_delete=0 and id in(
+                    select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id in(
+                        select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id=#{id}
                            <if test="clusterType != null and clusterType != ''">
                              and cluster_type = #{clusterType}
                            </if>
@@ -100,8 +100,8 @@ public interface ClusterMapper {
 
     @Select("""
             <script>
-                select * from cluster where id in(
-                    select relationship_id from cluster_relationship where cluster_id in(
+                select * from cluster where is_delete=0 and id in(
+                    select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id in(
                         <foreach item='item' index='index' separator=','>
                             item.id
                         </foreach>
@@ -110,10 +110,10 @@ public interface ClusterMapper {
         """)
     List<ClusterEntity> queryRelationshipClusterByClusterIdAndType(List<ClusterEntity> clusterEntityList);
 
-    @Select("select * from cluster where status=1")
+    @Select("select * from cluster where status=1 and is_delete=0")
     List<ClusterEntity> queryAllCluster();
 
-    @Select("SELECT * FROM cluster where update_time >  #{updateTime} and is_delete != 1")
+    @Select("SELECT * FROM cluster where update_time >= #{updateTime}")
     List<ClusterEntity> queryClusterByUpdate(ClusterEntity clusterEntity);
 
 
@@ -170,7 +170,7 @@ public interface ClusterMapper {
 
 
     @Select("""
-            select * from cluster where id=#{id} for update
+            select * from cluster where is_delete=0 and id=#{id} for update
         """)
     ClusterEntity lockByClusterId(ClusterEntity clusterEntity);
 

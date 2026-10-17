@@ -41,9 +41,9 @@ public interface GroupMemberMapper extends SyncDataHandlerMapper<GroupMemberEnti
     @Select("""
         <script>
            select * from group_member
-           where
+           where is_delete=0
                <if test='clusterId != null'>
-                   cluster_id=#{clusterId}
+                   and cluster_id=#{clusterId}
                </if>
                <if test='groupName != null'>
                    and group_name=#{groupName}
@@ -51,13 +51,13 @@ public interface GroupMemberMapper extends SyncDataHandlerMapper<GroupMemberEnti
                <if test='topicName != null'>
                    and topic_name=#{topicName}
                </if>
-                and status=1
+
         </script>
         """)
     List<GroupMemberEntity> selectMember(GroupMemberEntity groupMemberEntity);
 
 
-    @Select("select * from group_member where id=#{id} and status=1")
+    @Select("select * from group_member where is_delete=0 and id=#{id} ")
     GroupMemberEntity selectGroupMemberById(GroupMemberEntity groupMemberEntity);
 
     @Update("UPDATE group_member SET state=#{state} where id=#{id}")
@@ -89,5 +89,8 @@ public interface GroupMemberMapper extends SyncDataHandlerMapper<GroupMemberEnti
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroupMember(GroupMemberEntity groupMemberEntity);
 
+    @Override
+    @Select("select * from group_member where update_time >= #{updateTime}")
+    List<GroupMemberEntity> syncGet(GroupMemberEntity groupMemberEntity);
 
 }

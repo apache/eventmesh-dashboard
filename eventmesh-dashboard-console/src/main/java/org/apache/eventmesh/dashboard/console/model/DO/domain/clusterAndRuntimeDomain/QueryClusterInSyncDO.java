@@ -59,7 +59,7 @@ public class QueryClusterInSyncDO {
         data.setFunction(function);
         ClusterEntity clusterEntity = new ClusterEntity();
         clusterEntity.setId(id);
-        data.setClusterEntity(data.getClusterEntity());
+        data.setClusterEntity(clusterEntity);
         return data;
     }
 

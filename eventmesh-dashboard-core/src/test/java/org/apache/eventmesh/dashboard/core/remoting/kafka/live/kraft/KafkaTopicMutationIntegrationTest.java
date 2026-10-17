@@ -168,7 +168,7 @@ class KafkaTopicMutationIntegrationTest {
         prepareTopic();
         var handler = Remoting2Manage.getInstance().createDataMetadataHandler(TopicRemotingService.class, cluster);
         TopicMetadata queried = service.getAllTopics(new GetTopics2Request()).getData().stream()
-            .filter(topic -> topicName.equals(topic.getTopicName())).findFirst().orElseThrow();
+            .filter(topic -> topicName.equals(topic.getName())).findFirst().orElseThrow();
         Assertions.assertEquals(1, queried.getReplicationFactor());
         queried.setId(1L);
         queried.setReadQueueNum(2);
@@ -185,7 +185,7 @@ class KafkaTopicMutationIntegrationTest {
         prepareTopic();
         var handler = Remoting2Manage.getInstance().createDataMetadataHandler(TopicRemotingService.class, cluster);
         var queried = service.getAllTopics(new GetTopics2Request()).getData()
-            .stream().filter(topic -> topicName.equals(topic.getTopicName())).findFirst().orElseThrow();
+            .stream().filter(topic -> topicName.equals(topic.getName())).findFirst().orElseThrow();
         Assertions.assertEquals(TopicMetadata.class, queried.getClass());
         queried.setId(1L);
         handler.handleAll(List.of(), List.of(), List.of(), List.of(queried));
@@ -227,7 +227,7 @@ class KafkaTopicMutationIntegrationTest {
     private CreateTopic2Request request(Integer partitions, Integer replicas, Map<String, String> configs) {
         TopicMetadata metadata = new TopicMetadata();
         metadata.setId(1L);
-        metadata.setTopicName(topicName);
+        metadata.setName(topicName);
         metadata.setReadQueueNum(partitions);
         metadata.setWriteQueueNum(partitions);
         metadata.setReplicationFactor(replicas);

@@ -34,7 +34,7 @@ public class ConfigMetadata extends BaseRuntimeIdBase {
     /**
      * property key
      */
-    private String configName;
+    private String name;
 
     private String configValue;
 
@@ -59,8 +59,8 @@ public class ConfigMetadata extends BaseRuntimeIdBase {
     @Override
     public String nodeUnique() {
         if (this.instanceType != null && this.instanceName != null) {
-            return this.instanceType.name() + ":" + this.instanceName.length() + ":" + this.instanceName + ":" + this.configName;
+            return this.instanceType.name() + ":" + this.instanceName.length() + ":" + this.instanceName + ":" + this.name;
         }
-        return this.configName;
+        return this.name;
     }
 }

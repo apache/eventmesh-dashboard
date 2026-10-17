@@ -22,6 +22,8 @@ import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -32,7 +34,7 @@ public class TopicEntity extends BaseRuntimeIdEntity {
 
     private String topicType;
 
-    private String topicName;
+    private String name;
 
 
     /**
@@ -69,5 +71,18 @@ public class TopicEntity extends BaseRuntimeIdEntity {
 
 
     private Integer createProgress;
+
+    /**
+     * 保留 MyBatis 原有属性映射，名称只存储在 name 字段中。
+     */
+    @JsonIgnore
+    public String getTopicName() {
+        return this.name;
+    }
+
+    @JsonIgnore
+    public void setTopicName(String name) {
+        this.name = name;
+    }
 
 }

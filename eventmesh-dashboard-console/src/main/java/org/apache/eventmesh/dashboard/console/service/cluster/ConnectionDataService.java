@@ -38,13 +38,18 @@ public interface ConnectionDataService {
 
     List<ConnectionEntity> getAllConnectionsByClusterId(Long clusterId);
 
+    /** Creates a connection on an explicit runtime by reusing uniquely matched connectors in the same cluster. */
     boolean createConnection(CreateConnectionDTO createConnectionDTO);
 
     List<ConnectionEntity> getAllConnections();
 
     List<ConnectionListVO> getConnectionToFrontByCluster(Long clusterId, GetConnectionListDTO getConnectionListDTO);
 
+    /**
+     * @throws UnsupportedOperationException when connector configuration templates are unavailable
+     */
     List<ConfigEntity> getConnectorConfigsByClassAndVersion(String classType, String version);
 
+    /** Returns the generated entity ID; persistence failures are propagated. */
     Long insert(ConnectionEntity connectionEntity);
 }

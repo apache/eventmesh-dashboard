@@ -133,4 +133,17 @@ public abstract class BaseOrganizationBase {
     public void setSyncStatus(SyncStatus syncStatus) {
         this.syncStatus = syncStatus;
     }
+
+    // Shared state predicates; identity/ownership is defined by each metadata subtype.
+    public boolean isDelete() {
+        return this.getStatus() == 0;
+    }
+
+    public boolean isUpdate() {
+        return !this.isDelete() && !this.isInsert();
+    }
+
+    public boolean isInsert() {
+        return Objects.equals(this.getUpdateTime(), this.getCreateTime());
+    }
 }
