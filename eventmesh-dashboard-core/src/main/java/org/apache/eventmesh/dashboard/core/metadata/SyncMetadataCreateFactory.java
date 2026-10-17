@@ -88,7 +88,23 @@ public class SyncMetadataCreateFactory {
     private List<Object> deleteData = new ArrayList<>();
 
 
-    public void loadData() {
+    @Setter
+    private SnapshotMetadataHandler<BaseClusterIdBase> snapshotMetadataHandler;
+
+    public synchronized void loadData() {
+        if (Objects.nonNull(this.snapshotMetadataHandler)) {
+            List<BaseClusterIdBase> snapshot = new ArrayList<>();
+            java.util.Set<Long> ids = new java.util.HashSet<>();
+            for (Object entity : this.dataMetadataHandler.getData()) {
+                BaseClusterIdBase metadata = this.convertMetaData.toMetaData(entity);
+                if (Objects.isNull(metadata) || Objects.isNull(metadata.getId()) || !ids.add(metadata.getId())) {
+                    throw new IllegalArgumentException("Snapshot rows require distinct persisted IDs");
+                }
+                snapshot.add(metadata);
+            }
+            this.snapshotMetadataHandler.synchronize(snapshot, this.colonyDO);
+            return;
+        }
         // TODO 加载的时候， 目前永远不会加载 Runtime
         if (metadataType.isReadOnly()) {
             return;

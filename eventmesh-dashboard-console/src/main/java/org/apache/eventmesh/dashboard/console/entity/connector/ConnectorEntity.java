@@ -32,8 +32,6 @@ public class ConnectorEntity extends BaseRuntimeIdEntity {
 
     private static final long serialVersionUID = -8226303660232951326L;
 
-    private Long clusterId;
-
     private String name;
 
     private String className;

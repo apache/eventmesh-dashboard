@@ -29,8 +29,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ClusterRelationshipMetadata extends BaseRuntimeIdBase {
 
-    private ClusterType clusterType;
-
     private Long relationshipId;
 
     private ClusterType relationshipType;

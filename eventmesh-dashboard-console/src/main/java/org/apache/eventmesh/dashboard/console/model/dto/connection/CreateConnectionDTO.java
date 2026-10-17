@@ -28,6 +28,8 @@ public class CreateConnectionDTO {
 
     private Long clusterId;
 
+    private Long runtimeId;
+
     private AddConnectionDTO addConnectionDTO;
 
     private AddConnectorConfigDTO addConnectorConfigDTO;

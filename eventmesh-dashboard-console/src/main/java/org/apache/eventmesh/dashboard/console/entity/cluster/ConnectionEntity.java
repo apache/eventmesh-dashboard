@@ -38,12 +38,6 @@ public class ConnectionEntity extends BaseRuntimeIdEntity {
     private static final long serialVersionUID = 6565578252656944905L;
 
     /**
-     * Runtime cluster id
-     */
-    @Schema(name = "clusterId", description = "runtime cluster id")
-    private Long clusterId;
-
-    /**
      * The type of source. Possible values are "connector" or "client".
      */
     @Schema(name = "sourceType", defaultValue = "connector", allowableValues = {"connector", "client"})
@@ -67,8 +61,6 @@ public class ConnectionEntity extends BaseRuntimeIdEntity {
     @Schema(name = "sinkId", description = "connectorId or clientId")
     private Long sinkId;
 
-    private Long runtimeId;
-
     private String topic;
 
     private Long groupId;
@@ -76,5 +68,11 @@ public class ConnectionEntity extends BaseRuntimeIdEntity {
     private Timestamp endTime;
 
     private String description;
+
+    @Override
+    @Schema(name = "clusterId", description = "runtime cluster id")
+    public Long getClusterId() {
+        return super.getClusterId();
+    }
 
 }

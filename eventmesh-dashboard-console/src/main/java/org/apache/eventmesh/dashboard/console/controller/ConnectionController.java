@@ -28,17 +28,24 @@ import org.apache.eventmesh.dashboard.console.service.cluster.ConnectionDataServ
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ConnectionController {
 
 
-    private ConnectionDataService connectionDataService;
+    private final ConnectionDataService connectionDataService;
+
+    public ConnectionController(ConnectionDataService connectionDataService) {
+        this.connectionDataService = connectionDataService;
+    }
 
     /**
      * 'type' only can be Sink or Source
@@ -65,11 +72,8 @@ public class ConnectionController {
 
     @PostMapping("/cluster/connection/createConnection")
     public String createConnection(@Validated @RequestBody CreateConnectionDTO createConnectionDTO) {
-        try {
-            connectionDataService.createConnection(createConnectionDTO);
-
-        } catch (Exception e) {
-            return e.getMessage();
+        if (!this.connectionDataService.createConnection(createConnectionDTO)) {
+            throw new IllegalStateException("Connection creation did not succeed");
         }
         return "success";
     }
@@ -83,6 +87,18 @@ public class ConnectionController {
     @GetMapping("/cluster/connection/getConnectorDetail")
     public ConnectorEntity getConnectorDetail(Long connectorId) {
         return connectionDataService.getConnectorById(connectorId);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String invalidRequest(IllegalArgumentException exception) {
+        return exception.getMessage();
+    }
+
+    @ExceptionHandler(UnsupportedOperationException.class)
+    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    public String unsupportedOperation(UnsupportedOperationException exception) {
+        return exception.getMessage();
     }
 
 
