@@ -36,6 +36,9 @@ import java.util.List;
 @Mapper
 public interface ClusterRelationshipMapper {
 
+    @Select("SELECT * FROM cluster_relationship")
+    List<ClusterRelationshipEntity> selectSnapshot();
+
 
     @Select("""
         <script>

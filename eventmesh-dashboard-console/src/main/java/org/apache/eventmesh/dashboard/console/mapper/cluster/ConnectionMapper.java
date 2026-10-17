@@ -36,6 +36,9 @@ import java.util.List;
 @Mapper
 public interface ConnectionMapper {
 
+    @Select("SELECT * FROM connection")
+    List<ConnectionEntity> selectSnapshot();
+
 
     @Select("SELECT COUNT(*) FROM connection WHERE cluster_id=#{clusterId} AND status=1")
     Integer selectConnectionNumByCluster(ConnectionEntity connectionEntity);
