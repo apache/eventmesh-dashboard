@@ -186,7 +186,7 @@ public class MetadataDataManage {
 
     public void handlerMetadata() {
         this.nameAndIdList.forEach((value) -> {
-            if (value.isDelete()) {
+            if (value.isDelete() || Objects.equals(value.getStatus(), 0L)) {
                 nameAndIdMap.remove(value);
             } else if (Objects.equals(value.getStatus(), 1L)) {
                 nameAndIdMap.remove(value);

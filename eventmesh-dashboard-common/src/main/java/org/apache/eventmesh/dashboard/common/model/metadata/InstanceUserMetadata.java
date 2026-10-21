@@ -29,7 +29,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class InstanceUserMetadata extends BaseRuntimeIdBase {
 
-    private String userName;
+    private String name;
 
     @ToString.Exclude
     private String password;
@@ -42,6 +42,6 @@ public class InstanceUserMetadata extends BaseRuntimeIdBase {
 
     @Override
     public String nodeUnique() {
-        return this.userName;
+        return this.name;
     }
 }

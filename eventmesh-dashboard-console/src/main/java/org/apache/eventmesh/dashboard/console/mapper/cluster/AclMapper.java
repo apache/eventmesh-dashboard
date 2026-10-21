@@ -55,15 +55,15 @@ public interface AclMapper {
             + "VALUE (#{clusterId}, #{pattern}, #{operation}, #{permissionType}, #{host}, #{resourceType}, #{resourceName}, #{patternType})")
     void insert(AclEntity aclEntity);
 
-    @Update("UPDATE acl SET status=0 WHERE id=#{id}")
+    @Update("UPDATE acl SET is_delete=1, update_time=CURRENT_TIMESTAMP WHERE id=#{id} AND is_delete=0")
     void deleteById(AclEntity aclEntity);
 
     @Update("UPDATE acl SET resource_type=#{resourceType} WHERE id=#{id}")
     void updateResourceTypeById(AclEntity aclEntity);
 
-    @Select("SELECT * FROM acl")
+    @Select("SELECT * FROM acl WHERE is_delete=0")
     List<AclEntity> selectAll();
 
-    @Select("SELECT * FROM acl WHERE id=#{id}")
+    @Select("SELECT * FROM acl WHERE id=#{id} AND is_delete=0")
     AclEntity selectById(AclEntity aclEntity);
 }

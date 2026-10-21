@@ -59,6 +59,8 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseIdEntity> impl
     private final List<T> dataList = new ArrayList<>(1);
     private AbstractApplicationContext applicationContext;
     private T baseRuntimeIdBase;
+    private List<T> pendingData;
+    private LocalDateTime pendingTime;
 
     /**
      * TODO
@@ -128,14 +130,18 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseIdEntity> impl
 
     @Override
     @Transactional(readOnly = true)
-    public List<T> getData() {
+    public synchronized List<T> getData() {
+        if (Objects.nonNull(this.pendingData)) {
+            return this.pendingData;
+        }
         // DDL timestamps have second precision; overlap the boundary so same-second changes are replayed.
         LocalDateTime date = LocalDateTime.now().withNano(0);
         List<T> list = this.doGetData();
         if (this.dataList == list) {
             list = this.syncDataHandlerMapper.syncGet(this.baseRuntimeIdBase);
         }
-        this.baseRuntimeIdBase.setUpdateTime(date);
+        this.pendingData = Objects.requireNonNull(list, "Metadata query returned null");
+        this.pendingTime = date;
         return list;
     }
 
@@ -167,6 +173,20 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseIdEntity> impl
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    public synchronized void acknowledgeData() {
+        if (Objects.nonNull(this.pendingTime)) {
+            this.baseRuntimeIdBase.setUpdateTime(this.pendingTime);
+        }
+        this.retryData();
+    }
+
+    @Override
+    public synchronized void retryData() {
+        this.pendingTime = null;
+        this.pendingData = null;
     }
 
     public List<T> getClusterIdOrRuntime(BaseSyncBase baseSyncBase) {

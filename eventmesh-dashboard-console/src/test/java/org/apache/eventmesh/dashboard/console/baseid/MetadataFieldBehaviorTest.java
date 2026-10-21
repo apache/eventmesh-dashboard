@@ -115,20 +115,18 @@ public class MetadataFieldBehaviorTest {
     public void relationshipEndpointsAndRelationshipAttributesRemainIndependent() {
         ClusterRelationshipMetadata relationship = new ClusterRelationshipMetadata();
         relationship.setClusterId(51L);
-        relationship.setRuntimeId(52L);
         relationship.setClusterType(ClusterType.EVENTMESH_CLUSTER);
         relationship.setRelationshipId(61L);
         relationship.setRelationshipType(ClusterType.STORAGE_ROCKETMQ_CLUSTER);
 
         assertEquals("61-51", relationship.nodeUnique());
         assertEquals(Long.valueOf(51L), relationship.getClusterId());
-        assertEquals(Long.valueOf(52L), relationship.getRuntimeId());
         assertSame(ClusterType.EVENTMESH_CLUSTER, relationship.getClusterType());
         assertEquals(Long.valueOf(61L), relationship.getRelationshipId());
         assertSame(ClusterType.STORAGE_ROCKETMQ_CLUSTER, relationship.getRelationshipType());
         assertSingleFieldInHierarchy(ClusterRelationshipMetadata.class, "clusterId", BaseClusterIdBase.class);
         assertSingleFieldInHierarchy(ClusterRelationshipMetadata.class, "clusterType", BaseClusterIdBase.class);
-        assertSingleFieldInHierarchy(ClusterRelationshipMetadata.class, "runtimeId", BaseRuntimeIdBase.class);
+        assertEquals(0, fieldsInHierarchy(ClusterRelationshipMetadata.class, "runtimeId").size());
         assertEquals(1, fieldsInHierarchy(ClusterRelationshipMetadata.class, "relationshipId").size());
         assertEquals(1, fieldsInHierarchy(ClusterRelationshipMetadata.class, "relationshipType").size());
     }

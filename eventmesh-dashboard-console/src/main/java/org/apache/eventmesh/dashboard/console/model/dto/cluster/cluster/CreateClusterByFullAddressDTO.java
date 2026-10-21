@@ -28,7 +28,7 @@ public class CreateClusterByFullAddressDTO {
 
     private ClusterType clusterType = ClusterType.EVENTMESH_CLUSTER;
 
-    private String clusterName;
+    private String name;
 
     private List<SimpleCreateClusterDataDTO> simpleCreateClusterDataDTOList;
 

@@ -96,8 +96,10 @@ public class AclMysqlChainTest extends EntityMysqlChainSupportTest {
                     "SELECT resource_type FROM acl WHERE id = ?", Integer.class, id));
 
             assertEquals(200, fixture.post("/acl/deleteAcl", "{\"id\":" + id + "}").statusCode());
-            assertEquals(Long.valueOf(0L), fixture.jdbc().queryForObject(
+            assertEquals(Long.valueOf(1L), fixture.jdbc().queryForObject(
                     "SELECT status FROM acl WHERE id = ?", Long.class, id));
+            assertEquals(Integer.valueOf(1), fixture.jdbc().queryForObject(
+                    "SELECT is_delete FROM acl WHERE id = ?", Integer.class, id));
             assertEquals(Integer.valueOf(1), fixture.jdbc().queryForObject(
                     "SELECT COUNT(*) FROM acl WHERE id = ?", Integer.class, id));
         }
@@ -127,7 +129,9 @@ public class AclMysqlChainTest extends EntityMysqlChainSupportTest {
                     "SELECT resource_type FROM acl WHERE id = ?", Integer.class, entity.getId()));
 
             controller.deleteAcl(entity);
-            assertEquals(Integer.valueOf(0), fixture.jdbc().queryForObject(
+            assertEquals(Integer.valueOf(1), fixture.jdbc().queryForObject(
+                    "SELECT is_delete FROM acl WHERE id = ?", Integer.class, entity.getId()));
+            assertEquals(Integer.valueOf(1), fixture.jdbc().queryForObject(
                     "SELECT status FROM acl WHERE id = ?", Integer.class, entity.getId()));
         }
     }

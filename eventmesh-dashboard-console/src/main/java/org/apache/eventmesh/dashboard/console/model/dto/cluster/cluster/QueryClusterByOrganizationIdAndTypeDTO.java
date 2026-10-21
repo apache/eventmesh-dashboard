@@ -33,5 +33,5 @@ public class QueryClusterByOrganizationIdAndTypeDTO extends OrganizationIdDTO {
     @NotNull
     private ClusterType clusterType;
 
-    private String clusterName;
+    private String name;
 }

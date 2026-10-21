@@ -139,7 +139,7 @@ public class MetadataPipelineMysqlTest extends EntityMysqlChainSupportTest {
 
                         sync.run();
                         assertEquals(List.of(desired), verifier.describeAcls(bindingFilter).values().get().stream().toList());
-                        fixture.jdbc().update("UPDATE acl SET status = 0 WHERE id = ?", id);
+                        fixture.jdbc().update("UPDATE acl SET is_delete = 1 WHERE id = ?", id);
                         sync.run();
                         assertEquals(0, verifier.describeAcls(bindingFilter).values().get().size());
                         assertTrue(verifier.describeAcls(unrelatedFilter).values().get().contains(unrelated));

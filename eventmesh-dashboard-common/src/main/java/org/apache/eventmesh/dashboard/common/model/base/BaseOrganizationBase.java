@@ -27,10 +27,9 @@ import java.util.Objects;
 @SuppressWarnings({"LombokGetterMayBeUsed", "LombokSetterMayBeUsed"})
 public abstract class BaseOrganizationBase {
 
-    private String unique;
-
     private Long id;
 
+    /** Business status; stopping a cluster/runtime is distinct from logical deletion. */
     private Long status;
 
     private Long organizationId;
@@ -43,6 +42,7 @@ public abstract class BaseOrganizationBase {
 
     private Long updateUserId;
 
+    /** Logical deletion marker: 1 means deleted, 0 means retained. */
     private Integer isDelete;
 
     private SyncStatus syncStatus;
@@ -112,11 +112,12 @@ public abstract class BaseOrganizationBase {
         this.isDelete = isDelete;
     }
 
+    @java.beans.Transient
     public String getUnique() {
-        if (Objects.isNull(this.unique)) {
-            this.unique = this.getClass().getSimpleName() + "-" + this.id.toString();
+        if (Objects.isNull(this.id)) {
+            throw new IllegalStateException("Metadata identity requires an id");
         }
-        return this.unique;
+        return this.getClass().getSimpleName() + "-" + this.id;
     }
 
     /**
@@ -136,7 +137,7 @@ public abstract class BaseOrganizationBase {
 
     // Shared state predicates; identity/ownership is defined by each metadata subtype.
     public boolean isDelete() {
-        return this.getStatus() == 0;
+        return Objects.equals(this.getIsDelete(), 1);
     }
 
     public boolean isUpdate() {
@@ -144,6 +145,7 @@ public abstract class BaseOrganizationBase {
     }
 
     public boolean isInsert() {
-        return Objects.equals(this.getUpdateTime(), this.getCreateTime());
+        return !this.isDelete() && Objects.nonNull(this.getCreateTime())
+            && Objects.equals(this.getUpdateTime(), this.getCreateTime());
     }
 }

@@ -64,9 +64,9 @@ public interface GroupMemberMapper extends SyncDataHandlerMapper<GroupMemberEnti
     void updateGroupMember(GroupMemberEntity groupMemberEntity);
 
 
-    @Update("UPDATE group_member SET status=0 where id=#{id} ")
+    @Update("UPDATE group_member SET is_delete=1, update_time=CURRENT_TIMESTAMP where id=#{id} ")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity);
+    int deleteGroupMember(GroupMemberEntity groupMemberEntity);
 
     @Insert("""
         <script>
@@ -74,6 +74,7 @@ public interface GroupMemberMapper extends SyncDataHandlerMapper<GroupMemberEnti
            <foreach collection='list' item='c' index='index' separator=','>
                 (#{c.organizationId},#{c.clusterId},#{c.topicName},#{c.groupName},#{c.eventMeshUser})
            </foreach>
+        on duplicate key update status=1, is_delete=0, update_time=CURRENT_TIMESTAMP
         </script>
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
@@ -84,7 +85,7 @@ public interface GroupMemberMapper extends SyncDataHandlerMapper<GroupMemberEnti
         insert into
            group_member (organization_id , cluster_id, topic_name, group_name, eventmesh_user)
            values (#{organizationId},#{clusterId},#{topicName},#{groupName},#{eventMeshUser})
-           on duplicate  key update status=0
+           on duplicate  key update status=1, is_delete=0, update_time=CURRENT_TIMESTAMP
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addGroupMember(GroupMemberEntity groupMemberEntity);
@@ -92,5 +93,14 @@ public interface GroupMemberMapper extends SyncDataHandlerMapper<GroupMemberEnti
     @Override
     @Select("select * from group_member where update_time >= #{updateTime}")
     List<GroupMemberEntity> syncGet(GroupMemberEntity groupMemberEntity);
+
+    @Override
+    @Update("""
+        <script>
+        UPDATE group_member SET is_delete=1, update_time=CURRENT_TIMESTAMP WHERE id IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">#{item.id}</foreach>
+        </script>
+        """)
+    void syncDelete(List<GroupMemberEntity> entityList);
 
 }

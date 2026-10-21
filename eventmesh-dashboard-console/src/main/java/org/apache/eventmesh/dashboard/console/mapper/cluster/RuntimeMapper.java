@@ -176,10 +176,11 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
     @Update("UPDATE runtime SET port=#{port} ,jmx_port=#{jmxPort} ,status=#{status} where cluster_id=#{clusterId} AND status=1")
     void updateRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    @Update("UPDATE runtime SET status=0 where cluster_id=#{clusterId}")
+    /** Logical deletion preserves the last business status; deactivate only stops a runtime. */
+    @Update("UPDATE runtime SET is_delete=1, update_time=CURRENT_TIMESTAMP where cluster_id=#{clusterId} and is_delete=0")
     void deleteRuntimeByCluster(RuntimeEntity runtimeEntity);
 
-    @Update("UPDATE runtime SET status = 0 where id = #{id}")
+    @Update("UPDATE runtime SET status=0, update_time=CURRENT_TIMESTAMP where id=#{id} and is_delete=0")
     void deactivate(RuntimeEntity runtimeEntity);
 
 
@@ -207,7 +208,7 @@ public interface RuntimeMapper extends SyncDataHandlerMapper<RuntimeEntity> {
                             replication_type, deploy_status_type,  resources_config_id,deploy_script_id,create_script_content ,auth_type,jmx_port)
                       values(#{organizationId}, #{clusterId}, #{name}, #{clusterType},#{version},#{host},#{port},#{trusteeshipType},#{firstToWhom},
                              #{replicationType}, #{deployStatusType},#{resourcesConfigId},#{deployScriptId},'',#{authType},#{jmxPort})
-        ON DUPLICATE KEY UPDATE status=1,online_timestamp = now()
+        ON DUPLICATE KEY UPDATE status=1,is_delete=0,online_timestamp=now(),update_time=CURRENT_TIMESTAMP
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insertRuntime(RuntimeEntity runtimeEntity);

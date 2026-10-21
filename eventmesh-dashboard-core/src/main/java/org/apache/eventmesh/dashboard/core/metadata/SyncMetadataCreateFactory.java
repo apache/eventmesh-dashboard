@@ -32,15 +32,16 @@ import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
 import org.apache.eventmesh.dashboard.core.cluster.ClusterDO;
 import org.apache.eventmesh.dashboard.core.cluster.ColonyDO;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -62,8 +63,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SyncMetadataCreateFactory {
 
-    private final Map<Long, List<BaseClusterIdBase>> runtimeMetadataMap = new ConcurrentHashMap<>();
-    private final Map<Long, List<BaseClusterIdBase>> clusterMetadataMap = new ConcurrentHashMap<>();
+    private final Map<Long, Map<String, BaseClusterIdBase>> runtimeMetadataMap = new ConcurrentHashMap<>();
+    private final Map<Long, Map<String, BaseClusterIdBase>> clusterMetadataMap = new ConcurrentHashMap<>();
+    private final Map<Long, Map<String, BaseClusterIdBase>> appliedRuntimeMetadata = new HashMap<>();
+    private final Map<Long, Map<String, BaseClusterIdBase>> appliedClusterMetadata = new HashMap<>();
     @Setter
     private DataMetadataHandler<Object> dataMetadataHandler;
     @Setter
@@ -77,10 +80,6 @@ public class SyncMetadataCreateFactory {
     private DatabaseAndMetadataMapper databaseAndMetadataMapper;
     @Setter
     private ColonyDO<ClusterDO> colonyDO;
-    /**
-     * 初次加载量非常大，设置一个一个变量识别初次加载
-     */
-    private boolean printIntiGetData = false;
     private List<Object> addData = new ArrayList<>();
 
     private List<Object> updateData = new ArrayList<>();
@@ -113,67 +112,103 @@ public class SyncMetadataCreateFactory {
           TODO  bug 如何全量，就会缓存大量的 之前的 无效数据。
                 第一次查询需要过滤果无效 cluster 与 runtime 的数据
          */
-        List<Object> dataList = dataMetadataHandler.getData();
-        if (log.isTraceEnabled()) {
-            log.trace("$sync metadata type {} load data: {}", dataMetadataHandler.getClass().getSimpleName(), dataList.size());
-        }
-        dataList.forEach(data -> {
-            BaseRuntimeIdBase baseRuntimeIdBase = (BaseRuntimeIdBase) this.convertMetaData.toMetaData(data);
-            ClusterType clusterType = baseRuntimeIdBase.getClusterType();
-            if (Objects.isNull(clusterType)) {
-                ColonyDO<ClusterDO> colony = this.colonyDO.getAllColonyDO().get(baseRuntimeIdBase.getClusterId());
-                if (Objects.isNull(colony)) {
-                    log.info("cluster type is null, data is {}", data);
-                    return;
+        try {
+            Map<Long, Map<String, BaseClusterIdBase>> clusters = new HashMap<>();
+            Map<Long, Map<String, BaseClusterIdBase>> runtimes = new HashMap<>();
+            for (Object data : this.dataMetadataHandler.getData()) {
+                BaseClusterIdBase metadata = Objects.requireNonNull(this.convertMetaData.toMetaData(data), "Converted metadata");
+                final String identity = metadata.getUnique();
+                if (!metadata.isDelete() && (Objects.isNull(metadata.getStatus())
+                    || Objects.isNull(metadata.getCreateTime()) || Objects.isNull(metadata.getUpdateTime()))) {
+                    throw new IllegalArgumentException("Live metadata requires status and timestamps");
                 }
-                clusterType = colony.getClusterType();
+                ColonyDO<ClusterDO> colony = this.colonyDO.getAllColonyDO().get(
+                    Objects.requireNonNull(metadata.getClusterId(), "Metadata cluster id"));
+                if (Objects.isNull(colony)) {
+                    throw new IllegalStateException("Metadata cluster is not loaded: " + metadata.getClusterId());
+                }
+                ClusterType clusterType = metadata.getClusterType();
+                if (Objects.isNull(clusterType)) {
+                    clusterType = colony.getClusterType();
+                    metadata.setClusterType(clusterType);
+                }
+                if (!Objects.equals(clusterType, colony.getClusterType())) {
+                    throw new IllegalArgumentException("Metadata type does not match its target cluster");
+                }
+                ClusterFramework framework = ClusterSyncMetadataEnum.getClusterFramework(clusterType);
+                Long target;
+                Map<Long, Map<String, BaseClusterIdBase>> destination;
+                if (framework.isCAP()) {
+                    target = metadata.getClusterId();
+                    destination = clusters;
+                } else {
+                    target = ((BaseRuntimeIdBase) metadata).getRuntimeId();
+                    if (Objects.isNull(target) || !colony.getClusterDO().getRuntimeMap().containsKey(target)) {
+                        throw new IllegalStateException("Metadata runtime is not loaded: " + target);
+                    }
+                    destination = runtimes;
+                }
+                destination.computeIfAbsent(target, key -> new LinkedHashMap<>()).put(identity, metadata);
             }
-            ClusterFramework clusterFramework =
-                ClusterSyncMetadataEnum.getClusterFramework(clusterType);
-            if (this.printIntiGetData) {
-                this.printIntiGetData = false;
-
-            } else {
-                log.info("$sync from database load , cluster is {} runtime is {} u is {}",
-                    baseRuntimeIdBase.getClusterId(), baseRuntimeIdBase.getRuntimeId(), baseRuntimeIdBase.getId());
-            }
-            if (clusterFramework.isCAP()) {
-                this.clusterMetadataMap.computeIfAbsent(baseRuntimeIdBase.getClusterId(), (value) -> new ArrayList<>()).add(baseRuntimeIdBase);
-            } else {
-                this.runtimeMetadataMap.computeIfAbsent(baseRuntimeIdBase.getRuntimeId(), (value) -> new ArrayList<>()).add(baseRuntimeIdBase);
-            }
-        });
-
+            this.enqueue(clusters, this.clusterMetadataMap, this.appliedClusterMetadata);
+            this.enqueue(runtimes, this.runtimeMetadataMap, this.appliedRuntimeMetadata);
+            this.dataMetadataHandler.acknowledgeData();
+        } catch (RuntimeException exception) {
+            this.dataMetadataHandler.retryData();
+            throw exception;
+        }
     }
 
-    public void persistence() {
-        if (this.deleteData.isEmpty() && this.updateData.isEmpty() && this.clusterMetadataMap.isEmpty()) {
-            if (log.isTraceEnabled()) {
-                log.trace("#sync persistence {} metadata is empty", metadataType);
+    private void enqueue(Map<Long, Map<String, BaseClusterIdBase>> batches,
+        Map<Long, Map<String, BaseClusterIdBase>> pending, Map<Long, Map<String, BaseClusterIdBase>> applied) {
+        batches.forEach((target, batch) -> batch.forEach((key, value) -> {
+            Map<String, BaseClusterIdBase> queue = pending.computeIfAbsent(target, id -> new LinkedHashMap<>());
+            BaseClusterIdBase queued = queue.get(key);
+            // Preserve the same version object while an RPC is in flight, including partial-batch retries.
+            if (Objects.nonNull(queued) && this.sameDesiredState(queued, value)) {
+                return;
             }
+            BaseClusterIdBase previous = applied.getOrDefault(target, Map.of()).get(key);
+            if (Objects.nonNull(queued) || !this.sameDesiredState(previous, value)) {
+                queue.put(key, value);
+            }
+        }));
+    }
+
+    private boolean sameDesiredState(BaseClusterIdBase first, BaseClusterIdBase second) {
+        // Same-second incremental overlap and sync-result audit updates are not new desired state.
+        return EqualsBuilder.reflectionEquals(first, second, "syncStatus", "updateTime", "updateUserId");
+    }
+
+    public synchronized void forgetTarget(BaseSyncBase target) {
+        if (target instanceof RuntimeMetadata) {
+            this.runtimeMetadataMap.remove(target.getId());
+            this.appliedRuntimeMetadata.remove(target.getId());
+        } else {
+            this.clusterMetadataMap.remove(target.getId());
+            this.appliedClusterMetadata.remove(target.getId());
+        }
+    }
+
+    public synchronized void persistence() {
+        if (this.addData.isEmpty() && this.updateData.isEmpty() && this.deleteData.isEmpty()) {
             return;
         }
-
-        List<Object> addData;
-        List<Object> updateData;
-        List<Object> deleteData;
-        synchronized (this) {
-            addData = this.addData;
-            updateData = this.updateData;
-            deleteData = this.deleteData;
-            this.addData = new ArrayList<>();
-            this.updateData = new ArrayList<>();
-            this.deleteData = new ArrayList<>();
-        }
-        this.dataMetadataHandler.handleAll(null, addData, updateData, deleteData);
+        // Keep the queued writes if persistence fails; the next round retries them.
+        this.dataMetadataHandler.handleAll(null, List.copyOf(this.addData), List.copyOf(this.updateData), List.copyOf(this.deleteData));
+        this.addData.clear();
+        this.updateData.clear();
+        this.deleteData.clear();
     }
 
     /**
      * 需要记录 这里可以记录id， 第一次全量加载，之后查询创建的 id 的
      */
     public MetadataHandler<BaseClusterIdBase> createDataMetadataHandler(BaseSyncBase baseSyncBase) {
-        Map<Long, List<BaseClusterIdBase>> mapetadataMap =
+        Map<Long, Map<String, BaseClusterIdBase>> mapetadataMap =
             Objects.equals(baseSyncBase.getClass(), RuntimeMetadata.class) ? this.runtimeMetadataMap : this.clusterMetadataMap;
+        Map<Long, Map<String, BaseClusterIdBase>> appliedMap = baseSyncBase instanceof RuntimeMetadata
+            ? this.appliedRuntimeMetadata : this.appliedClusterMetadata;
         Global2Request global2Request = new Global2Request();
         if (Objects.equals(baseSyncBase.getClass(), RuntimeMetadata.class)) {
             global2Request.setRuntimeId(baseSyncBase.getId());
@@ -183,63 +218,78 @@ public class SyncMetadataCreateFactory {
 
         return new MetadataHandler<>() {
 
-            private final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-
-            private final long timeout = System.currentTimeMillis() + 5000;
+            private Map<String, BaseClusterIdBase> inFlight;
 
             @Override
             public void addMetadata(BaseClusterIdBase meta) {
-                SyncMetadataCreateFactory.this.addData.add(SyncMetadataCreateFactory.this.convertMetaData.toEntity(meta));
+                this.handleAll(null, List.of(meta), List.of(), List.of());
             }
 
             @Override
             public void deleteMetadata(BaseClusterIdBase meta) {
-                SyncMetadataCreateFactory.this.deleteData.add(SyncMetadataCreateFactory.this.convertMetaData.toEntity(meta));
+                this.handleAll(null, List.of(), List.of(), List.of(meta));
             }
 
             @Override
             public void updateMetadata(BaseClusterIdBase meta) {
-                SyncMetadataCreateFactory.this.updateData.add(meta);
+                this.handleAll(null, List.of(), List.of(meta), List.of());
             }
 
             @Override
             public void handleAll(Collection<BaseClusterIdBase> allData, List<BaseClusterIdBase> addData, List<BaseClusterIdBase> updateData,
                 List<BaseClusterIdBase> deleteData) {
-                this.addAll(SyncMetadataCreateFactory.this.addData, addData);
-                this.addAll(SyncMetadataCreateFactory.this.updateData, updateData);
-                this.addAll(SyncMetadataCreateFactory.this.deleteData, deleteData);
-            }
-
-            private void addAll(List<Object> persistenceData, List<BaseClusterIdBase> handleData) {
-                List<Object> newHandleData = handleData.stream().map(SyncMetadataCreateFactory.this.convertMetaData::toEntity).toList();
+                List<Object> adds = addData.stream().map(convertMetaData::toEntity).toList();
+                List<Object> updates = updateData.stream().map(convertMetaData::toEntity).toList();
+                List<Object> deletes = deleteData.stream().map(convertMetaData::toEntity).toList();
                 synchronized (SyncMetadataCreateFactory.this) {
-                    persistenceData.addAll(newHandleData);
+                    SyncMetadataCreateFactory.this.addData.addAll(adds);
+                    SyncMetadataCreateFactory.this.updateData.addAll(updates);
+                    SyncMetadataCreateFactory.this.deleteData.addAll(deletes);
                 }
             }
 
-            /**
-             * 这里 如果 baseSyncBase 第一次调用次方法，如何没有 没有数据可以直接通过 id加载 </p>
-             * 防止有延迟，第一次没有数据。可以延迟 10次 或则 5秒
-             */
-            @SuppressWarnings("unchecked")
+            /** Capture a batch without draining it; acknowledgement removes only these versions. */
             @Override
             public List<BaseClusterIdBase> getData() {
-                List<BaseClusterIdBase> baseClusterIdBases = mapetadataMap.remove(baseSyncBase.getId());
-                if (CollectionUtils.isEmpty(baseClusterIdBases) && atomicBoolean.get() && System.currentTimeMillis() < timeout) {
-                    baseClusterIdBases = (List<BaseClusterIdBase>) ((List) dataMetadataHandler.getData(global2Request));
-                    if (CollectionUtils.isEmpty(baseClusterIdBases)) {
-                        atomicBoolean.set(true);
+                synchronized (SyncMetadataCreateFactory.this) {
+                    if (Objects.isNull(this.inFlight)) {
+                        this.inFlight = new LinkedHashMap<>(mapetadataMap.getOrDefault(baseSyncBase.getId(), Map.of()));
                     }
+                    return new ArrayList<>(this.inFlight.values());
                 }
-                return baseClusterIdBases;
             }
 
             @Override
-            @SuppressWarnings("unchecked")
             public List<BaseClusterIdBase> getData(Global2Request request) {
-                return (List<BaseClusterIdBase>) ((List) dataMetadataHandler.getData(global2Request));
+                return dataMetadataHandler.getData(global2Request).stream().map(convertMetaData::toMetaData).toList();
             }
 
+            @Override
+            public void acknowledgeData() {
+                synchronized (SyncMetadataCreateFactory.this) {
+                    Map<String, BaseClusterIdBase> pending = mapetadataMap.get(baseSyncBase.getId());
+                    if (Objects.nonNull(pending) && Objects.nonNull(this.inFlight)) {
+                        appliedMap.computeIfAbsent(baseSyncBase.getId(), id -> new LinkedHashMap<>()).putAll(this.inFlight);
+                        this.inFlight.forEach((key, value) -> {
+                            // A newer load must not be acknowledged by an older RPC batch.
+                            if (pending.get(key) == value) {
+                                pending.remove(key);
+                            }
+                        });
+                        if (pending.isEmpty()) {
+                            mapetadataMap.remove(baseSyncBase.getId());
+                        }
+                    }
+                    this.inFlight = null;
+                }
+            }
+
+            @Override
+            public void retryData() {
+                synchronized (SyncMetadataCreateFactory.this) {
+                    this.inFlight = null;
+                }
+            }
         };
     }
 }

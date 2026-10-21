@@ -40,7 +40,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
 
     @Select("""
-             select * from config where status!=0 and is_delete=0 and cluster_id
+             select * from config where is_delete=0 and cluster_id
                  <foreach item='item' index='index' open='in(' separator=',' close=')'>
                     #{item.id}
                  </foreach>
@@ -51,7 +51,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
     @Select("""
         <script>
             <foreach item='item' index='index' separator=' union all '>
-                 select * from config where status!=0 and is_delete=0 and
+                 select * from config where is_delete=0 and
                                 instance_id = #{instanceId}
                             and instance_type = #{instanceType}
                             and config_name = #{configName}
@@ -61,7 +61,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
     List<ConfigEntity> queryByRuntimeIdAndConfigName(List<ConfigEntity> configEntityLists);
 
     @Select("""
-        select * from config where status!=0 and is_delete=0 and instance_id
+        select * from config where is_delete=0 and instance_id
              <foreach item='item' index='index' open='in(' separator=',' close=')'>
                 #{item.id}
              </foreach>
@@ -72,7 +72,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
     @Select("""
         <script>
-        select * from config where status!=0 and is_delete=0 and
+        select * from config where is_delete=0 and
             instance_id = #{instanceId} and instance_type = #{instanceType}
             <if test='isModify != null'>
                 and is_modify = #{isModify}
@@ -88,10 +88,10 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
     List<ConfigEntity> getConfigsToFrontWithDynamic(ConfigEntity configEntity);
 
 
-    @Select("SELECT * FROM config WHERE status!=0 and is_delete=0 and status=1 AND is_default=0")
+    @Select("SELECT * FROM config WHERE is_delete=0 and status=1 AND is_default=0")
     List<ConfigEntity> selectAll();
 
-    @Select("select * from config where status!=0 and is_delete=0 and instance_type=#{instanceType} and instance_id=#{instanceId}")
+    @Select("select * from config where is_delete=0 and instance_type=#{instanceType} and instance_id=#{instanceId}")
     List<ConfigEntity> selectConfigsByInstance(ConfigEntity configEntity);
 
 
@@ -113,12 +113,12 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
 
     @Insert("""
         <script>
-           insert into config (organization_id,cluster_id, instance_type, instance_id,
+           insert into config (organization_id,cluster_id,cluster_type, instance_type, instance_id,
                                config_type, config_name, config_value, config_value_type,config_value_range,
                                start_version,end_version, description, edit, is_default)
            values
            <foreach collection='list' item='c' index='index' separator=','>
-               (#{c.organizationId},#{c.clusterId}, #{c.instanceType},
+               (#{c.organizationId},#{c.clusterId},#{c.clusterType}, #{c.instanceType},
                 <if test='c.instanceId !=null'>
                     #{c.instanceId},
                 </if>
@@ -128,6 +128,7 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
                 #{c.configType},#{c.configName},#{c.configValue},#{c.configValueType},#{c.configValueRange},
                 #{c.startVersion},#{c.endVersion},#{c.description},#{c.edit},#{c.isDefault})
            </foreach>
+        on duplicate key update status=1, is_delete=0, update_time=CURRENT_TIMESTAMP
         </script>
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
@@ -137,33 +138,36 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
     @Insert("insert into config () select *,#{targetId} as cluster_id from config where clster where cluster_id = #{sourceId}")
     void copyConfig(CopyConfigQO data);
 
-    @Insert("INSERT INTO config (cluster_id, business_type, instance_type, instance_id, config_name, config_value, "
-            + "status, is_default,  diff_type, description, edit, is_modify,start_version,"
-            + "eventmesh_version,end_version) VALUE "
-            + "(#{clusterId},#{businessType},#{instanceType},#{instanceId},#{configName},"
-            + "#{configValue},#{status},#{isDefault},#{diffType},#{description},#{edit},#{isModify},"
-            + "#{startVersion},#{eventmeshVersion},#{endVersion})")
+    @Insert("""
+        INSERT INTO config (organization_id,cluster_id,cluster_type,instance_type,instance_id,
+            config_type,config_name,config_value,config_value_type,config_value_range,
+            start_version,end_version,description,edit,is_default)
+        VALUES (#{organizationId},#{clusterId},#{clusterType},#{instanceType},#{instanceId},
+            #{configType},#{configName},#{configValue},#{configValueType},#{configValueRange},
+            #{startVersion},#{endVersion},#{description},#{edit},#{isDefault})
+        ON DUPLICATE KEY UPDATE status=1,is_delete=0,update_time=CURRENT_TIMESTAMP
+        """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer addConfig(ConfigEntity configEntity);
 
-    @Update("UPDATE config SET status=0 WHERE id=#{id}")
+    @Update("UPDATE config SET is_delete=1, update_time=CURRENT_TIMESTAMP WHERE id=#{id}")
     Integer deleteConfig(ConfigEntity configEntity);
 
     @Update("UPDATE config SET config_value=#{configValue} ,already_update=#{alreadyUpdate} WHERE instance_type=#{instanceType} AND"
             + " instance_id=#{instanceId} AND config_name=#{configName} AND is_default=0")
     void updateConfig(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE status!=0 and is_delete=0 and instance_type=#{instanceType} AND instance_id=#{instanceId} AND is_default=0")
+    @Select("SELECT * FROM config WHERE is_delete=0 and instance_type=#{instanceType} AND instance_id=#{instanceId} AND is_default=0")
     List<ConfigEntity> selectByInstanceId(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE status!=0 and is_delete=0 and cluster_id=-1 AND business_type=#{businessType} "
+    @Select("SELECT * FROM config WHERE is_delete=0 and cluster_id=-1 AND business_type=#{businessType} "
             + "AND instance_type=#{instanceType} AND is_default=1")
     List<ConfigEntity> selectDefaultConfig(ConfigEntity configEntity);
 
-    @Select("SELECT * FROM config WHERE status!=0 and is_delete=0 and is_default=1")
+    @Select("SELECT * FROM config WHERE is_delete=0 and is_default=1")
     List<ConfigEntity> selectAllDefaultConfig();
 
-    @Select("SELECT * FROM config WHERE status!=0 and is_delete=0 and cluster_id=#{clusterId} AND instance_type=#{instanceType} "
+    @Select("SELECT * FROM config WHERE is_delete=0 and cluster_id=#{clusterId} AND instance_type=#{instanceType} "
             + "AND instance_id=#{instanceId} AND config_name=#{configName} AND status=1")
     ConfigEntity selectByUnique(ConfigEntity configEntity);
 
@@ -174,6 +178,12 @@ public interface ConfigMapper extends SyncDataHandlerMapper<ConfigEntity> {
     void syncUpdate(List<ConfigEntity> entityList);
 
     @Override
+    @Update("""
+        <script>
+        UPDATE config SET is_delete=1, update_time=CURRENT_TIMESTAMP WHERE id IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">#{item.id}</foreach>
+        </script>
+        """)
     void syncDelete(List<ConfigEntity> entityList);
 
 

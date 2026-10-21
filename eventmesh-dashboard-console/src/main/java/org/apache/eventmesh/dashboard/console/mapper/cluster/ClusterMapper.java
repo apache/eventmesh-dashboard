@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.mapper.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.model.DO.cluster.ClusterRelationQuery;
 import org.apache.eventmesh.dashboard.console.model.QO.cluster.QueryRelationClusterByClusterIdListAndTypeQO;
 
 import org.apache.ibatis.annotations.Insert;
@@ -52,7 +53,10 @@ public interface ClusterMapper {
     List<ClusterEntity> queryClusterListByClusterList(List<ClusterEntity> clusterEntityList);
 
     @Select("""
-        select * from cluster where is_delete=0 and organization_id =#{organizationId}  and cluster_type=#{clusterType}
+        <script>
+        select * from cluster where is_delete=0 and organization_id =#{organizationId} and cluster_type=#{clusterType}
+        <if test="name != null and name != ''">and name=#{name}</if>
+        </script>
         """)
     List<ClusterEntity> queryClusterByOrganizationIdAndType(ClusterEntity clusterEntity);
 
@@ -61,13 +65,16 @@ public interface ClusterMapper {
         <script>
         select * from cluster where is_delete=0 and id in(
             select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id=#{id}
-               <if test="clusterType != null and clusterType != ''">
+               <if test="clusterType != null">
                  and cluster_type = #{clusterType}
+               </if>
+               <if test="relationshipType != null">
+                 and relationship_type = #{relationshipType}
                </if>
             )
         </script>
         """)
-    List<ClusterEntity> queryRelationClusterByClusterIdAndType(ClusterEntity clusterEntity);
+    List<ClusterEntity> queryRelationClusterByClusterIdAndType(ClusterRelationQuery clusterEntity);
 
     @Select("""
         <script>
@@ -88,7 +95,7 @@ public interface ClusterMapper {
                 select * from cluster where is_delete=0 and id in(
                     select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id in(
                         select relationship_id from cluster_relationship where status=1 and is_delete=0 and cluster_id=#{id}
-                           <if test="clusterType != null and clusterType != ''">
+                           <if test="clusterType != null">
                              and cluster_type = #{clusterType}
                            </if>
                         )

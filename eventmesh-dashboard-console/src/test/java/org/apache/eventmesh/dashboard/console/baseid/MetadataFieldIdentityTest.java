@@ -54,12 +54,12 @@ public class MetadataFieldIdentityTest {
     public void duplicatedIdentityFieldsHaveOneInheritedStorageLocation() throws Exception {
         assertSame(BaseRuntimeIdBase.class, AclMetadata.class.getSuperclass());
         assertSame(BaseRuntimeIdBase.class, ConnectionMetadata.class.getSuperclass());
-        assertSame(BaseRuntimeIdBase.class, ClusterRelationshipMetadata.class.getSuperclass());
+        assertSame(BaseClusterIdBase.class, ClusterRelationshipMetadata.class.getSuperclass());
         assertFieldOwners(AclMetadata.class, "clusterId", BaseClusterIdBase.class);
         assertFieldOwners(ConnectionMetadata.class, "runtimeId", BaseRuntimeIdBase.class);
         assertFieldOwners(ClusterRelationshipMetadata.class, "clusterType", BaseClusterIdBase.class);
         assertFieldOwners(ConnectionMetadata.class, "clusterId", BaseClusterIdBase.class);
-        assertFieldOwners(ClusterRelationshipMetadata.class, "runtimeId", BaseRuntimeIdBase.class);
+        assertFalse(org.apache.ibatis.reflection.SystemMetaObject.forObject(new ClusterRelationshipMetadata()).hasGetter("runtimeId"));
         assertFieldOwners(ClusterRelationshipMetadata.class, "relationshipId", ClusterRelationshipMetadata.class);
         assertFieldOwners(ClusterRelationshipMetadata.class, "relationshipType", ClusterRelationshipMetadata.class);
     }
@@ -85,12 +85,11 @@ public class MetadataFieldIdentityTest {
         assertEquals(6L, connectionJson.get("runtimeId").asLong());
 
         ClusterRelationshipMetadata relationship = mapper.readValue("{\"id\":7,\"status\":1,"
-            + "\"clusterId\":8,\"clusterType\":\"EVENTMESH_CLUSTER\",\"runtimeId\":9,"
+            + "\"clusterId\":8,\"clusterType\":\"EVENTMESH_CLUSTER\","
             + "\"relationshipId\":10,\"relationshipType\":\"EVENTMESH_RUNTIME\"}",
             ClusterRelationshipMetadata.class);
         assertEquals(ClusterType.EVENTMESH_CLUSTER, relationship.getClusterType());
         assertEquals(ClusterType.EVENTMESH_RUNTIME, relationship.getRelationshipType());
-        assertEquals(Long.valueOf(9L), relationship.getRuntimeId());
         JsonNode relationshipJson = mapper.valueToTree(relationship);
         assertEquals("EVENTMESH_CLUSTER", relationshipJson.get("clusterType").asText());
         assertEquals("EVENTMESH_RUNTIME", relationshipJson.get("relationshipType").asText());
@@ -100,7 +99,8 @@ public class MetadataFieldIdentityTest {
             MetaClass metaClass = MetaClass.forClass(type, new DefaultReflectorFactory());
             List<String> beanProperties = Arrays.stream(Introspector.getBeanInfo(type).getPropertyDescriptors())
                 .map(PropertyDescriptor::getName).collect(Collectors.toList());
-            for (String property : Arrays.asList("clusterId", "clusterType", "runtimeId")) {
+            for (String property : type == ClusterRelationshipMetadata.class
+                ? Arrays.asList("clusterId", "clusterType") : Arrays.asList("clusterId", "clusterType", "runtimeId")) {
                 assertTrue(type.getSimpleName() + " missing MyBatis getter " + property,
                     metaClass.hasGetter(property));
                 assertTrue(type.getSimpleName() + " missing MyBatis setter " + property,
@@ -123,11 +123,9 @@ public class MetadataFieldIdentityTest {
         acl.setClusterId(12L);
         connection.setRuntimeId(23L);
         relationship.setClusterType(ClusterType.EVENTMESH_CLUSTER);
-        relationship.setRuntimeId(34L);
         assertEquals(acl.getClusterId(), readField(BaseClusterIdBase.class, "clusterId", acl));
         assertEquals(connection.getRuntimeId(), readField(BaseRuntimeIdBase.class, "runtimeId", connection));
         assertEquals(relationship.getClusterType(), readField(BaseClusterIdBase.class, "clusterType", relationship));
-        assertEquals(relationship.getRuntimeId(), readField(BaseRuntimeIdBase.class, "runtimeId", relationship));
 
         acl.setClusterId(null);
         connection.setRuntimeId(null);

@@ -48,7 +48,9 @@ public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
     }
 
     public void addNetAddress(NetAddress netAddress) {
-        this.netAddresseList.add(netAddress);
+        if (!this.netAddresseList.contains(netAddress)) {
+            this.netAddresseList.add(netAddress);
+        }
         if (Objects.nonNull(netAddress)) {
             this.netAddresses = this.getNetAddresses(this.netAddresseList);
         }
@@ -56,10 +58,13 @@ public class AbstractMultiCreateSDKConfig extends AbstractCreateSDKConfig {
 
     public void removeNetAddress(NetAddress netAddress) {
         this.netAddresseList.remove(netAddress);
+        this.netAddresses = this.getNetAddresses(this.netAddresseList);
     }
 
     public void addMetaAddress(NetAddress netAddress) {
-        this.metaAddressList.add(netAddress);
+        if (!this.metaAddressList.contains(netAddress)) {
+            this.metaAddressList.add(netAddress);
+        }
     }
 
     public void removeMetaAddress(NetAddress netAddress) {

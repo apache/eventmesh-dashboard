@@ -79,7 +79,7 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer updateGroup(GroupEntity groupEntity);
 
-    @Update("UPDATE `group` SET  status=1 WHERE id=#{id}")
+    @Update("UPDATE `group` SET  is_delete=1, update_time=CURRENT_TIMESTAMP WHERE id=#{id}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     Integer deleteGroup(GroupEntity groupEntity);
 
@@ -107,11 +107,12 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
 
     @Insert("""
         <script>
-           insert into `group` (organization_id,cluster_id, name, type,own_type)
+           insert into `group` (organization_id,cluster_id,cluster_type, name, type,own_type)
             values
                <foreach collection='list' item='c' index='index' separator=','>
-                (#{c.organizationId},#{c.clusterId},#{c.name},#{c.type},#{c.ownType})
+                (#{c.organizationId},#{c.clusterId},#{c.clusterType},#{c.name},#{c.type},#{c.ownType})
                </foreach>
+        on duplicate key update status=1, is_delete=0, update_time=CURRENT_TIMESTAMP
         </script>
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
@@ -119,8 +120,9 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
 
     @Insert("""
         <script>
-           insert into `group` (organization_id,cluster_id, name, type,own_type)
-            values (#{organizationId},#{clusterId},#{name},#{type},#{ownType}) on duplicate key update  status=1
+           insert into `group` (organization_id,cluster_id,cluster_type, name, type,own_type)
+            values (#{organizationId},#{clusterId},#{clusterType},#{name},#{type},#{ownType})
+            on duplicate key update  status=1, is_delete=0, update_time=CURRENT_TIMESTAMP
         </script>
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
@@ -134,6 +136,12 @@ public interface GroupMapper extends SyncDataHandlerMapper<GroupEntity> {
     void syncUpdate(List<GroupEntity> entityList);
 
     @Override
+    @Update("""
+        <script>
+        UPDATE `group` SET is_delete=1, update_time=CURRENT_TIMESTAMP WHERE id IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">#{item.id}</foreach>
+        </script>
+        """)
     void syncDelete(List<GroupEntity> entityList);
 
     @Override

@@ -133,7 +133,7 @@ public class ClusterMetadataIdentityTest {
     }
 
     @Test
-    public void inheritedStatePredicatesKeepExistingSemantics() {
+    public void statePredicatesDistinguishBusinessStopFromDeletion() {
         LocalDateTime created = LocalDateTime.of(2026, 10, 8, 0, 0);
         for (BaseOrganizationBase metadata : List.of(new ClusterMetadata(), new RuntimeMetadata(), new TopicMetadata())) {
             metadata.setCreateTime(created);
@@ -146,6 +146,8 @@ public class ClusterMetadataIdentityTest {
             Assert.assertTrue(metadata.isUpdate());
             Assert.assertFalse(metadata.isInsert());
             metadata.setStatus(0L);
+            Assert.assertFalse(metadata.isDelete());
+            metadata.setIsDelete(1);
             Assert.assertTrue(metadata.isDelete());
             Assert.assertFalse(metadata.isUpdate());
         }
@@ -177,6 +179,7 @@ public class ClusterMetadataIdentityTest {
         Mockito.when(database.getData(Mockito.any(Global2Request.class))).thenReturn(List.of());
         SyncMetadataCreateFactory factory = new SyncMetadataCreateFactory();
         factory.setDataMetadataHandler(database);
+        factory.setConvertMetaData(Mockito.mock(org.apache.eventmesh.dashboard.common.model.ConvertMetaData.class));
         ClusterMetadata cluster = new ClusterMetadata();
         cluster.setId(20L);
         RuntimeMetadata runtime = new RuntimeMetadata();
@@ -297,7 +300,7 @@ public class ClusterMetadataIdentityTest {
             checks.put(20L, check);
             service.unRegister(metadata);
             Mockito.verify(check).unRegister(metadata);
-            Assert.assertFalse(checks.containsKey(20L));
+            Assert.assertEquals(metadata instanceof RuntimeMetadata, checks.containsKey(20L));
         }
     }
 }

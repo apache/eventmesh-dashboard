@@ -48,9 +48,11 @@ import org.apache.commons.collections4.MapUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -66,6 +68,12 @@ public class ClusterMetadataDomain {
     @Getter
     private ColonyDO<ClusterDO> colonyDO;
 
+
+    private final Map<Long, ColonyDO<ClusterDO>> pendingClusters = new HashMap<>();
+
+    private final Set<Long> inactiveClusters = new HashSet<>();
+
+    private final Map<Long, ClusterRelationshipEntity> relationships = new HashMap<>();
 
     private boolean coreModel = true;
 
@@ -124,20 +132,25 @@ public class ClusterMetadataDomain {
             colonyDOMap);
         this.setRuntimeEntity(metadataAllDO.getRuntimeEntityList(), colonyDOMap);
 
-        colonyDOMap.forEach((key, value) -> {
-            AbstractMultiCreateSDKConfig createSDKConfig = value.getClusterDO().getMultiCreateSDKConfig();
-            if (Objects.isNull(createSDKConfig) || createSDKConfig.isNullAddress()) {
-                return;
-            }
+        this.pendingClusters.putAll(colonyDOMap);
+        for (Map.Entry<Long, ColonyDO<ClusterDO>> entry : new ArrayList<>(this.pendingClusters.entrySet())) {
+            ColonyDO<ClusterDO> value = entry.getValue();
             if (!ClusterSyncMetadataEnum.getClusterFramework(value.getClusterType()).isCAP()) {
-                return;
+                this.pendingClusters.remove(entry.getKey());
+                continue;
             }
+            AbstractMultiCreateSDKConfig config = value.getClusterDO().getMultiCreateSDKConfig();
             if (Objects.nonNull(this.handler)) {
-                // TODO
-                this.handler.registerCluster(null, value.getClusterDO(), value);
-                //this.handler.registerCluster(value.getClusterDO().getClusterInfo(), value.getClusterDO(), value);
+                ClusterEntity entity = this.clusterEntity(value);
+                if (Objects.isNull(config) || (value.getClusterType().isMeta()
+                    ? config.getNetAddressesByMeta().length == 0 : config.isNullAddress())) {
+                    this.handler.unRegisterCluster(entity, value.getClusterDO(), value);
+                } else {
+                    this.handler.registerCluster(entity, value.getClusterDO(), value);
+                }
             }
-        });
+            this.pendingClusters.remove(entry.getKey());
+        }
     }
 
 
@@ -150,13 +163,34 @@ public class ClusterMetadataDomain {
                 if (v.getClusterType().isDefinition()) {
                     definitionClusteList.add(v);
                 }
-                if (Objects.equals(v.getStatus(), 0L)) {
-                    ColonyDO<ClusterDO> colonyDO = this.colonyDO.remove(v.getId());
-                    if (Objects.nonNull(this.handler)) {
-                        this.handler.unRegisterCluster(v, colonyDO.getClusterDO(), colonyDO);
+                if (Objects.equals(v.getStatus(), 0L) || Objects.equals(v.getIsDelete(), 1)) {
+                    ColonyDO<ClusterDO> removed = this.getColonyDO(v.getId());
+                    if (Objects.nonNull(removed)) {
+                        // Keep the graph until every callback succeeds so the same event can be retried.
+                        if (Objects.nonNull(this.handler)) {
+                            if (!removed.getClusterSyncMetadata().getClusterFramework().isCAP()) {
+                                for (Object runtime : new ArrayList<>(removed.getClusterDO().getRuntimeMap().values())) {
+                                    RuntimeBaseDO runtimeDO = (RuntimeBaseDO) runtime;
+                                    RuntimeEntity entity = this.runtimeEntity(runtimeDO);
+                                    this.handler.unRegisterRuntime(entity, runtimeDO, removed);
+                                }
+                            }
+                            this.handler.unRegisterCluster(v, removed.getClusterDO(), removed);
+                        }
+                        this.detachCluster(v.getId());
                     }
+                    this.inactiveClusters.add(v.getId());
+                    this.pendingClusters.remove(v.getId());
+                    colonyDOMap.remove(v.getId());
                 } else {
+                    Objects.requireNonNull(v.getStatus(), "Cluster business status");
+                    this.inactiveClusters.remove(v.getId());
                     ClusterBaseDO clusterEntityDO = this.createClusterBaseDO(v);
+                    ColonyDO<ClusterDO> existing = this.getColonyDO(v.getId());
+                    if (Objects.nonNull(existing)) {
+                        clusterEntityDO.setRuntimeMap(existing.getClusterDO().getRuntimeMap());
+                        clusterEntityDO.setMultiCreateSDKConfig(existing.getClusterDO().getMultiCreateSDKConfig());
+                    }
                     ColonyDO<ClusterDO> colonyDO = this.colonyDO.register(v.getId(), v.getClusterType(), clusterEntityDO);
                     if (!v.getClusterType().isDefinition()) {
                         colonyDOMap.put(v.getId(), colonyDO);
@@ -164,11 +198,20 @@ public class ClusterMetadataDomain {
                 }
             });
         }
-        if (CollectionUtils.isEmpty(clusterRelationshipEntityList)) {
-            return definitionClusteList;
+        Map<Long, ClusterRelationshipEntity> nextRelationships = new HashMap<>(this.relationships);
+        if (Objects.nonNull(clusterRelationshipEntityList)) {
+            for (ClusterRelationshipEntity relationship : clusterRelationshipEntityList) {
+                nextRelationships.put(Objects.requireNonNull(relationship.getId(), "Relationship id"), relationship);
+            }
         }
-        clusterRelationshipEntityList.forEach(value -> ClusterRelationshipSnapshotHandler.apply(
-            ClusterRelationshipConvertMetaData.INSTANCE.toMetaData(value), this.colonyDO));
+        for (ClusterRelationshipEntity relationship : nextRelationships.values()) {
+            if (this.inactiveClusters.contains(relationship.getClusterId()) || this.inactiveClusters.contains(relationship.getRelationshipId())) {
+                continue;
+            }
+            ClusterRelationshipSnapshotHandler.apply(ClusterRelationshipConvertMetaData.INSTANCE.toMetaData(relationship), this.colonyDO);
+        }
+        this.relationships.clear();
+        this.relationships.putAll(nextRelationships);
         return definitionClusteList;
     }
 
@@ -182,17 +225,29 @@ public class ClusterMetadataDomain {
             netAddress.setPort(value.getPort());
             ColonyDO<ClusterDO> colonyDO;
             ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(value.getClusterType());
-            if (Objects.equals(value.getStatus(), 0L)) {
-                colonyDO = this.colonyDO.removeRuntime(value.getClusterId(), value.getId(), netAddress);
+            ColonyDO<ClusterDO> existingColony = this.getColonyDO(value.getClusterId());
+            RuntimeBaseDO existingRuntime = Objects.isNull(existingColony) ? null
+                : existingColony.getClusterDO().getRuntimeMap().get(value.getId());
+            NetAddress registeredAddress = Objects.isNull(existingRuntime) ? netAddress
+                : this.createNetAddress(this.runtimeEntity(existingRuntime));
+            if (Objects.equals(value.getStatus(), 0L) || Objects.equals(value.getIsDelete(), 1)) {
+                colonyDO = existingColony;
+                if (!clusterFramework.isCAP() && Objects.nonNull(this.handler)) {
+                    this.handler.unRegisterRuntime(value, null, colonyDO);
+                }
+                colonyDO = this.colonyDO.removeRuntime(value.getClusterId(), value.getId(), registeredAddress);
                 if (Objects.nonNull(colonyDO) && clusterFramework.isCAP()) {
                     colonyDOMap.put(value.getClusterId(), colonyDO);
-                } else {
-                    if (Objects.nonNull(this.handler)) {
-                        this.handler.unRegisterRuntime(value, null, colonyDO);
-                    }
                 }
             } else {
+                Objects.requireNonNull(value.getStatus(), "Runtime business status");
+                if (this.inactiveClusters.contains(value.getClusterId())) {
+                    return;
+                }
                 RuntimeBaseDO runtimeBaseDO = this.createRuntimeDO(value);
+                if (Objects.nonNull(existingRuntime) && !Objects.equals(registeredAddress, netAddress)) {
+                    this.colonyDO.removeRuntime(value.getClusterId(), value.getId(), registeredAddress);
+                }
                 colonyDO = this.colonyDO.register(value.getClusterId(), value.getId(), runtimeBaseDO, netAddress);
 
                 if (Objects.isNull(colonyDO)) {
@@ -209,6 +264,31 @@ public class ClusterMetadataDomain {
             }
         });
 
+    }
+
+    private ClusterEntity clusterEntity(ColonyDO<ClusterDO> colony) {
+        Object info = ((ClusterBaseDO) colony.getClusterDO()).getClusterInfo();
+        return info instanceof ClusterEntity ? (ClusterEntity) info : ClusterConvertMetaData.INSTANCE.toEntity((ClusterMetadata) info);
+    }
+
+    private RuntimeEntity runtimeEntity(RuntimeBaseDO runtime) {
+        Object info = runtime.getRuntimeMetadata();
+        return info instanceof RuntimeEntity ? (RuntimeEntity) info : RuntimeConvertMetaData.INSTANCE.toEntity((RuntimeMetadata) info);
+    }
+
+    private void detachCluster(Long id) {
+        this.colonyDO.getRuntimeColonyDOMap().remove(id);
+        this.colonyDO.getStorageColonyDOMap().remove(id);
+        this.colonyDO.getMetaColonyDOList().remove(id);
+        for (ColonyDO<ClusterDO> other : this.colonyDO.getAllColonyDO().values()) {
+            other.getRuntimeColonyDOMap().remove(id);
+            other.getStorageColonyDOMap().remove(id);
+            other.getMetaColonyDOList().remove(id);
+            if (Objects.equals(other.getSuperiorId(), id)) {
+                other.setSuperiorId(null);
+            }
+        }
+        this.colonyDO.remove(id);
     }
 
     private ClusterBaseDO createClusterBaseDO(ClusterEntity clusterEntity) {

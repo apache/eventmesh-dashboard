@@ -225,7 +225,11 @@ public class MetadataSyncManage implements AutoCloseable {
     }
 
     public void unRegister(BaseSyncBase baseSyncBase) {
-        this.metadataSyncConfigMap.remove(baseSyncBase.getUnique());
+        List<MetadataSyncWrapper> removed = this.metadataSyncConfigMap.remove(baseSyncBase.getUnique());
+        if (Objects.nonNull(removed)) {
+            removed.forEach(MetadataSyncWrapper::deactivate);
+        }
+        this.syncMetadataCreateFactoryMap.values().forEach(factory -> factory.forgetTarget(baseSyncBase));
         this.metadataSyncResultHandler.unregister(baseSyncBase);
     }
 

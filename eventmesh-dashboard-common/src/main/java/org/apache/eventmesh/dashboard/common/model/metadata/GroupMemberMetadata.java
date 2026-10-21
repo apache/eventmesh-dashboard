@@ -40,4 +40,6 @@ public class GroupMemberMetadata extends BaseRuntimeIdBase {
         return this.groupName == null || this.topicName == null ? null
             : this.groupName.length() + ":" + this.groupName + this.topicName;
     }
+
+
 }

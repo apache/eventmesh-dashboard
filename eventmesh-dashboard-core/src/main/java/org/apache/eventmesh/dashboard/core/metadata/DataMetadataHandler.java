@@ -23,4 +23,12 @@ package org.apache.eventmesh.dashboard.core.metadata;
  */
 public interface DataMetadataHandler<T> extends FullMetadataHandler<T>, GetMetadataHandler<T> {
 
+    /** Confirm the last read only after its consumer has accepted the batch. */
+    default void acknowledgeData() {
+    }
+
+    /** Release an unsuccessful read without advancing its checkpoint. */
+    default void retryData() {
+    }
+
 }

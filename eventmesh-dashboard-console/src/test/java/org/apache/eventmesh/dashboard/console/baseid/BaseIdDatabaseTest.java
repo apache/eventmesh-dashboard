@@ -18,6 +18,11 @@
 
 package org.apache.eventmesh.dashboard.console.baseid;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseIdEntity;
@@ -28,17 +33,12 @@ import org.apache.eventmesh.dashboard.console.mapper.cluster.*;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.*;
 
+import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
-import org.h2.jdbcx.JdbcDataSource;
-import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
-import javax.sql.DataSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -48,7 +48,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.*;
+import javax.sql.DataSource;
+
+import org.h2.jdbcx.JdbcDataSource;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class BaseIdDatabaseTest {
     static final LocalDateTime BOUNDARY = LocalDateTime.of(2026, 1, 1, 0, 0);
@@ -144,7 +149,7 @@ public class BaseIdDatabaseTest {
     }
 
     @Test
-    public void memberQueriesKeepStatusZeroVisibleAndHideDeletionMarkers() throws Exception {
+    public void memberQueriesKeepInactiveRowsAndHideDeletionMarkers() throws Exception {
         seed("group_member", GroupMemberEntity.class, 13, Map.of("topic_name", "orders", "group_name", "consumers", "status", 0));
         GroupMemberMapper mapper = session.getMapper(GroupMemberMapper.class);
         GroupMemberEntity query = new GroupMemberEntity();

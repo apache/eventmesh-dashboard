@@ -57,7 +57,7 @@ public class RocketMQUserRemotingService extends AbstractRocketMQRemotingService
         if (StringUtils.isBlank(user.getPassword()) || user.getUserType() == null || user.getUserStatus() == null) {
             throw new IllegalArgumentException("Creating a user requires password, userType and userStatus");
         }
-        return this.writeUser(user, RequestCode.AUTH_CREATE_USER, new CreateUserRequestHeader(user.getUserName()));
+        return this.writeUser(user, RequestCode.AUTH_CREATE_USER, new CreateUserRequestHeader(user.getName()));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class RocketMQUserRemotingService extends AbstractRocketMQRemotingService
         if (user.getPassword() == null && user.getUserType() == null && user.getUserStatus() == null) {
             throw new IllegalArgumentException("Updating a user requires at least one changed field");
         }
-        return this.writeUser(user, RequestCode.AUTH_UPDATE_USER, new UpdateUserRequestHeader(user.getUserName()));
+        return this.writeUser(user, RequestCode.AUTH_UPDATE_USER, new UpdateUserRequestHeader(user.getName()));
     }
 
     @Override
@@ -75,14 +75,14 @@ public class RocketMQUserRemotingService extends AbstractRocketMQRemotingService
         this.requireV2();
         InstanceUserMetadata user = this.requireUser(request == null ? null : request.getMetaData());
         return this.buildResult(this.invokeUser(RequestCode.AUTH_DELETE_USER,
-            new DeleteUserRequestHeader(user.getUserName()), null), new DeleteUserResult());
+            new DeleteUserRequestHeader(user.getName()), null), new DeleteUserResult());
     }
 
     @Override
     public GetUserResult getInstanceUser(GetUserRequest request) throws Exception {
         this.requireV2();
         InstanceUserMetadata filter = request == null ? null : request.getMetaData();
-        String username = filter == null ? null : this.requireUser(filter).getUserName();
+        String username = filter == null ? null : this.requireUser(filter).getName();
         RemotingCommand response = username == null
             ? this.invokeUser(RequestCode.AUTH_LIST_USER, new ListUsersRequestHeader(null), null)
             : this.invokeUser(RequestCode.AUTH_GET_USER, new GetUserRequestHeader(username), null);
@@ -104,14 +104,14 @@ public class RocketMQUserRemotingService extends AbstractRocketMQRemotingService
                     throw new IllegalStateException("RocketMQ returned an invalid or duplicate user");
                 }
                 InstanceUserMetadata user = new InstanceUserMetadata();
-                user.setUserName(info.getUsername());
+                user.setName(info.getUsername());
                 user.setUserType(this.userType(info.getUserType()));
                 user.setUserStatus(this.userStatus(info.getUserStatus()));
                 // The Broker may return credentials. Never copy the password into query metadata.
                 users.add(user);
             }
         }
-        users.sort(Comparator.comparing(InstanceUserMetadata::getUserName));
+        users.sort(Comparator.comparing(InstanceUserMetadata::getName));
         result.setData(users);
         return result;
     }
@@ -120,7 +120,7 @@ public class RocketMQUserRemotingService extends AbstractRocketMQRemotingService
         if (user.getPassword() != null && StringUtils.isBlank(user.getPassword())) {
             throw new IllegalArgumentException("Password must not be blank");
         }
-        UserInfo info = UserInfo.of(user.getUserName(), user.getPassword(),
+        UserInfo info = UserInfo.of(user.getName(), user.getPassword(),
             user.getUserType() == null ? null : this.userType(user.getUserType()),
             user.getUserStatus() == null ? null : this.userStatus(user.getUserStatus()));
         return this.buildResult(this.invokeUser(code, header, RemotingSerializable.encode(info)), new CreateUserResult());
@@ -137,7 +137,7 @@ public class RocketMQUserRemotingService extends AbstractRocketMQRemotingService
     }
 
     private InstanceUserMetadata requireUser(InstanceUserMetadata user) {
-        if (user == null || StringUtils.isBlank(user.getUserName()) || !user.getUserName().equals(user.getUserName().trim())) {
+        if (user == null || StringUtils.isBlank(user.getName()) || !user.getName().equals(user.getName().trim())) {
             throw new IllegalArgumentException("A nonblank username without surrounding whitespace is required");
         }
         return user;

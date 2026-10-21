@@ -19,7 +19,7 @@
 package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
+import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,7 +27,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ClusterRelationshipMetadata extends BaseRuntimeIdBase {
+public class ClusterRelationshipMetadata extends BaseClusterIdBase {
 
     private Long relationshipId;
 

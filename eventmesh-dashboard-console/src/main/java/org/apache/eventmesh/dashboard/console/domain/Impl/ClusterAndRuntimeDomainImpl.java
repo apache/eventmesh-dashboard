@@ -27,6 +27,7 @@ import org.apache.eventmesh.dashboard.console.entity.cases.ResourcesConfigEntity
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
+import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
 import org.apache.eventmesh.dashboard.console.mapstruct.model.entity.ClusterEntityMapstruct;
 import org.apache.eventmesh.dashboard.console.mapstruct.model.entity.RuntimeEntityMapstruct;
 import org.apache.eventmesh.dashboard.console.model.DO.clusterRelationship.QueryListByClusterIdAndTypeDO;
@@ -457,7 +458,8 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
                      这样需要把 eventmesh 的数据 与 storage 的数据 进行一次对比，保证一样
             */
             // 分类集群
-            List<ClusterEntity> oneClusterList = clusterService.queryRelationClusterByClusterIdAndType(clusterEntity);
+            List<ClusterEntity> oneClusterList = clusterService.queryRelationClusterByClusterIdAndType(
+                ClusterControllerMapper.INSTANCE.toRelationQuery(clusterEntity));
             List<ClusterEntity> notDefinitionClusterList = new ArrayList<>(oneClusterList);
             // 查询 eventmesh 里面 存储集群
             List<ClusterEntity> clusterEntityList = clusterService.queryStorageClusterByEventMeshId(clusterEntity);
@@ -466,7 +468,8 @@ public class ClusterAndRuntimeDomainImpl implements ClusterAndRuntimeDomain {
         @Deprecated
         public void getDefinition() {
             // 查询是否存
-            List<ClusterEntity> reationClusterList = clusterService.queryRelationClusterByClusterIdAndType(clusterEntity);
+            List<ClusterEntity> reationClusterList = clusterService.queryRelationClusterByClusterIdAndType(
+                ClusterControllerMapper.INSTANCE.toRelationQuery(clusterEntity));
             List<ClusterEntity> definitionClusterList = new ArrayList<>();
             reationClusterList.forEach(value -> {
                 ClusterType storageClusterType = value.getClusterType();

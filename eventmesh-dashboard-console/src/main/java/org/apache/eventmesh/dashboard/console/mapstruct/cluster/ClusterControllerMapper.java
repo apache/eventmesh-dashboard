@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.mapstruct.cluster;
 
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.model.ClusterRequestDTO;
+import org.apache.eventmesh.dashboard.console.model.DO.cluster.ClusterRelationQuery;
 import org.apache.eventmesh.dashboard.console.model.DO.domain.clusterAndRuntimeDomain.QueryClusterTreeDO;
 import org.apache.eventmesh.dashboard.console.model.deploy.active.CreateClusterDTO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.CreateClusterBySimpleDataDTO;
@@ -47,7 +48,9 @@ public interface ClusterControllerMapper {
 
     ClusterEntity queryClusterByOrganizationIdAndType(QueryClusterByOrganizationIdAndTypeDTO dto);
 
-    ClusterEntity queryRelationClusterByClusterIdAndType(QueryRelationClusterByClusterIdAndTypeDTO dto);
+    ClusterRelationQuery toRelationQuery(ClusterEntity entity);
+
+    ClusterRelationQuery queryRelationClusterByClusterIdAndType(QueryRelationClusterByClusterIdAndTypeDTO dto);
 
     ClusterEntity createCluster(CreateClusterBySimpleDataDTO createClusterBySimpleDataDTO);
 
