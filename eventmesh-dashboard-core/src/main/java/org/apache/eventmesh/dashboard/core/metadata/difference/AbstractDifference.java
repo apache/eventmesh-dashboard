@@ -54,21 +54,15 @@ public abstract class AbstractDifference implements Difference<BaseClusterIdBase
 
     @Override
     public void difference() {
-        Map<String, BaseClusterIdBase> previous = new HashMap<>(this.allData);
-        this.closeUpdate();
         try {
             this.doDifference();
-            targetHandler.handleAll(List.copyOf(this.allData.values()), List.copyOf(this.insertData),
-                List.copyOf(this.updateData), List.copyOf(this.deleteData));
-            this.sourceHandler.acknowledgeData();
-        } catch (RuntimeException exception) {
-            this.allData.clear();
-            this.allData.putAll(previous);
-            this.sourceHandler.retryData();
-            throw exception;
-        } finally {
+            targetHandler.handleAll(this.allData.values(), this.insertData, this.updateData, this.deleteData);
             this.closeUpdate();
+        } catch (Exception e) {
+            // TODO
+            log.error(e.getMessage(), e);
         }
+
     }
 
     public void closeAll() {

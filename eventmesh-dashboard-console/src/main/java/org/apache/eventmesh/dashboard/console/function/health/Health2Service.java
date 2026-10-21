@@ -129,13 +129,10 @@ public class Health2Service {
 
 
     public void unRegister(BaseSyncBase baseSyncBase) {
-        ClusterHealthCheckService clusterHealthCheckService = this.clusterHealthCheckServiceMap.get(baseSyncBase instanceof ClusterMetadata
+        ClusterHealthCheckService clusterHealthCheckService = this.clusterHealthCheckServiceMap.remove(baseSyncBase instanceof ClusterMetadata
             ? baseSyncBase.getId() : ((RuntimeMetadata) baseSyncBase).getClusterId());
         if (Objects.nonNull(clusterHealthCheckService)) {
             clusterHealthCheckService.unRegister(baseSyncBase);
-        }
-        if (baseSyncBase instanceof ClusterMetadata) {
-            this.clusterHealthCheckServiceMap.remove(baseSyncBase.getId());
         }
         this.checkServiceMap.remove(getKey(baseSyncBase, HealthCheckTypeEnum.PING));
         this.checkServiceMap.remove(getKey(baseSyncBase, HealthCheckTypeEnum.TOPIC));

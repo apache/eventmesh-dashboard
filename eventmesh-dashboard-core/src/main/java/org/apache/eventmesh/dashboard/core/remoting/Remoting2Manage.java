@@ -41,14 +41,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
-import java.util.EnumSet;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -111,8 +108,7 @@ public class Remoting2Manage {
                     }
                     RemotingServiceMethodMapperWrapper remotingServiceMethodMapperWrapper = new RemotingServiceMethodMapperWrapper();
                     remotingServiceMethodMapperWrapper.remotingServiceMethod = method;
-                    remotingServiceMethodMapperWrapper.notResult = Objects.equals(method.getReturnType(), Void.class)
-                        || Objects.equals(method.getReturnType(), Void.TYPE);
+                    remotingServiceMethodMapperWrapper.notResult = Objects.equals(method.getReturnType(), Void.class);
                     for (RemotingActionType remotingActionType : remotingServiceMethodMappers.value()) {
                         actionMap.put(remotingActionType, remotingServiceMethodMapperWrapper);
                     }
@@ -238,9 +234,6 @@ public class Remoting2Manage {
         private Long clusterId;
         private Long runtimeId;
 
-        private final Map<T, Set<RemotingActionType>> completedWrites = new IdentityHashMap<>();
-        private final Map<T, Map<RemotingActionType, GlobalResult<T>>> confirmedWrites = new IdentityHashMap<>();
-
         private AtomicBoolean isAll = new AtomicBoolean(false);
 
         @Override
@@ -264,8 +257,6 @@ public class Remoting2Manage {
             this.execute(addData, RemotingActionType.ADD, index);
             this.execute(updateData, RemotingActionType.UPDATE, index);
             this.execute(deleteData, RemotingActionType.DELETE, index);
-            this.completedWrites.clear();
-            this.confirmedWrites.clear();
         }
 
         @Override
@@ -279,12 +270,7 @@ public class Remoting2Manage {
                 return;
             }
             data.forEach((value) -> {
-                Set<RemotingActionType> completed = this.completedWrites.computeIfAbsent(value,
-                    key -> EnumSet.noneOf(RemotingActionType.class));
-                if (!completed.contains(remotingActionType)) {
-                    this.execution(value, remotingActionType, index);
-                    completed.add(remotingActionType);
-                }
+                this.execution(value, remotingActionType, index);
             });
         }
 
@@ -303,17 +289,15 @@ public class Remoting2Manage {
                         + " id is {} Unique is {} \n data is {}",
                         index,
                         wrapper.remotingServiceType.getSimpleName(),
-                        Objects.isNull(methodMapper) ? null : methodMapper.targetMethodName,
+                        methodMapper.targetMethodName,
                         remotingActionType,
                         this.clusterId,
                         this.runtimeId,
-                        Objects.isNull(baseRuntimeIdBase) ? null : baseRuntimeIdBase.getId(),
-                        Objects.isNull(baseRuntimeIdBase) ? null : baseRuntimeIdBase.nodeUnique(),
+                        baseRuntimeIdBase.getId(),
+                        baseRuntimeIdBase.getUnique(),
                         arg);
                 }
-                Map<RemotingActionType, GlobalResult<T>> confirmed = this.confirmedWrites.get(object);
-                result = Objects.nonNull(confirmed) && confirmed.containsKey(remotingActionType)
-                    ? confirmed.get(remotingActionType) : this.invoke(methodMapper, arg);
+                result = this.invoke(methodMapper, arg);
 
                 if (log.isTraceEnabled()) {
                     log.trace(
@@ -321,63 +305,54 @@ public class Remoting2Manage {
                         #remoting manage ,result  {} index {} Response metadata is {} method is {}  action is {} clusterId is{} runtime is {},
                          id is {} Unique is {} \n Result is {}
                         """,
-                        Objects.isNull(result) ? "success" : !Objects.equals(result.getCode(), 200) ? "error" : "success",
+                        Objects.isNull(result) ? "success" : result.getCode() != 200 ? "error" : "success",
                         index,
                         wrapper.remotingServiceType.getSimpleName(),
-                        Objects.isNull(methodMapper) ? null : methodMapper.targetMethodName,
+                        methodMapper.targetMethodName,
                         remotingActionType,
                         this.clusterId,
                         this.runtimeId,
-                        Objects.isNull(baseRuntimeIdBase) ? null : baseRuntimeIdBase.getId(),
-                        Objects.isNull(baseRuntimeIdBase) ? null : baseRuntimeIdBase.nodeUnique(),
+                        baseRuntimeIdBase.getId(),
+                        baseRuntimeIdBase.getUnique(),
                         result);
                 }
             } catch (Exception e) {
                 exception = e;
-                if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                }
                 if (log.isTraceEnabled()) {
                     log.trace(
                         "#remoting manage , result error  index {} Response metadata is {} method is {}  action is {} clusterId is{} "
                         + " runtime is {}, id is {} Unique is {} \n Result is {}",
                         index,
                         wrapper.remotingServiceType.getSimpleName(),
-                        Objects.isNull(methodMapper) ? null : methodMapper.targetMethodName,
+                        methodMapper.targetMethodName,
                         remotingActionType,
                         this.clusterId,
                         this.runtimeId,
-                        Objects.isNull(baseRuntimeIdBase) ? null : baseRuntimeIdBase.getId(),
-                        Objects.isNull(baseRuntimeIdBase) ? null : baseRuntimeIdBase.nodeUnique(),
+                        baseRuntimeIdBase.getId(),
+                        baseRuntimeIdBase.getUnique(),
                         result);
                 }
                 log.error(e.getMessage(), e);
             }
-            boolean failed = Objects.nonNull(exception) || (Objects.nonNull(result) && !Objects.equals(result.getCode(), 200))
-                || (Objects.isNull(result) && (Objects.isNull(methodMapper) || !methodMapper.notResult));
             if (!Objects.equals(RemotingActionType.QUEUE_ALL, remotingActionType)) {
-                if (failed) {
+                if (Objects.nonNull(exception) || (Objects.nonNull(result) && result.getCode() != 200)) {
                     for (RemotingResultHook hook : remotingResultHookList) {
                         hook.fail(remotingActionType, baseRuntimeIdBase, (GlobalResult<Object>) result, exception);
                     }
-                    throw new IllegalStateException("Remote metadata operation failed: " + remotingActionType
-                        + ", result=" + result, Objects.nonNull(exception) ? exception : Objects.isNull(result) ? null : result.getThrowable());
-                }
-                // A reporting failure must retry reporting, not repeat an already confirmed Broker mutation.
-                this.confirmedWrites.computeIfAbsent(object, key -> new EnumMap<>(RemotingActionType.class)).put(remotingActionType, result);
-                for (RemotingResultHook hook : remotingResultHookList) {
-                    hook.success(remotingActionType, baseRuntimeIdBase, (GlobalResult<Object>) result);
+                } else {
+                    for (RemotingResultHook hook : remotingResultHookList) {
+                        hook.success(remotingActionType, baseRuntimeIdBase, (GlobalResult<Object>) result);
+                    }
                 }
                 if (Objects.isNull(result) && methodMapper.notResult) {
                     return null;
                 }
             }
-            if (Objects.nonNull(exception) || Objects.isNull(result) || !Objects.equals(result.getCode(), 200)) {
-                throw new IllegalStateException("Remote metadata operation failed: " + remotingActionType
-                    + ", result=" + result, Objects.nonNull(exception) ? exception : Objects.isNull(result) ? null : result.getThrowable());
-            }
-            if (Objects.equals(remotingActionType, RemotingActionType.QUEUE_ALL) && !(result.getData() instanceof List)) {
-                throw new IllegalStateException("Remote metadata query must return a list");
+            if (Objects.isNull(result)) {
+                if (Objects.equals(RemotingActionType.QUEUE_ALL, remotingActionType)) {
+                    return Collections.EMPTY_LIST;
+                }
+                return null;
             }
             return result.getData();
         }

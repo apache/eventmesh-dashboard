@@ -59,10 +59,6 @@ public class MetadataSyncWrapper implements Runnable {
 
     private AbstractDifference execute;
 
-    private AbstractDifference retryDifference;
-
-    private volatile boolean active = true;
-
     /**
      * 只读 difference
      */
@@ -209,22 +205,21 @@ public class MetadataSyncWrapper implements Runnable {
      *              cluster 的 check，可以1小时，或则 几个小时一次。应为 check cluster 本省对感知要求不高
      *              database 的 check 可以 一分钟一次，压力会不会很大，这个需要进行计算。
      */
-    /** Prevent queued scheduler work after this registration is removed. */
-    public void deactivate() {
-        this.active = false;
-    }
-
     @Override
     public void run() {
-        if (!this.active) {
-            return;
-        }
         MetadataSyncResult metadataSyncResult = this.metadataSyncConfig.getMetadataSyncResult();
-        if (!this.runStatus.compareAndSet(false, true)) {
-            return;
-        }
+
         try {
             this.currentTime = System.currentTimeMillis();
+            if (!this.runStatus.compareAndSet(false, true)) {
+                log.info("metadata sync wrapper is already running , metadataType is {} , id is {} , runStatus is {}",
+                    metadataSyncConfig.getMetadataType(),
+                    baseSyncBase.getId(),
+                    this.runStatus.get());
+                metadataSyncResult.setSyncType(SyncType.NOT);
+                metadataSyncResult.setFirstToWhom(FirstToWhom.NOT_EXECUTED);
+                return;
+            }
             if (this.isError()) {
                 metadataSyncResult.setSyncType(SyncType.NOT);
                 metadataSyncResult.setFirstToWhom(FirstToWhom.ERROR_ING);
@@ -265,23 +260,18 @@ public class MetadataSyncWrapper implements Runnable {
         if (Objects.isNull(this.execute)) {
             return;
         }
-        boolean firstSync = this.isFirstToWhom();
         try {
-            if (firstSync) {
-                this.baseSyncBase.setFirstSyncState(FirstToWhom.UNDER_WAY);
-            }
+            this.baseSyncBase.setFirstSyncState(FirstToWhom.UNDER_WAY);
             this.execute.difference();
-            this.retryDifference = null;
-            if (firstSync) {
+            if (this.isFirstToWhom()) {
                 baseSyncBase.setFirstSyncState(FirstToWhom.COMPLETE);
             }
             metadataSyncResult.setFirstToWhom(FirstToWhom.COMPLETE);
             this.resetErrorTime();
         } catch (Exception e) {
-            if (firstSync) {
+            if (this.isFirstToWhom()) {
                 baseSyncBase.setFirstSyncState(FirstToWhom.ERROR_ING);
             }
-            this.retryDifference = this.execute;
             // 失败三次，停止同步吗？
             this.errorHandler(metadataSyncResult);
             log.error(e.getMessage(), e);
@@ -290,11 +280,6 @@ public class MetadataSyncWrapper implements Runnable {
     }
 
     private void calculate(MetadataSyncResult metadataSyncResult) {
-        this.execute = null;
-        if (Objects.nonNull(this.retryDifference)) {
-            this.execute = this.retryDifference;
-            return;
-        }
         if (this.readOnly()) {
             this.execute = this.readOnlyDifference;
             metadataSyncResult.setSyncType(SyncType.READONLY);
@@ -331,8 +316,10 @@ public class MetadataSyncWrapper implements Runnable {
     }
 
     private void resetErrorTime() {
-        this.errorNextTime = 0;
-        this.fistSyncRetry = 0;
+        if (this.isError()) {
+            this.errorNextTime = 0;
+            this.fistSyncRetry = 0;
+        }
     }
 
     private void errorHandler(MetadataSyncResult metadataSyncResult) {
@@ -347,6 +334,7 @@ public class MetadataSyncWrapper implements Runnable {
         }
         this.errorNextTime = this.currentTime + baseNum * 100L;
 
+        baseSyncBase.setFirstSyncState(FirstToWhom.FAIL);
         metadataSyncResult.setFirstToWhom(FirstToWhom.FAIL);
     }
 

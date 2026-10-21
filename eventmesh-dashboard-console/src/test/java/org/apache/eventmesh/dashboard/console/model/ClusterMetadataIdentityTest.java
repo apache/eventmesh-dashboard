@@ -179,7 +179,6 @@ public class ClusterMetadataIdentityTest {
         Mockito.when(database.getData(Mockito.any(Global2Request.class))).thenReturn(List.of());
         SyncMetadataCreateFactory factory = new SyncMetadataCreateFactory();
         factory.setDataMetadataHandler(database);
-        factory.setConvertMetaData(Mockito.mock(org.apache.eventmesh.dashboard.common.model.ConvertMetaData.class));
         ClusterMetadata cluster = new ClusterMetadata();
         cluster.setId(20L);
         RuntimeMetadata runtime = new RuntimeMetadata();
@@ -300,7 +299,7 @@ public class ClusterMetadataIdentityTest {
             checks.put(20L, check);
             service.unRegister(metadata);
             Mockito.verify(check).unRegister(metadata);
-            Assert.assertEquals(metadata instanceof RuntimeMetadata, checks.containsKey(20L));
+            Assert.assertFalse(checks.containsKey(20L));
         }
     }
 }
