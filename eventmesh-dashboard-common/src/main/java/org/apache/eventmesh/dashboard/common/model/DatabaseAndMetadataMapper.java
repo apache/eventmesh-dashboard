@@ -38,8 +38,6 @@ public class DatabaseAndMetadataMapper {
 
     private Class<?> metadataHandlerClass;
 
-    private Class<?> snapshotHandlerClass;
-
     private Map<ClusterType, Class<?>> metadataHandlerClassByClusterType;
 
     private ConvertMetaData<?, ?> convertMetaData;

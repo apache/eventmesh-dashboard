@@ -35,7 +35,6 @@ import org.apache.eventmesh.dashboard.console.spring.support.metadata.DatabaseAn
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.DefaultMetadataSyncResultHandler;
 import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataSyncManage;
-import org.apache.eventmesh.dashboard.core.metadata.SnapshotMetadataHandler;
 import org.apache.eventmesh.dashboard.core.remoting.Remoting2Manage;
 
 import java.time.LocalDateTime;
@@ -90,9 +89,6 @@ public class FunctionManage {
     @SuppressWarnings("rawtypes")
     @Autowired
     private List<DataMetadataHandler> dataMetadataHandlerList;
-
-    @Autowired
-    private List<SnapshotMetadataHandler<?>> snapshotMetadataHandlerList;
 
     @Autowired
     private DBRemotingResultHook dbRemotingResultHook;
@@ -202,7 +198,6 @@ public class FunctionManage {
         }
         this.metadataSyncManage.setMetadataSyncResultHandler(this.defaultMetadataSyncResultHandler);
         this.metadataSyncManage.setDataMetadataHandlerList((List) this.dataMetadataHandlerList);
-        this.metadataSyncManage.setSnapshotMetadataHandlerList(this.snapshotMetadataHandlerList);
         this.metadataSyncManage.setColonyDO(this.clusterMetadataDomain.getColonyDO());
 
         if (this.functionConfig.isEnabledSync()) {

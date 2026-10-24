@@ -28,9 +28,7 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationship
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.model.domain.ClusterEntityDO;
 import org.apache.eventmesh.dashboard.console.model.domain.RuntimeEntityDO;
-import org.apache.eventmesh.dashboard.console.spring.support.metadata.ClusterRelationshipSnapshotHandler;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ClusterConvertMetaData;
-import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ClusterRelationshipConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.RuntimeConvertMetaData;
 import org.apache.eventmesh.dashboard.core.cluster.ClusterBaseDO;
 import org.apache.eventmesh.dashboard.core.cluster.ClusterDO;
@@ -166,8 +164,17 @@ public class ClusterMetadataDomain {
         if (CollectionUtils.isEmpty(clusterRelationshipEntityList)) {
             return definitionClusteList;
         }
-        clusterRelationshipEntityList.forEach(value -> ClusterRelationshipSnapshotHandler.apply(
-            ClusterRelationshipConvertMetaData.INSTANCE.toMetaData(value), this.colonyDO));
+        clusterRelationshipEntityList.forEach(v -> {
+            try {
+                if (Objects.equals(v.getStatus(), 0L)) {
+                    this.colonyDO.unRelationship(v.getClusterId(), v.getRelationshipId());
+                } else {
+                    this.colonyDO.relationship(v.getClusterId(), v.getRelationshipId());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
         return definitionClusteList;
     }
 

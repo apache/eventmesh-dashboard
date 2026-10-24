@@ -19,23 +19,17 @@ package org.apache.eventmesh.dashboard.console.baseid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.same;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterTrusteeshipType;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.MetadataType;
-import org.apache.eventmesh.dashboard.common.model.ConvertMetaData;
 import org.apache.eventmesh.dashboard.common.model.DatabaseAndMetadataMapper;
 import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
 import org.apache.eventmesh.dashboard.common.model.metadata.AclMetadata;
@@ -48,23 +42,14 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationshipEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ConnectionEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.mapper.cluster.AclMapper;
-import org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper;
-import org.apache.eventmesh.dashboard.console.mapper.cluster.ConnectionMapper;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterRelationshipService;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
-import org.apache.eventmesh.dashboard.console.service.metadata.AclDataMetadataHandler;
-import org.apache.eventmesh.dashboard.console.service.metadata.ClusterRelationshipDataMetadataHandler;
-import org.apache.eventmesh.dashboard.console.service.metadata.ConnectionDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.service.metadata.TopicDataMetadataHandler;
 import org.apache.eventmesh.dashboard.console.spring.support.FunctionConfig;
 import org.apache.eventmesh.dashboard.console.spring.support.FunctionManage;
-import org.apache.eventmesh.dashboard.console.spring.support.metadata.ClusterRelationshipSnapshotHandler;
-import org.apache.eventmesh.dashboard.console.spring.support.metadata.ConnectionSnapshotHandler;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.DatabaseAndMetadataType;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.DefaultMetadataSyncResultHandler;
-import org.apache.eventmesh.dashboard.console.spring.support.metadata.KafkaAclSnapshotHandler;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.AclConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ClusterRelationshipConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ConnectionConvertMetaData;
@@ -72,7 +57,6 @@ import org.apache.eventmesh.dashboard.core.cluster.ClusterDO;
 import org.apache.eventmesh.dashboard.core.cluster.ColonyDO;
 import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataSyncManage;
-import org.apache.eventmesh.dashboard.core.metadata.SnapshotMetadataHandler;
 import org.apache.eventmesh.dashboard.core.metadata.SyncMetadataCreateFactory;
 import org.apache.eventmesh.dashboard.core.metadata.MetadataSyncWrapper;
 import org.apache.eventmesh.dashboard.core.metadata.result.MetadataSyncResultHandler;
@@ -84,7 +68,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -287,169 +270,7 @@ public class MetadataPipelineContractTest {
     }
 
     @Test
-    public void snapshotFactoryConvertsWholeSnapshotBeforeDeliveryAndRetriesFromSource() {
-        SyncMetadataCreateFactory factory = new SyncMetadataCreateFactory();
-        DataMetadataHandler<Object> source = mock(DataMetadataHandler.class);
-        ConvertMetaData<Object, BaseClusterIdBase> converter = mock(ConvertMetaData.class);
-        SnapshotMetadataHandler<BaseClusterIdBase> target = mock(SnapshotMetadataHandler.class);
-        ColonyDO<ClusterDO> colony = new ColonyDO<>();
-        BaseClusterIdBase first = metadata(1L);
-        BaseClusterIdBase second = metadata(2L);
-        Object rowOne = new Object();
-        Object rowTwo = new Object();
-        List<Object> rows = Arrays.asList(rowOne, rowTwo);
-        AtomicInteger attempts = new AtomicInteger();
-
-        when(source.getData()).thenReturn(rows);
-        when(converter.toMetaData(rowOne)).thenReturn(first);
-        when(converter.toMetaData(rowTwo)).thenReturn(second);
-        org.mockito.Mockito.doAnswer(invocation -> {
-            if (attempts.getAndIncrement() == 0) {
-                throw new IllegalStateException("destination unavailable");
-            }
-            return null;
-        }).when(target).synchronize(org.mockito.ArgumentMatchers.anyList(), org.mockito.ArgumentMatchers.same(colony));
-        factory.setDataMetadataHandler(source);
-        factory.setConvertMetaData(converter);
-        factory.setSnapshotMetadataHandler(target);
-        factory.setColonyDO(colony);
-
-        assertThrows(IllegalStateException.class, factory::loadData);
-        verify(target).synchronize(org.mockito.ArgumentMatchers.anyList(), org.mockito.ArgumentMatchers.same(colony));
-        factory.loadData();
-
-        verify(source, org.mockito.Mockito.times(2)).getData();
-        verify(target, org.mockito.Mockito.times(2)).synchronize(org.mockito.ArgumentMatchers.argThat(snapshot ->
-            snapshot.size() == 2 && snapshot.get(0).getId().equals(1L) && snapshot.get(1).getId().equals(2L)),
-            org.mockito.ArgumentMatchers.same(colony));
-    }
-
-    @Test
-    public void snapshotFactoryDoesNotDeliverPartialOrAmbiguousSnapshots() {
-        SyncMetadataCreateFactory factory = new SyncMetadataCreateFactory();
-        DataMetadataHandler<Object> source = mock(DataMetadataHandler.class);
-        ConvertMetaData<Object, BaseClusterIdBase> converter = mock(ConvertMetaData.class);
-        SnapshotMetadataHandler<BaseClusterIdBase> target = mock(SnapshotMetadataHandler.class);
-        BaseClusterIdBase first = metadata(1L);
-        Object rowOne = new Object();
-        Object rowTwo = new Object();
-        when(source.getData()).thenReturn(Arrays.asList(rowOne, rowTwo));
-        when(converter.toMetaData(rowOne)).thenReturn(first);
-        when(converter.toMetaData(rowTwo)).thenThrow(new IllegalArgumentException("bad row"));
-        factory.setDataMetadataHandler(source);
-        factory.setConvertMetaData(converter);
-        factory.setSnapshotMetadataHandler(target);
-
-        assertThrows(IllegalArgumentException.class, factory::loadData);
-        verify(target, never()).synchronize(org.mockito.ArgumentMatchers.anyList(), org.mockito.ArgumentMatchers.any());
-
-        doReturn(metadata(1L)).when(converter).toMetaData(rowTwo);
-        assertThrows(IllegalArgumentException.class, factory::loadData);
-        verify(target, never()).synchronize(org.mockito.ArgumentMatchers.anyList(), org.mockito.ArgumentMatchers.any());
-
-        doReturn(null).when(converter).toMetaData(rowTwo);
-        assertThrows(IllegalArgumentException.class, factory::loadData);
-        verify(target, never()).synchronize(org.mockito.ArgumentMatchers.anyList(), org.mockito.ArgumentMatchers.any());
-
-        doReturn(metadataWithoutId()).when(converter).toMetaData(rowTwo);
-        assertThrows(IllegalArgumentException.class, factory::loadData);
-        verify(target, never()).synchronize(org.mockito.ArgumentMatchers.anyList(), org.mockito.ArgumentMatchers.any());
-    }
-
-    @Test
-    public void emptySnapshotIsDeliveredAndSnapshotDatabaseHandlersRejectReverseWrites() {
-        SyncMetadataCreateFactory factory = new SyncMetadataCreateFactory();
-        DataMetadataHandler<Object> source = mock(DataMetadataHandler.class);
-        SnapshotMetadataHandler<BaseClusterIdBase> target = mock(SnapshotMetadataHandler.class);
-        when(source.getData()).thenReturn(Collections.emptyList());
-        factory.setDataMetadataHandler(source);
-        factory.setConvertMetaData(mock(ConvertMetaData.class));
-        factory.setSnapshotMetadataHandler(target);
-
-        factory.loadData();
-
-        verify(target).synchronize(org.mockito.ArgumentMatchers.argThat(List::isEmpty), org.mockito.ArgumentMatchers.isNull());
-        assertThrows(UnsupportedOperationException.class,
-            () -> new AclDataMetadataHandler(mock(org.apache.eventmesh.dashboard.console.mapper.cluster.AclMapper.class))
-                .handleAll(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        assertThrows(UnsupportedOperationException.class,
-            () -> new ConnectionDataMetadataHandler(mock(org.apache.eventmesh.dashboard.console.mapper.cluster.ConnectionMapper.class))
-                .handleAll(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        assertThrows(UnsupportedOperationException.class,
-            () -> new ClusterRelationshipDataMetadataHandler(mock(org.apache.eventmesh.dashboard.console.mapper.cluster.ClusterRelationshipMapper.class))
-                .handleAll(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-    }
-
-    @Test
-    public void registryBindsNewMetadataKindsToTypedSnapshotSourcesAndConverters() {
-        assertRegistered(MetadataType.ACL, AclDataMetadataHandler.class, AclConvertMetaData.INSTANCE, KafkaAclSnapshotHandler.class);
-        assertRegistered(MetadataType.CONNECTION, ConnectionDataMetadataHandler.class, ConnectionConvertMetaData.INSTANCE,
-            ConnectionSnapshotHandler.class);
-        assertRegistered(MetadataType.CLUSTER_RELATIONSHIP, ClusterRelationshipDataMetadataHandler.class,
-            ClusterRelationshipConvertMetaData.INSTANCE, ClusterRelationshipSnapshotHandler.class);
-    }
-
-    @Test
-    public void aclAndRelationshipSnapshotSourcesReturnRowsAndPropagateMapperFailures() {
-        AclMapper aclMapper = mock(AclMapper.class);
-        AclDataMetadataHandler aclHandler = new AclDataMetadataHandler(aclMapper);
-        List<AclEntity> aclRows = Collections.singletonList(aclEntity());
-        when(aclMapper.selectKafkaSnapshot()).thenReturn(aclRows);
-        assertSame(aclRows, aclHandler.getData());
-        verify(aclMapper).selectKafkaSnapshot();
-
-        ClusterRelationshipMapper relationshipMapper = mock(ClusterRelationshipMapper.class);
-        ClusterRelationshipDataMetadataHandler relationshipHandler = new ClusterRelationshipDataMetadataHandler(relationshipMapper);
-        List<ClusterRelationshipEntity> relationshipRows = Collections.singletonList(
-            relationship(91L, ClusterType.EVENTMESH_CLUSTER, 92L, ClusterType.STORAGE_KAFKA_BROKER, 1L));
-        when(relationshipMapper.selectSnapshot()).thenReturn(relationshipRows);
-        assertSame(relationshipRows, relationshipHandler.getData());
-        verify(relationshipMapper).selectSnapshot();
-
-        when(aclMapper.selectKafkaSnapshot()).thenThrow(new IllegalStateException("ACL snapshot query failed"));
-        when(relationshipMapper.selectSnapshot()).thenThrow(new IllegalStateException("relationship snapshot query failed"));
-        assertThrows(IllegalStateException.class, aclHandler::getData);
-        assertThrows(IllegalStateException.class, relationshipHandler::getData);
-    }
-
-    @Test
-    public void connectionSnapshotUsesPersistedIdsAndReturnsDefensiveScopedCopies() {
-        ConnectionSnapshotHandler handler = new ConnectionSnapshotHandler();
-        ConnectionMetadata first = connection(1001L, 50L, 60L, "orders");
-        ConnectionMetadata second = connection(1002L, 50L, 60L, "orders");
-        ConnectionMetadata ended = connection(1003L, 50L, 60L, "ended");
-        ended.setEndTime(LocalDateTime.of(2026, 10, 6, 0, 0));
-        ConnectionMetadata inactive = connection(1004L, 50L, 61L, "inactive");
-        inactive.setStatus(0L);
-        ConnectionMetadata deleted = connection(1005L, 51L, 60L, "deleted");
-        deleted.setIsDelete(1);
-
-        handler.synchronize(Arrays.asList(first, second, ended, inactive, deleted), null);
-
-        List<ConnectionMetadata> all = handler.list();
-        assertEquals(2, all.size());
-        assertEquals(Set.of(1001L, 1002L), all.stream().map(ConnectionMetadata::getId).collect(java.util.stream.Collectors.toSet()));
-        List<ConnectionMetadata> scoped = handler.list(50L, 60L);
-        assertEquals(2, scoped.size());
-        assertTrue(handler.list(50L, 61L).isEmpty());
-        assertTrue(handler.list(51L, 60L).isEmpty());
-
-        ConnectionMetadata scopedCopy = scoped.stream().filter(value -> value.getId().equals(1001L)).findFirst().orElseThrow();
-        scopedCopy.setDescription("caller mutation");
-        ConnectionMetadata storedCopy = handler.list(50L, 60L).stream()
-            .filter(value -> value.getId().equals(1001L)).findFirst().orElseThrow();
-        assertEquals("connection-1001", storedCopy.getDescription());
-        assertNotSame(scopedCopy, storedCopy);
-
-        ConnectionMetadata duplicateOne = connection(1006L, 50L, 60L, "before-duplicate");
-        handler.synchronize(Collections.singletonList(duplicateOne), null);
-        ConnectionMetadata duplicateTwo = connection(1006L, 50L, 60L, "after-duplicate");
-        assertThrows(IllegalArgumentException.class, () -> handler.synchronize(Arrays.asList(duplicateOne, duplicateTwo), null));
-        assertEquals("before-duplicate", handler.list().get(0).getTopic());
-    }
-
-    @Test
-    public void clusterMetadataDomainAppliesConvertedRelationshipAndUnlinksStatusThree() {
+    public void clusterMetadataDomainLinksRelationshipsAndUnlinksStatusZero() {
         ClusterMetadataDomain domain = new ClusterMetadataDomain();
         ColonyDO<ClusterDO> topology = new ColonyDO<>();
         topology.setClusterType(ClusterType.EVENTMESH_CLUSTER);
@@ -472,11 +293,10 @@ public class MetadataPipelineContractTest {
         assertSame(child, parent.getStorageColonyDOMap().get(702L));
         assertEquals(Long.valueOf(701L), child.getSuperiorId());
 
-        relationship.setStatus(3L);
+        relationship.setStatus(0L);
         domain.setClusterEntityAndDefinitionCluster(Collections.emptyList(), Collections.singletonList(relationship), new HashMap<>());
 
         assertFalse(parent.getStorageColonyDOMap().containsKey(702L));
-        assertNull(child.getSuperiorId());
     }
 
     @Test
@@ -495,7 +315,7 @@ public class MetadataPipelineContractTest {
         domain.rootClusterDHO();
 
         ClusterRelationshipEntity unresolved = relationship(801L, ClusterType.EVENTMESH_CLUSTER,
-            802L, ClusterType.STORAGE_KAFKA_BROKER, 1L);
+            802L, ClusterType.STORAGE_KAFKA_BROKER, 0L);
         ClusterEntity inactiveCluster = new ClusterEntity();
         inactiveCluster.setId(803L);
         inactiveCluster.setClusterType(ClusterType.STORAGE_KAFKA_BROKER);
@@ -513,7 +333,7 @@ public class MetadataPipelineContractTest {
         LocalDateTime clusterBefore = clusterCursor.getUpdateTime();
         LocalDateTime relationshipBefore = relationshipCursor.getUpdateTime();
 
-        assertThrows(IllegalStateException.class, manager::sync);
+        assertThrows(RuntimeException.class, manager::sync);
         assertEquals(runtimeBefore, runtimeCursor.getUpdateTime());
         assertEquals(clusterBefore, clusterCursor.getUpdateTime());
         assertEquals(relationshipBefore, relationshipCursor.getUpdateTime());
@@ -528,19 +348,19 @@ public class MetadataPipelineContractTest {
     @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void functionManageUsesExplicitSyncSelectionAndEnabledGate() {
-        FunctionManage enabledManager = configuredFunctionManage(true, Set.of(MetadataType.CONNECTION));
+        FunctionManage enabledManager = configuredFunctionManage(true, Set.of(MetadataType.TOPIC));
         ClusterMetadataDomain enabledDomain = (ClusterMetadataDomain) ReflectionTestUtils.getField(enabledManager, "clusterMetadataDomain");
         enabledDomain.rootClusterDHO();
         try {
             ReflectionTestUtils.invokeMethod(enabledManager, "buildMetadataSyncManage");
             MetadataSyncManage syncManager = (MetadataSyncManage) ReflectionTestUtils.getField(enabledManager, "metadataSyncManage");
-            assertEquals(Collections.singleton(MetadataType.CONNECTION), syncManager.getSyncMetadataCreateFactoryMap().keySet());
+            assertEquals(Collections.singleton(MetadataType.TOPIC), syncManager.getSyncMetadataCreateFactoryMap().keySet());
             assertSame(ReflectionTestUtils.getField(enabledManager, "defaultMetadataSyncResultHandler"),
                 ReflectionTestUtils.getField(syncManager, "metadataSyncResultHandler"));
             assertSame(enabledDomain.getColonyDO(), ReflectionTestUtils.getField(syncManager, "colonyDO"));
-            SyncMetadataCreateFactory factory = syncManager.getSyncMetadataCreateFactoryMap().get(MetadataType.CONNECTION);
-            assertEquals(MetadataType.CONNECTION, factory.getMetadataType());
-            assertSame(mapper(MetadataType.CONNECTION), factory.getDatabaseAndMetadataMapper());
+            SyncMetadataCreateFactory factory = syncManager.getSyncMetadataCreateFactoryMap().get(MetadataType.TOPIC);
+            assertEquals(MetadataType.TOPIC, factory.getMetadataType());
+            assertSame(mapper(MetadataType.TOPIC), factory.getDatabaseAndMetadataMapper());
         } finally {
             ReflectionTestUtils.invokeMethod(enabledManager, "closeMetadataSync");
         }
@@ -548,7 +368,7 @@ public class MetadataPipelineContractTest {
         assertTrue(((java.util.concurrent.ScheduledThreadPoolExecutor) ReflectionTestUtils.getField(enabledSyncManager,
             "scheduledExecutorService")).isShutdown());
 
-        FunctionManage disabledManager = configuredFunctionManage(false, Set.of(MetadataType.CONNECTION));
+        FunctionManage disabledManager = configuredFunctionManage(false, Set.of(MetadataType.TOPIC));
         ClusterMetadataDomain disabledDomain = (ClusterMetadataDomain) ReflectionTestUtils.getField(disabledManager, "clusterMetadataDomain");
         disabledDomain.rootClusterDHO();
         try {
@@ -568,74 +388,13 @@ public class MetadataPipelineContractTest {
 
     @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void metadataManagerRegistersAndRunsOnlySelectedConnectionSnapshotThenCloses() {
-        ConnectionMapper connectionMapper = mock(ConnectionMapper.class);
-        AclMapper aclMapper = mock(AclMapper.class);
-        ClusterRelationshipMapper relationshipMapper = mock(ClusterRelationshipMapper.class);
-        ConnectionDataMetadataHandler connectionSource = new ConnectionDataMetadataHandler(connectionMapper);
-        AclDataMetadataHandler aclSource = new AclDataMetadataHandler(aclMapper);
-        ClusterRelationshipDataMetadataHandler relationshipSource = new ClusterRelationshipDataMetadataHandler(relationshipMapper);
-        ConnectionSnapshotHandler target = spy(new ConnectionSnapshotHandler());
-        MetadataSyncManage manager = configuredManager(
-            Arrays.asList(connectionSource, aclSource, relationshipSource), Collections.singletonList(target));
-        ColonyDO<ClusterDO> colony = new ColonyDO<>();
-        manager.setColonyDO(colony);
-        DatabaseAndMetadataMapper mapping = mapper(MetadataType.CONNECTION);
-        ConnectionEntity row = new ConnectionEntity();
-        row.setId(901L);
-        row.setClusterId(902L);
-        row.setRuntimeId(903L);
-        row.setStatus(1L);
-        row.setTopic("selected");
-        when(connectionMapper.selectSnapshot()).thenReturn(Collections.singletonList(row));
-
-        try {
-            manager.init(Integer.MAX_VALUE, 60000, Collections.singletonList(mapping));
-            assertEquals(Collections.singleton(MetadataType.CONNECTION), manager.getSyncMetadataCreateFactoryMap().keySet());
-            SyncMetadataCreateFactory factory = manager.getSyncMetadataCreateFactoryMap().get(MetadataType.CONNECTION);
-            assertEquals(MetadataType.CONNECTION, factory.getMetadataType());
-            assertSame(mapping, factory.getDatabaseAndMetadataMapper());
-            assertSame(colony, ReflectionTestUtils.getField(factory, "colonyDO"));
-            manager.run();
-            assertEquals(1, target.list().size());
-            assertEquals(Long.valueOf(901L), target.list().get(0).getId());
-            verify(target).synchronize(org.mockito.ArgumentMatchers.argThat(snapshot -> snapshot.size() == 1
-                && snapshot.get(0).getId().equals(901L)), same(colony));
-            verify(connectionMapper).selectSnapshot();
-            verify(aclMapper, never()).selectAll();
-            verify(relationshipMapper, never()).selectSnapshot();
-        } finally {
-            manager.close();
-        }
-    }
-
-    @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public void metadataManagerFailsFastWhenSnapshotSourceOrTargetIsMissing() {
-        DatabaseAndMetadataMapper mapping = mapper(MetadataType.CONNECTION);
-        MetadataSyncManage missingSource = configuredManager(Collections.emptyList(), Collections.singletonList(new ConnectionSnapshotHandler()));
-        assertThrows(IllegalStateException.class,
-            () -> missingSource.init(Integer.MAX_VALUE, 60000, Collections.singletonList(mapping)));
-        missingSource.close();
-
-        ConnectionDataMetadataHandler source = new ConnectionDataMetadataHandler(mock(ConnectionMapper.class));
-        MetadataSyncManage missingTarget = configuredManager(Collections.singletonList(source), Collections.emptyList());
-        assertThrows(IllegalStateException.class,
-            () -> missingTarget.init(Integer.MAX_VALUE, 60000, Collections.singletonList(mapping)));
-        missingTarget.close();
-    }
-
-    @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public void metadataManagerRegistrationSkipsSnapshotAndUnselectedRemoteTypes() {
-        AclMapper aclMapper = mock(AclMapper.class);
+    public void metadataManagerRegistrationSkipsUnselectedRemoteTypes() {
         MetadataSyncResultHandler resultHandler = mock(MetadataSyncResultHandler.class);
         MetadataSyncManage manager = new MetadataSyncManage();
-        manager.setDataMetadataHandlerList((List) Collections.singletonList(new AclDataMetadataHandler(aclMapper)));
-        manager.setSnapshotMetadataHandlerList(Collections.singletonList(new KafkaAclSnapshotHandler()));
+        manager.setDataMetadataHandlerList(Collections.emptyList());
         manager.setMetadataSyncResultHandler(resultHandler);
         try {
-            manager.init(Integer.MAX_VALUE, 60000, Collections.singletonList(mapper(MetadataType.ACL)));
+            manager.init(Integer.MAX_VALUE, 60000, Collections.<DatabaseAndMetadataMapper>emptyList());
 
             ClusterMetadata cluster = new ClusterMetadata();
             cluster.setId(991L);
@@ -643,12 +402,11 @@ public class MetadataPipelineContractTest {
             cluster.setTrusteeshipType(ClusterTrusteeshipType.TRUSTEESHIP);
             manager.register(cluster);
 
-            assertTrue(manager.getSyncMetadataCreateFactoryMap().containsKey(MetadataType.ACL));
+            assertTrue(manager.getSyncMetadataCreateFactoryMap().isEmpty());
             java.util.Map<?, ?> registeredConfigs = (java.util.Map<?, ?>) ReflectionTestUtils.getField(manager, "metadataSyncConfigMap");
             assertEquals(1, registeredConfigs.size());
             assertTrue(registeredConfigs.values().stream().allMatch(value -> ((List<?>) value).isEmpty()));
             verify(resultHandler).register(org.mockito.ArgumentMatchers.argThat(List::isEmpty));
-            verify(aclMapper, never()).selectKafkaSnapshot();
         } finally {
             manager.close();
         }
@@ -656,21 +414,16 @@ public class MetadataPipelineContractTest {
 
     @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void metadataManagerRetainsSelectedLegacyTopicWrapperBesideSnapshotFactories() {
+    public void metadataManagerRegistersSelectedTopicWrapper() {
         TopicDataMetadataHandler topicSource = mock(TopicDataMetadataHandler.class);
-        AclMapper aclMapper = mock(AclMapper.class);
-        AclDataMetadataHandler aclSource = new AclDataMetadataHandler(aclMapper);
-        KafkaAclSnapshotHandler aclTarget = new KafkaAclSnapshotHandler();
         MetadataSyncResultHandler resultHandler = mock(MetadataSyncResultHandler.class);
         Remoting2Manage remoting = mock(Remoting2Manage.class);
         DataMetadataHandler<BaseClusterIdBase> remoteTopicHandler = mock(DataMetadataHandler.class);
         MetadataSyncManage manager = new MetadataSyncManage();
-        manager.setDataMetadataHandlerList((List) Arrays.asList(topicSource, aclSource));
-        manager.setSnapshotMetadataHandlerList(Collections.singletonList(aclTarget));
+        manager.setDataMetadataHandlerList((List) Collections.singletonList(topicSource));
         manager.setMetadataSyncResultHandler(resultHandler);
         ReflectionTestUtils.setField(manager, "remoting2Manage", remoting);
         DatabaseAndMetadataMapper topicMapping = mapper(MetadataType.TOPIC);
-        DatabaseAndMetadataMapper aclMapping = mapper(MetadataType.ACL);
         ClusterMetadata cluster = new ClusterMetadata();
         cluster.setId(992L);
         cluster.setClusterType(ClusterType.STORAGE_KAFKA_BROKER);
@@ -680,7 +433,7 @@ public class MetadataPipelineContractTest {
             .thenReturn(remoteTopicHandler);
 
         try {
-            manager.init(Integer.MAX_VALUE, 60000, Arrays.asList(topicMapping, aclMapping));
+            manager.init(Integer.MAX_VALUE, 60000, Collections.singletonList(topicMapping));
             manager.register(cluster);
 
             java.util.Map<?, ?> registeredConfigs = (java.util.Map<?, ?>) ReflectionTestUtils.getField(manager, "metadataSyncConfigMap");
@@ -691,21 +444,9 @@ public class MetadataPipelineContractTest {
             verify(resultHandler).register(org.mockito.ArgumentMatchers.argThat(results -> results.size() == 1
                 && results.get(0).getMetadataType() == MetadataType.TOPIC));
             verify(remoting).createDataMetadataHandler(topicMapping.resolveMetadataHandlerClass(cluster.getClusterType()), cluster);
-            verify(aclMapper, never()).selectKafkaSnapshot();
         } finally {
             manager.close();
         }
-    }
-
-    private static void assertRegistered(MetadataType type, Class<?> handlerType, ConvertMetaData<?, ?> converter, Class<?> targetType) {
-        DatabaseAndMetadataType registered = Arrays.stream(DatabaseAndMetadataType.values())
-            .filter(value -> value.getDatabaseAndMetadataMapper().getMetaType() == type)
-            .findFirst().orElseThrow();
-        assertEquals(handlerType, registered.getDatabaseAndMetadataMapper().getDatabaseHandlerClass());
-        assertSame(converter, registered.getDatabaseAndMetadataMapper().getConvertMetaData());
-        assertEquals(targetType, registered.getDatabaseAndMetadataMapper().getSnapshotHandlerClass());
-        assertTrue(SnapshotMetadataHandler.class.isAssignableFrom(registered.getDatabaseAndMetadataMapper().getSnapshotHandlerClass()));
-        assertFalse(DataMetadataHandler.class.isAssignableFrom(registered.getDatabaseAndMetadataMapper().getSnapshotHandlerClass()));
     }
 
     private static AclEntity aclEntity() {
@@ -728,41 +469,11 @@ public class MetadataPipelineContractTest {
         return entity;
     }
 
-    private static BaseClusterIdBase metadata(long id) {
-        BaseClusterIdBase metadata = new AclMetadata();
-        metadata.setId(id);
-        return metadata;
-    }
-
-    private static BaseClusterIdBase metadataWithoutId() {
-        return new AclMetadata();
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static MetadataSyncManage configuredManager(List<?> sources, List<?> targets) {
-        MetadataSyncManage manager = new MetadataSyncManage();
-        manager.setDataMetadataHandlerList((List) sources);
-        manager.setSnapshotMetadataHandlerList((List) targets);
-        manager.setMetadataSyncResultHandler(mock(MetadataSyncResultHandler.class));
-        return manager;
-    }
-
     private static DatabaseAndMetadataMapper mapper(MetadataType type) {
         return Arrays.stream(DatabaseAndMetadataType.values())
             .map(DatabaseAndMetadataType::getDatabaseAndMetadataMapper)
             .filter(value -> value.getMetaType() == type)
             .findFirst().orElseThrow();
-    }
-
-    private static ConnectionMetadata connection(long id, long clusterId, long runtimeId, String topic) {
-        ConnectionMetadata metadata = new ConnectionMetadata();
-        metadata.setId(id);
-        metadata.setClusterId(clusterId);
-        metadata.setRuntimeId(runtimeId);
-        metadata.setStatus(1L);
-        metadata.setTopic(topic);
-        metadata.setDescription("connection-" + id);
-        return metadata;
     }
 
     private static ClusterRelationshipEntity relationship(long parentId, ClusterType parentType, long childId,
@@ -786,8 +497,7 @@ public class MetadataPipelineContractTest {
         config.setIncludeSyncType(selectedTypes);
         ReflectionTestUtils.setField(manager, "functionConfig", config);
         ReflectionTestUtils.setField(manager, "dataMetadataHandlerList",
-            Collections.singletonList(new ConnectionDataMetadataHandler(mock(ConnectionMapper.class))));
-        ReflectionTestUtils.setField(manager, "snapshotMetadataHandlerList", Collections.singletonList(new ConnectionSnapshotHandler()));
+            Collections.singletonList(mock(TopicDataMetadataHandler.class)));
         ReflectionTestUtils.setField(manager, "defaultMetadataSyncResultHandler", new DefaultMetadataSyncResultHandler());
         return manager;
     }

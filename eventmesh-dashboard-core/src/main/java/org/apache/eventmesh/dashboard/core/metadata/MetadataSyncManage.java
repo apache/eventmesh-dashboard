@@ -112,9 +112,6 @@ public class MetadataSyncManage implements AutoCloseable {
     private ColonyDO<ClusterDO> colonyDO;
 
 
-    @Setter
-    private List<SnapshotMetadataHandler<?>> snapshotMetadataHandlerList = List.of();
-
     private Integer period;
 
 
@@ -140,12 +137,6 @@ public class MetadataSyncManage implements AutoCloseable {
             factory.setMetadataType(mapping.getMetaType());
             factory.setDatabaseAndMetadataMapper(mapping);
             factory.setColonyDO(this.colonyDO);
-            if (Objects.nonNull(mapping.getSnapshotHandlerClass())) {
-                SnapshotMetadataHandler<?> target = this.snapshotMetadataHandlerList.stream()
-                    .filter(mapping.getSnapshotHandlerClass()::isInstance).findFirst()
-                    .orElseThrow(() -> new IllegalStateException("Missing snapshot handler: " + mapping.getSnapshotHandlerClass()));
-                factory.setSnapshotMetadataHandler((SnapshotMetadataHandler<BaseClusterIdBase>) target);
-            }
             this.syncMetadataCreateFactoryMap.put(mapping.getMetaType(), factory);
         }
         this.period = period;
@@ -208,7 +199,7 @@ public class MetadataSyncManage implements AutoCloseable {
         List<MetadataType> metadataTypeList = clusterSyncMetadata.getMetadataTypeList();
         metadataTypeList.forEach((value -> {
             SyncMetadataCreateFactory factory = this.syncMetadataCreateFactoryMap.get(value);
-            if (Objects.isNull(factory) || Objects.nonNull(factory.getDatabaseAndMetadataMapper().getSnapshotHandlerClass())) {
+            if (Objects.isNull(factory)) {
                 return;
             }
             // build MetadataSyncResult
