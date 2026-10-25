@@ -228,6 +228,23 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/org/apache/eventmesh/dashboard/console/integration/**/*.java</exclude>
+                        <exclude>**/org/apache/eventmesh/dashboard/console/EventMeshDashboardApplicationTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- 合并所有测试 profile，避免重复的顶层 profiles 导致 Maven 在解析阶段失败。 -->
     <profiles>
         <profile>
             <id>kafka-topic-sync-tests</id>
@@ -301,24 +318,6 @@
                 </plugins>
             </build>
         </profile>
-    </profiles>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/org/apache/eventmesh/dashboard/console/integration/**/*.java</exclude>
-                        <exclude>**/org/apache/eventmesh/dashboard/console/EventMeshDashboardApplicationTest.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <profiles>
         <profile>
             <id>rocketmq-collect-tests</id>
             <build>
