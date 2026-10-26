@@ -60,8 +60,7 @@ public class DataSyncHandler {
         Map<Class<?>, List<Object>> classCollectListMap = new HashMap<>();
         dataSyncHandlerWrapper.restoreDataList.forEach((restoreData -> {
             restoreData.getDataMap().forEach((key, value) -> {
-                // MyBatis 的 foreach 通过 iterator 遍历样本；原 CollectList 的迭代器强转会失败，size 也只返回批次数。
-                // 使用普通列表合并样本引用，保持 ReportEngine 的 List 契约，避免修改 SQL 生成和入库链路。
+                // MyBatis 需要可迭代的样本列表；复制引用后再归还缓冲，避免错误迭代器与已清空的集合。
                 classCollectListMap.computeIfAbsent(key, k -> new ArrayList<>()).addAll(value);
             });
             restoreData.restore();
@@ -156,20 +155,12 @@ public class DataSyncHandler {
             this.restoreDataList = new ArrayList<>(count + count / 2);
         }
 
-        /**
-         * 汇总同一轮采集结果，并由最后完成的任务触发入库。
-         * AtomicInteger 的递减具有 volatile 读写语义，可使各任务递减前的写入对最后完成的线程可见。
-         * 同步用于保护共享 ArrayList 的并发修改；可见性保障不能避免列表写入冲突，采集耗时也不保证互斥。
-         *
-         * @param restoreData 当前任务的采集结果
-         */
+        // 任务按完成顺序回传，共享列表必须互斥追加，预分配容量不代表任务编号对应的元素已存在。
         public synchronized void sync(RestoreData restoreData) {
             if (this.timeout) {
                 log.error("DataSyncHandlerWrapper timeout, cluster id is {} cluster type is {}",
                     restoreData.getCollectMetadata().getClusterId(), restoreData.getCollectMetadata().getClusterType());
             }
-            // 任务可能乱序完成，按任务编号向尚未填充的列表插入会越界；预分配容量不会创建元素。
-            // 后续按模型类型及样本自身的集群、节点等维度处理结果，因此可以按完成顺序追加。
             restoreDataList.add(restoreData);
             if (this.atomicInteger.decrementAndGet() == 0) {
                 LocalDateTime now = LocalDateTime.now();

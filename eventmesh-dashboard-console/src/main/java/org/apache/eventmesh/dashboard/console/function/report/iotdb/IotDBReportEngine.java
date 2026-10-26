@@ -26,7 +26,7 @@ import org.apache.eventmesh.dashboard.console.function.report.model.SingleGenera
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.mapping.BoundSql;
-import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.reflection.SystemMetaObject;
 
 import java.lang.reflect.Field;
@@ -36,20 +36,17 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
@@ -64,9 +61,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IotDBReportEngine extends AbstractReportEngine {
 
-    private static final Set<String> QUERY_FUNCTIONS = Set.of("sum", "avg", "min", "max", "count");
-
-    private static final Pattern QUERY_INTERVAL = Pattern.compile("[1-9][0-9]*(ms|s|m|h|d|w|mo|y)");
+    private static final Set<String> SELECT_FUNCTIONS = Set.of("sum", "avg", "min", "max", "count");
 
     /**
      *
@@ -197,12 +192,13 @@ public class IotDBReportEngine extends AbstractReportEngine {
     public void initDatabase() throws SQLException {
         try (DruidDataSource dataSource = this.createDataSource(
             "jdbc:iotdb://" + this.reportEngineConfig.getEngineAddress() + "/?sql_dialect=table")) {
-            try (Connection connection = dataSource.getConnection()) {
+            // 初始化 DDL 同样归还 Statement，避免初始化失败时泄漏 JDBC 资源。
+            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
                 String sql = """
                         create database if not exists eventmesh_dashboard with(TTL=31536000000)
                     """;
                 connection.setAutoCommit(true);
-                connection.createStatement().execute(sql);
+                statement.execute(sql);
             }
         }
     }
@@ -229,13 +225,12 @@ public class IotDBReportEngine extends AbstractReportEngine {
     @Override
     public CompletableFuture<List<Map<String, Object>>> query(SingleGeneralReportDO singleGeneralReportDO) {
         return CompletableFuture.supplyAsync(() -> {
-            // 查询模板改为参数占位符后必须绑定值，避免条件丢失或字符串拼接改变 SQL 语义。
             validateQuery(singleGeneralReportDO);
-            BoundSql sql = this.buildSqlSource(singleGeneralReportDO.getReportName(), singleGeneralReportDO.getReportType())
-                .getBoundSql(singleGeneralReportDO);
+            BoundSql boundSql = this.buildBoundSql(singleGeneralReportDO.getReportName(),
+                singleGeneralReportDO.getReportType(), singleGeneralReportDO);
             try (Connection connection = this.dataSource.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql.getSql())) {
-                bindQuery(ps, sql, singleGeneralReportDO);
+                PreparedStatement ps = connection.prepareStatement(boundSql.getSql())) {
+                bind(ps, boundSql);
                 try (ResultSet rs = ps.executeQuery()) {
                     List<Map<String, Object>> list = new ArrayList<>();
                     ResultSetMetaData metaData = rs.getMetaData();
@@ -258,32 +253,6 @@ public class IotDBReportEngine extends AbstractReportEngine {
 
     }
 
-    /** 只有函数名和时间间隔需要作为 SQL 语法展开，限定其格式，其他条件全部绑定参数。 */
-    private void validateQuery(SingleGeneralReportDO query) {
-        if (query.getSelectFun() != null && !QUERY_FUNCTIONS.contains(query.getSelectFun().toLowerCase(Locale.ROOT))) {
-            throw new IllegalArgumentException("Unsupported report aggregation function");
-        }
-        if (query.getInterval() != null && !QUERY_INTERVAL.matcher(query.getInterval()).matches()) {
-            throw new IllegalArgumentException("Invalid report time interval");
-        }
-    }
-
-    /** IoTDB 的资源 ID 列是 STRING，时间按本地应用时区转换为 JDBC Timestamp。 */
-    private void bindQuery(PreparedStatement statement, BoundSql sql, SingleGeneralReportDO query) throws SQLException {
-        MetaObject parameters = SystemMetaObject.forObject(query);
-        for (int index = 0; index < sql.getParameterMappings().size(); index++) {
-            String property = sql.getParameterMappings().get(index).getProperty();
-            Object value = parameters.getValue(property);
-            if (value instanceof LocalDateTime timestamp) {
-                statement.setTimestamp(index + 1, Timestamp.valueOf(timestamp));
-            } else if (property.endsWith("Id")) {
-                statement.setString(index + 1, value.toString());
-            } else {
-                statement.setObject(index + 1, value);
-            }
-        }
-    }
-
     @Override
     public void createReport(String tableName) {
         String sql;
@@ -300,29 +269,68 @@ public class IotDBReportEngine extends AbstractReportEngine {
 
     @Override
     public void batchInsert(String tableName, List<Object> data) {
-        String sql = this.buildSql(tableName, ReportViewType.INSERT.getName(), data);
-        this.execute(sql);
+        if (data.isEmpty()) {
+            return;
+        }
+        // INSERT 与查询共享 MyBatis 的参数绑定，避免消费组名含引号时破坏 SQL。
+        BoundSql sql = this.buildBoundSql(tableName, ReportViewType.INSERT.getName(), data);
+        try (Connection connection = this.dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(sql.getSql())) {
+            bind(statement, sql);
+            statement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException("Unable to insert report " + tableName, e);
+        }
     }
 
     @Override
     public void batchInsert(Map<String, List<Object>> data) {
-        StringBuilder sb = new StringBuilder();
-        List<String> sqlList = new ArrayList<>();
-        int count = 5000;
-        for (Entry<String, List<Object>> entry : data.entrySet()) {
-            String sql = this.buildSql(entry.getKey(), ReportViewType.INSERT.getName(), entry.getValue());
-            count = count - entry.getValue().size();
-            sb.append(sql);
-            if (count < 0) {
-                count = 5000;
-                sqlList.add(sb.toString());
-                sb.delete(0, sb.length());
+        // 各模型独立执行，不能拼接多个无分隔的 INSERT 或丢弃绑定值。
+        data.forEach(this::batchInsert);
+    }
+
+    private void validateQuery(SingleGeneralReportDO query) {
+        if (query.getSelectFun() != null && !SELECT_FUNCTIONS.contains(query.getSelectFun())) {
+            throw new IllegalArgumentException("Unsupported report function");
+        }
+        if (query.getInterval() != null && !query.getInterval().matches("[1-9][0-9]{0,8}(ms|s|m|h|d)")) {
+            throw new IllegalArgumentException("Invalid report interval");
+        }
+        if (query.getStartTime() == null || query.getEndTime() == null || !query.getStartTime().isBefore(query.getEndTime())) {
+            throw new IllegalArgumentException("A valid report time range is required");
+        }
+        if (!this.getReportMetaHandlerMap().containsKey(query.getReportName())) {
+            throw new IllegalArgumentException("Unknown report name");
+        }
+        IotDBReportMetaHandler handler = (IotDBReportMetaHandler) this.getReportMetaHandlerMap().get(query.getReportName());
+        // Kafka 使用远端名称标签，不能静默忽略只适用于其他模型的 topicId/groupId 过滤。
+        for (String filter : List.of("organizationId", "clustersId", "runtimeId", "runtimeType", "topicId", "groupId",
+            "topicName", "groupName", "partitionIndex")) {
+            if (SystemMetaObject.forObject(query).getValue(filter) != null && !handler.supportsFilter(filter)) {
+                throw new IllegalArgumentException("Unsupported report filter: " + filter);
             }
         }
-        if (!sb.isEmpty()) {
-            sqlList.add(sb.toString());
+    }
+
+    private void bind(PreparedStatement statement, BoundSql sql) throws SQLException {
+        for (int i = 0; i < sql.getParameterMappings().size(); i++) {
+            ParameterMapping mapping = sql.getParameterMappings().get(i);
+            String property = mapping.getProperty();
+            Object value = sql.hasAdditionalParameter(property) ? sql.getAdditionalParameter(property)
+                : SystemMetaObject.forObject(sql.getParameterObject()).getValue(property);
+            if (value == null) {
+                statement.setNull(i + 1, Types.NULL);
+            } else if (value instanceof LocalDateTime time) {
+                statement.setTimestamp(i + 1, java.sql.Timestamp.valueOf(time));
+            } else if (property.endsWith("Id")) {
+                // IoTDB 的资源 ID 是 STRING TAG，不能按 JDBC 数值类型写入。
+                statement.setString(i + 1, value.toString());
+            } else if (value instanceof String text) {
+                // IoTDB JDBC 2.0.3 的 setString 只包裹引号，表方言仍需在绑定边界转义单引号。
+                statement.setString(i + 1, text.replace("'", "''"));
+            } else {
+                statement.setObject(i + 1, value);
+            }
         }
-        this.execute(sqlList);
     }
 
     /**
@@ -384,7 +392,7 @@ public class IotDBReportEngine extends AbstractReportEngine {
             PreparedStatement ps = conn.prepareStatement(sql)) {
             if (CollectionUtils.isNotEmpty(objectList)) {
                 for (int i = 0; i < objectList.size(); i++) {
-                    ps.setObject(i, objectList.get(i));
+                    ps.setObject(i + 1, objectList.get(i));
                 }
             }
             try (ResultSet rs = ps.executeQuery()) {

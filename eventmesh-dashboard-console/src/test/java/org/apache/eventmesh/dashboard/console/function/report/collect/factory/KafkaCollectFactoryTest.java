@@ -41,21 +41,45 @@ public class KafkaCollectFactoryTest {
     public void createsClusterTaskAndJmxTasksOnlyForEligibleKafkaNodes() throws IllegalAccessException {
         ClusterMetadata cluster = new ClusterMetadata();
         cluster.setId(11L);
+        // Factory 按真实集群类型分派，配置对象无需提供类型。
+        cluster.setClusterType(ClusterType.STORAGE_KAFKA_CLUSTER);
         RuntimeMetadata broker = runtime(12L, ClusterType.STORAGE_KAFKA_BROKER, 9999);
         RuntimeMetadata raft = runtime(13L, ClusterType.STORAGE_KAFKA_RAFT, 10000);
         RuntimeMetadata withoutJmx = runtime(14L, ClusterType.STORAGE_KAFKA_BROKER, null);
         RuntimeMetadata deleted = runtime(15L, ClusterType.STORAGE_KAFKA_BROKER, 9999);
         deleted.setStatus(0L);
         RuntimeMetadata unrelated = runtime(16L, ClusterType.STORAGE_KAFKA_ZK, 9999);
+        RuntimeMetadata foreign = runtime(17L, ClusterType.STORAGE_KAFKA_BROKER, 9999);
+        foreign.setClusterId(21L);
 
         Map<String, Collect> tasks = new KafkaCollectFactory().createCollectors(new CollectMetadata(), cluster,
-            List.of(broker, raft, withoutJmx, deleted, unrelated));
+            List.of(broker, raft, withoutJmx, deleted, unrelated, foreign));
 
         assertEquals(3, tasks.size());
         assertTrue(tasks.get("ClusterMetadata-11") instanceof KafkaAdminCollect);
         assertTrue(tasks.get("RuntimeMetadata-12") instanceof KafkaJmxCollect);
         assertTrue(tasks.get("RuntimeMetadata-13") instanceof KafkaJmxCollect);
         assertEquals(List.of(broker, raft, withoutJmx), FieldUtils.readField(tasks.get("ClusterMetadata-11"), "brokers", true));
+    }
+
+    @Test
+    public void createsExactlyOneAdminForEmptyKafkaCluster() {
+        ClusterMetadata cluster = new ClusterMetadata();
+        cluster.setId(11L);
+        cluster.setClusterType(ClusterType.STORAGE_KAFKA_CLUSTER);
+        Map<String, Collect> tasks = new KafkaCollectFactory().createCollectors(new CollectMetadata(), cluster, List.of());
+        assertEquals(1, tasks.size());
+        assertTrue(tasks.get("ClusterMetadata-11") instanceof KafkaAdminCollect);
+    }
+
+    @Test
+    public void ignoresNonKafkaClusters() {
+        ClusterMetadata cluster = new ClusterMetadata();
+        cluster.setId(11L);
+        cluster.setClusterType(ClusterType.STORAGE_ROCKETMQ_CLUSTER);
+        Map<String, Collect> tasks = new KafkaCollectFactory().createCollectors(new CollectMetadata(), cluster,
+            List.of(runtime(12L, ClusterType.STORAGE_KAFKA_BROKER, 9999)));
+        assertTrue(tasks.isEmpty());
     }
 
     private RuntimeMetadata runtime(long id, ClusterType clusterType, Integer jmxPort) {

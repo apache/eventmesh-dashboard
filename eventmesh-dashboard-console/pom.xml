@@ -125,6 +125,12 @@
             <artifactId>decoration-core</artifactId>
             <version>0.1.21</version>
         </dependency>
+        <!-- Boot 2 的报表 HTTP 自动配置反射加载 javax 适配器，必须显式提供该运行依赖。 -->
+        <dependency>
+            <groupId>cn.lampup</groupId>
+            <artifactId>decoration-javax</artifactId>
+            <version>0.1.21</version>
+        </dependency>
 
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -163,10 +169,10 @@
             <artifactId>jakarta.json-api</artifactId>
             <version>2.1.3</version>
         </dependency>
+        <!-- JSR-310 与 Boot 管理的 Jackson 核心必须同版本，避免时间字段序列化失败。 -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.17.1</version>
         </dependency>
         <dependency>
             <groupId>org.opensearch.client</groupId>

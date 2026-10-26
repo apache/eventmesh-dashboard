@@ -31,6 +31,7 @@ import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaT
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
+import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.session.Configuration;
 
 import java.lang.reflect.Field;
@@ -47,15 +48,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class KafkaReportModelTest {
 
     @Test
-    public void missingMetricProducesSqlNullInsteadOfAnEmptyNumericSlot() {
-        KafkaBrokerTrafficMetrics sample = new KafkaBrokerTrafficMetrics();
-        sample.setTime(LocalDateTime.of(2026, 10, 7, 12, 0));
+    public void unavailableMetricKeepsErrorMarkerInTheExistingInsertTemplate() {
+        KafkaBrokerTopicTrafficMetrics sample = new KafkaBrokerTopicTrafficMetrics();
+        sample.setTime(LocalDateTime.of(2026, 10, 7, 12, 0, 1));
         sample.setValueMessagesInTotal(42L);
-        String sql = new XMLLanguageDriver().createSqlSource(new Configuration(),
-            "<script>" + handler(KafkaBrokerTrafficMetrics.class).insert() + "</script>", List.class)
-            .getBoundSql(List.of(sample)).getSql();
-        assertTrue(sql.contains("NULL"));
-        assertFalse(sql.contains(",,"));
+        sample.setValueBytesInTotal(-1L);
+        sample.setValueBytesOutTotal(0L);
+        BoundSql bound = new XMLLanguageDriver().createSqlSource(new Configuration(),
+            "<script>" + handler(KafkaBrokerTopicTrafficMetrics.class).insert() + "</script>", List.class)
+            .getBoundSql(List.of(sample));
+        // 参数化后检查真实绑定值，继续要求错误标记、累计值与真实零值均被保留。
+        List<Object> values = bound.getParameterMappings().stream().map(mapping -> bound.getAdditionalParameter(mapping.getProperty())).toList();
+        assertTrue(values.contains(-1L));
+        assertTrue(values.contains(42L));
+        assertTrue(values.contains(0L));
+        assertFalse(bound.getSql().contains(",,"));
     }
 
     @Test

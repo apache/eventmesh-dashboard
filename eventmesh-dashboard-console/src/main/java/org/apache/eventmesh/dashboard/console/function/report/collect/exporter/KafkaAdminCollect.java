@@ -68,6 +68,8 @@ public class KafkaAdminCollect extends AbstractCollect {
 
     private static final int REQUEST_TIMEOUT_SECONDS = 5;
 
+    private static final long UNAVAILABLE_VALUE = -1L;
+
     /** 用于构造 bootstrap 地址的节点列表，由 Kafka 专用注册器提供。 */
     @Setter
     private List<RuntimeMetadata> brokers = List.of();
@@ -105,6 +107,8 @@ public class KafkaAdminCollect extends AbstractCollect {
         // 每轮创建并关闭客户端；先获取分区末端位点，再与消费组提交位点计算积压。
         try (AdminClient client = createClient(config)) {
             KafkaClusterMetrics cluster = new KafkaClusterMetrics();
+            // 消费组请求可能失败，未知数量沿用 Kafka 采集的 -1 约定，避免误报为零或留下空数值。
+            cluster.setValueConsumerGroupCount(UNAVAILABLE_VALUE);
             cluster.setValueBrokerCount((long) client.describeCluster().nodes().get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).size());
             Set<TopicPartition> partitions = collectTopics(client, cluster);
             Map<TopicPartition, Long> latestOffsets = collectPartitionOffsets(client, partitions);
@@ -199,8 +203,8 @@ public class KafkaAdminCollect extends AbstractCollect {
         try {
             Map<TopicPartition, ListOffsetsResultInfo> latestResult =
                 client.listOffsets(latestRequest).all().get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            Map<TopicPartition, ListOffsetsResultInfo> earliestResult =
-                client.listOffsets(earliestRequest).all().get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            // 最早位点失败不应丢弃已经取得的末端位点及消费积压。
+            Map<TopicPartition, ListOffsetsResultInfo> earliestResult = readEarliestOffsets(client, earliestRequest);
             latestResult.forEach((partition, info) -> {
                 // 无效位点不作为零值上报，避免影响后续消费积压计算。
                 if (info.offset() < 0) {
@@ -212,9 +216,9 @@ public class KafkaAdminCollect extends AbstractCollect {
                 metric.setPartitionIndex(String.valueOf(partition.partition()));
                 metric.setValueLatestOffset(info.offset());
                 ListOffsetsResultInfo earliestInfo = earliestResult.get(partition);
-                if (earliestInfo != null && earliestInfo.offset() >= 0) {
-                    metric.setValueEarliestOffset(earliestInfo.offset());
-                }
+                // 最早位点不可用时保留错误标识，末端位点和后续积压计算仍使用已成功取得的结果。
+                metric.setValueEarliestOffset(earliestInfo != null && earliestInfo.offset() >= 0
+                    ? earliestInfo.offset() : UNAVAILABLE_VALUE);
                 setData(metric);
             });
         } catch (InterruptedException e) {
@@ -224,6 +228,16 @@ public class KafkaAdminCollect extends AbstractCollect {
             log.warn("Kafka partition offset collection failed for cluster {}", getClusterMetadata().getId(), e);
         }
         return latest;
+    }
+
+    private Map<TopicPartition, ListOffsetsResultInfo> readEarliestOffsets(AdminClient client, Map<TopicPartition, OffsetSpec> request)
+        throws InterruptedException {
+        try {
+            return client.listOffsets(request).all().get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (ExecutionException | TimeoutException e) {
+            log.warn("Kafka earliest offsets unavailable for cluster {}", getClusterMetadata().getId(), e);
+            return Map.of();
+        }
     }
 
     /**

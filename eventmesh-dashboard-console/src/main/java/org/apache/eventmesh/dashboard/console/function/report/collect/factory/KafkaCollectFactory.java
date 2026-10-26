@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.dashboard.console.function.report.collect.factory;
 
+import org.apache.eventmesh.dashboard.common.annotation.ClusterTypeMark;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
@@ -26,6 +27,7 @@ import org.apache.eventmesh.dashboard.console.function.report.collect.exporter.K
 import org.apache.eventmesh.dashboard.console.function.report.collect.exporter.KafkaJmxCollect;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,17 +36,24 @@ import java.util.Objects;
 /**
  * 每个 Kafka 集群创建一个 Admin 采集任务，每个已配置 JMX 端口的有效 Broker 创建一个 JMX 采集任务。
  */
-public class KafkaCollectFactory {
+@ClusterTypeMark(clusterType = {ClusterType.STORAGE_KAFKA_CLUSTER})
+public class KafkaCollectFactory implements CollectFactory {
 
     /**
-     * 根据 Kafka 集群的采集配置和完整节点列表创建任务，任务表由专用注册器维护。
+     * 根据统一缓存的完整节点列表创建任务，任务表由 CollectManage 维护。
      */
+    @Override
     public Map<String, Collect> createCollectors(CollectMetadata collectMetadata, ClusterMetadata clusterMetadata,
         List<RuntimeMetadata> runtimeMetadataList) {
         Map<String, Collect> collectors = new HashMap<>();
+        // collect 配置不提供可靠的类型，按真实集群分派，避免为其他类型创建 Kafka 任务。
+        if (!Objects.equals(clusterMetadata.getClusterType(), ClusterType.STORAGE_KAFKA_CLUSTER)) {
+            return collectors;
+        }
         List<RuntimeMetadata> brokers = new ArrayList<>();
         for (RuntimeMetadata runtime : runtimeMetadataList) {
-            if (runtime.isDelete() || (!Objects.equals(runtime.getClusterType(), ClusterType.STORAGE_KAFKA_BROKER)
+            if (!Objects.equals(runtime.getClusterId(), clusterMetadata.getId()) || runtime.isDelete()
+                || (!Objects.equals(runtime.getClusterType(), ClusterType.STORAGE_KAFKA_BROKER)
                 && !Objects.equals(runtime.getClusterType(), ClusterType.STORAGE_KAFKA_RAFT))) {
                 continue;
             }
@@ -58,6 +67,8 @@ public class KafkaCollectFactory {
             jmx.setRuntimeMetadata(runtime);
             collectors.put(RuntimeMetadata.class.getSimpleName() + "-" + runtime.getId(), jmx);
         }
+        // 缓存遍历顺序不固定，使用稳定节点顺序生成集群 bootstrap 列表。
+        brokers.sort(Comparator.comparing(RuntimeMetadata::getId));
         KafkaAdminCollect admin = new KafkaAdminCollect();
         admin.setCollectMetadata(collectMetadata);
         admin.setClusterMetadata(clusterMetadata);

@@ -40,12 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,9 +50,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,20 +59,25 @@ import static org.mockito.Mockito.when;
 public class KafkaReportQueryTest {
 
     @Test
-    public void singleQueryReturnsRowsUnderTheReportName() {
+    public void createsTheServletExceptionHandlerForTheReportHttpEndpoints() throws Exception {
+        // Boot 2 的自动配置会反射加载 javax 适配器，独立提交必须包含真实运行依赖。
+        Object handler = new com.lamp.decoration.core.spring.DecorationAutoConfiguration()
+            .decorationExceptionHandler(new com.lamp.decoration.core.spring.DecorationProperties());
+        assertEquals("com.lamp.decoration.servlet.javax.DecorationExceptionHandler", handler.getClass().getName());
+    }
+
+    @Test
+    public void queryUsesTheReportNameExpectedByTheSingleEndpoint() {
         ReportEngine engine = mock(ReportEngine.class);
         List<Map<String, Object>> rows = List.of(Map.of("value_broker_count", 2L));
         when(engine.query(any())).thenReturn(CompletableFuture.completedFuture(rows));
         ReportHandlerManage manager = new ReportHandlerManage();
         manager.setReportEngine(engine);
-        ReportController controller = new ReportController();
-        ReflectionTestUtils.setField(controller, "reportHandlerManage", manager);
-
-        assertEquals(rows, controller.reportBySingle(query("kafka_cluster_metrics")));
+        assertEquals(Map.of("kafka_cluster_metrics", rows), manager.queryResultIsMap(List.of(query("kafka_cluster_metrics"))));
     }
 
     @Test
-    public void batchKeepsBothGaugeReportsAndCopiesSharedFilters() {
+    public void batchCopiesSharedFiltersToEachReportRequest() {
         ReportEngine engine = mock(ReportEngine.class);
         when(engine.query(any())).thenAnswer(invocation -> {
             SingleGeneralReportDO request = invocation.getArgument(0);
@@ -100,6 +101,7 @@ public class KafkaReportQueryTest {
 
         Map<String, List<Map<String, Object>>> result = controller.reportByHome(request);
 
+        // 同一展示类型的两张报表必须分别返回，不能把覆盖行为固化成正确结果。
         assertEquals(2, result.size());
         assertEquals("kafka_cluster_metrics", result.get("kafka_cluster_metrics").get(0).get("source"));
         assertEquals("kafka_topic_metrics", result.get("kafka_topic_metrics").get(0).get("source"));
@@ -147,22 +149,14 @@ public class KafkaReportQueryTest {
     }
 
     @Test
-    public void loadsConfigurationBeforeSchedulingAndRefreshesItInSeconds() {
+    public void forwardsTheApplicationDataSourceWithoutStartingAnotherLifecycle() {
         ReportHandlerManage manager = new ReportHandlerManage();
         CollectManage collectors = mock(CollectManage.class);
-        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
         ReflectionTestUtils.setField(manager, "collectManage", collectors);
-        ReflectionTestUtils.setField(manager, "scheduledExecutorService", scheduler);
-
-        ReflectionTestUtils.invokeMethod(manager, "startCollection");
-
-        InOrder order = inOrder(collectors, scheduler);
-        order.verify(collectors).syncData();
-        order.verify(scheduler).scheduleAtFixedRate(any(Runnable.class), eq(5L), eq(5L), eq(TimeUnit.SECONDS));
-        ArgumentCaptor<Runnable> refresh = ArgumentCaptor.forClass(Runnable.class);
-        order.verify(scheduler).scheduleWithFixedDelay(refresh.capture(), eq(5L), eq(5L), eq(TimeUnit.SECONDS));
-        refresh.getValue().run();
-        verify(collectors, times(2)).syncData();
+        com.alibaba.druid.pool.DruidDataSource source = mock(com.alibaba.druid.pool.DruidDataSource.class);
+        manager.setDataSource(source);
+        verify(collectors).setDataSource(source);
+        verify(collectors, never()).syncData();
     }
 
     @Test

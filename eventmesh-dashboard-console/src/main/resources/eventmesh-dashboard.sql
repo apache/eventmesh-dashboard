@@ -264,7 +264,8 @@ create table runtime
     replication_type      varchar(16)   not null comment '节点在集群的复制类型',
     sync_error_type       varchar(16)   not null default 'NOT' comment '同步数据异常标识字段',
     deploy_status_type    varchar(16)   not null comment '部署进行中状态',
-    kubernetes_cluster_id bigint unique not null default 0 comment 'kubernetes cluster id',
+    -- 非 Kubernetes 节点共用默认值 0，该关联字段不能具有全局唯一约束。
+    kubernetes_cluster_id bigint not null default 0 comment 'kubernetes cluster id',
     create_script_content text          not null comment ' kubernetes 创建时的内容',
     resources_config_id   varchar(16)   not null comment '默认部署配置',
     deploy_script_id      bigint unsigned not null comment '默认部署脚本id',
@@ -280,7 +281,9 @@ create table runtime
     update_time           timestamp     not null default current_timestamp on update current_timestamp comment '修改时间',
     endpoint_map          varchar(1024) not null default '' comment '监听信息',
     is_delete             int           not null default 0 comment '0',
-    unique key uniq_cluster_phy_id_host_port (cluster_id, host)
+    -- 同一主机可以部署多个 Kafka Broker，网络地址由主机和端口共同确定。
+    key idx_runtime_kubernetes_cluster_id (kubernetes_cluster_id),
+    unique key uniq_cluster_phy_id_host_port (cluster_id, host, port)
 ) comment 'runtime信息表';
 
 drop table if exists `client`;
@@ -453,7 +456,7 @@ create table `collect`
     collect_interval     bigint      not null comment '采集间隔',
     storage_cluster_id   bigint      not null comment '存储集群id',
     storage_cluster_name varchar(36) not null comment '存储集群名',
-    enable               int         not null comment '是否启动',
+    enable               tinyint(1)  not null comment '是否启动',
     instance_labeling    bigint not null  default 0 comment '历史标记',
     `status`             int                  default 1 not null comment '状态: 1启用，0未启用',
     `create_time`        timestamp   not null default current_timestamp comment '创建时间',

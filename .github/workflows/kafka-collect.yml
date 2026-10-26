@@ -1,0 +1,104 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+name: Kafka Collection
+
+on:
+  push:
+    branches: ['**', '!dependabot/**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  kafka-collect:
+    name: Kafka metrics and real storage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      kafka:
+        image: apache/kafka:3.9.1
+        env:
+          KAFKA_NODE_ID: 1
+          KAFKA_PROCESS_ROLES: broker,controller
+          KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+          KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+          KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+          KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+          KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+          JMX_PORT: 9999
+          KAFKA_JMX_OPTS: >-
+            -Dcom.sun.management.jmxremote
+            -Dcom.sun.management.jmxremote.authenticate=false
+            -Dcom.sun.management.jmxremote.ssl=false
+            -Dcom.sun.management.jmxremote.rmi.port=9999
+            -Djava.rmi.server.hostname=127.0.0.1
+        ports:
+          - 9092:9092
+          - 9999:9999
+        options: >-
+          --health-cmd="bash -c '</dev/tcp/localhost/9092'"
+          --health-interval=5s --health-timeout=3s --health-retries=30
+      iotdb:
+        image: apache/iotdb:2.0.4-standalone
+        ports:
+          - 6667:6667
+        options: >-
+          --health-cmd="bash -c '</dev/tcp/localhost/6667'"
+          --health-interval=5s --health-timeout=3s --health-retries=30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: 17
+          cache: maven
+      - name: Kafka unit and schema regressions
+        run: ./mvnw -B -pl eventmesh-dashboard-console -am -Pkafka-collect-tests -DfailIfNoTests=false test
+      - name: Preserve unit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kafka-unit-reports
+          path: '**/target/surefire-reports/**'
+      - name: Kafka JMX to IoTDB and HTTP queries
+        run: >-
+          ./mvnw -B -pl eventmesh-dashboard-console -am -Pkafka-collect-live-tests
+          -Dtest=KafkaCollectLiveTest -Dsurefire.failIfNoSpecifiedTests=false test
+      - name: Require the real collection test report
+        run: |
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          path = 'eventmesh-dashboard-console/target/surefire-reports/TEST-org.apache.eventmesh.dashboard.console.function.report.collect.KafkaCollectLiveTest.xml'
+          suite = ET.parse(path).getroot()
+          assert int(suite.get('tests', '0')) > 0, suite.attrib
+          assert all(int(suite.get(key, '0')) == 0 for key in ('failures', 'errors', 'skipped')), suite.attrib
+          PY
+      - name: Preserve live reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kafka-live-reports
+          path: '**/target/surefire-reports/**'
