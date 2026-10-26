@@ -20,6 +20,8 @@ package org.apache.eventmesh.dashboard.console.model;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
 import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
 import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
 import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
@@ -31,6 +33,7 @@ import org.apache.eventmesh.dashboard.console.model.dto.topic.GetTopicListDTO;
 import org.apache.eventmesh.dashboard.console.model.function.config.QueryByInstanceIdDTO;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ConfigConvertMetaData;
 import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.TopicConvertMetaData;
+import org.apache.eventmesh.dashboard.core.remoting.jvm.runtime.JvmTopicRemotingService;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.mapping.BoundSql;
@@ -45,6 +48,7 @@ import org.apache.ibatis.session.Configuration;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -136,6 +140,24 @@ public class NameMappingTest {
         Assert.assertEquals("timeout", config.getConfigName());
         config.setConfigName("retries");
         Assert.assertEquals("retries", config.getName());
+    }
+
+    @Test
+    public void jvmTopicQueryUpdatesCanonicalNameForNonEmptyData() {
+        TopicMetadata topic = new TopicMetadata();
+        topic.setName("orders");
+        JvmTopicRemotingService service = new JvmTopicRemotingService() {
+            @Override
+            protected List<Object> getMockDatabaseData() {
+                return List.of(topic);
+            }
+        };
+
+        GetTopicsResult result = service.getAllTopics(new GetTopics2Request());
+
+        Assert.assertEquals(Integer.valueOf(200), result.getCode());
+        Assert.assertEquals(1, result.getData().size());
+        Assert.assertEquals("orders1", result.getData().get(0).getName());
     }
 
     private void assertBatchNameBinding(Class<?> mapper, Object entity, String expected) throws Exception {
