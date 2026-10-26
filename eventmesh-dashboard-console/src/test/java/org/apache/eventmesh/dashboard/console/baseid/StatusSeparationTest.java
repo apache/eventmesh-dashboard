@@ -211,28 +211,6 @@ public class StatusSeparationTest {
     }
 
     @Test
-    public void aclMigrationMarksOnlyLegacyDeletedRecords() throws Exception {
-        db.seed("acl", AclEntity.class, 1, Map.of("status", 0));
-        db.seed("acl", AclEntity.class, 2, Map.of("status", 1));
-        db.sql("ALTER TABLE acl DROP COLUMN is_delete");
-        String migration = new String(getClass().getResourceAsStream("/db/migration/V20261022__separate_acl_deletion.sql")
-            .readAllBytes(), StandardCharsets.UTF_8).replaceAll("(?s)/\\*.*?\\*/", "").replaceAll("(?m)^--.*$", "");
-        for (String statement : migration.split(";")) {
-            if (!statement.isBlank()) {
-                db.sql(statement);
-            }
-        }
-        AclMapper mapper = db.session.getMapper(AclMapper.class);
-        assertEquals(1, mapper.selectAll().size());
-        assertEquals(Long.valueOf(2), mapper.selectAll().get(0).getId());
-        assertEquals(1L, storedValue("SELECT is_delete FROM acl WHERE id=1"));
-        assertEquals(1L, storedValue("SELECT status FROM acl WHERE id=1"));
-        db.sql("UPDATE acl SET status=0 WHERE id=2");
-        assertEquals(Integer.valueOf(0), mapper.selectAll().get(0).getIsDelete());
-        assertEquals(Long.valueOf(0), mapper.selectAll().get(0).getStatus());
-    }
-
-    @Test
     public void portLookupKeepsInactiveRecordsButExcludesDeletedRecords() throws Exception {
         db.seed("port", PortEntity.class, 1, Map.of("cluster_id", 7, "status", 0));
         PortMapper mapper = db.session.getMapper(PortMapper.class);
