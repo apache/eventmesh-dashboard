@@ -88,7 +88,7 @@ public class SyncMetadataCreateFactory {
     private List<Object> deleteData = new ArrayList<>();
 
 
-    public synchronized void loadData() {
+    public void loadData() {
         // TODO 加载的时候， 目前永远不会加载 Runtime
         if (metadataType.isReadOnly()) {
             return;

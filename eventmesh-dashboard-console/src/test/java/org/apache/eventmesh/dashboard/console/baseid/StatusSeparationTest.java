@@ -146,7 +146,7 @@ public class StatusSeparationTest {
     }
 
     @Test
-    public void endedConnectionsAreInactiveButRetainedForSnapshotsAndHistory() throws Exception {
+    public void endedConnectionsAreInactiveButRetainedForHistory() throws Exception {
         seedConnections();
         ConnectionMapper mapper = db.session.getMapper(ConnectionMapper.class);
         ConnectionEntity query = connection(1);
@@ -158,14 +158,12 @@ public class StatusSeparationTest {
         assertEquals(2, mapper.selectToFrontByClusterId(query).size());
         assertEquals(2, mapper.selectByClusterIdSourceTypeAndSourceId(query).size());
         assertEquals(2, mapper.selectByClusterIdSinkTypeAndSinkId(query).size());
-        ConnectionEntity ended = mapper.selectSnapshot().stream().filter(v -> v.getId() == 1L).findFirst().orElseThrow();
-        assertEquals(Long.valueOf(0), ended.getStatus());
-        assertNotNull(ended.getEndTime());
-        assertNull(ended.getIsDelete());
-        assertEquals(3, mapper.selectSnapshot().size());
+        assertEquals(0L, storedValue("SELECT status FROM connection WHERE id=1"));
+        assertEquals(1L, storedValue("SELECT COUNT(*) FROM connection WHERE id=1 AND end_time IS NOT NULL"));
+        assertEquals(3L, storedValue("SELECT COUNT(*) FROM connection"));
         mapper.batchEndConnectionById(List.of(connection(2), connection(3)));
         assertTrue(mapper.selectAll().isEmpty());
-        assertEquals(3, mapper.selectSnapshot().size());
+        assertEquals(3L, storedValue("SELECT COUNT(*) FROM connection"));
     }
 
     @Test
@@ -181,7 +179,7 @@ public class StatusSeparationTest {
         row.setRuntimeId(9L);
         mapper.insert(row);
         assertEquals(3, mapper.selectAll().size());
-        assertTrue(mapper.selectSnapshot().stream().allMatch(v -> v.getEndTime() == null));
+        assertTrue(mapper.selectAll().stream().allMatch(v -> v.getEndTime() == null));
     }
 
     @Test
@@ -196,7 +194,7 @@ public class StatusSeparationTest {
     }
 
     @Test
-    public void aclDeletionPreservesInactiveStatusAndSnapshotRetainsTombstones() throws Exception {
+    public void aclDeletionPreservesInactiveStatusAndStoredTombstones() throws Exception {
         db.seed("acl", AclEntity.class, 1, Map.of("cluster_id", 7, "status", 0, "resource_type", 10));
         db.seed("acl", AclEntity.class, 2, Map.of("cluster_id", 7, "status", 1, "resource_type", 10));
         AclMapper mapper = db.session.getMapper(AclMapper.class);
@@ -207,10 +205,9 @@ public class StatusSeparationTest {
         mapper.deleteById(row);
         assertNull(mapper.selectById(row));
         assertEquals(1, mapper.selectAll().size());
-        AclEntity deleted = mapper.selectKafkaSnapshot().stream().filter(v -> v.getId() == 1L).findFirst().orElseThrow();
-        assertEquals(Long.valueOf(0), deleted.getStatus());
-        assertEquals(Integer.valueOf(1), deleted.getIsDelete());
-        assertEquals(2, mapper.selectKafkaSnapshot().size());
+        assertEquals(0L, storedValue("SELECT status FROM acl WHERE id=1"));
+        assertEquals(1L, storedValue("SELECT is_delete FROM acl WHERE id=1"));
+        assertEquals(2L, storedValue("SELECT COUNT(*) FROM acl"));
     }
 
     @Test
@@ -228,9 +225,8 @@ public class StatusSeparationTest {
         AclMapper mapper = db.session.getMapper(AclMapper.class);
         assertEquals(1, mapper.selectAll().size());
         assertEquals(Long.valueOf(2), mapper.selectAll().get(0).getId());
-        AclEntity deleted = mapper.selectKafkaSnapshot().stream().filter(v -> v.getId() == 1L).findFirst().orElseThrow();
-        assertEquals(Integer.valueOf(1), deleted.getIsDelete());
-        assertEquals(Long.valueOf(1), deleted.getStatus());
+        assertEquals(1L, storedValue("SELECT is_delete FROM acl WHERE id=1"));
+        assertEquals(1L, storedValue("SELECT status FROM acl WHERE id=1"));
         db.sql("UPDATE acl SET status=0 WHERE id=2");
         assertEquals(Integer.valueOf(0), mapper.selectAll().get(0).getIsDelete());
         assertEquals(Long.valueOf(0), mapper.selectAll().get(0).getStatus());
@@ -245,6 +241,14 @@ public class StatusSeparationTest {
         assertNotNull(mapper.lockPort(query));
         db.sql("UPDATE port SET is_delete=1 WHERE id=1");
         assertNull(mapper.lockPort(query));
+    }
+
+    private long storedValue(String sql) throws Exception {
+        try (java.sql.Statement statement = db.session.getConnection().createStatement();
+            java.sql.ResultSet result = statement.executeQuery(sql)) {
+            assertTrue(result.next());
+            return result.getLong(1);
+        }
     }
 
     private void createRepositoryTable(String table) throws Exception {

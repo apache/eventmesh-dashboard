@@ -36,10 +36,6 @@ import java.util.List;
 @Mapper
 public interface ClusterRelationshipMapper {
 
-    @Select("SELECT * FROM cluster_relationship")
-    List<ClusterRelationshipEntity> selectSnapshot();
-
-
     @Select("""
         <script>
             select *  from cluster_relationship where status=1 and is_delete=0 and cluster_id = #{clusterId}

@@ -39,10 +39,11 @@ import org.apache.eventmesh.dashboard.core.remoting.Remoting2Manage;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -188,28 +189,39 @@ public class FunctionManage {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void buildMetadataSyncManage() {
+        List<DataMetadataHandler<Object>> dataMetadataHandlerList;
         List<DatabaseAndMetadataMapper> databaseAndMetadataMapperList = new ArrayList<>();
-        for (DatabaseAndMetadataType type : DatabaseAndMetadataType.values()) {
-            DatabaseAndMetadataMapper mapping = type.getDatabaseAndMetadataMapper();
-            // Each metadata kind is explicitly enabled; an empty selection starts no synchronization jobs.
-            if (this.functionConfig.getIncludeSyncType().contains(mapping.getMetaType())) {
-                databaseAndMetadataMapperList.add(mapping);
+        if (!this.functionConfig.getIncludeSyncType().isEmpty()) {
+            Set<Class<?>> handlerSet = new HashSet<>();
+            for (DatabaseAndMetadataType databaseAndMetadataType : DatabaseAndMetadataType.values()) {
+                DatabaseAndMetadataMapper databaseAndMetadataMapper = databaseAndMetadataType.getDatabaseAndMetadataMapper();
+                if (!this.functionConfig.getIncludeSyncType().contains(databaseAndMetadataMapper.getMetaType())) {
+                    continue;
+                }
+                databaseAndMetadataMapperList.add(databaseAndMetadataMapper);
+                handlerSet.add(databaseAndMetadataMapper.getMetadataHandlerClass());
             }
+            dataMetadataHandlerList = new ArrayList<>();
+            for (DataMetadataHandler dataMetadataHandler : this.dataMetadataHandlerList) {
+                if (handlerSet.contains(dataMetadataHandler.getClass())) {
+                    continue;
+                }
+                dataMetadataHandlerList.add((DataMetadataHandler<Object>) dataMetadataHandler);
+            }
+        } else {
+            dataMetadataHandlerList = (List<DataMetadataHandler<Object>>) ((Object) this.dataMetadataHandlerList);
         }
+
         this.metadataSyncManage.setMetadataSyncResultHandler(this.defaultMetadataSyncResultHandler);
-        this.metadataSyncManage.setDataMetadataHandlerList((List) this.dataMetadataHandlerList);
+        this.metadataSyncManage.setDataMetadataHandlerList(dataMetadataHandlerList);
         this.metadataSyncManage.setColonyDO(this.clusterMetadataDomain.getColonyDO());
 
-        if (this.functionConfig.isEnabledSync()) {
-            this.metadataSyncManage.init(1000, 5000, databaseAndMetadataMapperList);
-        }
+        this.metadataSyncManage.init(1000, 5000, databaseAndMetadataMapperList);
     }
 
-    @PreDestroy
-    public void closeMetadataSync() {
-        this.metadataSyncManage.close();
-    }
-
+    /**
+     * TODO 核心逻辑在这里
+     */
     private void createHandler() {
         DefaultDataHandler defaultDataHandler = new DefaultDataHandler();
         defaultDataHandler.setHealthService(healthService);

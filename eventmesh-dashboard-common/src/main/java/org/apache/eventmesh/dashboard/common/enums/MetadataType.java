@@ -21,7 +21,6 @@ package org.apache.eventmesh.dashboard.common.enums;
 import org.apache.eventmesh.dashboard.common.model.metadata.AclMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClientMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
-import org.apache.eventmesh.dashboard.common.model.metadata.ClusterRelationshipMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConnectionMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.ConsumeOffsetMetadata;
@@ -62,10 +61,6 @@ public enum MetadataType {
     NET_CONNECT(ConnectionMetadata.class, true),
 
     USER(ConnectionMetadata.class),
-
-    CONNECTION(ConnectionMetadata.class),
-
-    CLUSTER_RELATIONSHIP(ClusterRelationshipMetadata.class),
 
     ACL(AclMetadata.class);
 
