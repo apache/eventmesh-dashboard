@@ -66,7 +66,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -253,7 +253,7 @@ public class KafkaCollectLiveTest {
             foreign.setOrganizationId(999L);
             assertTrue(engine.query(foreign).get(10, TimeUnit.SECONDS).isEmpty());
             verifyAggregateValues(engine);
-            verifyHttp(reports);
+            verifyHttp(reports, topic, group);
         } finally {
             ((ExecutorService) ReflectionTestUtils.getField(collect, "threadPoolExecutor")).shutdownNow();
             ((ExecutorService) ReflectionTestUtils.getField(reports, "scheduledExecutorService")).shutdownNow();
@@ -319,26 +319,88 @@ public class KafkaCollectLiveTest {
         }
     }
 
-    private void verifyHttp(ReportHandlerManage reports) throws Exception {
-        ReportController controller = new ReportController();
-        ReflectionTestUtils.setField(controller, "reportHandlerManage", reports);
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        ObjectMapper json = converter.getObjectMapper();
-        MockMvc http = MockMvcBuilders.standaloneSetup(controller).setMessageConverters(converter).build();
-        String single = http.perform(post("/report/reportBySingle").contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsBytes(query("kafka_cluster_metrics"))))
+    private void verifyHttp(ReportHandlerManage reports, String topic, String group) throws Exception {
+        try (var context = new org.springframework.web.context.support.AnnotationConfigWebApplicationContext()) {
+            context.setServletContext(new org.springframework.mock.web.MockServletContext());
+            context.addBeanFactoryPostProcessor(factory -> factory.registerSingleton("reportHandlerManage", reports));
+            org.springframework.test.context.support.TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
+                "decoration.constantConfig.all=true");
+            context.register(LiveHttpConfiguration.class);
+            context.refresh();
+            ObjectMapper json = Jackson2ObjectMapperBuilder.json()
+                .featuresToDisable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).build();
+            MockMvc http = MockMvcBuilders.webAppContextSetup(context).build();
+            String single = http.perform(post("/report/reportBySingle").contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsBytes(query("kafka_cluster_metrics"))))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+            assertEquals(200, json.readTree(single).path("code").asInt(), single);
+            assertTrue(json.readTree(single).path("data").isArray(), single);
+            assertFalse(json.readTree(single).path("data").isEmpty());
+            MultiGeneralReportDO multiple = new MultiGeneralReportDO();
+            BeanUtils.copyProperties(query("kafka_cluster_metrics"), multiple);
+            multiple.setReportNameList(List.of("kafka_cluster_metrics", "kafka_topic_metrics"));
+            String response = http.perform(post("/report/reportByHome").contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsBytes(multiple)))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+            assertEquals(200, json.readTree(response).path("code").asInt(), response);
+            assertEquals(2, json.readTree(response).path("data").size());
+            assertNotNull(json.readTree(response).path("data").get("kafka_cluster_metrics"));
+            assertNotNull(json.readTree(response).path("data").get("kafka_topic_metrics"));
+            SingleGeneralReportDO offsets = query("kafka_consumer_offset_metrics");
+            offsets.setTopicName(topic);
+            offsets.setGroupName(group);
+            offsets.setPartitionIndex("0");
+            var matching = postReport(http, json, offsets);
+            assertEquals(1, matching.size());
+            assertEquals(topic, matching.get(0).path("topic_name").asText());
+            assertEquals(group, matching.get(0).path("group_name").asText());
+            assertEquals("0", matching.get(0).path("partition_index").asText());
+            assertEquals(2L, matching.get(0).path("value_lag").asLong());
+            offsets.setGroupName(group + "-absent");
+            assertTrue(postReport(http, json, offsets).isEmpty());
+            SingleGeneralReportDO foreign = query("kafka_cluster_metrics");
+            foreign.setOrganizationId(999L);
+            assertTrue(postReport(http, json, foreign).isEmpty());
+            SingleGeneralReportDO broker = query("kafka_broker_health_metrics");
+            broker.setRuntimeId(2L);
+            broker.setRuntimeType(System.getProperty("kafka.collect.node.type", "STORAGE_KAFKA_RAFT"));
+            var runtime = postReport(http, json, broker);
+            assertEquals(1, runtime.size());
+            assertEquals("2", runtime.get(0).path("runtime_id").asText());
+            assertEquals(broker.getRuntimeType(), runtime.get(0).path("runtime_type").asText());
+            SingleGeneralReportDO invalid = query("kafka_cluster_metrics");
+            invalid.setSelectFun("sum) from invalid --");
+            String error = http.perform(post("/report/reportBySingle").contentType(MediaType.APPLICATION_JSON)
+                    .content(json.writeValueAsBytes(invalid)))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+            int errorCode = new com.lamp.decoration.core.exception.DecorationCustomExceptionResult().getDefaultExceptionResult().getCode();
+            assertEquals(errorCode, json.readTree(error).path("code").asInt(), error);
+            assertTrue(json.readTree(error).path("data").asText().contains("Unsupported report function"), error);
+            assertNull(com.github.pagehelper.PageHelper.getLocalPage());
+            assertNull(com.lamp.decoration.core.DecorationContext.get().getQueryClause());
+            assertNull(com.lamp.decoration.core.DecorationContext.get().getResultObject());
+        }
+    }
+
+    private com.fasterxml.jackson.databind.JsonNode postReport(MockMvc http, ObjectMapper json, SingleGeneralReportDO request) throws Exception {
+        String response = http.perform(post("/report/reportBySingle").contentType(MediaType.APPLICATION_JSON)
+                .content(json.writeValueAsBytes(request)))
             .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        assertTrue(json.readTree(single).isArray());
-        assertFalse(json.readTree(single).isEmpty());
-        MultiGeneralReportDO multiple = new MultiGeneralReportDO();
-        BeanUtils.copyProperties(query("kafka_cluster_metrics"), multiple);
-        multiple.setReportNameList(List.of("kafka_cluster_metrics", "kafka_topic_metrics"));
-        String response = http.perform(post("/report/reportByHome").contentType(MediaType.APPLICATION_JSON)
-                .content(json.writeValueAsBytes(multiple)))
-            .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        assertEquals(2, json.readTree(response).size());
-        assertNotNull(json.readTree(response).get("kafka_cluster_metrics"));
-        assertNotNull(json.readTree(response).get("kafka_topic_metrics"));
+        var result = json.readTree(response);
+        assertEquals(200, result.path("code").asInt(), response);
+        assertTrue(result.path("data").isArray(), response);
+        return result.path("data");
+    }
+
+    @org.springframework.boot.test.context.TestConfiguration
+    @org.springframework.web.servlet.config.annotation.EnableWebMvc
+    @org.springframework.context.annotation.Import({org.apache.eventmesh.dashboard.console.spring.DecorationServletConfiguration.class,
+        ReportController.class})
+    public static class LiveHttpConfiguration implements org.springframework.web.servlet.config.annotation.WebMvcConfigurer {
+        @Override
+        public void configurePathMatch(org.springframework.web.servlet.config.annotation.PathMatchConfigurer configurer) {
+            configurer.setPatternParser(new org.springframework.web.util.pattern.PathPatternParser());
+        }
     }
 
     private SingleGeneralReportDO query(String name) {

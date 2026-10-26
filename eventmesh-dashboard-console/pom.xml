@@ -125,12 +125,6 @@
             <artifactId>decoration-core</artifactId>
             <version>0.1.21</version>
         </dependency>
-        <!-- Boot 2 的报表 HTTP 自动配置反射加载 javax 适配器，必须显式提供该运行依赖。 -->
-        <dependency>
-            <groupId>cn.lampup</groupId>
-            <artifactId>decoration-javax</artifactId>
-            <version>0.1.21</version>
-        </dependency>
 
         <dependency>
             <groupId>jakarta.servlet</groupId>

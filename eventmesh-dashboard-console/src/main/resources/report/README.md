@@ -4,7 +4,7 @@ Kafka collection uses one AdminClient task per cluster and one JMX task per Brok
 
 The eight report names are `kafka_cluster_metrics`, `kafka_topic_metrics`, `kafka_partition_offset_metrics`, `kafka_consumer_group_metrics`, `kafka_consumer_offset_metrics`, `kafka_broker_traffic_metrics`, `kafka_broker_topic_traffic_metrics`, and `kafka_broker_health_metrics`. Broker and Topic traffic stores cumulative JMX `Count` values. The other models store gauges. Missing values use `-1`; zero remains a valid measurement.
 
-`POST /report/reportBySingle` returns an array of rows. `POST /report/reportByHome` accepts `reportNameList` and returns an object keyed by each report name. Reports with the same `reportType` remain separate.
+`POST /report/reportBySingle` returns an array of rows in the application's result envelope. `POST /report/reportByHome` accepts `reportNameList` and returns data keyed by each report name. Reports with the same `reportType` remain separate. The default envelope puts the query result in `data` and uses `code` for the application status.
 
 For example, query consumer offsets with:
 
