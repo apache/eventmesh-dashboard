@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.controller;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
-import org.apache.eventmesh.dashboard.console.entity.base.BaseClusterIdEntity;
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
@@ -56,11 +56,11 @@ public class ClusterAbilityService {
         ClusterEntity clusterEntity = new ClusterEntity();
         clusterEntity.setId(clusterIdDTO.getClusterId());
         clusterEntity = this.clusterService.queryClusterById(clusterEntity);
-        return this.isCapByEntity(clusterEntity);
+        return this.isCap(clusterEntity.getClusterType());
     }
 
-    public boolean isCapByEntity(BaseClusterIdEntity baseClusterIdEntity) {
-        ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(baseClusterIdEntity.getClusterType());
+    public boolean isCap(ClusterType clusterType) {
+        ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(clusterType);
         return clusterFramework.isCAP();
     }
 }

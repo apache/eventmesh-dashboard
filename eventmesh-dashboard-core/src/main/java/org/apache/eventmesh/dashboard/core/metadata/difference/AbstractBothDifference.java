@@ -74,14 +74,14 @@ public abstract class AbstractBothDifference extends AbstractBufferDifference {
         }
         if (MapUtils.isEmpty(allData)) {
             sourceData.forEach(data -> {
-                this.allData.put(data.getUnique(), data);
+                this.allData.put(data.nodeUnique(), data);
                 this.insertData.add(data);
             });
             return;
         }
         Map<String, BaseClusterIdBase> newAllData = new HashMap<>();
         sourceData.forEach((value) -> {
-            String key = value.getUnique();
+            String key = value.nodeUnique();
             BaseClusterIdBase oldValue = allData.remove(key);
             if (Objects.isNull(oldValue)) {
                 this.insertData.add(value);

@@ -20,7 +20,7 @@ package org.apache.eventmesh.dashboard.console.service.metadata;
 
 import org.apache.eventmesh.dashboard.common.model.base.BaseSyncBase;
 import org.apache.eventmesh.dashboard.common.model.remoting.Global2Request;
-import org.apache.eventmesh.dashboard.console.entity.base.BaseClusterIdEntity;
+import org.apache.eventmesh.dashboard.console.entity.base.BaseIdEntity;
 import org.apache.eventmesh.dashboard.console.entity.base.BaseRuntimeIdEntity;
 import org.apache.eventmesh.dashboard.console.mapper.SyncDataHandlerMapper;
 import org.apache.eventmesh.dashboard.core.metadata.DataMetadataHandler;
@@ -52,7 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class AbstractDBDataMetadataHandler<T extends BaseClusterIdEntity> implements DataMetadataHandler<T>, ApplicationContextAware {
+public abstract class AbstractDBDataMetadataHandler<T extends BaseIdEntity> implements DataMetadataHandler<T>, ApplicationContextAware {
 
     private static final Map<Type, Object> CLASS_SYNC_DATA_HANDLER_MAPPER_MAP = new HashMap<>();
     protected SyncDataHandlerMapper<T> syncDataHandlerMapper;
@@ -129,16 +129,14 @@ public abstract class AbstractDBDataMetadataHandler<T extends BaseClusterIdEntit
     @Override
     @Transactional(readOnly = true)
     public List<T> getData() {
-        LocalDateTime date = LocalDateTime.now();
-        try {
-            List<T> list = this.doGetData();
-            if (this.dataList == list) {
-                return this.syncDataHandlerMapper.syncGet(this.baseRuntimeIdBase);
-            }
-            return list;
-        } finally {
-            this.baseRuntimeIdBase.setUpdateTime(date);
+        // DDL timestamps have second precision; overlap the boundary so same-second changes are replayed.
+        LocalDateTime date = LocalDateTime.now().withNano(0);
+        List<T> list = this.doGetData();
+        if (this.dataList == list) {
+            list = this.syncDataHandlerMapper.syncGet(this.baseRuntimeIdBase);
         }
+        this.baseRuntimeIdBase.setUpdateTime(date);
+        return list;
     }
 
     @SuppressWarnings("unchecked")

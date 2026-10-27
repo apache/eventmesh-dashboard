@@ -99,8 +99,8 @@ public class ClusterMetadataDomain {
     }
 
     public void setMainCluster(ClusterEntity clusterEntity) {
-        this.colonyDO = ColonyDO.create(ClusterEntityDO.class, clusterEntity);
-        this.colonyDO.setClusterId(clusterEntity.getClusterId());
+        this.colonyDO = ColonyDO.create(ClusterEntityDO.class, this.createClusterBaseDO(clusterEntity));
+        this.colonyDO.setClusterId(clusterEntity.getId());
         this.colonyDO.setClusterType(clusterEntity.getClusterType());
         this.colonyDO.setSuperiorId(-0L);
     }
@@ -131,9 +131,8 @@ public class ClusterMetadataDomain {
                 return;
             }
             if (Objects.nonNull(this.handler)) {
-                // TODO
-                this.handler.registerCluster(null, value.getClusterDO(), value);
-                //this.handler.registerCluster(value.getClusterDO().getClusterInfo(), value.getClusterDO(), value);
+                ClusterEntity entity = ClusterConvertMetaData.INSTANCE.toEntity(value.getClusterDO().getClusterInfo());
+                this.handler.registerCluster(entity, value.getClusterDO(), value);
             }
         });
     }
@@ -148,9 +147,9 @@ public class ClusterMetadataDomain {
                 if (v.getClusterType().isDefinition()) {
                     definitionClusteList.add(v);
                 }
-                if (Objects.equals(v.getStatus(), 0L)) {
+                if (Objects.equals(v.getStatus(), 0L) || Objects.equals(v.getIsDelete(), 1)) {
                     ColonyDO<ClusterDO> colonyDO = this.colonyDO.remove(v.getId());
-                    if (Objects.nonNull(this.handler)) {
+                    if (Objects.nonNull(this.handler) && Objects.nonNull(colonyDO)) {
                         this.handler.unRegisterCluster(v, colonyDO.getClusterDO(), colonyDO);
                     }
                 } else {
@@ -189,7 +188,7 @@ public class ClusterMetadataDomain {
             netAddress.setPort(value.getPort());
             ColonyDO<ClusterDO> colonyDO;
             ClusterFramework clusterFramework = ClusterSyncMetadataEnum.getClusterFramework(value.getClusterType());
-            if (Objects.equals(value.getStatus(), 0L)) {
+            if (Objects.equals(value.getStatus(), 0L) || Objects.equals(value.getIsDelete(), 1)) {
                 colonyDO = this.colonyDO.removeRuntime(value.getClusterId(), value.getId(), netAddress);
                 if (Objects.nonNull(colonyDO) && clusterFramework.isCAP()) {
                     colonyDOMap.put(value.getClusterId(), colonyDO);

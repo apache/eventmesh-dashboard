@@ -29,14 +29,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class NetConnectionEntity extends BaseRuntimeIdEntity {
 
-
-    private Long clusterId;
-
     private String clientHost;
 
     private Integer clientPort;
-
-    private Long runtimeId;
 
     private String runtimeHost;
 

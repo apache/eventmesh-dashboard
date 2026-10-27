@@ -22,7 +22,7 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.CollectType;
-import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
+import org.apache.eventmesh.dashboard.common.model.base.BaseOrganizationBase;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
@@ -202,7 +202,7 @@ public class CollectManage {
     public void handlerData(List<ClusterMetadata> clusterMetadataList, List<RuntimeMetadata> runtimeMetadataList,
         List<CollectMetadata> collectMetadataList) {
         clusterMetadataList.forEach((clusterMetadata) -> {
-            if (clusterMetadata.isDelete()) {
+            if (clusterMetadata.isDelete() || Objects.equals(clusterMetadata.getStatus(), 0L)) {
                 clusterMetadataMap.remove(clusterMetadata.getId());
                 this.deleteCollect(clusterMetadata);
                 return;
@@ -214,8 +214,10 @@ public class CollectManage {
         // 需要全部缓存，因为 collect 可以从 普罗米修斯修改成 eventmesh
         runtimeMetadataList.forEach(runtimeMetadata -> {
             //TODO 需要识别是否是 启动状态
-            if (runtimeMetadata.isDelete()) {
-                runtimeMetadataMap.get(runtimeMetadata.getClusterId()).remove(runtimeMetadata.getName());
+            if (runtimeMetadata.isDelete() || Objects.equals(runtimeMetadata.getStatus(), 0L)) {
+                if (runtimeMetadataMap.containsKey(runtimeMetadata.getClusterId())) {
+                    runtimeMetadataMap.get(runtimeMetadata.getClusterId()).remove(runtimeMetadata.getName());
+                }
                 return;
             }
             runtimeMetadataMap.computeIfAbsent(runtimeMetadata.getClusterId(), id -> new ConcurrentHashMap<>())
@@ -242,7 +244,7 @@ public class CollectManage {
         });
 
         collectMetadataList.forEach(collectMetadata -> {
-            if (collectMetadata.isDelete() || collectMetadata.getStatus() == 2) {
+            if (collectMetadata.isDelete() || Objects.equals(collectMetadata.getStatus(), 0L) || Objects.equals(collectMetadata.getStatus(), 2L)) {
                 this.deleteByCollectMetadata(collectMetadata);
                 return;
             }
@@ -318,11 +320,11 @@ public class CollectManage {
         }
     }
 
-    private String createCollectKey(BaseClusterIdBase base) {
+    private String createCollectKey(BaseOrganizationBase base) {
         return base.getClass().getSimpleName() + "-" + base.getId();
     }
 
-    private void deleteCollect(BaseClusterIdBase base) {
+    private void deleteCollect(BaseOrganizationBase base) {
         if (Objects.isNull(base)) {
             return;
         }

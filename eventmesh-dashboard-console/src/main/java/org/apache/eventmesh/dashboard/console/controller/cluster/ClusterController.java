@@ -28,6 +28,7 @@ import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterRelationship
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
 import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
+import org.apache.eventmesh.dashboard.console.model.ClusterRequestDTO;
 import org.apache.eventmesh.dashboard.console.model.deploy.ClusterAllMetadataDO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.client.QueryClientByUserFormDTO;
 import org.apache.eventmesh.dashboard.console.model.dto.cluster.cluster.BatchCreateClusterDataDTO;
@@ -77,14 +78,14 @@ public class ClusterController {
     }
 
     @PostMapping("queryClusterDetails")
-    public ClusterDetailsVO queryClusterDetails(@RequestBody @Validated ClusterIdDTO clusterIdDTO) {
+    public ClusterDetailsVO queryClusterDetails(@RequestBody @Validated ClusterRequestDTO request) {
         ClusterEntity clusterEntity = new ClusterEntity();
         // eventmesh 集群详情
         // 基本统计信息
         // 部署信息，巡查信息
         // meta 列表， runtime 列表  存储列表
         RuntimeEntity runtimeEntity = new RuntimeEntity();
-        runtimeEntity.setClusterId(clusterIdDTO.getClusterId());
+        runtimeEntity.setClusterId(request.getId());
         CompletableFuture<ClusterAllMetadataDO> completableFuture =
             CompletableFuture.supplyAsync(() -> this.runtimeService.queryAllByClusterId(runtimeEntity, true, false));
 

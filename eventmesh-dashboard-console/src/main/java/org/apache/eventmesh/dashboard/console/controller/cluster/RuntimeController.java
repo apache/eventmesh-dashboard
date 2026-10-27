@@ -23,6 +23,7 @@ import org.apache.eventmesh.dashboard.console.function.health.CheckResultCache;
 import org.apache.eventmesh.dashboard.console.mapstruct.cluster.RuntimeControllerMapper;
 import org.apache.eventmesh.dashboard.console.model.ClusterIdDTO;
 import org.apache.eventmesh.dashboard.console.model.IdDTO;
+import org.apache.eventmesh.dashboard.console.model.vo.cluster.RuntimeVO;
 import org.apache.eventmesh.dashboard.console.service.cluster.RuntimeService;
 
 import java.util.List;
@@ -43,13 +44,14 @@ public class RuntimeController {
     private RuntimeService runtimeService;
 
     @PostMapping("/queryRuntimeListByClusterId")
-    public List<RuntimeEntity> queryRuntimeListByClusterId(@Validated @RequestBody ClusterIdDTO clusterIdDTO) {
+    public List<RuntimeVO> queryRuntimeListByClusterId(@Validated @RequestBody ClusterIdDTO clusterIdDTO) {
         List<RuntimeEntity> runtimeEntityList =
             runtimeService.queryRuntimeToFrontByClusterId(RuntimeControllerMapper.INSTANCE.queryRuntimeListByClusterId(clusterIdDTO));
-        runtimeEntityList.forEach(n -> {
-            n.setStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", n.getId()));
-        });
-        return runtimeEntityList;
+        return runtimeEntityList.stream().map(entity -> {
+            RuntimeVO result = RuntimeControllerMapper.INSTANCE.toVO(entity);
+            result.setHealthStatus(CheckResultCache.getINSTANCE().getLastHealthyCheckResult("runtime", entity.getId()));
+            return result;
+        }).toList();
     }
 
 

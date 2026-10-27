@@ -20,16 +20,18 @@ package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 
+@lombok.Data
+@lombok.EqualsAndHashCode(callSuper = true)
 public class QueueMetadata extends BaseRuntimeIdBase {
 
     private String topicName;
 
-    private String queueName;
+    private String name;
 
 
     @Override
     public String nodeUnique() {
-        return this.topicName + "-" + this.queueName;
+        return this.topicName + "-" + this.name;
     }
 
 }

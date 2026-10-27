@@ -70,7 +70,7 @@ public class RocketMQTopicRemotingServiceTest {
     public void test_createTopic() throws Exception {
         log.info("【真实 Broker 测试】创建并查询主题");
         TopicMetadata topicMetadata = new TopicMetadata();
-        topicMetadata.setTopicName("test_topic");
+        topicMetadata.setName("test_topic");
         topicMetadata.setWriteQueueNum(10);
         topicMetadata.setReadQueueNum(12);
         topicMetadata.setOrder(0);
@@ -100,7 +100,7 @@ public class RocketMQTopicRemotingServiceTest {
 
     private void logConfig(TopicMetadata topic) {
         log.info("主题={}，读队列数={}，写队列数={}，顺序消息={}，过滤类型={}，主题属性={}",
-            topic.getTopicName(), topic.getReadQueueNum(), topic.getWriteQueueNum(),
+            topic.getName(), topic.getReadQueueNum(), topic.getWriteQueueNum(),
             Integer.valueOf(1).equals(topic.getOrder()) ? "是" : "否", topic.getTopicFilterType(), topic.getTopicConfig());
     }
 }

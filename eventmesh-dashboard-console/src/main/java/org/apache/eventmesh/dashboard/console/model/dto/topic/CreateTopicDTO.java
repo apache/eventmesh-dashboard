@@ -42,7 +42,7 @@ public class CreateTopicDTO extends OperationBaseDTO {
     private String topicType;
 
     @NotBlank(message = "topic 名不能为空")
-    private String topicName;
+    private String name;
 
 
     /**

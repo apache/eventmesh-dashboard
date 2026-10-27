@@ -24,7 +24,6 @@ import org.apache.eventmesh.dashboard.common.enums.ReplicationType;
 import org.apache.eventmesh.dashboard.console.controller.deploy.handler.UpdateHandler;
 import org.apache.eventmesh.dashboard.console.entity.cluster.ClusterEntity;
 import org.apache.eventmesh.dashboard.console.entity.cluster.RuntimeEntity;
-import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
 import org.apache.eventmesh.dashboard.console.mapstruct.deploy.ClusterCycleControllerMapper;
 import org.apache.eventmesh.dashboard.console.model.deploy.create.CreateRuntimeByDeployScriptDTO;
 import org.apache.eventmesh.dashboard.console.service.cluster.ClusterService;
@@ -63,7 +62,8 @@ public class CreateRuntimeByDeployScriptHandler implements UpdateHandler<CreateR
      */
     @Override
     public void handler(CreateRuntimeByDeployScriptDTO createRuntimeByDeployScriptDTO) {
-        ClusterEntity clusterEntity = ClusterControllerMapper.INSTANCE.toClusterEntity(createRuntimeByDeployScriptDTO);
+        ClusterEntity clusterEntity = new ClusterEntity();
+        clusterEntity.setId(createRuntimeByDeployScriptDTO.getClusterId());
         clusterEntity = this.clusterService.queryClusterById(clusterEntity);
         RuntimeEntity runtimeEntity = ClusterCycleControllerMapper.INSTANCE.createRuntimeByDeployScript(createRuntimeByDeployScriptDTO);
         if (Objects.isNull(runtimeEntity.getDeployScriptId()) && Objects.isNull(clusterEntity.getDeployScriptId())) {

@@ -151,14 +151,14 @@ public class FunctionManage {
             log.debug("No runtime entities found");
             return;
         }
-        runtimeEntity.setUpdateTime(date);
-        clusterEntity.setUpdateTime(date);
-        clusterRelationshipEntity.setUpdateTime(date);
 
         MetadataAllDO metadataAll =
             MetadataAllDO.builder().clusterEntityList(clusterEntityList).clusterRelationshipEntityList(clusterRelationshipEntityList)
                 .runtimeEntityList(runtimeEntityList).build();
         this.clusterMetadataDomain.handlerMetadata(metadataAll);
+        runtimeEntity.setUpdateTime(date);
+        clusterEntity.setUpdateTime(date);
+        clusterRelationshipEntity.setUpdateTime(date);
 
     }
 

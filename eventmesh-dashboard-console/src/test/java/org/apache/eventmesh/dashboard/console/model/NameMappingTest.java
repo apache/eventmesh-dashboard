@@ -1,0 +1,173 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+package org.apache.eventmesh.dashboard.console.model;
+
+import org.apache.eventmesh.dashboard.common.model.metadata.ConfigMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.TopicMetadata;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopics2Request;
+import org.apache.eventmesh.dashboard.common.model.remoting.topic.GetTopicsResult;
+import org.apache.eventmesh.dashboard.console.entity.function.ConfigEntity;
+import org.apache.eventmesh.dashboard.console.entity.message.TopicEntity;
+import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
+import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
+import org.apache.eventmesh.dashboard.console.mapstruct.message.ConfigControllerMapper;
+import org.apache.eventmesh.dashboard.console.mapstruct.message.TopicControllerMapper;
+import org.apache.eventmesh.dashboard.console.model.dto.topic.CreateTopicDTO;
+import org.apache.eventmesh.dashboard.console.model.dto.topic.GetTopicListDTO;
+import org.apache.eventmesh.dashboard.console.model.function.config.QueryByInstanceIdDTO;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.ConfigConvertMetaData;
+import org.apache.eventmesh.dashboard.console.spring.support.metadata.convert.TopicConvertMetaData;
+import org.apache.eventmesh.dashboard.core.remoting.jvm.runtime.JvmTopicRemotingService;
+
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.Environment;
+import org.apache.ibatis.datasource.unpooled.UnpooledDataSource;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
+import org.apache.ibatis.session.Configuration;
+
+import java.sql.Connection;
+import java.sql.Statement;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class NameMappingTest {
+
+    @Test
+    public void topicNameSurvivesDtoAndMetadataConversion() {
+        CreateTopicDTO request = new CreateTopicDTO();
+        request.setName("orders");
+        TopicEntity entity = TopicControllerMapper.INSTANCE.createTopic(request);
+        entity.setId(100L);
+        entity.setClusterId(10L);
+        TopicMetadata metadata = TopicConvertMetaData.INSTANCE.toMetaData(entity);
+        Assert.assertEquals("orders", metadata.nodeUnique());
+        Assert.assertEquals("orders", TopicConvertMetaData.INSTANCE.toEntity(metadata).getName());
+        Assert.assertEquals(Long.valueOf(100L), metadata.getId());
+        Assert.assertEquals(Long.valueOf(10L), metadata.getClusterId());
+        GetTopicListDTO query = new GetTopicListDTO();
+        query.setName("orders");
+        Assert.assertEquals("orders", TopicControllerMapper.INSTANCE.queryTopicListByClusterId(query).getName());
+    }
+
+    @Test
+    public void configNameSurvivesDtoAndMetadataConversion() {
+        QueryByInstanceIdDTO query = new QueryByInstanceIdDTO();
+        query.setName("namesrvAddr");
+        ConfigEntity entity = ConfigControllerMapper.INSTANCE.queryByInstanceId(query);
+        ConfigMetadata metadata = ConfigConvertMetaData.INSTANCE.toMetaData(entity);
+        Assert.assertEquals("namesrvAddr", metadata.nodeUnique());
+        Assert.assertEquals("namesrvAddr", ConfigConvertMetaData.INSTANCE.toEntity(metadata).getName());
+    }
+
+    @Test
+    public void entityJsonUsesNameOnly() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        TopicEntity topic = mapper.readValue("{\"name\":\"orders\"}", TopicEntity.class);
+        Assert.assertEquals("orders", topic.getName());
+        Assert.assertEquals("orders", mapper.valueToTree(topic).get("name").asText());
+        Assert.assertFalse(mapper.valueToTree(topic).has("topicName"));
+        ConfigEntity config = mapper.readValue("{\"name\":\"timeout\"}", ConfigEntity.class);
+        Assert.assertEquals("timeout", config.getName());
+        Assert.assertEquals("timeout", mapper.valueToTree(config).get("name").asText());
+        Assert.assertFalse(mapper.valueToTree(config).has("configName"));
+        Assert.assertEquals("orders", mapper.readValue("{\"name\":\"orders\"}", CreateTopicDTO.class).getName());
+        Assert.assertEquals("timeout", mapper.readValue("{\"name\":\"timeout\"}", QueryByInstanceIdDTO.class).getName());
+    }
+
+    @Test
+    public void batchInsertsBindLegacyPropertiesToName() throws Exception {
+        TopicEntity topic = new TopicEntity();
+        topic.setName("orders");
+        ConfigEntity config = new ConfigEntity();
+        config.setName("timeout");
+        assertBatchNameBinding(TopicMapper.class, topic, "orders");
+        assertBatchNameBinding(ConfigMapper.class, config, "timeout");
+    }
+
+    @Test
+    public void databaseColumnsLoadIntoName() throws Exception {
+        UnpooledDataSource source = new UnpooledDataSource("org.h2.Driver", "jdbc:h2:mem:" + UUID.randomUUID(), "sa", "");
+        try (Connection connection = source.getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute("create table topic (id bigint, topic_name varchar(100), status int, is_delete int)");
+            statement.execute("insert into topic values (100, 'orders', 1, 0)");
+            statement.execute("create table config (id bigint, config_name varchar(100), status int, is_default int, is_delete int)");
+            statement.execute("insert into config values (200, 'timeout', 1, 0, 0)");
+            Configuration configuration = new Configuration(new Environment("name-test", new JdbcTransactionFactory(), source));
+            configuration.setMapUnderscoreToCamelCase(true);
+            configuration.addMapper(TopicMapper.class);
+            configuration.addMapper(ConfigMapper.class);
+            try (SqlSession session = new SqlSessionFactoryBuilder().build(configuration).openSession()) {
+                Assert.assertEquals("orders", session.getMapper(TopicMapper.class).selectAll().get(0).getName());
+                Assert.assertEquals("timeout", session.getMapper(ConfigMapper.class).selectAll().get(0).getName());
+            }
+        }
+    }
+
+    @Test
+    public void legacyAccessorsShareTheNameField() {
+        TopicEntity topic = new TopicEntity();
+        topic.setName("orders");
+        Assert.assertEquals("orders", topic.getTopicName());
+        topic.setTopicName("payments");
+        Assert.assertEquals("payments", topic.getName());
+        ConfigEntity config = new ConfigEntity();
+        config.setName("timeout");
+        Assert.assertEquals("timeout", config.getConfigName());
+        config.setConfigName("retries");
+        Assert.assertEquals("retries", config.getName());
+    }
+
+    @Test
+    public void jvmTopicQueryUpdatesCanonicalNameForNonEmptyData() {
+        TopicMetadata topic = new TopicMetadata();
+        topic.setName("orders");
+        JvmTopicRemotingService service = new JvmTopicRemotingService() {
+            @Override
+            protected List<Object> getMockDatabaseData() {
+                return List.of(topic);
+            }
+        };
+
+        GetTopicsResult result = service.getAllTopics(new GetTopics2Request());
+
+        Assert.assertEquals(Integer.valueOf(200), result.getCode());
+        Assert.assertEquals(1, result.getData().size());
+        Assert.assertEquals("orders1", result.getData().get(0).getName());
+    }
+
+    private void assertBatchNameBinding(Class<?> mapper, Object entity, String expected) throws Exception {
+        String script = String.join(" ",
+            mapper.getMethod("batchInsert", java.util.List.class).getAnnotation(Insert.class).value());
+        Configuration configuration = new Configuration();
+        BoundSql sql = new XMLLanguageDriver().createSqlSource(configuration, script, java.util.Map.class)
+            .getBoundSql(Collections.singletonMap("list", Collections.singletonList(entity)));
+        String property = sql.getParameterMappings().stream().map(value -> value.getProperty())
+            .filter(value -> value.endsWith(".topicName") || value.endsWith(".configName")).findFirst().orElseThrow();
+        Assert.assertEquals(expected, sql.getAdditionalParameter(property));
+    }
+}

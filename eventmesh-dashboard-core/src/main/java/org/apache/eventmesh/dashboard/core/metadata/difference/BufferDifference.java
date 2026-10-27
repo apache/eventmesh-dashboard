@@ -31,6 +31,12 @@ public class BufferDifference extends AbstractBothDifference {
     @Override
     void doDifference() {
         List<BaseClusterIdBase> sourcetList = sourceHandler.getData();
-        this.intersection(sourcetList, allData);
+        List<BaseClusterIdBase> live = sourcetList.stream().filter(value -> !value.isDelete()).toList();
+        // Explicit tombstones supersede cached rows; otherwise intersection also schedules their deletion.
+        sourcetList.stream().filter(BaseClusterIdBase::isDelete).forEach(value -> {
+            this.allData.remove(value.nodeUnique());
+            this.deleteData.add(value);
+        });
+        this.intersection(live, allData);
     }
 }

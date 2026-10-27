@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ChangeConfigDTO {
 
-    private String configName;
+    private String name;
 
     private String configValue;
 

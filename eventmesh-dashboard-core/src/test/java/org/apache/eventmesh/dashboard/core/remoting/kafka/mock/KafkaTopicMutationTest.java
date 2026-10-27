@@ -117,7 +117,7 @@ class KafkaTopicMutationTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> service.createTopic(new CreateTopic2Request()));
         for (String name : List.of("", " ", ".", "..", "bad/name", "x".repeat(250))) {
             CreateTopic2Request request = request(1, 1, null);
-            request.getMetaData().setTopicName(name);
+            request.getMetaData().setName(name);
             Assertions.assertThrows(IllegalArgumentException.class, () -> service.createTopic(request));
         }
         Assertions.assertThrows(IllegalArgumentException.class, () -> service.createTopic(request(null, 1, null)));
@@ -344,7 +344,7 @@ class KafkaTopicMutationTest {
 
     private CreateTopic2Request request(Integer partitions, Integer replicas, Map<String, String> configs) {
         TopicMetadata metadata = new TopicMetadata();
-        metadata.setTopicName("topic-a");
+        metadata.setName("topic-a");
         metadata.setReadQueueNum(partitions);
         metadata.setWriteQueueNum(partitions);
         metadata.setReplicationFactor(replicas);

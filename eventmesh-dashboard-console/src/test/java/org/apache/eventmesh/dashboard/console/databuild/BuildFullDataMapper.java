@@ -35,6 +35,7 @@ import org.apache.eventmesh.dashboard.console.mapper.function.ConfigMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.GroupMemberMapper;
 import org.apache.eventmesh.dashboard.console.mapper.message.TopicMapper;
+import org.apache.eventmesh.dashboard.console.mapstruct.cluster.ClusterControllerMapper;
 import org.apache.eventmesh.dashboard.console.model.DO.runtime.QueryRuntimeByBigExpandClusterDO;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -163,7 +164,8 @@ public class BuildFullDataMapper {
         if (Objects.nonNull(clusterEntity.getClusterType())) {
             if (clusterEntity.getClusterType().isStorage()) {
                 if (clusterEntity.getClusterType().isDefinition()) {
-                    List<ClusterEntity> newClusterEntityList = this.clusterMapper.queryRelationClusterByClusterIdAndType(clusterEntity);
+                    List<ClusterEntity> newClusterEntityList = this.clusterMapper.queryRelationClusterByClusterIdAndType(
+                ClusterControllerMapper.INSTANCE.toRelationQuery(clusterEntity));
                     // 得到 里面的 runtime
                     List<RuntimeEntity> runtimeList = this.runtimeMapper.queryRuntimeByClusterId(newClusterEntityList);
                     buildDataService.buildFullData(runtimeList);
@@ -177,7 +179,8 @@ public class BuildFullDataMapper {
                 return;
             }
         }
-        List<ClusterEntity> clusterList = this.clusterMapper.queryRelationClusterByClusterIdAndType(clusterEntity);
+        List<ClusterEntity> clusterList = this.clusterMapper.queryRelationClusterByClusterIdAndType(
+                ClusterControllerMapper.INSTANCE.toRelationQuery(clusterEntity));
         if (CollectionUtils.isEmpty(clusterList)) {
             throw new RuntimeException(" clusterList is empty");
         }

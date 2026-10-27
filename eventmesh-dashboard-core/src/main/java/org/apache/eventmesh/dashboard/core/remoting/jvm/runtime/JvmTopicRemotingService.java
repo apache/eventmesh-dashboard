@@ -51,7 +51,7 @@ public class JvmTopicRemotingService extends AbstractJvmRemotingService implemen
 
     @Override
     public GetTopicsResult getAllTopics(GetTopics2Request getTopicsRequest) {
-        return this.randomUpdateMockDatabaseData(List.of("topicName"), this.tt(new GetTopicsResult()));
+        return this.randomUpdateMockDatabaseData(List.of("name"), this.tt(new GetTopicsResult()));
     }
 
     @Override

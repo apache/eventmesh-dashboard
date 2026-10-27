@@ -96,7 +96,7 @@ class RocketMQUserIntegrationTest {
         log.info("【真实用户测试】创建普通用户并查询验证");
         this.create();
         InstanceUserMetadata actual = this.read();
-        Assertions.assertEquals(this.name, actual.getUserName());
+        Assertions.assertEquals(this.name, actual.getName());
         Assertions.assertEquals("Normal", actual.getUserType());
         Assertions.assertEquals("enable", actual.getUserStatus());
         Assertions.assertNull(actual.getPassword());
@@ -121,7 +121,7 @@ class RocketMQUserIntegrationTest {
         log.info("【真实用户测试】框架列表查询能找到临时用户，查询结果不包含密码");
         this.create();
         List<?> users = Remoting2Manage.getInstance().createDataMetadataHandler(UserRemotingService.class, this.runtime).getData();
-        Assertions.assertTrue(users.stream().map(InstanceUserMetadata.class::cast).anyMatch(u -> this.name.equals(u.getUserName())));
+        Assertions.assertTrue(users.stream().map(InstanceUserMetadata.class::cast).anyMatch(u -> this.name.equals(u.getName())));
         Assertions.assertTrue(users.stream().map(InstanceUserMetadata.class::cast).allMatch(u -> u.getPassword() == null));
     }
 
@@ -145,7 +145,7 @@ class RocketMQUserIntegrationTest {
     private InstanceUserMetadata user() {
         InstanceUserMetadata user = new InstanceUserMetadata();
         user.setId(99510L);
-        user.setUserName(this.name);
+        user.setName(this.name);
         user.setPassword(UUID.randomUUID().toString());
         user.setUserType("Normal");
         user.setUserStatus("enable");

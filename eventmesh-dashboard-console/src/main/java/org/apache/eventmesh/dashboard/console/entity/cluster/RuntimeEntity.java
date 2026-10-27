@@ -31,7 +31,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class RuntimeEntity extends BaseSyncEntity {
 
-    private String name;
+    /** 所属集群编号，与节点自身 id 独立。 */
+    private Long clusterId;
 
     private String host;
 

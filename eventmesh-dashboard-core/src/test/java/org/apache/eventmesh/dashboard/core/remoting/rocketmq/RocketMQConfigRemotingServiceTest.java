@@ -107,7 +107,7 @@ class RocketMQConfigRemotingServiceTest {
         log.info("【配置模拟测试】查询全部配置并验证排序及 UTF-8");
         this.respond(ResponseCode.SUCCESS, "z=末尾\na=first\n");
         GetConfigResult result = this.service.getAllConfigs(new GetConfigRequest());
-        Assertions.assertEquals(List.of("a", "z"), result.getData().stream().map(ConfigMetadata::getConfigName).toList());
+        Assertions.assertEquals(List.of("a", "z"), result.getData().stream().map(ConfigMetadata::getName).toList());
         Assertions.assertEquals("末尾", result.getData().get(1).getConfigValue());
         Assertions.assertEquals(RequestCode.GET_BROKER_CONFIG, this.captured().getCode());
     }
@@ -171,7 +171,7 @@ class RocketMQConfigRemotingServiceTest {
 
     private ConfigMetadata config(String key, String value) {
         ConfigMetadata config = new ConfigMetadata();
-        config.setConfigName(key);
+        config.setName(key);
         config.setConfigValue(value);
         return config;
     }

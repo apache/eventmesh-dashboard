@@ -26,5 +26,5 @@ import lombok.Data;
 @Data
 public class GetTopicListDTO extends ClusterIdDTO {
 
-    private String topicName;
+    private String name;
 }

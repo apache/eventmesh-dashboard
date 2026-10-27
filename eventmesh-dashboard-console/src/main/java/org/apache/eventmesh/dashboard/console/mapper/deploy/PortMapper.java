@@ -36,7 +36,7 @@ public interface PortMapper {
     void insertPort(PortEntity portEntity);
 
 
-    @Select(" select * from port where cluster_id = #{clusterId} for update")
+    @Select(" select * from port where cluster_id = #{clusterId} and is_delete=0 for update")
     PortEntity lockPort(PortEntity portEntity);
 
     @Update(" update port set current_port = current_port + #{currentPort} where cluster_id=#{clusterId}")

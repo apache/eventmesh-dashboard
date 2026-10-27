@@ -36,21 +36,20 @@ import java.util.List;
 @Mapper
 public interface ConnectionMapper {
 
-
-    @Select("SELECT COUNT(*) FROM connection WHERE cluster_id=#{clusterId} AND status=1")
+    @Select("SELECT COUNT(*) FROM connection WHERE cluster_id=#{clusterId} AND status=1 AND end_time IS NULL")
     Integer selectConnectionNumByCluster(ConnectionEntity connectionEntity);
 
-    @Select("SELECT * FROM connection WHERE status = 1")
+    @Select("SELECT * FROM connection WHERE status = 1 AND end_time IS NULL")
     List<ConnectionEntity> selectAll();
 
-    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND status=1")
+    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND status=1 AND end_time IS NULL")
     List<ConnectionEntity> selectByClusterId(ConnectionEntity connectionEntity);
 
     @Select({
         "<script>",
         "SELECT * FROM connection",
         "<where>",
-        "cluster_id = #{connectionEntity.clusterId} and status=1",
+        "cluster_id = #{connectionEntity.clusterId} and status=1 and end_time IS NULL",
         "<if test='connectionEntity.topic != null'>",
         "and topic like CONCAT('%',#{connectionEntity.topic},'%')",
         "</if>",
@@ -58,10 +57,12 @@ public interface ConnectionMapper {
         "</script>"})
     List<ConnectionEntity> selectToFrontByClusterId(@Param("connectionEntity") ConnectionEntity connectionEntity);
 
-    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND source_id = #{sourceId} AND source_type = #{sourceType} AND status=1")
+    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND source_id = #{sourceId} AND source_type = #{sourceType}"
+            + " AND status=1 AND end_time IS NULL")
     public List<ConnectionEntity> selectByClusterIdSourceTypeAndSourceId(ConnectionEntity connectionEntity);
 
-    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND sink_id = #{sinkId} AND sink_type = #{sinkType}")
+    @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND sink_id = #{sinkId} AND sink_type = #{sinkType}"
+            + " AND status=1 AND end_time IS NULL")
     public List<ConnectionEntity> selectByClusterIdSinkTypeAndSinkId(ConnectionEntity connectionEntity);
 
     @Select("SELECT * FROM connection WHERE cluster_id = #{clusterId} AND source_id = #{sourceId} AND source_type = #{sourceType} "
@@ -78,7 +79,7 @@ public interface ConnectionMapper {
     @Insert("INSERT INTO connection (cluster_id, source_type, source_id," + " sink_type, sink_id, runtime_id, status, topic, group_id, description)"
             + " VALUES ( #{clusterId}, #{sourceType}, #{sourceId}, "
             + " #{sinkType}, #{sinkId},  #{runtimeId}, 1, #{topic}, #{groupId}, #{description})"
-            + "ON DUPLICATE KEY UPDATE status = 1")
+            + "ON DUPLICATE KEY UPDATE status=1, end_time=NULL")
     Long insert(ConnectionEntity connectionEntity);
 
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
@@ -91,19 +92,20 @@ public interface ConnectionMapper {
         "       #{connectionEntity.sinkType}, #{connectionEntity.sinkId}, #{connectionEntity.runtimeId},",
         "       #{connectionEntity.topic}, #{connectionEntity.groupId}, #{connectionEntity.description})",
         "   </foreach>",
-        "ON DUPLICATE KEY UPDATE status = 1",
+        "ON DUPLICATE KEY UPDATE status=1, end_time=NULL",
         "</script>"})
     void batchInsert(List<ConnectionEntity> connectionEntityList);
 
-    @Update("UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{id}")
+    /** Ending a connection makes it inactive; it remains available in history and snapshots. */
+    @Update("UPDATE connection SET status=0, end_time=NOW() WHERE id=#{id} AND end_time IS NULL")
     void endConnectionById(ConnectionEntity connectionEntity);
 
-    //batch end
     @Update({
         "<script>",
-        "   <foreach collection='list' item='connectionEntity' index='index' separator=';'>",
-        "       UPDATE connection SET status = 1, end_time = NOW() WHERE id = #{connectionEntity.id}",
-        "   </foreach>",
+        "UPDATE connection SET status=0, end_time=NOW() WHERE end_time IS NULL AND id IN",
+        "<foreach collection='list' item='connectionEntity' open='(' separator=',' close=')'>",
+        "#{connectionEntity.id}",
+        "</foreach>",
         "</script>"})
     void batchEndConnectionById(List<ConnectionEntity> connectionEntityList);
 

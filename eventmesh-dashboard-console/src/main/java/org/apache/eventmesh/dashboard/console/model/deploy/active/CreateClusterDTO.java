@@ -32,8 +32,12 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CreateClusterDTO extends ClusterIdDTO {
 
+    /** Type of the cluster being created. */
+    @Override
     @NotNull
-    private ClusterType clusterType;
+    public ClusterType getClusterType() {
+        return super.getClusterType();
+    }
 
     @NotNull
     private String name;

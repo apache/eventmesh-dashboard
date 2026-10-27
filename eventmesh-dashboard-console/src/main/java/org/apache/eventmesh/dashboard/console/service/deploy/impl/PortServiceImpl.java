@@ -84,7 +84,7 @@ public class PortServiceImpl implements PortService {
             int port = ports.getCurrentPort() + i;
             portMap.put(portMetadata.getConfigName(), port);
             ConfigEntity configEntity = new ConfigEntity();
-            configEntity.setConfigName(portMetadata.getConfigName());
+            configEntity.setName(portMetadata.getConfigName());
             configEntity.setConfigValue(port + "");
             configEntityList.add(configEntity);
 
@@ -97,7 +97,7 @@ public class PortServiceImpl implements PortService {
             List<ConfigEntity> queryData = this.configMapper.queryByRuntimeIdAndConfigName(configEntityList);
             queryData.forEach(configEntity -> {
                 JSONObject jsonObject = JSONObject.parseObject(configEntity.getConfigValueRange());
-                jsonObject.put("port", portMap.get(configEntity.getConfigName()));
+                jsonObject.put("port", portMap.get(configEntity.getName()));
                 configEntity.setConfigValueRange(jsonObject.toJSONString());
             });
         }

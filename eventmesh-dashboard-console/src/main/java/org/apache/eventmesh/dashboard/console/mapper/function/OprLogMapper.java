@@ -64,6 +64,7 @@ public interface OprLogMapper {
         "<script>",
         "SELECT * FROM operation_log",
         "<where>",
+        "is_delete=0",
         "<if test='clusterId != null'>",
         "AND cluster_id = #{clusterId}",
         "</if>",
