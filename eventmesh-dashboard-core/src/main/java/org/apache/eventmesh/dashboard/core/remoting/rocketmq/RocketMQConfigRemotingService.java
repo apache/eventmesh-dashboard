@@ -93,13 +93,13 @@ public class RocketMQConfigRemotingService extends AbstractRocketMQRemotingServi
         if (request == null) {
             throw new IllegalArgumentException("Config request is required");
         }
-        String name = request.getMetaData() == null ? request.getConfigObjectName() : request.getMetaData().getConfigName();
+        String name = request.getMetaData() == null ? request.getConfigObjectName() : request.getMetaData().getName();
         if (StringUtils.isBlank(name)) {
             throw new IllegalArgumentException("Configuration key is required");
         }
         GetConfigResult result = this.getAllConfigs(request);
         if (result.getCode() == 200) {
-            result.getData().removeIf(config -> !name.equals(config.getConfigName()));
+            result.getData().removeIf(config -> !name.equals(config.getName()));
         }
         return result;
     }
@@ -125,7 +125,7 @@ public class RocketMQConfigRemotingService extends AbstractRocketMQRemotingServi
         List<ConfigMetadata> configs = new ArrayList<>();
         properties.stringPropertyNames().stream().sorted().forEach(name -> {
             ConfigMetadata config = new ConfigMetadata();
-            config.setConfigName(name);
+            config.setName(name);
             config.setConfigValue(properties.getProperty(name));
             configs.add(config);
         });
@@ -140,12 +140,12 @@ public class RocketMQConfigRemotingService extends AbstractRocketMQRemotingServi
     }
 
     private void addProperty(Properties properties, ConfigMetadata config) {
-        if (StringUtils.isBlank(config.getConfigName()) || config.getConfigValue() == null) {
+        if (StringUtils.isBlank(config.getName()) || config.getConfigValue() == null) {
             throw new IllegalArgumentException("Configuration key and value are required");
         }
-        if (properties.containsKey(config.getConfigName())) {
+        if (properties.containsKey(config.getName())) {
             throw new IllegalArgumentException("Duplicate configuration keys are not allowed");
         }
-        properties.setProperty(config.getConfigName(), config.getConfigValue());
+        properties.setProperty(config.getName(), config.getConfigValue());
     }
 }

@@ -360,7 +360,8 @@ create table `acl`
     `resource_type`   int(11)      not null default '0' comment '资源类型(0:未知，1:任意，10:kafka topic,11:kafka group;21:rocketmq topic)',
     `resource_name`   varchar(192) not null default '' comment '资源名称',
     `pattern_type`    tinyint(4)   not null comment '匹配类型(0:未知，1:任意，2:match，3:literal，4:prefixed)',
-    `status`          int          not null default 1 comment '状态(0:删除，1:存在)',
+    `status`          int          not null default 1 comment '状态(0:停用，1:启用)',
+    `is_delete`       int          not null default 0 comment '逻辑删除(0:保留，1:删除)',
     `create_time`     timestamp    not null default current_timestamp comment '创建时间',
     `update_time`     timestamp    not null default current_timestamp on update current_timestamp comment '更新时间',
     index             `idx_cluster_phy_id_principal_res_name` (`cluster_id`, `pattern`, `resource_name`)

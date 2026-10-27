@@ -35,15 +35,22 @@ public class BodyDataDifference extends AbstractBufferDifference {
         }
         objectList.forEach((value) -> {
             String key = value.nodeUnique();
-            if (value.isInsert()) {
-                this.insertData.add(value);
-                this.allData.put(key, value);
-            } else if (value.isUpdate()) {
-                this.updateData.add(value);
-                this.allData.put(key, value);
-            } else if (value.isDelete()) {
+            if (Objects.isNull(key)) {
+                throw new IllegalArgumentException("Metadata requires a node identity");
+            }
+            if (value.isDelete()) {
                 this.deleteData.add(value);
                 this.allData.remove(key);
+            } else {
+                if (Objects.isNull(value.getStatus()) || Objects.isNull(value.getCreateTime()) || Objects.isNull(value.getUpdateTime())) {
+                    throw new IllegalArgumentException("Live metadata requires status and timestamps");
+                }
+                if (value.isInsert()) {
+                    this.insertData.add(value);
+                } else {
+                    this.updateData.add(value);
+                }
+                this.allData.put(key, value);
             }
         });
 

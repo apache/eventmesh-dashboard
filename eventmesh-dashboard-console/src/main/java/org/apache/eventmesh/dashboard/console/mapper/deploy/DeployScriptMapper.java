@@ -25,6 +25,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 /**
  *
  */
@@ -45,18 +47,18 @@ public interface DeployScriptMapper {
 
 
     @Update("""
-        update deploy_script set status = 1 where id=#{id}")"
+        update deploy_script set is_delete=1, update_time=CURRENT_TIMESTAMP where id=#{id} and is_delete=0
         """)
     void deleteById(DeployScriptEntity deployScriptEntity);
 
 
     @Select("""
         <script>
-            select * from deploy_script where organization_id=#{id}
+            select * from deploy_script where organization_id=#{organizationId} and is_delete=0
             <if test = "name!=null">
                and name like concat('%',#{name},'%')
             </if>
         </script>
         """)
-    void queryByName(DeployScriptEntity deployScriptEntity);
+    List<DeployScriptEntity> queryByName(DeployScriptEntity deployScriptEntity);
 }

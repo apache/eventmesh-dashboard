@@ -99,7 +99,7 @@ class RocketMQConfigIntegrationTest {
     void queryBrokerConfigurationThroughFramework() {
         log.info("【真实配置测试】框架查询 Broker 配置，返回配置列表");
         List<?> configs = Remoting2Manage.getInstance().createDataMetadataHandler(ConfigRemotingService.class, this.runtime).getData();
-        Assertions.assertTrue(configs.stream().map(ConfigMetadata.class::cast).anyMatch(c -> "brokerName".equals(c.getConfigName())));
+        Assertions.assertTrue(configs.stream().map(ConfigMetadata.class::cast).anyMatch(c -> "brokerName".equals(c.getName())));
     }
 
     @Test
@@ -126,7 +126,7 @@ class RocketMQConfigIntegrationTest {
     private ConfigMetadata config(String value) {
         ConfigMetadata config = new ConfigMetadata();
         config.setId(99520L);
-        config.setConfigName("commercialBaseCount");
+        config.setName("commercialBaseCount");
         config.setConfigValue(value);
         return config;
     }

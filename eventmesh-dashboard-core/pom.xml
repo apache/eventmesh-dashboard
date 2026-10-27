@@ -296,6 +296,9 @@
         </profile>
         <profile>
             <id>rocketmq-admin-services-tests</id>
+            <properties>
+                <argLine></argLine>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -314,6 +317,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <testFailureIgnore>false</testFailureIgnore>
+                            <argLine>@{argLine} -Xmx1024m</argLine>
                             <includes combine.self="override">
                                 <include>**/RocketMQClient*Test.java</include>
                                 <include>**/RocketMQConfig*Test.java</include>

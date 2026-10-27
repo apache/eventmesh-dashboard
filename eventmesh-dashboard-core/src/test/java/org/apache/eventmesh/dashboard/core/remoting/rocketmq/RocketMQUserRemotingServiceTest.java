@@ -185,7 +185,7 @@ class RocketMQUserRemotingServiceTest {
 
     private CreateUserRequest create() {
         InstanceUserMetadata user = new InstanceUserMetadata();
-        user.setUserName("test-user");
+        user.setName("test-user");
         user.setPassword("private-password");
         user.setUserType("Normal");
         user.setUserStatus("enable");

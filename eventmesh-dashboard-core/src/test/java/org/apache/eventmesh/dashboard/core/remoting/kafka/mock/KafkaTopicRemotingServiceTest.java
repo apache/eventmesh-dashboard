@@ -88,7 +88,7 @@ class KafkaTopicRemotingServiceTest {
         request.setRuntimePort(1);
         GetTopicsResult result = service.getAllTopics(request);
         Assertions.assertEquals(200, result.getCode());
-        Assertions.assertEquals(List.of("topic-a", "topic-b"), result.getData().stream().map(TopicMetadata::getTopicName).toList());
+        Assertions.assertEquals(List.of("topic-a", "topic-b"), result.getData().stream().map(TopicMetadata::getName).toList());
         for (int i = 0; i < result.getData().size(); i++) {
             TopicMetadata topic = result.getData().get(i);
             Assertions.assertEquals(i == 0 ? 1 : 3, topic.getReadQueueNum());
@@ -97,7 +97,7 @@ class KafkaTopicRemotingServiceTest {
             Assertions.assertNull(topic.getId());
             Assertions.assertNull(topic.getRetentionMs());
             Assertions.assertNull(topic.getTopicConfig());
-            log.info("主题={}，读分区={}，写分区={}", topic.getTopicName(), topic.getReadQueueNum(), topic.getWriteQueueNum());
+            log.info("主题={}，读分区={}，写分区={}", topic.getName(), topic.getReadQueueNum(), topic.getWriteQueueNum());
         }
         ArgumentCaptor<ListTopicsOptions> options = ArgumentCaptor.forClass(ListTopicsOptions.class);
         Mockito.verify(client).listTopics(options.capture());

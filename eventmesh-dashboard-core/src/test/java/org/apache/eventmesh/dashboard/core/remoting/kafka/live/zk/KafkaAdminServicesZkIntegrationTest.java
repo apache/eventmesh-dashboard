@@ -310,7 +310,7 @@ class KafkaAdminServicesZkIntegrationTest {
         request.setNode(query.getNode());
         request.setConfigObjectName(query.getConfigObjectName());
         ConfigMetadata metadata = new ConfigMetadata();
-        metadata.setConfigName(name);
+        metadata.setName(name);
         metadata.setConfigValue(value);
         request.setMetaData(metadata);
         return request;
@@ -328,10 +328,10 @@ class KafkaAdminServicesZkIntegrationTest {
     @DisplayName("真实 Kafka：查询 Topic 配置：读取初始保留时间和分段时间")
     void queryTopicConfig() throws Exception {
         var rows = configs.getConfigs(topicConfig()).getData();
-        rows.stream().filter(row -> List.of("retention.ms", "segment.ms").contains(row.getConfigName()))
-            .forEach(row -> log.info("【配置查询结果】Topic={}，配置项={}，实际值={}", topic, row.getConfigName(), row.getConfigValue()));
-        Assertions.assertEquals("600000", rows.stream().filter(row -> row.getConfigName().equals("retention.ms")).findFirst().orElseThrow().getConfigValue());
-        Assertions.assertEquals("300000", rows.stream().filter(row -> row.getConfigName().equals("segment.ms")).findFirst().orElseThrow().getConfigValue());
+        rows.stream().filter(row -> List.of("retention.ms", "segment.ms").contains(row.getName()))
+            .forEach(row -> log.info("【配置查询结果】Topic={}，配置项={}，实际值={}", topic, row.getName(), row.getConfigValue()));
+        Assertions.assertEquals("600000", rows.stream().filter(row -> row.getName().equals("retention.ms")).findFirst().orElseThrow().getConfigValue());
+        Assertions.assertEquals("300000", rows.stream().filter(row -> row.getName().equals("segment.ms")).findFirst().orElseThrow().getConfigValue());
     }
 
     /** 更新 Topic 配置：修改保留时间并保留分段时间。 */
@@ -407,7 +407,7 @@ class KafkaAdminServicesZkIntegrationTest {
         var handler = Remoting2Manage.getInstance().createDataMetadataHandler(ConfigRemotingService.class, cluster);
         List<ConfigMetadata> rows = handler.getData().stream().map(ConfigMetadata.class::cast).toList();
         Assertions.assertTrue(rows.stream().anyMatch(row -> row.getInstanceType() == MetadataType.TOPIC
-            && topic.equals(row.getInstanceName()) && "retention.ms".equals(row.getConfigName())));
+            && topic.equals(row.getInstanceName()) && "retention.ms".equals(row.getName())));
         Assertions.assertTrue(rows.stream().anyMatch(row -> row.getInstanceType() == MetadataType.RUNTIME));
         // With no dynamic default overrides Kafka returns no CLUSTER rows; never invent config entries.
         Assertions.assertTrue(rows.stream().filter(row -> row.getInstanceType() == MetadataType.CLUSTER)
@@ -424,7 +424,7 @@ class KafkaAdminServicesZkIntegrationTest {
         entry.setId(1L);
         entry.setInstanceType(MetadataType.TOPIC);
         entry.setInstanceName(topic);
-        entry.setConfigName("compression.type");
+        entry.setName("compression.type");
         entry.setConfigValue("gzip");
         var handler = Remoting2Manage.getInstance().createDataMetadataHandler(ConfigRemotingService.class, cluster);
         handler.handleAll(List.of(), List.of(entry), List.of(), List.of());
@@ -443,7 +443,7 @@ class KafkaAdminServicesZkIntegrationTest {
         var handler = Remoting2Manage.getInstance().createDataMetadataHandler(ConfigRemotingService.class, cluster);
         ConfigMetadata entry = handler.getData().stream().map(ConfigMetadata.class::cast)
             .filter(row -> row.getInstanceType() == MetadataType.TOPIC && topic.equals(row.getInstanceName())
-                && "retention.ms".equals(row.getConfigName())).findFirst().orElseThrow();
+                && "retention.ms".equals(row.getName())).findFirst().orElseThrow();
         entry.setId(1L);
         entry.setConfigValue("900000");
         handler.handleAll(List.of(), List.of(), List.of(entry), List.of());
@@ -462,7 +462,7 @@ class KafkaAdminServicesZkIntegrationTest {
         var handler = Remoting2Manage.getInstance().createDataMetadataHandler(ConfigRemotingService.class, cluster);
         ConfigMetadata entry = handler.getData().stream().map(ConfigMetadata.class::cast)
             .filter(row -> row.getInstanceType() == MetadataType.TOPIC && topic.equals(row.getInstanceName())
-                && "retention.ms".equals(row.getConfigName())).findFirst().orElseThrow();
+                && "retention.ms".equals(row.getName())).findFirst().orElseThrow();
         entry.setId(1L);
         handler.handleAll(List.of(), List.of(), List.of(), List.of(entry));
         var resource = new ConfigResource(ConfigResource.Type.TOPIC, topic);
@@ -516,7 +516,7 @@ class KafkaAdminServicesZkIntegrationTest {
                 var handler = Remoting2Manage.getInstance().createDataMetadataHandler(ConfigRemotingService.class, cluster);
                 ConfigMetadata entry = handler.getData().stream().map(ConfigMetadata.class::cast)
                     .filter(row -> row.getInstanceType() == (defaults ? MetadataType.CLUSTER : MetadataType.RUNTIME)
-                        && request.getNode().equals(row.getInstanceName()) && "log.retention.ms".equals(row.getConfigName()))
+                        && request.getNode().equals(row.getInstanceName()) && "log.retention.ms".equals(row.getName()))
                     .findFirst().orElseThrow();
                 entry.setId(1L);
                 entry.setConfigValue("604800123");

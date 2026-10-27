@@ -30,8 +30,12 @@ import lombok.EqualsAndHashCode;
 public class CreateClusterByFormDataDTO extends ClusterIdDTO {
 
 
+    /** Type of the cluster being created. */
+    @Override
     @NotNull
-    private ClusterType clusterType;
+    public ClusterType getClusterType() {
+        return super.getClusterType();
+    }
 
 
     @NotNull

@@ -170,13 +170,13 @@ class KafkaGroupConfigLiveTest {
         ConfigMetadata discovered = this.configHandler.getData().stream().map(ConfigMetadata.class::cast)
             .filter(row -> MetadataType.TOPIC == row.getInstanceType() && this.topic.equals(row.getInstanceName()))
             .findFirst().orElseThrow();
-        Assertions.assertNotNull(discovered.getConfigName());
+        Assertions.assertNotNull(discovered.getName());
         String originalRetention = this.readTopicConfig(target);
 
         ConfigMetadata ownedConfig = new ConfigMetadata();
         ownedConfig.setInstanceType(MetadataType.TOPIC);
         ownedConfig.setInstanceName(this.topic);
-        ownedConfig.setConfigName("retention.ms");
+        ownedConfig.setName("retention.ms");
         ownedConfig.setConfigValue("180000");
         this.configHandler.handleAll(List.of(), List.of(ownedConfig), List.of(), List.of());
         Assertions.assertEquals("180000", this.readTopicConfig(target));

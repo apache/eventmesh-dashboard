@@ -41,7 +41,7 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
 
     @Select("""
             <script>
-                select * from topic where cluster_id
+                select * from topic where is_delete=0 and cluster_id
                     <foreach item='item' index='index' open='in(' separator=',' close=')'>
                             #{item.id}
                     </foreach>
@@ -50,12 +50,12 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     List<TopicEntity> queryByClusterIdList(List<ClusterEntity> topicEntityList);
 
 
-    @Select("SELECT count(*) FROM topic WHERE cluster_id=#{clusterId} AND status=1")
+    @Select("SELECT count(*) FROM topic WHERE is_delete=0 and cluster_id=#{clusterId} AND status=1")
     Integer selectTopicNumByCluster(TopicEntity topicEntity);
 
     @Select("""
         <script>
-            select * from topic where cluster_id =#{topicEntity.clusterId} and status=1
+            select * from topic where is_delete=0 and cluster_id =#{topicEntity.clusterId} and status=1
                 <if test='topicEntity.topicName!=null'>
                     and topic_name like concat('%',#{topicEntity.topicName},'%')
                 </if>
@@ -65,14 +65,14 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     List<TopicEntity> queryTopicsToFrontByClusterId(@Param("topicEntity") TopicEntity topicEntity);
 
 
-    @Select("SELECT * FROM topic WHERE cluster_id=#{clusterId} and status = 1")
+    @Select("SELECT * FROM topic WHERE is_delete=0 and cluster_id=#{clusterId} and status = 1")
     List<TopicEntity> selectTopicByCluster(TopicEntity topicEntity);
 
 
-    @Select("SELECT * FROM topic WHERE status=1")
+    @Select("SELECT * FROM topic WHERE is_delete=0 and status=1")
     List<TopicEntity> selectAll();
 
-    @Select("SELECT * FROM topic WHERE id=#{id}")
+    @Select("SELECT * FROM topic WHERE is_delete=0 and id=#{id}")
     TopicEntity queryTopicById(TopicEntity topicEntity);
 
 
@@ -84,7 +84,7 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
 
     @Update("""
         <script>
-            update  `topic` set status=0 where id in(
+            update  `topic` set is_delete=1, update_time=CURRENT_TIMESTAMP where id in(
                <foreach collection='list'  item='item' index='index' separator=','>
                     #{item.id}
                </foreach>
@@ -94,7 +94,7 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
     Integer deleteTopicByIds(List<TopicEntity> topicEntity);
 
 
-    @Update("UPDATE `topic` SET status=0 WHERE id=#{id}")
+    @Update("UPDATE `topic` SET is_delete=1, update_time=CURRENT_TIMESTAMP WHERE id=#{id}")
     Integer deleteTopicById(TopicEntity topicEntity);
 
     @Insert("""
@@ -115,17 +115,18 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
                         #{c.topicName},#{c.topicType},#{c.readQueueNum},#{c.writeQueueNum},#{c.replicationFactor}
                             ,#{c.order},#{c.description},#{c.createProgress},#{c.retentionMs})
                </foreach>
+        on duplicate key update status=1, is_delete=0, update_time=CURRENT_TIMESTAMP
         </script>
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void batchInsert(List<TopicEntity> topicEntities);
 
     @Insert("""
-        insert into topic (cluster_id,runtime_id,topic_name,topic_type, read_queue_num, write_queue_num, replication_factor, 
+        insert into topic (cluster_id,cluster_type,runtime_id,topic_name,topic_type, read_queue_num, write_queue_num, replication_factor,
                            `order` , description, create_progress,retention_ms)
-                   values (#{clusterId},#{runtimeId},#{topicName},#{topicType},#{readQueueNum},#{writeQueueNum},#{replicationFactor}
+                   values (#{clusterId},#{clusterType},#{runtimeId},#{topicName},#{topicType},#{readQueueNum},#{writeQueueNum},#{replicationFactor}
                             ,#{order},#{description},#{createProgress},#{retentionMs})
-        on duplicate key update status = 1
+        on duplicate key update status=1, is_delete=0, update_time=CURRENT_TIMESTAMP
         """)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insertTopic(TopicEntity topicEntity);
@@ -139,22 +140,29 @@ public interface TopicMapper extends SyncDataHandlerMapper<TopicEntity> {
 
 
     @Override
+    @Update("""
+        <script>
+        UPDATE topic SET is_delete=1, update_time=CURRENT_TIMESTAMP WHERE id IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">#{item.id}</foreach>
+        </script>
+        """)
     void syncDelete(List<TopicEntity> entityList);
 
     @Override
     @Select("""
             <script>
-            select * from topic where
+            select * from topic
+            <where>
                 <if test="runtimeId != null">
-                    runtime_id=#{runtimeId}
+                    and runtime_id=#{runtimeId}
                 </if>
-                <if test="clusterId !=null">
-                    cluster_id=#{clusterId}
+                <if test="clusterId != null">
+                    and cluster_id=#{clusterId}
                 </if>
-                <if test = "updateTime!=null">
-                    update_time >= #{updateTime}
+                <if test="updateTime != null">
+                    and update_time >= #{updateTime}
                 </if>
-                 and status != 0
+            </where>
             </script>
         """)
     List<TopicEntity> syncGet(TopicEntity topicEntity);

@@ -224,7 +224,7 @@ public class CollectExporter extends AbstractCollect {
                 }
             }
         } else {
-            object.setClustersId(this.clusterMetadata.getClusterId());
+            object.setClustersId(this.clusterMetadata.getId());
             object.setClustersName(this.clusterMetadata.getName());
         }
         object.setTime(time);

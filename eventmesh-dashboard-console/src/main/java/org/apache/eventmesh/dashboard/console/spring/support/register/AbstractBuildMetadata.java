@@ -64,7 +64,7 @@ public abstract class AbstractBuildMetadata implements BuildMetadata {
     public void generatePropertiesConfig(ScriptBuildData data) {
         StringBuffer config = new StringBuffer();
         data.getConfigEntityList().forEach(configEntity -> {
-            config.append(configEntity.getConfigName()).append("=").append(configEntity.getConfigValue()).append(System.lineSeparator());
+            config.append(configEntity.getName()).append("=").append(configEntity.getConfigValue()).append(System.lineSeparator());
         });
         String runtimeConfig = config.toString();
         data.put("runtimeConfig", runtimeConfig);

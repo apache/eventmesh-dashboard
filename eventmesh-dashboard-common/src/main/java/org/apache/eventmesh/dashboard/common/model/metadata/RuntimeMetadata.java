@@ -27,6 +27,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class RuntimeMetadata extends BaseSyncBase {
 
+    /** Parent cluster identity; excluded from equality as it was in the former superclass. */
+    @EqualsAndHashCode.Exclude
+    private Long clusterId;
+
     private String name;
 
     private String host;

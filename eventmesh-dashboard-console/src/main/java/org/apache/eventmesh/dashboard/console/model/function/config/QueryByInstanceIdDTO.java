@@ -28,6 +28,6 @@ public class QueryByInstanceIdDTO {
 
     private MetadataType instanceType;
 
-    private String configName;
+    private String name;
 
 }

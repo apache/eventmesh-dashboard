@@ -32,8 +32,6 @@ public class InstanceUserEntity extends BaseRuntimeIdEntity {
 
     private String password;
 
-    private Long clusterId;
-
     private String name;
 
     private String token;

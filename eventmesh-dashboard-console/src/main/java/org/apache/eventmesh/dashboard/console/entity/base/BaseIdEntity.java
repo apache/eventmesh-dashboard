@@ -49,6 +49,7 @@ public class BaseIdEntity implements Serializable {
      */
     private Long status;
 
+    /** Logical deletion marker; status remains the resource business state. */
     private Integer isDelete;
 
 

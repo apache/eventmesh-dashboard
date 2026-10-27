@@ -310,6 +310,55 @@
             </build>
         </profile>
         <profile>
+            <id>baseid-contract-tests</id>
+            <properties><argLine></argLine></properties>
+            <build><plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration><testIncludes combine.self="override">
+                        <testInclude>**/baseid/*Test.java</testInclude>
+                        <testInclude>**/model/Cluster*Test.java</testInclude>
+                        <testInclude>**/model/NameMappingTest.java</testInclude>
+                    </testIncludes></configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <testFailureIgnore>false</testFailureIgnore>
+                        <argLine>@{argLine} -Xmx1024m</argLine>
+                        <includes combine.self="override">
+                            <include>**/baseid/*Test.java</include>
+                            <include>**/model/Cluster*Test.java</include>
+                            <include>**/model/NameMappingTest.java</include>
+                        </includes>
+                    </configuration>
+                    <dependencies><dependency>
+                        <groupId>org.apache.maven.surefire</groupId><artifactId>surefire-junit4</artifactId><version>3.5.3</version>
+                    </dependency></dependencies>
+                </plugin>
+            </plugins></build>
+        </profile>
+        <profile>
+            <id>state-quality</id>
+            <properties>
+                <state.quality.dir>${maven.multiModuleProjectDirectory}/eventmesh-dashboard-console/target/dev-crew/status-lifecycle-20261008</state.quality.dir>
+                <state.coverage.file>${state.quality.dir}/coverage/jacoco.exec</state.coverage.file>
+            </properties>
+            <build><plugins><plugin>
+                <groupId>org.jacoco</groupId><artifactId>jacoco-maven-plugin</artifactId><version>0.8.13</version>
+                <configuration>
+                    <destFile>${state.coverage.file}</destFile>
+                    <dataFile>${state.quality.dir}/coverage/jacoco.exec</dataFile>
+                    <outputDirectory>${state.quality.dir}/coverage/${project.artifactId}</outputDirectory>
+                    <formats><format>XML</format></formats>
+                </configuration>
+                <executions><execution><goals><goal>prepare-agent</goal></goals></execution></executions>
+            </plugin></plugins></build>
+        </profile>
+
+        <profile>
             <id>kafka-sync-quality</id>
             <properties>
                 <jacocoArgLine></jacocoArgLine>

@@ -27,7 +27,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class TopicMetadata extends BaseRuntimeIdBase {
 
-    private String topicName;
+    private String name;
 
     private Integer readQueueNum;
 
@@ -54,6 +54,8 @@ public class TopicMetadata extends BaseRuntimeIdBase {
 
     @Override
     public String nodeUnique() {
-        return this.topicName;
+        return this.name;
     }
+
+
 }

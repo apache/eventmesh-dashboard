@@ -52,7 +52,8 @@ public class KafkaCollectFactory implements CollectFactory {
         }
         List<RuntimeMetadata> brokers = new ArrayList<>();
         for (RuntimeMetadata runtime : runtimeMetadataList) {
-            if (!Objects.equals(runtime.getClusterId(), clusterMetadata.getId()) || runtime.isDelete()
+            // 上游将 status 与 isDelete 分离，停用节点仍不能注册 JMX 或进入 Admin 的地址列表。
+            if (!Objects.equals(runtime.getClusterId(), clusterMetadata.getId()) || runtime.isDelete() || Objects.equals(runtime.getStatus(), 0L)
                 || (!Objects.equals(runtime.getClusterType(), ClusterType.STORAGE_KAFKA_BROKER)
                 && !Objects.equals(runtime.getClusterType(), ClusterType.STORAGE_KAFKA_RAFT))) {
                 continue;

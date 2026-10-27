@@ -64,7 +64,9 @@ public class GroupMemberServiceImp implements GroupMemberService {
 
     @Override
     public GroupMemberEntity deleteGroupMember(GroupMemberEntity groupMemberEntity) {
-        return groupMemberMapper.deleteGroupMember(groupMemberEntity);
+        groupMemberMapper.deleteGroupMember(groupMemberEntity);
+        groupMemberEntity.setIsDelete(1);
+        return groupMemberEntity;
     }
 
     @Override

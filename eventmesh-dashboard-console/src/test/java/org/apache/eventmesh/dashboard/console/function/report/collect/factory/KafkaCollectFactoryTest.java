@@ -47,13 +47,16 @@ public class KafkaCollectFactoryTest {
         RuntimeMetadata raft = runtime(13L, ClusterType.STORAGE_KAFKA_RAFT, 10000);
         RuntimeMetadata withoutJmx = runtime(14L, ClusterType.STORAGE_KAFKA_BROKER, null);
         RuntimeMetadata deleted = runtime(15L, ClusterType.STORAGE_KAFKA_BROKER, 9999);
-        deleted.setStatus(0L);
+        // 独立覆盖上游分离后的逻辑删除与业务停用，不能只用 status 代表删除。
+        deleted.setIsDelete(1);
+        RuntimeMetadata stopped = runtime(18L, ClusterType.STORAGE_KAFKA_BROKER, 9999);
+        stopped.setStatus(0L);
         RuntimeMetadata unrelated = runtime(16L, ClusterType.STORAGE_KAFKA_ZK, 9999);
         RuntimeMetadata foreign = runtime(17L, ClusterType.STORAGE_KAFKA_BROKER, 9999);
         foreign.setClusterId(21L);
 
         Map<String, Collect> tasks = new KafkaCollectFactory().createCollectors(new CollectMetadata(), cluster,
-            List.of(broker, raft, withoutJmx, deleted, unrelated, foreign));
+            List.of(broker, raft, withoutJmx, deleted, stopped, unrelated, foreign));
 
         assertEquals(3, tasks.size());
         assertTrue(tasks.get("ClusterMetadata-11") instanceof KafkaAdminCollect);

@@ -65,7 +65,8 @@ public class DefaultMetadataSyncResultHandler implements MetadataSyncResultHandl
         BaseSyncEntity baseSyncEntity = dimension.getBaseSyncEntity();
 
         MetadataSyncResultEntity metadataSyncResultEntity = new MetadataSyncResultEntity();
-        metadataSyncResultEntity.setClusterId(baseSyncEntity.getClusterId());
+        metadataSyncResultEntity.setClusterId(baseSyncEntity instanceof RuntimeEntity runtime
+            ? runtime.getClusterId() : baseSyncEntity.getId());
         metadataSyncResultEntity.setSyncId(baseSyncEntity.getId());
         metadataSyncResultEntity.setMetadataType(metadataSyncResult.getMetadataType());
         metadataSyncResultEntity.setSyncErrorType(metadataSyncResult.getSyncErrorType());

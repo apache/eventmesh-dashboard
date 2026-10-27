@@ -20,6 +20,8 @@ package org.apache.eventmesh.dashboard.common.model.metadata;
 
 import org.apache.eventmesh.dashboard.common.model.base.BaseRuntimeIdBase;
 
+import java.time.LocalDateTime;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -64,13 +66,13 @@ public class ConnectionMetadata extends BaseRuntimeIdBase {
      */
     private Long sinkId;
 
-    private Long runtimeId;
-
     private String topic;
 
     private Long groupId;
 
     private String description;
+
+    private LocalDateTime endTime;
 
 
     @Override

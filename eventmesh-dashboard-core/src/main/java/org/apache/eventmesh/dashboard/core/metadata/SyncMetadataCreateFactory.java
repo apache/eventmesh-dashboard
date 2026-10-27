@@ -162,7 +162,7 @@ public class SyncMetadataCreateFactory {
         if (Objects.equals(baseSyncBase.getClass(), RuntimeMetadata.class)) {
             global2Request.setRuntimeId(baseSyncBase.getId());
         } else {
-            global2Request.setClusterId(baseSyncBase.getClusterId());
+            global2Request.setClusterId(baseSyncBase.getId());
         }
 
         return new MetadataHandler<>() {

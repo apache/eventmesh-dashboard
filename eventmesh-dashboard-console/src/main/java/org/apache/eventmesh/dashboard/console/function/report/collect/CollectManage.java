@@ -22,7 +22,7 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.CollectType;
-import org.apache.eventmesh.dashboard.common.model.base.BaseClusterIdBase;
+import org.apache.eventmesh.dashboard.common.model.base.BaseOrganizationBase;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
@@ -225,7 +225,8 @@ public class CollectManage {
         Set<Long> changedClusterIds = new HashSet<>();
         Set<Long> deletedClusterIds = new HashSet<>();
         clusterMetadataList.forEach((clusterMetadata) -> {
-            if (clusterMetadata.isDelete()) {
+            // 上游已分离逻辑删除与业务停用，两种增量都必须撤下集群及节点采集任务。
+            if (clusterMetadata.isDelete() || Objects.equals(clusterMetadata.getStatus(), 0L)) {
                 CollectMetadata collectMetadata = this.collectMetadataMap.get(clusterMetadata.getId());
                 if (Objects.nonNull(collectMetadata)) {
                     this.deleteByCollectMetadata(collectMetadata);
@@ -252,7 +253,8 @@ public class CollectManage {
             // 保留原名称键；同一节点改名或删除时清理旧名称，防止 Factory 读到重复的 Broker。
             runtimes.values().removeIf(runtime -> Objects.equals(runtime.getId(), runtimeMetadata.getId()));
             //TODO 需要识别是否是 启动状态
-            if (runtimeMetadata.isDelete()) {
+            // 停用节点不再由 isDelete 识别，沿用上游状态判断并清理既有任务。
+            if (runtimeMetadata.isDelete() || Objects.equals(runtimeMetadata.getStatus(), 0L)) {
                 this.deleteCollect(runtimeMetadata);
                 if (Objects.equals(runtimeMetadata.getClusterType(), ClusterType.PROMETHEUS_EXPORTER)) {
                     this.deleteCollect(this.clusterMetadataMap.get(runtimeMetadata.getClusterId()));
@@ -296,7 +298,9 @@ public class CollectManage {
             if (deletedClusterIds.contains(collectMetadata.getClusterId())) {
                 return;
             }
-            if (collectMetadata.isDelete() || collectMetadata.getStatus() == 2 || Boolean.FALSE.equals(collectMetadata.getEnable())) {
+            // 同时兼容上游的停用状态和 Kafka 配置的 enable 开关。
+            if (collectMetadata.isDelete() || Objects.equals(collectMetadata.getStatus(), 0L)
+                || Objects.equals(collectMetadata.getStatus(), 2L) || Boolean.FALSE.equals(collectMetadata.getEnable())) {
                 this.deleteByCollectMetadata(collectMetadata);
                 return;
             }
@@ -418,11 +422,11 @@ public class CollectManage {
         }
     }
 
-    private String createCollectKey(BaseClusterIdBase base) {
+    private String createCollectKey(BaseOrganizationBase base) {
         return base.getClass().getSimpleName() + "-" + base.getId();
     }
 
-    private void deleteCollect(BaseClusterIdBase base) {
+    private void deleteCollect(BaseOrganizationBase base) {
         if (Objects.isNull(base)) {
             return;
         }
