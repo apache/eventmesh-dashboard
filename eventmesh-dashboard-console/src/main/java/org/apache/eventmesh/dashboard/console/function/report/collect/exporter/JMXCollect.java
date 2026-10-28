@@ -18,8 +18,8 @@
 package org.apache.eventmesh.dashboard.console.function.report.collect.exporter;
 
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-import org.apache.eventmesh.dashboard.console.function.report.collect.AbstractCollect;
 import org.apache.eventmesh.dashboard.console.function.report.collect.DataSyncHandler.DataSyncHandlerWrapper;
+import org.apache.eventmesh.dashboard.console.function.report.collect.KafkaCollect;
 import org.apache.eventmesh.dashboard.console.function.report.collect.RestoreData;
 
 import java.io.IOException;
@@ -50,11 +50,13 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import lombok.extern.slf4j.Slf4j;
 
 /** 提供节点 JMX 连接、数值读取与分组查询，复用父类采集及结果缓冲流程。 */
 @Slf4j
-public abstract class JMXCollect extends AbstractCollect {
+public abstract class JMXCollect extends KafkaCollect {
 
     protected static final long ERROR_LONG = -1L;
 
@@ -68,15 +70,10 @@ public abstract class JMXCollect extends AbstractCollect {
 
     private static final int CONNECT_TIMEOUT_SECONDS = 5;
 
-    private static final AtomicInteger CONNECT_THREAD_INDEX = new AtomicInteger();
-
     // RMI 返回的地址也可能不可达，JNDI 超时不能约束握手；限制等待与后台连接数量。
     private static final ThreadPoolExecutor CONNECT_EXECUTOR = new ThreadPoolExecutor(0, 20, 30, TimeUnit.SECONDS,
-        new SynchronousQueue<>(), task -> {
-            Thread worker = new Thread(task, "jmx-connect-" + CONNECT_THREAD_INDEX.incrementAndGet());
-            worker.setDaemon(true);
-            return worker;
-        }, new ThreadPoolExecutor.AbortPolicy());
+        new SynchronousQueue<>(), new ThreadFactoryBuilder().setNameFormat("jmx-connect-%d").setDaemon(true).build(),
+        new ThreadPoolExecutor.AbortPolicy());
 
     private static final Map<String, Object> JMX_ENVIRONMENT = Map.of(
         "com.sun.jndi.rmi.connect.timeout", "5000",

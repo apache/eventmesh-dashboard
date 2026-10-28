@@ -112,12 +112,9 @@ public abstract class AbstractReportEngine implements ReportEngine {
     }
 
     protected String buildSql(String reportName, String type, Object value) {
-        return this.buildBoundSql(reportName, type, value).getSql();
-    }
-
-    // 保留 MyBatis 绑定值，JDBC 执行不能只取问号 SQL 而丢失参数。
-    protected BoundSql buildBoundSql(String reportName, String type, Object value) {
-        return this.buildSqlSource(reportName, type).getBoundSql(value);
+        SqlSource sqlSource = this.buildSqlSource(reportName, type);
+        BoundSql boundSql = sqlSource.getBoundSql(value);
+        return boundSql.getSql();
     }
 
     protected SqlSource buildSqlSource(String reportName, String type) {

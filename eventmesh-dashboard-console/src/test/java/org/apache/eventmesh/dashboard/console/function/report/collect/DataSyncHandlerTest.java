@@ -27,11 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -75,6 +73,7 @@ public class DataSyncHandlerTest {
             for (Object row : rows) {
                 observed.add(((RocketmqConsumerConnectionNumber) row).getValueConnectionCount());
             }
+            Assertions.assertFalse(first.getDataMap().isEmpty(), "Do not recycle before engine consumes the batch");
             return null;
         }).when(engine).batchInsertByClass(Mockito.anyMap());
         wrapper.sync(last);
@@ -86,10 +85,11 @@ public class DataSyncHandlerTest {
         Mockito.verify(padding, Mockito.times(3)).padding(Mockito.any());
         Assertions.assertTrue(first.getDataMap().isEmpty());
         Assertions.assertTrue(last.getDataMap().isEmpty());
+        Assertions.assertTrue(wrapper.restoreDataList.isEmpty());
     }
 
     @Test
-    public void concurrentCompletionWithSubmittedIndicesLosesNoRows() throws Exception {
+    public void concurrentCompletionAllocatesUniqueIndicesAndLosesNoRows() throws Exception {
         DataSyncHandler handler = new DataSyncHandler();
         ReportEngine engine = Mockito.mock(ReportEngine.class);
         handler.setReportEngine(engine);
@@ -106,17 +106,13 @@ public class DataSyncHandlerTest {
             }
             return null;
         }).when(engine).batchInsertByClass(Mockito.anyMap());
-        // 阿里规约 01-(七)4：测试线程数、队列和拒绝策略显式配置，保持原有八线程并发场景。
-        AtomicInteger threadIndex = new AtomicInteger();
-        var executor = new ThreadPoolExecutor(8, 8, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(200),
-            task -> new Thread(task, "sync-contract-test-" + threadIndex.incrementAndGet()), new ThreadPoolExecutor.AbortPolicy());
+        var executor = Executors.newFixedThreadPool(8);
         try {
             List<Future<?>> jobs = new ArrayList<>();
             for (int i = 0; i < 200; i++) {
                 final int value = i;
-                // 编号与生产调度器一样在提交线程分配，完成回调仍由工作线程并发执行。
-                int index = wrapper.getIndex();
                 jobs.add(executor.submit(() -> {
+                    int index = wrapper.getIndex();
                     Assertions.assertTrue(indices.add(index));
                     wrapper.sync(data(index, value));
                 }));
@@ -133,7 +129,7 @@ public class DataSyncHandlerTest {
     }
 
     @Test
-    public void failedWriteReturnsSampleBuffers() {
+    public void failedWriteStillReleasesContainers() {
         DataSyncHandler handler = new DataSyncHandler();
         ReportEngine engine = Mockito.mock(ReportEngine.class);
         handler.setReportEngine(engine);
@@ -143,6 +139,7 @@ public class DataSyncHandlerTest {
         RestoreData data = data(0, 1);
         Assertions.assertThrows(IllegalStateException.class, () -> wrapper.sync(data));
         Assertions.assertTrue(data.getDataMap().isEmpty());
+        Assertions.assertTrue(wrapper.restoreDataList.isEmpty());
     }
 
     private RestoreData data(int index, long... values) {

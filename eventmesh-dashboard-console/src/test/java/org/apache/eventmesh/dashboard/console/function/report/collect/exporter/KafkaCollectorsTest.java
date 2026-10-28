@@ -70,6 +70,7 @@ import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
+import org.apache.kafka.common.internals.KafkaFutureImpl;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -206,8 +207,10 @@ public class KafkaCollectorsTest {
         when(firstEarliest.offset()).thenReturn(0L);
         when(secondEarliest.offset()).thenReturn(5L);
         when(client.listOffsets(anyMap())).thenReturn(latest, earliest);
-        when(latest.all()).thenReturn(KafkaFuture.completedFuture(Map.of(firstPartition, firstLatest, secondPartition, secondLatest)));
-        when(earliest.all()).thenReturn(KafkaFuture.completedFuture(Map.of(firstPartition, firstEarliest, secondPartition, secondEarliest)));
+        when(latest.partitionResult(firstPartition)).thenReturn(KafkaFuture.completedFuture(firstLatest));
+        when(latest.partitionResult(secondPartition)).thenReturn(KafkaFuture.completedFuture(secondLatest));
+        when(earliest.partitionResult(firstPartition)).thenReturn(KafkaFuture.completedFuture(firstEarliest));
+        when(earliest.partitionResult(secondPartition)).thenReturn(KafkaFuture.completedFuture(secondEarliest));
         ListConsumerGroupsResult groups = mock(ListConsumerGroupsResult.class);
         ConsumerGroupListing listing = mock(ConsumerGroupListing.class);
         when(listing.groupId()).thenReturn("buyers");
@@ -262,6 +265,85 @@ public class KafkaCollectorsTest {
     }
 
     @Test
+    public void busyAdminRoundCompletesWithoutWaitingForActiveRound() throws Exception {
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        KafkaAdminCollect collector = new KafkaAdminCollect() {
+            @Override
+            protected void doCollect() {
+                entered.countDown();
+                await(release);
+            }
+        };
+        collector.setClusterMetadata(cluster());
+        collector.setCollectMetadata(collect());
+        CompletableFuture<Void> active = CompletableFuture.runAsync(() -> collector.collect(0, recording(new ArrayList<>())));
+        CompletableFuture<Void> busy = null;
+        List<RestoreData> skipped = new ArrayList<>();
+        try {
+            assertTrue(entered.await(5, TimeUnit.SECONDS));
+            busy = CompletableFuture.runAsync(() -> collector.collect(0, recording(skipped)));
+            busy.get(1, TimeUnit.SECONDS);
+            assertEquals(1, skipped.size());
+            assertTrue(skipped.get(0).getDataMap().isEmpty());
+        } finally {
+            release.countDown();
+            active.get(5, TimeUnit.SECONDS);
+            if (busy != null) {
+                busy.get(5, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    @Test
+    public void failedPartitionKeepsHealthyPartitionOffsetsAndLag() throws Exception {
+        AdminClient client = mock(AdminClient.class, RETURNS_DEEP_STUBS);
+        Node node = new Node(1, "localhost", 9092);
+        TopicPartition healthy = new TopicPartition("orders", 0);
+        TopicPartition failed = new TopicPartition("orders", 1);
+        TopicDescription topic = new TopicDescription("orders", false, List.of(
+            new TopicPartitionInfo(0, node, List.of(node), List.of(node)),
+            new TopicPartitionInfo(1, node, List.of(node), List.of(node))));
+        ListOffsetsResultInfo latest = mock(ListOffsetsResultInfo.class);
+        ListOffsetsResultInfo earliest = mock(ListOffsetsResultInfo.class);
+        when(latest.offset()).thenReturn(10L);
+        when(earliest.offset()).thenReturn(0L);
+        KafkaFutureImpl<ListOffsetsResultInfo> failure = new KafkaFutureImpl<>();
+        failure.completeExceptionally(new IllegalStateException("partition unavailable"));
+        when(client.describeCluster().nodes().get(anyLong(), any(TimeUnit.class))).thenReturn(List.of(node));
+        when(client.listTopics(any(ListTopicsOptions.class)).names().get(anyLong(), any(TimeUnit.class))).thenReturn(Set.of("orders"));
+        when(client.describeTopics(Set.of("orders")).allTopicNames().get(anyLong(), any(TimeUnit.class)))
+            .thenReturn(Map.of("orders", topic));
+        when(client.listOffsets(anyMap())).thenReturn(
+            new ListOffsetsResult(Map.of(healthy, KafkaFuture.completedFuture(latest), failed, failure)),
+            new ListOffsetsResult(Map.of(healthy, KafkaFuture.completedFuture(earliest), failed, failure)));
+        ConsumerGroupListing listing = mock(ConsumerGroupListing.class);
+        when(listing.groupId()).thenReturn("buyers");
+        when(client.listConsumerGroups().all().get(anyLong(), any(TimeUnit.class))).thenReturn(List.of(listing));
+        when(client.describeConsumerGroups(List.of("buyers")).all().get(anyLong(), any(TimeUnit.class))).thenReturn(Map.of());
+        when(client.listConsumerGroupOffsets("buyers").partitionsToOffsetAndMetadata().get(anyLong(), any(TimeUnit.class)))
+            .thenReturn(Map.of(healthy, new OffsetAndMetadata(6L)));
+        KafkaAdminCollect collector = new KafkaAdminCollect() {
+            @Override
+            protected AdminClient createClient(CreateKakfaConfig config) {
+                return client;
+            }
+        };
+        collector.setClusterMetadata(cluster());
+        collector.setCollectMetadata(collect());
+        collector.setBrokers(List.of(broker()));
+
+        RestoreData data = collect(collector);
+        KafkaPartitionOffsetMetrics partition =
+            (KafkaPartitionOffsetMetrics) data.getDataMap().get(KafkaPartitionOffsetMetrics.class).get(0);
+        KafkaConsumerOffsetMetrics group =
+            (KafkaConsumerOffsetMetrics) data.getDataMap().get(KafkaConsumerOffsetMetrics.class).get(0);
+        assertEquals("0", partition.getPartitionIndex());
+        assertEquals(10L, partition.getValueLatestOffset());
+        assertEquals(4L, group.getValueLag());
+    }
+
+    @Test
     public void unavailableAdminValuesUseErrorMarkerInsteadOfNull() throws Exception {
         AdminClient client = mock(AdminClient.class, RETURNS_DEEP_STUBS);
         Node node = new Node(1, "localhost", 9092);
@@ -275,8 +357,13 @@ public class KafkaCollectorsTest {
             .thenReturn(Set.of("orders"));
         when(client.describeTopics(Set.of("orders")).allTopicNames().get(anyLong(), any(TimeUnit.class)))
             .thenReturn(Map.of("orders", topic));
-        when(client.listOffsets(anyMap()).all().get(anyLong(), any(TimeUnit.class)))
-            .thenReturn(Map.of(partition, latest), Map.of());
+        ListOffsetsResult latestResult = mock(ListOffsetsResult.class);
+        ListOffsetsResult earliestResult = mock(ListOffsetsResult.class);
+        KafkaFutureImpl<ListOffsetsResultInfo> unavailable = new KafkaFutureImpl<>();
+        unavailable.completeExceptionally(new IllegalStateException("earliest offset unavailable"));
+        when(client.listOffsets(anyMap())).thenReturn(latestResult, earliestResult);
+        when(latestResult.partitionResult(partition)).thenReturn(KafkaFuture.completedFuture(latest));
+        when(earliestResult.partitionResult(partition)).thenReturn(unavailable);
         when(client.listConsumerGroups().all().get(anyLong(), any(TimeUnit.class)))
             .thenThrow(new TimeoutException("consumer groups unavailable"));
         KafkaAdminCollect collector = new KafkaAdminCollect() {
@@ -610,7 +697,7 @@ public class KafkaCollectorsTest {
             collector.emit(8L);
             throw new IllegalStateException("failed after partial sample");
         };
-        assertThrows(IllegalStateException.class, () -> collector.collect(3, wrapper));
+        assertThrows(IllegalStateException.class, () -> collector.collect(0, wrapper));
         // 失败轮次只结算，不交付部分样本；仍使用真实汇总链路确认完成数归零。
         verify(engine).batchInsertByClass(Map.of());
         collector.action = () -> collector.emit(0L);
@@ -648,9 +735,9 @@ public class KafkaCollectorsTest {
                 }
             };
             DataSyncHandlerWrapper skipped = handler.getDataSyncHandlerWrapper(1);
-            collector.collect(2, skipped);
+            collector.collect(0, skipped);
             assertEquals(1, completions.get());
-            collector.collect(3, handler.getDataSyncHandlerWrapper(1));
+            collector.collect(0, handler.getDataSyncHandlerWrapper(1));
             assertEquals(2, completions.get());
         } finally {
             release.countDown();

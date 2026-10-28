@@ -21,8 +21,9 @@ import org.apache.eventmesh.dashboard.common.annotation.ClusterTypeMark;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
-import org.apache.eventmesh.dashboard.console.function.report.collect.AbstractCollect;
 import org.apache.eventmesh.dashboard.console.function.report.collect.DataSyncHandler.DataSyncHandlerWrapper;
+import org.apache.eventmesh.dashboard.console.function.report.collect.KafkaCollect;
+import org.apache.eventmesh.dashboard.console.function.report.collect.RestoreData;
 import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaClusterMetrics;
 import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaConsumerGroupMetrics;
 import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaConsumerOffsetMetrics;
@@ -36,6 +37,7 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ConsumerGroupDescription;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
+import org.apache.kafka.clients.admin.ListOffsetsResult;
 import org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo;
 import org.apache.kafka.clients.admin.ListTopicsOptions;
 import org.apache.kafka.clients.admin.OffsetSpec;
@@ -54,6 +56,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -64,11 +67,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ClusterTypeMark(clusterType = {ClusterType.STORAGE_KAFKA_CLUSTER})
-public class KafkaAdminCollect extends AbstractCollect {
+public class KafkaAdminCollect extends KafkaCollect {
 
     private static final int REQUEST_TIMEOUT_SECONDS = 5;
 
     private static final long UNAVAILABLE_VALUE = -1L;
+
+    private final AtomicBoolean collecting = new AtomicBoolean();
 
     /** 用于构造 bootstrap 地址的节点列表，由 Kafka 专用注册器提供。 */
     @Setter
@@ -87,9 +92,18 @@ public class KafkaAdminCollect extends AbstractCollect {
     }
 
     @Override
-    public synchronized void collect(int index, DataSyncHandlerWrapper wrapper) {
-        // 父类在实例中保存本轮采集缓冲，同一实例串行执行，避免两轮结果互相覆盖。
-        super.collect(index, wrapper);
+    public void collect(int index, DataSyncHandlerWrapper wrapper) {
+        if (!collecting.compareAndSet(false, true)) {
+            RestoreData empty = createRestoreData();
+            empty.setIndex(index);
+            wrapper.sync(empty);
+            return;
+        }
+        try {
+            super.collect(index, wrapper);
+        } finally {
+            collecting.set(false);
+        }
     }
 
     @Override
@@ -136,6 +150,9 @@ public class KafkaAdminCollect extends AbstractCollect {
         long requestTimeoutMillis = TimeUnit.SECONDS.toMillis(REQUEST_TIMEOUT_SECONDS);
         properties.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, (int) requestTimeoutMillis);
         properties.put(AdminClientConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, (int) requestTimeoutMillis);
+        // 单个不可达节点不能占满整轮期限，应留出时间连接其他 bootstrap 节点。
+        properties.put(AdminClientConfig.SOCKET_CONNECTION_SETUP_TIMEOUT_MS_CONFIG, 2000L);
+        properties.put(AdminClientConfig.SOCKET_CONNECTION_SETUP_TIMEOUT_MAX_MS_CONFIG, 2000L);
         return AdminClient.create(properties);
     }
 
@@ -201,10 +218,9 @@ public class KafkaAdminCollect extends AbstractCollect {
             earliestRequest.put(partition, OffsetSpec.earliest());
         });
         try {
-            Map<TopicPartition, ListOffsetsResultInfo> latestResult =
-                client.listOffsets(latestRequest).all().get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Map<TopicPartition, ListOffsetsResultInfo> latestResult = readOffsets(client, latestRequest);
             // 最早位点失败不应丢弃已经取得的末端位点及消费积压。
-            Map<TopicPartition, ListOffsetsResultInfo> earliestResult = readEarliestOffsets(client, earliestRequest);
+            Map<TopicPartition, ListOffsetsResultInfo> earliestResult = readOffsets(client, earliestRequest);
             latestResult.forEach((partition, info) -> {
                 // 无效位点不作为零值上报，避免影响后续消费积压计算。
                 if (info.offset() < 0) {
@@ -224,20 +240,24 @@ public class KafkaAdminCollect extends AbstractCollect {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.warn("Kafka partition offset collection interrupted for cluster {}", getClusterMetadata().getId(), e);
-        } catch (ExecutionException | TimeoutException e) {
-            log.warn("Kafka partition offset collection failed for cluster {}", getClusterMetadata().getId(), e);
         }
         return latest;
     }
 
-    private Map<TopicPartition, ListOffsetsResultInfo> readEarliestOffsets(AdminClient client, Map<TopicPartition, OffsetSpec> request)
+    private Map<TopicPartition, ListOffsetsResultInfo> readOffsets(AdminClient client, Map<TopicPartition, OffsetSpec> request)
         throws InterruptedException {
-        try {
-            return client.listOffsets(request).all().get(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        } catch (ExecutionException | TimeoutException e) {
-            log.warn("Kafka earliest offsets unavailable for cluster {}", getClusterMetadata().getId(), e);
-            return Map.of();
+        ListOffsetsResult response = client.listOffsets(request);
+        Map<TopicPartition, ListOffsetsResultInfo> offsets = new HashMap<>();
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(REQUEST_TIMEOUT_SECONDS);
+        for (TopicPartition partition : request.keySet()) {
+            try {
+                long remaining = Math.max(0L, deadline - System.nanoTime());
+                offsets.put(partition, response.partitionResult(partition).get(remaining, TimeUnit.NANOSECONDS));
+            } catch (ExecutionException | TimeoutException e) {
+                log.warn("Kafka offset unavailable for cluster {} partition {}", getClusterMetadata().getId(), partition, e);
+            }
         }
+        return offsets;
     }
 
     /**

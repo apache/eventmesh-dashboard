@@ -125,14 +125,6 @@ public class RowMapperUtil {
             return dbValue;
         }
 
-        // 历史 collect.enable 使用 INT，且未启用的 JMX 端口默认空串，按目标字段语义解析 JDBC 值。
-        if (fieldType == Boolean.class && dbValue instanceof Number number) {
-            return number.intValue() != 0;
-        }
-        if (Number.class.isAssignableFrom(fieldType) && dbValue instanceof String text && StringUtils.isBlank(text)) {
-            return null;
-        }
-
         // ========== 数字类型互转 ==========
         if (Number.class.isAssignableFrom(fieldType) && dbValue instanceof Number) {
             return convertNumber((Number) dbValue, fieldType);
@@ -146,6 +138,9 @@ public class RowMapperUtil {
         // ========== 日期类型 ==========
         if (fieldType == LocalDateTime.class && dbValue instanceof Timestamp) {
             return ((Timestamp) dbValue).toLocalDateTime();
+        }
+        if (fieldType == java.util.Date.class && dbValue instanceof Timestamp) {
+            return new java.util.Date(((Timestamp) dbValue).getTime());
         }
 
         // 其他：原样返回，交给反射set（可能继续报错）

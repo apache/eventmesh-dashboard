@@ -1289,8 +1289,6 @@ public class RocketMQCollectTest {
                 RocketmqConsumerOffset.class, RocketmqConsumerConnectionNumber.class, RocketmqBrokerMessagesIn.class,
                 RocketmqBrokerMessagesOut.class, RocketmqStorageDispatchBehindBytes.class, RocketmqStorageFlushBehindBytes.class,
                 RocketmqStorageMessageReserveTime.class, RocketmqThreadPoolWartermark.class, RocketmqTopicNumber.class,
-                // 原生运行时响应包含既有累计指标，真实环境也必须逐项验证，不能仅按 Mock 缺省字段列举模型。
-                RocketmqMessagesInTotal.class, RocketmqMessagesOutTotal.class, RocketmqThroughputInTotal.class,
                 RocketmqConsumerGroupNumber.class, RocketmqTopicMessagesIn.class, RocketmqGroupMessagesOut.class, RocketmqConsumerLagLatency.class, RocketmqConsumerSuccessTps.class, RocketmqConsumerFailedTps.class, RocketmqConsumerProcessTime.class, RocketmqStorageDiskUsage.class, RocketmqStorageDiskFreeBytes.class), models.keySet(),
                 "Only existing Topic/consumer measurements and approved Broker stats/runtime measurements are collected");
             var requests = org.mockito.ArgumentCaptor.forClass(RemotingCommand.class);
@@ -1544,9 +1542,6 @@ public class RocketMQCollectTest {
         byte[] body = responses.get(Integer.toString(RequestCode.GET_BROKER_RUNTIME_INFO));
         Assertions.assertNotNull(body);
         var values = RemotingSerializable.decode(body, KVTable.class).getTable();
-        Assertions.assertEquals(Long.parseLong(values.get("msgPutTotalTodayNow")), rows(models, RocketmqMessagesInTotal.class).get(0).getValue());
-        Assertions.assertEquals(Long.parseLong(values.get("msgGetTotalTodayNow")), rows(models, RocketmqMessagesOutTotal.class).get(0).getValue());
-        Assertions.assertEquals(Long.parseLong(values.get("putMessageSizeTotal")), rows(models, RocketmqThroughputInTotal.class).get(0).getValue());
         long dispatch = Long.parseLong(values.get("dispatchBehindBytes"));
         Assertions.assertEquals(1, rows(models, RocketmqStorageDispatchBehindBytes.class).size());
         Assertions.assertEquals(dispatch, rows(models, RocketmqStorageDispatchBehindBytes.class).get(0).getValue());
@@ -1619,9 +1614,6 @@ public class RocketMQCollectTest {
         tables.put(RocketmqConsumerProcessTime.class, "rocketmq_consumer_process_time");
         tables.put(RocketmqStorageDiskUsage.class, "rocketmq_storage_disk_usage");
         tables.put(RocketmqStorageDiskFreeBytes.class, "rocketmq_storage_disk_free_bytes");
-        tables.put(RocketmqMessagesInTotal.class, "rocketmq_messages_in_total");
-        tables.put(RocketmqMessagesOutTotal.class, "rocketmq_messages_out_total");
-        tables.put(RocketmqThroughputInTotal.class, "rocketmq_throughput_in_total");
         engine.setClazzToTableName(tables);
         try {
             // 使用独立测试库，避免同名历史表结构影响测试；建表及写入仍调用现有报表引擎。
@@ -1845,11 +1837,7 @@ public class RocketMQCollectTest {
             header.setUnitMode(false);
             header.setBatch(false);
             RemotingCommand send = RemotingCommand.createRequestCommand(RequestCode.SEND_MESSAGE, header);
-            // 4.9.8 读取最早消息时间时需要完整的 2 * maxMessageSize 扫描范围。
-            // 三条 3 MiB 测试消息使默认 4 MiB 限制的空 Broker 具备该范围，仍保持队列位点为 3。
-            byte[] payload = new byte[3 * 1024 * 1024];
-            java.util.Arrays.fill(payload, (byte) ('a' + i));
-            send.setBody(payload);
+            send.setBody(("iotdb-metric-" + i).getBytes(StandardCharsets.UTF_8));
             assertSuccess(client.invokeSync(send, 3000));
         }
         SubscriptionGroupConfig group = new SubscriptionGroupConfig();

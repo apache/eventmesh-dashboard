@@ -86,14 +86,11 @@ public abstract class AbstractCollect implements Collect {
         if (Objects.nonNull(this.runtimeMetadata) && data instanceof RuntimeId runtimeId) {
             runtimeId.setRuntimeId(this.runtimeMetadata.getId());
             runtimeId.setRuntimeName(this.runtimeMetadata.getName());
-            // JMX 节点同时覆盖 Broker 与 KRaft，补齐类型以支持报表资源过滤。
-            runtimeId.setRuntimeType(this.runtimeMetadata.getClusterType() == null ? null : this.runtimeMetadata.getClusterType().name());
         }
         this.current.setData(data);
     }
 
-    // 子类跳过或失败的轮次也使用相同的结果契约，独立容器不会覆盖正在采集的缓冲。
-    protected final RestoreData createRestoreData() {
+    private RestoreData createRestoreData() {
         RestoreData restoreData = new RestoreData();
         restoreData.setAbstractCollect(this);
         restoreData.setCollectMetadata(this.collectMetadata);
@@ -104,8 +101,6 @@ public abstract class AbstractCollect implements Collect {
     private synchronized void currentData() {
         if (this.backup != null) {
             this.current = this.backup;
-            // 已取出的缓冲要等待本轮归还，不能在另一轮尚未入库时再次取得同一对象。
-            this.backup = null;
         } else {
             this.current = this.createRestoreData();
         }

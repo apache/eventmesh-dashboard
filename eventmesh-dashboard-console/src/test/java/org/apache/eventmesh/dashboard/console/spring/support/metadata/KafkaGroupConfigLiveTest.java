@@ -86,9 +86,8 @@ class KafkaGroupConfigLiveTest {
     private DataMetadataHandler<BaseClusterIdBase> configHandler;
 
     static List<Object[]> brokerTargets() {
-        // 允许隔离测试设施使用空闲端口，避免碰到开发环境的容器监听地址。
-        return List.of(new Object[] {ClusterType.STORAGE_KAFKA_RAFT, "127.0.0.1", Integer.getInteger("kafka.live.kraft.port", 19092)},
-            new Object[] {ClusterType.STORAGE_KAFKA_BROKER, "127.0.0.1", Integer.getInteger("kafka.live.zk.port", 29092)});
+        return List.of(new Object[] {ClusterType.STORAGE_KAFKA_RAFT, "127.0.0.1", 19092},
+            new Object[] {ClusterType.STORAGE_KAFKA_BROKER, "127.0.0.1", 29092});
     }
 
     @ParameterizedTest(name = "{0}")

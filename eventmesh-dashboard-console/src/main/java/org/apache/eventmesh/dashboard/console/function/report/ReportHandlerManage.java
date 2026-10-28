@@ -126,6 +126,11 @@ public class ReportHandlerManage {
     @Setter
     private boolean enable = true;
 
+    /** Kafka 采集使用现有数据源读取集群与节点配置。 */
+    public void setKafkaDataSource(DruidDataSource dataSource) {
+        this.collectManage.setKafkaDataSource(dataSource);
+    }
+
     public void init() {
         this.handlerConfig();
         ClasspathScanner classpathScanner =
@@ -150,17 +155,11 @@ public class ReportHandlerManage {
         this.ddlHandler();
     }
 
-    /** 采集配置由现有管理器读取，复用应用数据源，避免创建独立的元数据同步链路。 */
-    public void setDataSource(DruidDataSource dataSource) {
-        this.collectManage.setDataSource(dataSource);
-    }
-
     public Map<String, List<Map<String, Object>>> queryResultIsMap(List<SingleGeneralReportDO> singleGeneralReportDOList) {
         Map<String, CompletableFuture<List<Map<String, Object>>>> completableFutures = new HashMap<>(singleGeneralReportDOList.size());
         singleGeneralReportDOList.forEach(reportDO -> {
             CompletableFuture<List<Map<String, Object>>> completableFuture = reportEngine.query(reportDO);
-            // 同一展示类型可包含多张报表，使用报表名与单报表入口保持一致，避免结果覆盖。
-            completableFutures.put(reportDO.getReportName(), completableFuture);
+            completableFutures.put(reportDO.getReportType(), completableFuture);
         });
         Map<String, List<Map<String, Object>>> resultMap = new HashMap<>(singleGeneralReportDOList.size());
         completableFutures.forEach((key, completableFuture) -> {

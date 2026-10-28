@@ -40,13 +40,6 @@ public class GeneralReportDO {
 
     private Long groupId;
 
-    // Kafka 报表按远端名称和分区保存标签，名称过滤不依赖控制台内部资源 ID。
-    private String topicName;
-
-    private String groupName;
-
-    private String partitionIndex;
-
     /**
      * 查询条件 与 分组条件
      */

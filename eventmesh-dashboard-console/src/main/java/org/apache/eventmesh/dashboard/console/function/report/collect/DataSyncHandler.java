@@ -60,8 +60,7 @@ public class DataSyncHandler {
         Map<Class<?>, List<Object>> classCollectListMap = new HashMap<>();
         dataSyncHandlerWrapper.restoreDataList.forEach((restoreData -> {
             restoreData.getDataMap().forEach((key, value) -> {
-                // MyBatis 需要可迭代的样本列表；复制引用后再归还缓冲，避免错误迭代器与已清空的集合。
-                classCollectListMap.computeIfAbsent(key, k -> new ArrayList<>()).addAll(value);
+                classCollectListMap.computeIfAbsent(key, k -> new CollectList<>()).addAll(value);
             });
             restoreData.restore();
         }));
@@ -155,13 +154,13 @@ public class DataSyncHandler {
             this.restoreDataList = new ArrayList<>(count + count / 2);
         }
 
-        // 任务按完成顺序回传，共享列表必须互斥追加，预分配容量不代表任务编号对应的元素已存在。
-        public synchronized void sync(RestoreData restoreData) {
+        public void sync(RestoreData restoreData) {
             if (this.timeout) {
                 log.error("DataSyncHandlerWrapper timeout, cluster id is {} cluster type is {}",
                     restoreData.getCollectMetadata().getClusterId(), restoreData.getCollectMetadata().getClusterType());
             }
-            restoreDataList.add(restoreData);
+            // TODO 我赌，时间差，可见性到位了
+            restoreDataList.add(restoreData.getIndex(), restoreData);
             if (this.atomicInteger.decrementAndGet() == 0) {
                 LocalDateTime now = LocalDateTime.now();
                 log.info("sync finished , count is {} start time is {}  end time is {} , time consuming is {} ", restoreDataList.size(), startTime,

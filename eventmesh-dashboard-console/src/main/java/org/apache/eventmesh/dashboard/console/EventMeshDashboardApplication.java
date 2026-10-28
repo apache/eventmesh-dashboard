@@ -23,14 +23,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.lamp.decoration.core.spring.DecorationAutoConfiguration;
-
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-// Servlet 桥接由项目配置复用核心扩展点，避免自动配置反射加载额外适配器依赖。
-@SpringBootApplication(exclude = DecorationAutoConfiguration.class)
+@SpringBootApplication
 @EnableScheduling
 @EnableTransactionManagement
 public class EventMeshDashboardApplication {

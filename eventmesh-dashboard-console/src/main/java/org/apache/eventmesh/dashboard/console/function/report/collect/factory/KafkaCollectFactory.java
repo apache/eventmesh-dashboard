@@ -17,7 +17,6 @@
 
 package org.apache.eventmesh.dashboard.console.function.report.collect.factory;
 
-import org.apache.eventmesh.dashboard.common.annotation.ClusterTypeMark;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
@@ -36,13 +35,11 @@ import java.util.Objects;
 /**
  * 每个 Kafka 集群创建一个 Admin 采集任务，每个已配置 JMX 端口的有效 Broker 创建一个 JMX 采集任务。
  */
-@ClusterTypeMark(clusterType = {ClusterType.STORAGE_KAFKA_CLUSTER})
-public class KafkaCollectFactory implements CollectFactory {
+public class KafkaCollectFactory {
 
     /**
      * 根据统一缓存的完整节点列表创建任务，任务表由 CollectManage 维护。
      */
-    @Override
     public Map<String, Collect> createCollectors(CollectMetadata collectMetadata, ClusterMetadata clusterMetadata,
         List<RuntimeMetadata> runtimeMetadataList) {
         Map<String, Collect> collectors = new HashMap<>();

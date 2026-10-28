@@ -96,7 +96,7 @@ public class FunctionManage {
     @Autowired
     private DBRemotingResultHook dbRemotingResultHook;
 
-    @Autowired
+    @Autowired(required = false)
     private DruidDataSource dataSource;
 
     @Value("${function.enabled:false}")
@@ -111,8 +111,8 @@ public class FunctionManage {
         ReportHandlerManage reportHandlerManage = new ReportHandlerManage();
         reportHandlerManage.setReportConfig(functionConfig.getReportConfig());
         reportHandlerManage.setEnable(functionConfig.isEnabledReport());
-        // 报表管理器需要同一数据源读取节点和采集配置，原来未注入时无法注册采集任务。
-        reportHandlerManage.setDataSource(dataSource);
+        // Kafka 使用现有数据源读取节点和采集配置。
+        reportHandlerManage.setKafkaDataSource(dataSource);
         reportHandlerManage.init();
         return reportHandlerManage;
     }

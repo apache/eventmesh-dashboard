@@ -22,6 +22,8 @@ import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportT
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,65 +34,98 @@ public class IotDBReportMetaHandler extends AbstractReportMetaHandler {
 
     @Override
     public String insert() {
-        StringBuilder sql = new StringBuilder("insert into ").append(this.reportMeta.getTableName()).append(" (");
-        sql.append(this.fieldList.stream().map(this::column).collect(java.util.stream.Collectors.joining(",")));
-        // 名称可以包含引号，数值也通过绑定保留零值、错误标记与 INT64 精度。
-        sql.append(") values <foreach collection='_parameter' item='item' separator=','>(");
-        sql.append(this.fieldList.stream().map(field -> "#{item." + field.getName() + "}")
-            .collect(java.util.stream.Collectors.joining(",")));
-        return sql.append(")</foreach>").toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("insert into ");
+        stringBuilder.append(this.reportMeta.getTableName());
+        stringBuilder.append(" (");
+        this.fieldList.forEach(field -> {
+            String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, field.getName());
+            stringBuilder.append(key).append(",");
+        });
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1).append(" ) values \r\n");
+        stringBuilder.append("  <foreach  collection='_parameter' item='item' index='index'  separator=','> \r\n    (");
+        this.fieldList.forEach(field -> {
+            if (field.getName().endsWith("Id") || !(Number.class.isAssignableFrom(field.getType()))) {
+                stringBuilder.append("'${item.").append(field.getName()).append("}'");
+            } else {
+                stringBuilder.append("${item.").append(field.getName()).append("}");
+            }
+
+            stringBuilder.append(",");
+        });
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1).append(")\r\n").append("  </foreach>");
+        return stringBuilder.toString();
     }
 
     @Override
     public String query(String type) {
-        StringBuilder sql = new StringBuilder("select <choose><when test='interval != null'>")
-            .append("date_bin(${interval}, time)</when><otherwise>time</otherwise></choose> as time");
-        // 每个逗号由字段自身提供，所有 TAG 都参与分组，防止不同 Topic、消费组或分区被合并。
-        for (Field field : this.fieldList) {
-            if ("time".equals(field.getName())) {
-                continue;
+        Map<String, Field> map = new HashMap<>();
+        this.fieldList.forEach(field -> {
+            map.put(field.getName(), field);
+        });
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("select ")
+            .append("\r\n  <if test='_parameter.interval != null'> date_bin(${_parameter.interval}, time) as time , </if>")
+            .append("\r\n  <if test='_parameter.interval == null'> time ,</if> ");
+        stringBuilder.append("\r\n  <trim prefix=' ' prefixOverrides=','>");
+        this.fieldList.forEach(field -> {
+            String filedName = field.getName();
+            if (Objects.equals(filedName, "time")) {
+                return;
             }
-            String name = column(field);
-            sql.append(",");
-            if (field.getName().startsWith("value")) {
-                sql.append("<choose><when test='selectFun != null'>${selectFun}(").append(name)
-                    .append(") as ").append(name).append("</when><otherwise>").append(name).append("</otherwise></choose>");
-            } else if (isTag(field)) {
-                sql.append(name);
-            } else {
-                sql.append("<choose><when test='selectFun != null'>last_by(").append(name)
-                    .append(", time) as ").append(name).append("</when><otherwise>").append(name).append("</otherwise></choose>");
+            String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
+            if (filedName.startsWith("value")) {
+                stringBuilder.append("\r\n    <if test='_parameter.selectFun == null'>,").append(key).append("</if>")
+                    .append("\r\n    <if test='_parameter.selectFun != null'> ,${_parameter.selectFun}(").append(key).append(")</if>");
+            } else if (key.endsWith("_id")) {
+                stringBuilder.append("\r\n    ");
+                stringBuilder.append("<if test='_parameter.").append(filedName).append("!=null'>  ,")
+                    .append(key).append(',');
+                String typeField = filedName.replace("Id", "Type");
+                if (map.containsKey(typeField)) {
+                    stringBuilder.append(",").append(key.replace("id", "type"));
+                }
+                String nameField = filedName.replace("Id", "Name");
+                if (map.containsKey(nameField)) {
+                    //  last_by 函数可以解决 attribute类型字段 必须 与 group by 保持一致的问题
+                    stringBuilder.append(",")
+                        .append("last_by(").append(key.replace("id", "name"))
+                        .append(")").append(",");
+                }
+                stringBuilder.append("  </if>");
             }
-        }
-        sql.append(" from ").append(this.reportMeta.getTableName())
-            .append(" where time &gt;= #{startTime} and time &lt; #{endTime}");
-        for (Field field : this.fieldList) {
-            String name = field.getName();
-            if (name.endsWith("Id") || field.isAnnotationPresent(ReportTag.class) || "runtimeType".equals(name)) {
-                sql.append("<if test='").append(name).append(" != null'> and ").append(column(field))
-                    .append("=#{").append(name).append("}</if>");
+        });
+        stringBuilder.append("\r\n  </trim>");
+        stringBuilder.append("\r\nfrom ").append(this.reportMeta.getTableName()).append("\r\n where \r\n")
+            .append(" time &gt; ${startTime} and time &lt; ${endTime}  \r\n");
+        this.fieldList.forEach(field -> {
+            String filedName = field.getName();
+            if (filedName.endsWith("Id")) {
+                String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
+                stringBuilder.append("\r\n    <if test='_parameter.")
+                    .append(field.getName())
+                    .append("!=null'>")
+                    .append("   and  ")
+                    .append(key)
+                    .append("='${_parameter.")
+                    .append(field.getName())
+                    .append("}'   </if>");
             }
-        }
-        sql.append("<if test='selectFun != null'> group by ")
-            .append("<choose><when test='interval != null'>date_bin(${interval}, time)</when><otherwise>time</otherwise></choose>");
-        for (Field field : this.fieldList) {
-            if (isTag(field)) {
-                sql.append(",").append(column(field));
+        });
+        stringBuilder.append("\r\n  <if test='_parameter.selectFun != null'> ");
+        stringBuilder.append("\r\n group by time, \r\n  <trim prefix=' ' prefixOverrides=','>");
+        this.fieldList.forEach(field -> {
+            String filedName = field.getName();
+            String key = CaseFormat.LOWER_CAMEL.to(com.google.common.base.CaseFormat.LOWER_UNDERSCORE, filedName);
+            if (filedName.endsWith("Id")) {
+                stringBuilder.append(AbstractReportMetaHandler.lineAndTabString);
+                stringBuilder.append("<if test='_parameter.").append(filedName).append("!=null'>,")
+                    .append(key).append(" , ");
+                stringBuilder.append("  </if>");
             }
-        }
-        return sql.append("</if>").toString();
-    }
-
-    private String column(Field field) {
-        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
-    }
-
-    private boolean isTag(Field field) {
-        return field.getName().endsWith("Id") || field.isAnnotationPresent(ReportTag.class);
-    }
-
-    public boolean supportsFilter(String name) {
-        return this.fieldList.stream().anyMatch(field -> field.getName().equals(name));
+        });
+        stringBuilder.append("\r\n  </trim>").append("\r\n  </if>");
+        return stringBuilder.toString();
     }
 
     @Override

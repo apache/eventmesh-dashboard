@@ -243,7 +243,7 @@
         </pluginManagement>
     </build>
     <profiles>
-        <!-- 验证 JDBC 映射与 Kafka 采集链路，父 POM 默认的 none 不能跳过这些回归。 -->
+        <!-- 父 POM 默认不编译测试；此 profile 只启用 Kafka 采集回归。 -->
         <profile>
             <id>kafka-collect-tests</id>
             <build>
@@ -253,13 +253,7 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <configuration>
                             <testIncludes combine.self="override">
-                                <testInclude>**/KafkaCollectManageTest.java</testInclude>
-                                <testInclude>**/KafkaCollectFactoryTest.java</testInclude>
-                                <testInclude>**/KafkaCollectorsTest.java</testInclude>
-                                <testInclude>**/KafkaDataSyncHandlerTest.java</testInclude>
-                                <testInclude>**/KafkaReportModelTest.java</testInclude>
-                                <testInclude>**/KafkaReportQueryTest.java</testInclude>
-                                <testInclude>**/KafkaRuntimeSchemaTest.java</testInclude>
+                                <testInclude>**/function/report/collect/**/Kafka*Test.java</testInclude>
                             </testIncludes>
                         </configuration>
                     </plugin>
@@ -269,40 +263,7 @@
                         <configuration>
                             <testFailureIgnore>false</testFailureIgnore>
                             <includes combine.self="override">
-                                <include>**/KafkaCollectManageTest.java</include>
-                                <include>**/KafkaCollectFactoryTest.java</include>
-                                <include>**/KafkaCollectorsTest.java</include>
-                                <include>**/KafkaDataSyncHandlerTest.java</include>
-                                <include>**/KafkaReportModelTest.java</include>
-                                <include>**/KafkaReportQueryTest.java</include>
-                                <include>**/KafkaRuntimeSchemaTest.java</include>
-                            </includes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <!-- 显式运行完整真实采集链路，服务缺失或断言失败必须阻断构建。 -->
-        <profile>
-            <id>kafka-collect-live-tests</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <testIncludes combine.self="override">
-                                <testInclude>**/KafkaCollectLiveTest.java</testInclude>
-                            </testIncludes>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <testFailureIgnore>false</testFailureIgnore>
-                            <includes combine.self="override">
-                                <include>**/KafkaCollectLiveTest.java</include>
+                                <include>**/function/report/collect/**/Kafka*Test.java</include>
                             </includes>
                         </configuration>
                     </plugin>

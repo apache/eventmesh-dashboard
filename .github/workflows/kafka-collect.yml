@@ -68,6 +68,16 @@ jobs:
         options: >-
           --health-cmd="bash -c '</dev/tcp/localhost/6667'"
           --health-interval=5s --health-timeout=3s --health-retries=30
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: codex_test_pw
+          MYSQL_ROOT_HOST: '%'
+        ports:
+          - 13306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -pcodex_test_pw"
+          --health-interval=5s --health-timeout=3s --health-retries=30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -75,30 +85,24 @@ jobs:
           distribution: corretto
           java-version: 17
           cache: maven
-      - name: Kafka unit and schema regressions
-        run: ./mvnw -B -pl eventmesh-dashboard-console -am -Pkafka-collect-tests -DfailIfNoTests=false test
-      - name: Preserve unit reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: kafka-unit-reports
-          path: '**/target/surefire-reports/**'
-      - name: Kafka JMX to IoTDB and HTTP queries
+      - name: Kafka collection and storage regressions
         run: >-
-          ./mvnw -B -pl eventmesh-dashboard-console -am -Pkafka-collect-live-tests
-          -Dtest=KafkaCollectLiveTest -Dsurefire.failIfNoSpecifiedTests=false test
+          ./mvnw -B -pl eventmesh-dashboard-console -am -Pkafka-collect-tests
+          -Dkafka.collect.bootstrap=127.0.0.1:9092 -Dkafka.collect.port=9092
+          -Dkafka.collect.jmx.port=9999 -DfailIfNoTests=false test
       - name: Require the real collection test report
         run: |
           python3 - <<'PY'
           import xml.etree.ElementTree as ET
-          path = 'eventmesh-dashboard-console/target/surefire-reports/TEST-org.apache.eventmesh.dashboard.console.function.report.collect.KafkaCollectLiveTest.xml'
-          suite = ET.parse(path).getroot()
-          assert int(suite.get('tests', '0')) > 0, suite.attrib
-          assert all(int(suite.get(key, '0')) == 0 for key in ('failures', 'errors', 'skipped')), suite.attrib
+          for name in ('KafkaCollectLiveTest', 'KafkaMetadataLiveTest'):
+              path = f'eventmesh-dashboard-console/target/surefire-reports/TEST-org.apache.eventmesh.dashboard.console.function.report.collect.{name}.xml'
+              suite = ET.parse(path).getroot()
+              assert int(suite.get('tests', '0')) > 0, suite.attrib
+              assert all(int(suite.get(key, '0')) == 0 for key in ('failures', 'errors', 'skipped')), suite.attrib
           PY
-      - name: Preserve live reports
+      - name: Preserve regression reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: kafka-live-reports
+          name: kafka-reports
           path: '**/target/surefire-reports/**'

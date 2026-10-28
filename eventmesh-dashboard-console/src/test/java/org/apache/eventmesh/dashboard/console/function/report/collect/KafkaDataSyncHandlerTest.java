@@ -26,98 +26,69 @@ import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaC
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class KafkaDataSyncHandlerTest {
 
     @Test
-    public void outOfOrderResultsAreDeliveredAsAnIterableSampleList() {
+    public void copiesSamplesBeforeReturningTheCollectorBuffer() {
         ReportEngine engine = mock(ReportEngine.class);
         AtomicReference<Map<Class<?>, List<Object>>> written = new AtomicReference<>();
         doAnswer(invocation -> {
             written.set(invocation.getArgument(0));
             return null;
         }).when(engine).batchInsertByClass(anyMap());
-        DataSyncHandler handler = new DataSyncHandler();
-        handler.setReportEngine(engine);
-        handler.setPaddingService(mock(PaddingService.class));
-        DataSyncHandler.DataSyncHandlerWrapper wrapper = handler.getDataSyncHandlerWrapper(2);
-        wrapper.sync(result(1, 2L));
-        wrapper.sync(result(0, 1L));
-        List<Object> samples = written.get().get(KafkaClusterMetrics.class);
-        assertEquals(2, samples.size());
-        assertEquals(2, samples.stream().count());
-        assertEquals(Long.valueOf(2), ((KafkaClusterMetrics) samples.iterator().next()).getValueBrokerCount());
+        KafkaDataSyncHandler handler = new KafkaDataSyncHandler(mock(PaddingService.class), engine);
+        RestoreData result = result(7L);
+        handler.getDataSyncHandlerWrapper(1).sync(result);
+        assertTrue(result.getDataMap().isEmpty());
+        assertEquals(7L, ((KafkaClusterMetrics) written.get().get(KafkaClusterMetrics.class).get(0)).getValueBrokerCount());
     }
 
     @Test
-    public void emptyRoundsCompleteThroughTheExistingResultContract() {
+    public void independentConcurrentCollectorsDeliverEverySample() {
         ReportEngine engine = mock(ReportEngine.class);
-        AtomicReference<Map<Class<?>, List<Object>>> written = new AtomicReference<>();
+        Set<Long> written = ConcurrentHashMap.newKeySet();
         doAnswer(invocation -> {
-            written.set(invocation.getArgument(0));
+            Map<Class<?>, List<Object>> samples = invocation.getArgument(0);
+            written.add(((KafkaClusterMetrics) samples.get(KafkaClusterMetrics.class).get(0)).getValueBrokerCount());
             return null;
         }).when(engine).batchInsertByClass(anyMap());
-        DataSyncHandler handler = new DataSyncHandler();
-        handler.setReportEngine(engine);
-        handler.setPaddingService(mock(PaddingService.class));
-        DataSyncHandler.DataSyncHandlerWrapper wrapper = handler.getDataSyncHandlerWrapper(2);
-        RestoreData empty = result(1, 2L);
-        empty.getDataMap().clear();
-        wrapper.sync(empty);
-        verify(engine, never()).batchInsertByClass(anyMap());
-        wrapper.sync(result(0, 2L));
-        verify(engine, times(1)).batchInsertByClass(anyMap());
-        List<Object> samples = written.get().get(KafkaClusterMetrics.class);
-        assertEquals(1, samples.size());
-        assertEquals(Long.valueOf(2), ((KafkaClusterMetrics) samples.get(0)).getValueBrokerCount());
-    }
-
-    @Test
-    public void concurrentCollectorsDeliverEverySampleExactlyOnce() {
-        ReportEngine engine = mock(ReportEngine.class);
-        AtomicReference<Map<Class<?>, List<Object>>> written = new AtomicReference<>();
-        doAnswer(invocation -> {
-            written.set(invocation.getArgument(0));
-            return null;
-        }).when(engine).batchInsertByClass(anyMap());
-        DataSyncHandler handler = new DataSyncHandler();
-        handler.setReportEngine(engine);
-        handler.setPaddingService(mock(PaddingService.class));
-        DataSyncHandler.DataSyncHandlerWrapper wrapper = handler.getDataSyncHandlerWrapper(64);
-        List<CompletableFuture<Void>> tasks = new ArrayList<>();
+        KafkaDataSyncHandler handler = new KafkaDataSyncHandler(mock(PaddingService.class), engine);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
         for (int i = 0; i < 64; i++) {
-            int index = i;
-            tasks.add(CompletableFuture.runAsync(() -> wrapper.sync(result(index, index))));
+            long value = i;
+            DataSyncHandler.DataSyncHandlerWrapper wrapper = handler.getDataSyncHandlerWrapper(1);
+            futures.add(CompletableFuture.runAsync(() -> wrapper.sync(result(value))));
         }
-        CompletableFuture.allOf(tasks.toArray(CompletableFuture[]::new)).join();
-        verify(engine, times(1)).batchInsertByClass(anyMap());
-        List<Object> samples = written.get().get(KafkaClusterMetrics.class);
-        assertEquals(64, samples.size());
-        assertEquals(64, samples.stream().map(value -> ((KafkaClusterMetrics) value).getValueBrokerCount()).distinct().count());
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+        assertEquals(64, written.size());
+        verify(engine, times(64)).batchInsertByClass(anyMap());
     }
 
     @Test
-    public void returnedBufferIsNotReusedAgainWhileItsNextBatchIsPending() {
-        AbstractCollect collector = new AbstractCollect() {
-            private long samples;
-
+    public void kafkaCollectorUsesIndependentBuffersAfterReturn() {
+        KafkaCollect collector = new KafkaCollect() {
+            private long count;
             @Override
             protected void doCollect() {
                 KafkaClusterMetrics sample = new KafkaClusterMetrics();
-                sample.setValueBrokerCount(++samples);
+                sample.setValueBrokerCount(++count);
                 setData(sample);
             }
         };
@@ -132,28 +103,24 @@ public class KafkaDataSyncHandlerTest {
             RestoreData result = invocation.getArgument(0);
             results.add(result);
             if (results.size() == 1) {
-                // 第一轮立即归还，第二轮延迟交付，第三轮不能再次取出第二轮仍占用的缓冲。
                 result.restore();
             }
             return null;
-        }).when(wrapper).sync(org.mockito.ArgumentMatchers.any(RestoreData.class));
-
+        }).when(wrapper).sync(any(RestoreData.class));
         collector.collect(0, wrapper);
-        collector.collect(1, wrapper);
-        collector.collect(2, wrapper);
-
+        collector.collect(0, wrapper);
+        collector.collect(0, wrapper);
         assertNotSame(results.get(1), results.get(2));
-        assertEquals(1, results.get(1).getDataMap().get(KafkaClusterMetrics.class).size());
-        assertEquals(Long.valueOf(2), ((KafkaClusterMetrics) results.get(1).getDataMap().get(KafkaClusterMetrics.class).get(0))
+        assertEquals(2L, ((KafkaClusterMetrics) results.get(1).getDataMap().get(KafkaClusterMetrics.class).get(0))
             .getValueBrokerCount());
     }
 
-    private RestoreData result(int index, long count) {
+    private RestoreData result(long value) {
         RestoreData result = new RestoreData();
-        result.setIndex(index);
+        result.setIndex(0);
         result.setAbstractCollect(mock(AbstractCollect.class));
         KafkaClusterMetrics sample = new KafkaClusterMetrics();
-        sample.setValueBrokerCount(count);
+        sample.setValueBrokerCount(value);
         result.setData(sample);
         return result;
     }

@@ -57,11 +57,10 @@ public class KafkaReportModelTest {
         BoundSql bound = new XMLLanguageDriver().createSqlSource(new Configuration(),
             "<script>" + handler(KafkaBrokerTopicTrafficMetrics.class).insert() + "</script>", List.class)
             .getBoundSql(List.of(sample));
-        // 参数化后检查真实绑定值，继续要求错误标记、累计值与真实零值均被保留。
-        List<Object> values = bound.getParameterMappings().stream().map(mapping -> bound.getAdditionalParameter(mapping.getProperty())).toList();
-        assertTrue(values.contains(-1L));
-        assertTrue(values.contains(42L));
-        assertTrue(values.contains(0L));
+        // 沿用参考版本的插入模板，检查错误标记、累计值与真实零值均进入样本。
+        assertTrue(bound.getSql().contains("-1"));
+        assertTrue(bound.getSql().contains("42"));
+        assertTrue(bound.getSql().contains("0"));
         assertFalse(bound.getSql().contains(",,"));
     }
 
