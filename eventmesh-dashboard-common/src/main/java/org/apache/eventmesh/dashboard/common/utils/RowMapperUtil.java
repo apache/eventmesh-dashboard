@@ -125,6 +125,11 @@ public class RowMapperUtil {
             return dbValue;
         }
 
+        // 数据库以整数表示布尔配置时，反射不能直接将 Number 赋给 Boolean。
+        if (fieldType == Boolean.class && dbValue instanceof Number) {
+            return ((Number) dbValue).intValue() != 0;
+        }
+
         // ========== 数字类型互转 ==========
         if (Number.class.isAssignableFrom(fieldType) && dbValue instanceof Number) {
             return convertNumber((Number) dbValue, fieldType);
@@ -132,7 +137,12 @@ public class RowMapperUtil {
 
         // ========== 字符串 → 数字 ==========
         if (Number.class.isAssignableFrom(fieldType) && dbValue instanceof String) {
-            return convertNumber(new BigDecimal((String) dbValue), fieldType);
+            String value = ((String) dbValue).trim();
+            // 可选数字列在数据库中可能存储空字符串，不能直接转换为数字。
+            if (value.isEmpty()) {
+                return null;
+            }
+            return convertNumber(new BigDecimal(value), fieldType);
         }
 
         // ========== 日期类型 ==========

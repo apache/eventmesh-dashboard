@@ -19,7 +19,6 @@ package org.apache.eventmesh.dashboard.console.function.report.collect.exporter;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMetaData.AggregationClass;
 import org.apache.eventmesh.dashboard.console.function.report.collect.AbstractCollect;
@@ -64,7 +63,6 @@ public class CollectExporter extends AbstractCollect {
     }
 
     protected ClusterType clusterType;
-    protected ClusterMetadata clusterMetadata;
     private Map<String, ReportMetaData> reportMetaDataMap = new HashMap<>();
     private Map<String, ReportMetaData> aggregationMetaDataMap = new HashMap<>();
     private Map<String, AggregationWrapper> aggregationWrapperMap = new HashMap<>();

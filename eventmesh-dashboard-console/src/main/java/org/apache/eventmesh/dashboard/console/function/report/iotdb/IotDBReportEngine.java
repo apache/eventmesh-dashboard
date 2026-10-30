@@ -169,6 +169,11 @@ public class IotDBReportEngine extends AbstractReportEngine {
     private DruidDataSource dataSource;
     private boolean isBatch = false;
 
+    /** Kafka 采集通过参数化写入复用现有数据源，调用方负责关闭连接。 */
+    public Connection openConnection() throws SQLException {
+        return this.dataSource.getConnection();
+    }
+
     @Override
     protected void doInit() {
         try {

@@ -27,6 +27,7 @@ import org.apache.eventmesh.dashboard.console.function.report.model.base.Runtime
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -35,15 +36,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractCollect implements Collect {
 
-    private RestoreData current;
+    // 采集回调可能在其他线程追加样本，需要看到本轮缓冲。
+    private volatile RestoreData current;
 
     private volatile RestoreData backup;
+
+    private final AtomicBoolean collectionRunning = new AtomicBoolean();
 
     @Setter
     private CollectMetadata collectMetadata;
 
+    // Share one field with exporters to prevent metadata shadowing.
     @Setter
-    private ClusterMetadata clusterMetadata;
+    protected ClusterMetadata clusterMetadata;
 
     @Setter
     private RuntimeMetadata runtimeMetadata;
@@ -51,19 +56,54 @@ public abstract class AbstractCollect implements Collect {
     @Setter
     private DataSyncHandlerWrapper dataSyncHandlerWrapper;
 
+    /**
+     * 异步采集器必须在返回前结束写入回调，或原子化本轮关闭与写入，防止迟到样本进入后续轮次。
+     */
     protected abstract void doCollect();
 
     @Override
     public void collect(int index, DataSyncHandlerWrapper dataSyncHandlerWrapper) {
         log.info("collect start index {} , cluster type {}  cluster id {}  runtime id {}", index, clusterMetadata.getClusterType(),
             clusterMetadata.getClusterType(), Objects.isNull(runtimeMetadata) ? "null" : runtimeMetadata.getId());
-        this.currentData();
-        this.current.setIndex(index);
-        this.doCollect();
-        dataSyncHandlerWrapper.sync(this.current);
-        this.current = null;
+        // 同一采集器仍在运行时，完成空批次，避免后续轮次占用等待线程。
+        if (!this.collectionRunning.compareAndSet(false, true)) {
+            log.warn("Skipping overlapping collection for cluster {} and runtime {}", this.clusterMetadata.getId(),
+                Objects.isNull(this.runtimeMetadata) ? null : this.runtimeMetadata.getId());
+            RestoreData empty = this.createRestoreData();
+            empty.setIndex(index);
+            dataSyncHandlerWrapper.sync(empty);
+            return;
+        }
+        RestoreData result;
+        try {
+            this.currentData();
+            result = this.current;
+            result.setIndex(index);
+            try {
+                this.doCollect();
+            } catch (RuntimeException | Error e) {
+                // 采集中断后丢弃未交付的样本，再将缓冲交还给采集器。
+                result.restore();
+                throw e;
+            }
+        } finally {
+            this.current = null;
+            this.collectionRunning.set(false);
+        }
+        dataSyncHandlerWrapper.sync(result);
         log.info("collect end index {} , cluster type {}  cluster id {}  runtime id {}", index, clusterMetadata.getClusterType(),
             clusterMetadata.getClusterType(), Objects.isNull(runtimeMetadata) ? "null" : runtimeMetadata.getId());
+    }
+
+    // 节点离开元数据缓存后，采集任务仍需要以原集群 ID 限定清理范围。
+    final boolean belongsToCluster(Long clusterId) {
+        return this.clusterMetadata != null && clusterId != null && Objects.equals(this.clusterMetadata.getId(), clusterId);
+    }
+
+    // 归属未知不能作为迁移证据，避免清理其他实现注入的任务。
+    final boolean belongsToDifferentCluster(Long clusterId) {
+        return this.clusterMetadata != null && this.clusterMetadata.getId() != null && clusterId != null
+            && !this.belongsToCluster(clusterId);
     }
 
     public synchronized void restore(RestoreData restoreData) {
@@ -101,6 +141,8 @@ public abstract class AbstractCollect implements Collect {
     private synchronized void currentData() {
         if (this.backup != null) {
             this.current = this.backup;
+            // 已借出的缓冲在交付完成前不能再次用于其他批次。
+            this.backup = null;
         } else {
             this.current = this.createRestoreData();
         }
