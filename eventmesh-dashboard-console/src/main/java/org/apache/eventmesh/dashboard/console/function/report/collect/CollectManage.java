@@ -22,6 +22,7 @@ import org.apache.eventmesh.dashboard.common.enums.ClusterFramework;
 import org.apache.eventmesh.dashboard.common.enums.ClusterSyncMetadataEnum;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.enums.CollectType;
+import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 import org.apache.eventmesh.dashboard.common.model.base.BaseOrganizationBase;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
@@ -31,6 +32,9 @@ import org.apache.eventmesh.dashboard.common.utils.RowMapperUtil;
 import org.apache.eventmesh.dashboard.console.function.report.ReportHandlerManage;
 import org.apache.eventmesh.dashboard.console.function.report.collect.DataSyncHandler.DataSyncHandlerWrapper;
 import org.apache.eventmesh.dashboard.console.function.report.collect.exporter.CollectExporter;
+import org.apache.eventmesh.dashboard.console.function.report.collect.exporter.KafkaAdminCollect;
+import org.apache.eventmesh.dashboard.console.function.report.collect.exporter.KafkaJmxCollect;
+import org.apache.eventmesh.dashboard.console.function.report.collect.factory.KafkaCollectFactory;
 import org.apache.eventmesh.dashboard.console.function.report.collect.padding.PaddingService;
 import org.apache.eventmesh.dashboard.console.function.report.model.base.Time;
 
@@ -41,6 +45,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -77,6 +82,11 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class CollectManage {
+
+    private static final LocalDateTime INITIAL_KAFKA_SYNC = LocalDateTime.of(2000, 1, 1, 0, 0);
+
+    /** 与现有采集配置处理一致，排除状态为 2 的配置。 */
+    private static final long EXCLUDED_COLLECT_STATUS = 2L;
 
     private static final Map<ClusterType, Class<?>> CLUSTER_TYPE_CLASS = new HashMap<>();
 
@@ -138,6 +148,9 @@ public class CollectManage {
      */
     private final Map<Long, Map<String, RuntimeMetadata>> runtimeMetadataMap = new ConcurrentHashMap<>();
 
+    /** Kafka 同名节点不能共用原名称键，按元数据 ID 索引节点。 */
+    private final Map<Long, Map<Long, RuntimeMetadata>> runtimeMetadataById = new ConcurrentHashMap<>();
+
     /**
      * cluster 元数据，用于聚合操作
      */
@@ -155,7 +168,12 @@ public class CollectManage {
 
     private final DataSyncHandler dataSyncHandler = new DataSyncHandler();
 
-    private final KafkaCollectRegistrar kafkaCollectRegistrar = new KafkaCollectRegistrar();
+    private final KafkaCollectFactory kafkaCollectFactory = new KafkaCollectFactory();
+
+    /** 旧配置缓存按配置 ID 存储，Kafka 按集群 ID 查询时需要隔离键空间。 */
+    private final Map<Long, CollectMetadata> kafkaConfigurations = new ConcurrentHashMap<>();
+
+    private LocalDateTime kafkaLastSync = INITIAL_KAFKA_SYNC;
 
     private KafkaDataSyncHandler kafkaDataSyncHandler;
 
@@ -177,20 +195,46 @@ public class CollectManage {
     }
 
     public void collect() {
-        this.kafkaCollectRegistrar.collect(this.threadPoolExecutor, this.kafkaDataSyncHandler);
         if (this.executeingCollectMap.isEmpty()) {
             log.info("Not executed because there is no collector to be executed ");
             return;
         }
-        DataSyncHandlerWrapper wrapper = dataSyncHandler.getDataSyncHandlerWrapper(executeingCollectMap.size());
-        this.executeingCollectMap.forEach(
-            (clusterId, exporter) -> this.threadPoolExecutor.execute(() -> exporter.collect(wrapper.getIndex(), wrapper)));
+        // 统一任务表中区分结果交付方式；Kafka 独立交付，其他采集器仍使用原批次处理。
+        List<Collect> regularCollectors = new ArrayList<>();
+        this.executeingCollectMap.values().forEach(collector -> {
+            if (isKafkaCollector(collector)) {
+                DataSyncHandlerWrapper wrapper = this.kafkaDataSyncHandler.getDataSyncHandlerWrapper(1);
+                this.threadPoolExecutor.execute(() -> collector.collect(0, wrapper));
+            } else {
+                regularCollectors.add(collector);
+            }
+        });
+        if (!regularCollectors.isEmpty()) {
+            DataSyncHandlerWrapper wrapper = this.dataSyncHandler.getDataSyncHandlerWrapper(regularCollectors.size());
+            regularCollectors.forEach(collector ->
+                this.threadPoolExecutor.execute(() -> collector.collect(wrapper.getIndex(), wrapper)));
+        }
     }
 
     public void syncData() {
         if (this.kafkaDataSource != null) {
             try (Connection connection = this.kafkaDataSource.getConnection()) {
-                this.kafkaCollectRegistrar.syncData(connection);
+                // 统一任务注册；仅 Kafka 元数据读取保留兼容现有表类型的映射。
+                final LocalDateTime nextSync = LocalDateTime.now().minusSeconds(1);
+                Set<Long> knownIds = new HashSet<>(this.kafkaConfigurations.keySet());
+                knownIds.addAll(this.runtimeMetadataById.keySet());
+                this.clusterMetadataMap.values().stream().filter(CollectManage::isKafkaCluster)
+                    .map(ClusterMetadata::getId).forEach(knownIds::add);
+                List<ClusterMetadata> clusters = KafkaMetadataReader.readClusters(connection, this.kafkaLastSync, knownIds);
+                clusters.stream().filter(CollectManage::isKafkaCluster).map(ClusterMetadata::getId).forEach(knownIds::add);
+                List<RuntimeMetadata> runtimes = KafkaMetadataReader.readRuntimes(connection, this.kafkaLastSync, knownIds);
+                // 新接入或变更为 Kafka 的集群可能沿用更新时间更早的采集配置。
+                boolean needsFullConfig = clusters.stream().anyMatch(cluster -> isKafkaCluster(cluster)
+                    && !this.kafkaConfigurations.containsKey(cluster.getId()));
+                LocalDateTime configSince = needsFullConfig ? INITIAL_KAFKA_SYNC : this.kafkaLastSync;
+                List<CollectMetadata> configurations = KafkaMetadataReader.readConfigurations(connection, configSince, knownIds);
+                this.handleKafkaMetadata(clusters, runtimes, configurations);
+                this.kafkaLastSync = nextSync;
             } catch (Exception e) {
                 log.error("Failed to synchronize Kafka collector metadata", e);
             }
@@ -218,8 +262,8 @@ public class CollectManage {
 
     public void handlerData(List<ClusterMetadata> clusterMetadataList, List<RuntimeMetadata> runtimeMetadataList,
         List<CollectMetadata> collectMetadataList) {
-        // Kafka 需要同时维护集群级 Admin 与节点级 JMX 任务。
-        this.kafkaCollectRegistrar.handlerData(clusterMetadataList, runtimeMetadataList, collectMetadataList);
+        // 先处理 Kafka，避免旧采集器的异常阻断同批次的 Kafka 任务注册。
+        this.handleKafkaMetadata(clusterMetadataList, runtimeMetadataList, collectMetadataList);
         clusterMetadataList.forEach((clusterMetadata) -> {
             if (clusterMetadata.isDelete() || Objects.equals(clusterMetadata.getStatus(), 0L)) {
                 clusterMetadataMap.remove(clusterMetadata.getId());
@@ -241,7 +285,7 @@ public class CollectManage {
             }
             runtimeMetadataMap.computeIfAbsent(runtimeMetadata.getClusterId(), id -> new ConcurrentHashMap<>())
                 .put(runtimeMetadata.getName(), runtimeMetadata);
-            if (this.kafkaCollectRegistrar.handlesRuntime(runtimeMetadata)) {
+            if (isKafkaRuntime(runtimeMetadata) || this.isKnownKafkaCluster(runtimeMetadata.getClusterId())) {
                 return;
             }
             if (Objects.equals(runtimeMetadata.getClusterType(), ClusterType.PROMETHEUS_EXPORTER)) {
@@ -266,7 +310,7 @@ public class CollectManage {
         });
 
         collectMetadataList.forEach(collectMetadata -> {
-            if (this.kafkaCollectRegistrar.isKafkaConfiguration(collectMetadata)) {
+            if (this.isKafkaConfiguration(collectMetadata)) {
                 return;
             }
             if (collectMetadata.isDelete() || Objects.equals(collectMetadata.getStatus(), 0L) || Objects.equals(collectMetadata.getStatus(), 2L)) {
@@ -294,9 +338,9 @@ public class CollectManage {
      * </pre>
      */
     public void deleteByCollectMetadata(CollectMetadata collectMetadata) {
-        if (this.kafkaCollectRegistrar.isKafkaConfiguration(collectMetadata)) {
+        if (this.isKafkaConfiguration(collectMetadata)) {
             // 单独移除 Kafka 的集群与节点任务，不改变其他采集器的删除流程。
-            this.kafkaCollectRegistrar.deleteConfiguration(collectMetadata);
+            this.deleteKafkaConfiguration(collectMetadata);
             return;
         }
         this.collectMetadataMap.remove(collectMetadata.getClusterId());
@@ -348,6 +392,117 @@ public class CollectManage {
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static boolean isKafkaCollector(Collect collector) {
+        return collector instanceof KafkaAdminCollect || collector instanceof KafkaJmxCollect;
+    }
+
+    private static boolean isKafkaCluster(ClusterMetadata cluster) {
+        return cluster != null && Objects.equals(cluster.getClusterType(), ClusterType.STORAGE_KAFKA_CLUSTER);
+    }
+
+    private static boolean isKafkaRuntime(RuntimeMetadata runtime) {
+        return runtime != null && (Objects.equals(runtime.getClusterType(), ClusterType.STORAGE_KAFKA_BROKER)
+            || Objects.equals(runtime.getClusterType(), ClusterType.STORAGE_KAFKA_RAFT));
+    }
+
+    private boolean isKnownKafkaCluster(Long clusterId) {
+        return clusterId != null && (this.kafkaConfigurations.containsKey(clusterId)
+            || this.runtimeMetadataById.containsKey(clusterId)
+            || isKafkaCluster(this.clusterMetadataMap.get(clusterId)));
+    }
+
+    private boolean isKafkaConfiguration(CollectMetadata configuration) {
+        return configuration != null && (Objects.equals(configuration.getClusterType(), ClusterType.STORAGE_KAFKA_CLUSTER)
+            || this.isKnownKafkaCluster(configuration.getClusterId()));
+    }
+
+    private synchronized void handleKafkaMetadata(List<ClusterMetadata> clusters, List<RuntimeMetadata> runtimes,
+        List<CollectMetadata> configurations) {
+        Set<Long> changed = new HashSet<>();
+        for (ClusterMetadata cluster : clusters) {
+            Long clusterId = cluster.getId();
+            if (isKafkaCluster(cluster)) {
+                if (cluster.isDelete() || Objects.equals(cluster.getStatus(), RecordStatus.INACTIVE.getNumber().longValue())) {
+                    this.clusterMetadataMap.remove(clusterId);
+                } else {
+                    this.clusterMetadataMap.put(clusterId, cluster);
+                }
+                changed.add(clusterId);
+            } else if (this.isKnownKafkaCluster(clusterId)) {
+                this.removeKafkaCollectors(clusterId);
+                this.kafkaConfigurations.remove(clusterId);
+                this.runtimeMetadataById.remove(clusterId);
+                // 同批次的节点和配置需看到新集群类型，不能重新注册旧 Kafka 任务。
+                if (cluster.isDelete() || Objects.equals(cluster.getStatus(), RecordStatus.INACTIVE.getNumber().longValue())) {
+                    this.clusterMetadataMap.remove(clusterId);
+                } else {
+                    this.clusterMetadataMap.put(clusterId, cluster);
+                }
+            }
+        }
+        for (RuntimeMetadata runtime : runtimes) {
+            Long clusterId = runtime.getClusterId();
+            if (!isKafkaRuntime(runtime) && !this.isKnownKafkaCluster(clusterId)) {
+                continue;
+            }
+            Map<Long, RuntimeMetadata> nodes = this.runtimeMetadataById.computeIfAbsent(clusterId, id -> new ConcurrentHashMap<>());
+            String key = this.createCollectKey(runtime);
+            if (!isKafkaRuntime(runtime) || runtime.isDelete()
+                || Objects.equals(runtime.getStatus(), RecordStatus.INACTIVE.getNumber().longValue())) {
+                nodes.remove(runtime.getId());
+                this.removeKafkaCollector(key);
+            } else {
+                nodes.put(runtime.getId(), runtime);
+            }
+            changed.add(clusterId);
+        }
+        for (CollectMetadata configuration : configurations) {
+            if (!this.isKafkaConfiguration(configuration)) {
+                continue;
+            }
+            this.kafkaConfigurations.put(configuration.getClusterId(), configuration);
+            changed.add(configuration.getClusterId());
+        }
+        changed.forEach(this::rebuildKafkaCollectors);
+    }
+
+    private void rebuildKafkaCollectors(Long clusterId) {
+        this.removeKafkaCollectors(clusterId);
+        ClusterMetadata cluster = this.clusterMetadataMap.get(clusterId);
+        CollectMetadata configuration = this.kafkaConfigurations.get(clusterId);
+        if (!isKafkaCluster(cluster) || cluster.isDelete()
+            || Objects.equals(cluster.getStatus(), RecordStatus.INACTIVE.getNumber().longValue())
+            || configuration == null || configuration.isDelete()
+            || Objects.equals(configuration.getStatus(), RecordStatus.INACTIVE.getNumber().longValue())
+            || Objects.equals(configuration.getStatus(), EXCLUDED_COLLECT_STATUS) || Boolean.FALSE.equals(configuration.getEnable())
+            || !Objects.equals(configuration.getCollectType(), CollectType.EVENTMESH)) {
+            return;
+        }
+        Map<Long, RuntimeMetadata> nodes = this.runtimeMetadataById.getOrDefault(clusterId, Map.of());
+        this.executeingCollectMap.putAll(
+            this.kafkaCollectFactory.createCollectors(configuration, cluster, new ArrayList<>(nodes.values())));
+    }
+
+    private void removeKafkaCollectors(Long clusterId) {
+        this.removeKafkaCollector(ClusterMetadata.class.getSimpleName() + "-" + clusterId);
+        Map<Long, RuntimeMetadata> nodes = this.runtimeMetadataById.get(clusterId);
+        if (nodes != null) {
+            nodes.values().forEach(runtime -> this.removeKafkaCollector(this.createCollectKey(runtime)));
+        }
+    }
+
+    private void removeKafkaCollector(String key) {
+        Collect collector = this.executeingCollectMap.get(key);
+        if (isKafkaCollector(collector)) {
+            this.executeingCollectMap.remove(key, collector);
+        }
+    }
+
+    private synchronized void deleteKafkaConfiguration(CollectMetadata configuration) {
+        this.kafkaConfigurations.remove(configuration.getClusterId());
+        this.removeKafkaCollectors(configuration.getClusterId());
     }
 
     private String createCollectKey(BaseOrganizationBase base) {

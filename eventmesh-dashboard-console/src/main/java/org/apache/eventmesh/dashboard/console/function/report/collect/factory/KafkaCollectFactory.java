@@ -18,6 +18,7 @@
 package org.apache.eventmesh.dashboard.console.function.report.collect.factory;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.enums.RecordStatus;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
@@ -50,7 +51,8 @@ public class KafkaCollectFactory {
         List<RuntimeMetadata> brokers = new ArrayList<>();
         for (RuntimeMetadata runtime : runtimeMetadataList) {
             // 上游将 status 与 isDelete 分离，停用节点仍不能注册 JMX 或进入 Admin 的地址列表。
-            if (!Objects.equals(runtime.getClusterId(), clusterMetadata.getId()) || runtime.isDelete() || Objects.equals(runtime.getStatus(), 0L)
+            if (!Objects.equals(runtime.getClusterId(), clusterMetadata.getId()) || runtime.isDelete()
+                || Objects.equals(runtime.getStatus(), RecordStatus.INACTIVE.getNumber().longValue())
                 || (!Objects.equals(runtime.getClusterType(), ClusterType.STORAGE_KAFKA_BROKER)
                 && !Objects.equals(runtime.getClusterType(), ClusterType.STORAGE_KAFKA_RAFT))) {
                 continue;

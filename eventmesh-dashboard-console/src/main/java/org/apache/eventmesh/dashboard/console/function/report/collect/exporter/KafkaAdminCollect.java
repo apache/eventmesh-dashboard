@@ -20,9 +20,10 @@ package org.apache.eventmesh.dashboard.console.function.report.collect.exporter;
 import org.apache.eventmesh.dashboard.common.annotation.ClusterTypeMark;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
+import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
+import org.apache.eventmesh.dashboard.console.function.report.collect.AbstractCollect;
 import org.apache.eventmesh.dashboard.console.function.report.collect.DataSyncHandler.DataSyncHandlerWrapper;
-import org.apache.eventmesh.dashboard.console.function.report.collect.KafkaCollect;
 import org.apache.eventmesh.dashboard.console.function.report.collect.RestoreData;
 import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaClusterMetrics;
 import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaConsumerGroupMetrics;
@@ -67,7 +68,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ClusterTypeMark(clusterType = {ClusterType.STORAGE_KAFKA_CLUSTER})
-public class KafkaAdminCollect extends KafkaCollect {
+public class KafkaAdminCollect extends AbstractCollect {
 
     private static final int REQUEST_TIMEOUT_SECONDS = 5;
 
@@ -75,11 +76,24 @@ public class KafkaAdminCollect extends KafkaCollect {
 
     private final AtomicBoolean collecting = new AtomicBoolean();
 
-    /** 用于构造 bootstrap 地址的节点列表，由 Kafka 专用注册器提供。 */
+    /** 用于构造 bootstrap 地址的节点列表，由采集管理器提供。 */
     @Setter
     private List<RuntimeMetadata> brokers = List.of();
 
     private ClusterMetadata clusterMetadata;
+
+    private CollectMetadata collectMetadata;
+
+    @Override
+    public void setCollectMetadata(CollectMetadata collectMetadata) {
+        super.setCollectMetadata(collectMetadata);
+        this.collectMetadata = collectMetadata;
+    }
+
+    @Override
+    public void restore(RestoreData restoreData) {
+        // Admin 采集轮次相互独立，不能复用仍可能被其他线程持有的结果容器。
+    }
 
     @Override
     public void setClusterMetadata(ClusterMetadata clusterMetadata) {
@@ -94,7 +108,9 @@ public class KafkaAdminCollect extends KafkaCollect {
     @Override
     public void collect(int index, DataSyncHandlerWrapper wrapper) {
         if (!collecting.compareAndSet(false, true)) {
-            RestoreData empty = createRestoreData();
+            RestoreData empty = new RestoreData();
+            empty.setAbstractCollect(this);
+            empty.setCollectMetadata(collectMetadata);
             empty.setIndex(index);
             wrapper.sync(empty);
             return;

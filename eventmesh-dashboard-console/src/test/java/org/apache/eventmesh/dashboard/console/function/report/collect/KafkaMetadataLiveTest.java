@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -159,8 +160,13 @@ public class KafkaMetadataLiveTest {
 
     @SuppressWarnings("unchecked")
     private Map<String, Collect> tasks(CollectManage manager) throws IllegalAccessException {
-        Object registrar = FieldUtils.readField(manager, "kafkaCollectRegistrar", true);
-        Map<Long, Map<String, Collect>> all = (Map<Long, Map<String, Collect>>) FieldUtils.readField(registrar, "collectors", true);
-        return all.getOrDefault(11L, Map.of());
+        Map<String, Collect> all = (Map<String, Collect>) FieldUtils.readField(manager, "executeingCollectMap", true);
+        Map<String, Collect> kafka = new HashMap<>();
+        all.forEach((key, value) -> {
+            if (value instanceof KafkaAdminCollect || value instanceof KafkaJmxCollect) {
+                kafka.put(key, value);
+            }
+        });
+        return kafka;
     }
 }

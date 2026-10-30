@@ -34,6 +34,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.apache.eventmesh.dashboard.common.enums.ClusterType;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
@@ -76,6 +77,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -120,13 +122,97 @@ public class KafkaCollectorsTest {
             assertTrue(collect(collector).getDataMap().isEmpty());
             long elapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started);
             assertTrue(elapsed >= 4500 && elapsed < 8500, "JMX read deadline: " + elapsed);
-            verify(connector).close();
         } finally {
             release.countDown();
         }
-        RestoreData next = collect(collector);
+        verify(connector, org.mockito.Mockito.timeout(2000)).close();
+        RestoreData next = collectAfterRecovery(collector);
         assertEquals(0L, ((KafkaBrokerTrafficMetrics) next.getDataMap().get(KafkaBrokerTrafficMetrics.class).get(0)).getValueMessagesInTotal());
         verify(connector, times(2)).close();
+    }
+
+    @Test
+    public void stalledNodeDoesNotStartAnotherRequestOrBlockHealthyNodes() throws Exception {
+        CountDownLatch release = new CountDownLatch(1);
+        AtomicInteger calls = new AtomicInteger();
+        MBeanServerConnection stalled = mock(MBeanServerConnection.class);
+        JMXConnector stalledConnector = mock(JMXConnector.class);
+        when(stalledConnector.getMBeanServerConnection()).thenReturn(stalled);
+        when(stalled.getAttribute(new ObjectName("kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec"), "Count"))
+            .thenAnswer(invocation -> {
+                if (calls.getAndIncrement() == 0) {
+                    while (release.getCount() > 0) {
+                        java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(10));
+                        Thread.interrupted();
+                    }
+                }
+                return 0L;
+            });
+        KafkaJmxCollect collector = jmxCollector(stalledConnector);
+        RuntimeMetadata stalledNode = broker();
+        stalledNode.setId(101L);
+        collector.setRuntimeMetadata(stalledNode);
+        try {
+            assertTrue(collect(collector).getDataMap().isEmpty());
+            assertTrue(collect(collector).getDataMap().isEmpty());
+            assertEquals(1, calls.get());
+            MBeanServerConnection healthy = mock(MBeanServerConnection.class);
+            JMXConnector healthyConnector = mock(JMXConnector.class);
+            when(healthyConnector.getMBeanServerConnection()).thenReturn(healthy);
+            when(healthy.getAttribute(new ObjectName("kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec"), "Count"))
+                .thenReturn(1L);
+            KafkaJmxCollect other = jmxCollector(healthyConnector);
+            RuntimeMetadata otherNode = broker();
+            otherNode.setId(102L);
+            other.setRuntimeMetadata(otherNode);
+            assertFalse(collect(other).getDataMap().isEmpty());
+        } finally {
+            release.countDown();
+        }
+    }
+
+    @Test
+    public void stalledCloseDoesNotBlockTheCollectionThread() throws Exception {
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        MBeanServerConnection connection = mock(MBeanServerConnection.class);
+        JMXConnector connector = mock(JMXConnector.class);
+        when(connector.getMBeanServerConnection()).thenReturn(connection);
+        when(connection.getAttribute(new ObjectName("kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec"), "Count"))
+            .thenReturn(1L);
+        doAnswer(invocation -> {
+            entered.countDown();
+            while (release.getCount() > 0) {
+                java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(10));
+                Thread.interrupted();
+            }
+            return null;
+        }).when(connector).close();
+        KafkaJmxCollect collector = jmxCollector(connector);
+        RuntimeMetadata runtime = broker();
+        runtime.setId(201L);
+        collector.setRuntimeMetadata(runtime);
+        CompletableFuture<RestoreData> result = CompletableFuture.supplyAsync(() -> collect(collector));
+        try {
+            assertTrue(entered.await(3, TimeUnit.SECONDS));
+            assertTrue(result.get(7, TimeUnit.SECONDS).getDataMap().isEmpty());
+        } finally {
+            release.countDown();
+        }
+        verify(connector, org.mockito.Mockito.timeout(2000)).close();
+    }
+
+    @Test
+    public void closeFailureDoesNotDiscardCollectedSamples() throws Exception {
+        MBeanServerConnection connection = mock(MBeanServerConnection.class);
+        JMXConnector connector = mock(JMXConnector.class);
+        when(connector.getMBeanServerConnection()).thenReturn(connection);
+        when(connection.getAttribute(new ObjectName("kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec"), "Count"))
+            .thenReturn(1L);
+        org.mockito.Mockito.doThrow(new IOException("close failed")).when(connector).close();
+        RestoreData result = collect(jmxCollector(connector));
+        KafkaBrokerTrafficMetrics traffic = (KafkaBrokerTrafficMetrics) result.getDataMap().get(KafkaBrokerTrafficMetrics.class).get(0);
+        assertEquals(1L, traffic.getValueMessagesInTotal());
     }
 
     @Test
@@ -165,7 +251,7 @@ public class KafkaCollectorsTest {
             release.countDown();
         }
         verify(late, org.mockito.Mockito.timeout(2000).times(1)).close();
-        assertFalse(collect(collector).getDataMap().isEmpty());
+        assertFalse(collectAfterRecovery(collector).getDataMap().isEmpty());
         verify(available).close();
     }
 
@@ -409,13 +495,15 @@ public class KafkaCollectorsTest {
 
         KafkaJmxCollect collector = new KafkaJmxCollect() {
             @Override
-            protected JMXConnector connect(JMXServiceURL url) throws IOException {
+            protected JMXConnector openConnector(JMXServiceURL url) throws IOException {
                 assertEquals("service:jmx:rmi:///jndi/rmi://localhost:9999/jmxrmi", url.toString());
                 return connector;
             }
         };
         collector.setClusterMetadata(cluster());
-        collector.setRuntimeMetadata(broker());
+        RuntimeMetadata runtime = broker();
+        runtime.setClusterType(ClusterType.STORAGE_KAFKA_RAFT);
+        collector.setRuntimeMetadata(runtime);
         collector.setCollectMetadata(collect());
 
         RestoreData data = collect(collector);
@@ -428,6 +516,7 @@ public class KafkaCollectorsTest {
         assertEquals(Long.valueOf(2), traffic.getValueFailedProduceRequestsTotal());
         assertEquals(Long.valueOf(12), traffic.getRuntimeId());
         assertEquals(Long.valueOf(11), traffic.getClustersId());
+        assertEquals(ClusterType.STORAGE_KAFKA_RAFT.name(), traffic.getRuntimeType());
         KafkaBrokerHealthMetrics health =
             (KafkaBrokerHealthMetrics) data.getDataMap().get(KafkaBrokerHealthMetrics.class).get(0);
         assertEquals(Long.valueOf(3), health.getValueUnderReplicatedPartitions());
@@ -456,7 +545,7 @@ public class KafkaCollectorsTest {
             .thenReturn(42L);
         KafkaJmxCollect collector = new KafkaJmxCollect() {
             @Override
-            protected JMXConnector connect(JMXServiceURL url) {
+            protected JMXConnector openConnector(JMXServiceURL url) {
                 return connector;
             }
         };
@@ -562,7 +651,7 @@ public class KafkaCollectorsTest {
     private KafkaJmxCollect jmxCollector(JMXConnector connector) {
         KafkaJmxCollect collector = new KafkaJmxCollect() {
             @Override
-            protected JMXConnector connect(JMXServiceURL url) {
+            protected JMXConnector openConnector(JMXServiceURL url) {
                 return connector;
             }
         };
@@ -582,6 +671,18 @@ public class KafkaCollectorsTest {
         collector.collect(0, wrapper);
         assertNotNull(result.get());
         return result.get();
+    }
+
+    private RestoreData collectAfterRecovery(KafkaJmxCollect collector) {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(2);
+        while (System.nanoTime() < deadline) {
+            RestoreData result = collect(collector);
+            if (!result.getDataMap().isEmpty()) {
+                return result;
+            }
+            java.util.concurrent.locks.LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(10));
+        }
+        throw new AssertionError("JMX collector did not recover");
     }
 
     private CollectMetadata collect() {
@@ -677,11 +778,12 @@ public class KafkaCollectorsTest {
         when(connection.getAttribute(second, "Count")).thenThrow(new AttributeNotFoundException("missing"));
         when(connection.getAttribute(third, "Count")).thenReturn(7L);
         when(connection.getAttribute(quoted, "Count")).thenReturn(9L);
-        Map<String, Map<String, Long>> groups = collector.readGroupedLongs(connection,
-            "test:type=Metric,*", "topic", "name", "Count", Set.of("Messages", "Bytes"));
+        Map<String, Map<String, Long>> groups = new HashMap<>();
+        collector.collectGroupedLongs(connection, "test:type=Metric,*", "topic", "name", "Count",
+            Set.of("Messages", "Bytes"), groups::put);
         assertEquals(Map.of("Messages", 0L, "Bytes", -1L), groups.get("orders"));
-        assertEquals(Map.of("Messages", 7L), groups.get("payments"));
-        assertEquals(Map.of("Messages", 9L), groups.get("special,topic"));
+        assertEquals(Map.of("Messages", 7L, "Bytes", -1L), groups.get("payments"));
+        assertEquals(Map.of("Messages", 9L, "Bytes", -1L), groups.get("special,topic"));
     }
 
     @Test

@@ -20,6 +20,7 @@ package org.apache.eventmesh.dashboard.console.function.report.collect;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
 import org.apache.eventmesh.dashboard.console.function.report.ReportEngine;
+import org.apache.eventmesh.dashboard.console.function.report.collect.exporter.KafkaAdminCollect;
 import org.apache.eventmesh.dashboard.console.function.report.collect.padding.PaddingService;
 import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaClusterMetrics;
 
@@ -83,7 +84,7 @@ public class KafkaDataSyncHandlerTest {
 
     @Test
     public void kafkaCollectorUsesIndependentBuffersAfterReturn() {
-        KafkaCollect collector = new KafkaCollect() {
+        KafkaAdminCollect collector = new KafkaAdminCollect() {
             private long count;
             @Override
             protected void doCollect() {

@@ -19,12 +19,15 @@ package org.apache.eventmesh.dashboard.console.function.report.collect.exporter;
 
 import org.apache.eventmesh.dashboard.common.annotation.ClusterTypeMark;
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
+import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.OrganizationId;
+import org.apache.eventmesh.dashboard.console.function.report.model.base.RuntimeId;
 import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaBrokerHealthMetrics;
 import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaBrokerTopicTrafficMetrics;
 import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaBrokerTrafficMetrics;
 
-import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.management.MBeanServerConnection;
 
@@ -46,19 +49,29 @@ public class KafkaJmxCollect extends JMXCollect {
     private static final String REQUEST_LATENCY = "kafka.network:type=RequestMetrics,name=TotalTimeMs,request=";
 
     @Override
+    protected void setData(OrganizationId data) {
+        // 节点类型属于 Kafka 维度，通用 JMX 基类不负责填充。
+        RuntimeMetadata runtimeMetadata = getRuntimeMetadata();
+        if (data instanceof RuntimeId runtime && runtimeMetadata != null && runtimeMetadata.getClusterType() != null) {
+            runtime.setRuntimeType(runtimeMetadata.getClusterType().name());
+        }
+        super.setData(data);
+    }
+
+    @Override
     protected void doJmxCollect() {
         // 连接、关闭与查询容错由 JMX 基类处理，Kafka 仅负责指标和维度组装。
-        withConnection(connection -> {
-            collectBrokerTraffic(connection);
-            collectTopicTraffic(connection);
-            collectBrokerHealth(connection);
+        withConnection((connection, samples) -> {
+            collectBrokerTraffic(connection, samples);
+            collectTopicTraffic(connection, samples);
+            collectBrokerHealth(connection, samples);
         });
     }
 
     /**
      * 采集 Broker 维度的累计流量；部分属性缺失时统一填充错误值 -1，至少一个字段有效才保存样本。
      */
-    private void collectBrokerTraffic(MBeanServerConnection connection) {
+    private void collectBrokerTraffic(MBeanServerConnection connection, Consumer<OrganizationId> samples) {
         // 名称中的 PerSec 不代表此处采集速率；读取 Count 属性，保留累计值口径。
         KafkaBrokerTrafficMetrics traffic = new KafkaBrokerTrafficMetrics();
         // Broker 总体消息数与收发字节数，直接读取总量 MBean，不累加 Topic 样本。
@@ -81,14 +94,14 @@ public class KafkaJmxCollect extends JMXCollect {
             traffic.getValueProduceRequestsTotal(), traffic.getValueFailedProduceRequestsTotal(), traffic.getValueFetchRequestsTotal(),
             traffic.getValueFailedFetchRequestsTotal(), traffic.getValueBytesRejectedTotal(), traffic.getValueReplicationBytesInTotal(),
             traffic.getValueReplicationBytesOutTotal())) {
-            setData(traffic);
+            samples.accept(traffic);
         }
     }
 
     /**
      * 采集 Broker 的当前运行状态与请求统计，和累计流量分别保存，避免混淆指标口径。
      */
-    private void collectBrokerHealth(MBeanServerConnection connection) {
+    private void collectBrokerHealth(MBeanServerConnection connection, Consumer<OrganizationId> samples) {
         KafkaBrokerHealthMetrics health = new KafkaBrokerHealthMetrics();
         // 分区与副本状态：同步不足、离线副本、ISR 下限和分区迁移情况。
         health.setValueUnderReplicatedPartitions(readLong(connection, REPLICA_MANAGER + "UnderReplicatedPartitions", "Value"));
@@ -118,26 +131,25 @@ public class KafkaJmxCollect extends JMXCollect {
             health.getValueReassigningPartitions(), health.getValueLogSizeBytes(), health.getValueProducePurgatorySize(),
             health.getValueFetchPurgatorySize(), health.getValueRequestHandlerIdleRatio(), health.getValueProduceRequestMeanMs(),
             health.getValueProduceRequestP99Ms(), health.getValueFetchRequestMeanMs(), health.getValueFetchRequestP99Ms())) {
-            setData(health);
+            samples.accept(health);
         }
     }
 
     /** 将同一 Broker、同一 Topic 的消息数和收发字节数合并为一条样本。 */
-    private void collectTopicTraffic(MBeanServerConnection connection) {
-        // 一次批量查询所有 Topic 指标，标签分组与属性遍历封装在通用 JMX 能力中。
-        Map<String, Map<String, Long>> topics = readGroupedLongs(connection,
+    private void collectTopicTraffic(MBeanServerConnection connection, Consumer<OrganizationId> samples) {
+        // 分组、缺失值和遍历均封装在通用 JMX 能力中，此处只组装单个 Topic 样本。
+        collectGroupedLongs(connection,
             BROKER_TOPIC_METRICS + "*,topic=*", "topic", "name", "Count",
-            Set.of("MessagesInPerSec", "BytesInPerSec", "BytesOutPerSec"));
-        topics.forEach((topic, values) -> {
-            KafkaBrokerTopicTrafficMetrics traffic = new KafkaBrokerTopicTrafficMetrics();
-            traffic.setTopicName(topic);
-            // 同一 Topic 的部分 MBean 缺失时保持错误值，避免将缺失转换为真实零。
-            traffic.setValueMessagesInTotal(values.getOrDefault("MessagesInPerSec", ERROR_LONG));
-            traffic.setValueBytesInTotal(values.getOrDefault("BytesInPerSec", ERROR_LONG));
-            traffic.setValueBytesOutTotal(values.getOrDefault("BytesOutPerSec", ERROR_LONG));
-            if (hasValue(traffic.getValueMessagesInTotal(), traffic.getValueBytesInTotal(), traffic.getValueBytesOutTotal())) {
-                setData(traffic);
-            }
-        });
+            Set.of("MessagesInPerSec", "BytesInPerSec", "BytesOutPerSec"), (topic, values) -> {
+                KafkaBrokerTopicTrafficMetrics traffic = new KafkaBrokerTopicTrafficMetrics();
+                traffic.setTopicName(topic);
+                // 同一 Topic 的部分 MBean 缺失时保持错误值，避免将缺失转换为真实零。
+                traffic.setValueMessagesInTotal(values.get("MessagesInPerSec"));
+                traffic.setValueBytesInTotal(values.get("BytesInPerSec"));
+                traffic.setValueBytesOutTotal(values.get("BytesOutPerSec"));
+                if (hasValue(traffic.getValueMessagesInTotal(), traffic.getValueBytesInTotal(), traffic.getValueBytesOutTotal())) {
+                    samples.accept(traffic);
+                }
+            });
     }
 }

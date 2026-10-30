@@ -18,7 +18,6 @@
 package org.apache.eventmesh.dashboard.console.function.report.collect;
 
 import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.common.enums.CollectType;
 import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
 import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
@@ -50,33 +49,31 @@ final class KafkaMetadataReader {
     }
 
     static List<RuntimeMetadata> readRuntimes(Connection connection, LocalDateTime since, Set<Long> knownIds) throws SQLException {
-        String sql = "select id, organization_id, cluster_id, cluster_type, name, INET_NTOA(host) as host, port, jmx_port, status, "
-            + "is_delete from runtime where update_time >= ? and (cluster_type in (?, ?)" + knownIds("cluster_id", knownIds) + ")";
+        String sql = "select id, organization_id, cluster_id, cluster_type, name, INET_NTOA(host) as host, port, "
+            + "jmx_port as kafka_jmx_port, status, is_delete from runtime where update_time >= ? and (cluster_type in (?, ?)"
+            + knownIds("cluster_id", knownIds) + ")";
         List<Object> args = new ArrayList<>();
         args.add(since);
         args.add(ClusterType.STORAGE_KAFKA_BROKER.name());
         args.add(ClusterType.STORAGE_KAFKA_RAFT.name());
         args.addAll(knownIds);
         List<RuntimeMetadata> result = new ArrayList<>();
-        try (PreparedStatement statement = prepare(connection, sql, args); ResultSet rows = statement.executeQuery()) {
-            while (rows.next()) {
-                RuntimeMetadata runtime = new RuntimeMetadata();
-                runtime.setId(rows.getLong("id"));
-                runtime.setOrganizationId(rows.getLong("organization_id"));
-                runtime.setClusterId(rows.getLong("cluster_id"));
-                runtime.setClusterType(ClusterType.valueOf(rows.getString("cluster_type")));
-                runtime.setName(rows.getString("name"));
-                runtime.setHost(rows.getString("host"));
-                runtime.setPort(rows.getInt("port"));
-                if (KafkaCollectRegistrar.isKafkaRuntime(runtime)) {
-                    String jmxPort = rows.getString("jmx_port");
-                    runtime.setJmxPort(jmxPort == null || jmxPort.isBlank() ? null : Integer.valueOf(jmxPort));
-                }
-                runtime.setStatus(rows.getLong("status"));
-                runtime.setIsDelete(rows.getInt("is_delete"));
-                result.add(runtime);
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (int index = 0; index < args.size(); index++) {
+                statement.setObject(index + 1, args.get(index));
             }
-        } catch (IllegalArgumentException e) {
+            try (ResultSet rows = statement.executeQuery()) {
+                while (rows.next()) {
+                    RuntimeMetadata runtime = RowMapperUtil.mapRow(rows, RuntimeMetadata.class);
+                    if (runtime.getClusterType() == ClusterType.STORAGE_KAFKA_BROKER
+                        || runtime.getClusterType() == ClusterType.STORAGE_KAFKA_RAFT) {
+                        String port = rows.getString("kafka_jmx_port");
+                        runtime.setJmxPort(port == null || port.isBlank() ? null : Integer.valueOf(port));
+                    }
+                    result.add(runtime);
+                }
+            }
+        } catch (Exception e) {
             throw new SQLException("Invalid Kafka runtime metadata", e);
         }
         return result;
@@ -84,7 +81,7 @@ final class KafkaMetadataReader {
 
     static List<CollectMetadata> readConfigurations(Connection connection, LocalDateTime since, Set<Long> knownIds) throws SQLException {
         String sql = "select c.id, c.cluster_id, c.collect_type, c.save_time, c.collect_interval, c.storage_cluster_id, "
-            + "c.enable, c.status, c.is_delete, k.cluster_type as kafka_cluster_type from collect c "
+            + "c.enable as kafka_enable, c.status, c.is_delete, k.cluster_type as cluster_type from collect c "
             + "left join cluster k on k.id = c.cluster_id where c.update_time >= ? and (k.cluster_type = ?"
             + knownIds("c.cluster_id", knownIds) + ")";
         List<Object> args = new ArrayList<>();
@@ -92,25 +89,19 @@ final class KafkaMetadataReader {
         args.add(ClusterType.STORAGE_KAFKA_CLUSTER.name());
         args.addAll(knownIds);
         List<CollectMetadata> result = new ArrayList<>();
-        try (PreparedStatement statement = prepare(connection, sql, args); ResultSet rows = statement.executeQuery()) {
-            while (rows.next()) {
-                CollectMetadata configuration = new CollectMetadata();
-                configuration.setId(rows.getLong("id"));
-                configuration.setClusterId(rows.getLong("cluster_id"));
-                String clusterType = rows.getString("kafka_cluster_type");
-                if (clusterType != null) {
-                    configuration.setClusterType(ClusterType.valueOf(clusterType));
-                }
-                configuration.setCollectType(CollectType.valueOf(rows.getString("collect_type")));
-                configuration.setSaveTime(rows.getLong("save_time"));
-                configuration.setCollectInterval(rows.getLong("collect_interval"));
-                configuration.setStorageClusterId(rows.getLong("storage_cluster_id"));
-                configuration.setEnable(rows.getBoolean("enable"));
-                configuration.setStatus(rows.getLong("status"));
-                configuration.setIsDelete(rows.getInt("is_delete"));
-                result.add(configuration);
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (int index = 0; index < args.size(); index++) {
+                statement.setObject(index + 1, args.get(index));
             }
-        } catch (IllegalArgumentException e) {
+            try (ResultSet rows = statement.executeQuery()) {
+                while (rows.next()) {
+                    CollectMetadata configuration = RowMapperUtil.mapRow(rows, CollectMetadata.class);
+                    // 现有通用映射不能将数据库整数映射到 Boolean，仅补充该字段。
+                    configuration.setEnable(rows.getBoolean("kafka_enable"));
+                    result.add(configuration);
+                }
+            }
+        } catch (Exception e) {
             throw new SQLException("Invalid Kafka collector configuration", e);
         }
         return result;
@@ -118,22 +109,5 @@ final class KafkaMetadataReader {
 
     private static String knownIds(String column, Set<Long> ids) {
         return ids.isEmpty() ? "" : " or " + column + " in (" + String.join(",", Collections.nCopies(ids.size(), "?")) + ")";
-    }
-
-    private static PreparedStatement prepare(Connection connection, String sql, List<Object> args) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(sql);
-        try {
-            for (int index = 0; index < args.size(); index++) {
-                statement.setObject(index + 1, args.get(index));
-            }
-            return statement;
-        } catch (SQLException | RuntimeException e) {
-            try {
-                statement.close();
-            } catch (SQLException closeError) {
-                e.addSuppressed(closeError);
-            }
-            throw e;
-        }
     }
 }

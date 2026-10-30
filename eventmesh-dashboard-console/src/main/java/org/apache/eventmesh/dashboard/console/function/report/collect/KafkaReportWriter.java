@@ -21,15 +21,19 @@ import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportM
 import org.apache.eventmesh.dashboard.console.function.report.iotdb.IotDBReportEngine;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.iotdb.jdbc.IoTDBConnection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +87,12 @@ final class KafkaReportWriter {
         if (value == null) {
             statement.setNull(index, Types.NULL);
         } else if (value instanceof LocalDateTime time) {
-            statement.setTimestamp(index, Timestamp.valueOf(time));
+            // IoTDB 2.0.3 不支持 LocalDateTime 的 setObject；先复刻 setTimestamp 的时区与毫秒语义，再使用表模型字符串绑定。
+            IoTDBConnection connection = statement.getConnection().unwrap(IoTDBConnection.class);
+            ZoneId connectionZone = ZoneId.of(connection.getTimeZone());
+            Instant instant = time.atZone(ZoneId.systemDefault()).withLaterOffsetAtOverlap().toInstant().truncatedTo(ChronoUnit.MILLIS);
+            LocalDateTime normalizedTime = LocalDateTime.ofInstant(instant, connectionZone);
+            statement.setString(index, normalizedTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         } else if (value instanceof String text) {
             // IoTDB JDBC 的字符串绑定需要转义单引号；存储值仍为原始名称。
             statement.setString(index, text.replace("'", "''"));
