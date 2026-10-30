@@ -111,8 +111,8 @@ public class FunctionManage {
         ReportHandlerManage reportHandlerManage = new ReportHandlerManage();
         reportHandlerManage.setReportConfig(functionConfig.getReportConfig());
         reportHandlerManage.setEnable(functionConfig.isEnabledReport());
-        // Kafka 使用现有数据源读取节点和采集配置。
-        reportHandlerManage.setKafkaDataSource(dataSource);
+        // 采集任务共用元数据同步；原同步入口需要应用数据源才能读取集群配置。
+        reportHandlerManage.setDataSource(dataSource);
         reportHandlerManage.init();
         return reportHandlerManage;
     }

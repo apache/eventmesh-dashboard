@@ -23,18 +23,12 @@ import org.apache.eventmesh.dashboard.console.function.report.model.base.Cluster
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-
-import javax.validation.constraints.NotNull;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -58,86 +52,21 @@ public class DataSyncHandler {
      */
     public void padding(DataSyncHandlerWrapper dataSyncHandlerWrapper) {
         Map<Class<?>, List<Object>> classCollectListMap = new HashMap<>();
-        dataSyncHandlerWrapper.restoreDataList.forEach((restoreData -> {
-            restoreData.getDataMap().forEach((key, value) -> {
-                classCollectListMap.computeIfAbsent(key, k -> new CollectList<>()).addAll(value);
-            });
-            restoreData.restore();
-        }));
-        // TODO 这是是否有性能问题
-        classCollectListMap.values().forEach(list -> list.forEach(value -> paddingService.padding((ClusterId) value)));
-        reportEngine.batchInsertByClass(classCollectListMap);
+        try {
+            // 原包装列表不能正确迭代且可能提前归还缓冲，复制样本并在写入完成后归还。
+            dataSyncHandlerWrapper.restoreDataList.forEach(restoreData ->
+                restoreData.getDataMap().forEach((key, value) ->
+                    classCollectListMap.computeIfAbsent(key, k -> new ArrayList<>()).addAll(value)));
+            classCollectListMap.values().forEach(list -> list.forEach(value -> paddingService.padding((ClusterId) value)));
+            this.write(reportEngine, classCollectListMap);
+        } finally {
+            dataSyncHandlerWrapper.restoreDataList.forEach(RestoreData::restore);
+        }
     }
 
-    static class CollectList<T> extends AbstractList<T> {
-
-        private final List<Collection<? extends T>> datas = new ArrayList<>();
-
-        @Override
-        public void forEach(Consumer<? super T> action) {
-            this.datas.forEach((data) -> data.forEach(action));
-        }
-
-        @Override
-        public T get(int index) {
-            return null;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Iterator<T> iterator() {
-            return new CollectIterator<>((Iterator<List<T>>) this.datas);
-        }
-
-        @Override
-        public int size() {
-            return this.datas.size();
-        }
-
-        @Override
-        public boolean addAll(@NotNull Collection<? extends T> data) {
-            return this.datas.add(data);
-        }
-
-    }
-
-    static class CollectIterator<T> implements Iterator<T> {
-
-        private final Iterator<List<T>> listIterator;
-
-        private Iterator<T> iterator;
-
-        public CollectIterator(List<List<T>> datas) {
-            this(datas.iterator());
-        }
-
-        public CollectIterator(Iterator<List<T>> listIterator) {
-            this.listIterator = listIterator;
-            if (this.listIterator.hasNext()) {
-                this.iterator = listIterator.next().iterator();
-            }
-        }
-
-        @Override
-        public boolean hasNext() {
-            if (Objects.isNull(this.iterator)) {
-                return false;
-            }
-            if (this.iterator.hasNext()) {
-                return true;
-            }
-            if (listIterator.hasNext()) {
-                iterator = listIterator.next().iterator();
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public T next() {
-            return iterator.next();
-        }
-
+    /** 不同存储写入方式复用同一份批次整理与缓冲归还流程。 */
+    protected void write(ReportEngine engine, Map<Class<?>, List<Object>> samples) {
+        engine.batchInsertByClass(samples);
     }
 
     public class DataSyncHandlerWrapper {
@@ -145,12 +74,14 @@ public class DataSyncHandler {
 
         final List<RestoreData> restoreDataList;
         private final AtomicInteger atomicInteger;
+        private final boolean[] completed;
         private final LocalDateTime startTime = LocalDateTime.now();
-        private int index = 0;
+        private final AtomicInteger index = new AtomicInteger();
         private volatile boolean timeout = false;
 
         public DataSyncHandlerWrapper(int count) {
             this.atomicInteger = new AtomicInteger(count);
+            this.completed = new boolean[count];
             this.restoreDataList = new ArrayList<>(count + count / 2);
         }
 
@@ -159,14 +90,38 @@ public class DataSyncHandler {
                 log.error("DataSyncHandlerWrapper timeout, cluster id is {} cluster type is {}",
                     restoreData.getCollectMetadata().getClusterId(), restoreData.getCollectMetadata().getClusterType());
             }
-            // TODO 我赌，时间差，可见性到位了
-            restoreDataList.add(restoreData.getIndex(), restoreData);
-            if (this.atomicInteger.decrementAndGet() == 0) {
+            finish(restoreData.getIndex(), restoreData);
+        }
+
+        /** 采集任务异常结束时完成对应批次位置，不覆盖已经交付的结果。 */
+        public void complete(int index) {
+            finish(index, null);
+        }
+
+        private void finish(int index, RestoreData restoreData) {
+            boolean finished;
+            // 任务可能并发或乱序结束，按索引去重，并只在锁内登记结果。
+            synchronized (restoreDataList) {
+                Objects.checkIndex(index, completed.length);
+                if (completed[index]) {
+                    return;
+                }
+                completed[index] = true;
+                if (restoreData != null) {
+                    restoreDataList.add(restoreData);
+                }
+                finished = this.atomicInteger.decrementAndGet() == 0;
+            }
+            if (finished) {
                 LocalDateTime now = LocalDateTime.now();
                 log.info("sync finished , count is {} start time is {}  end time is {} , time consuming is {} ", restoreDataList.size(), startTime,
                     now,
                     ChronoUnit.MILLENNIA.between(startTime, now));
-                padding(this);
+                try {
+                    padding(this);
+                } finally {
+                    restoreDataList.clear();
+                }
             }
         }
 
@@ -178,7 +133,8 @@ public class DataSyncHandler {
         }
 
         public int getIndex() {
-            return this.index++;
+            // 索引在多个采集线程中分配，必须保证每个任务的位置唯一。
+            return this.index.getAndIncrement();
         }
 
     }

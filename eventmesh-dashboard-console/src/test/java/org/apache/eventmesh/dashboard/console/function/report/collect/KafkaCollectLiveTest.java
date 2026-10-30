@@ -17,11 +17,6 @@
 
 package org.apache.eventmesh.dashboard.console.function.report.collect;
 
-import org.apache.eventmesh.dashboard.common.enums.ClusterType;
-import org.apache.eventmesh.dashboard.common.enums.CollectType;
-import org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata;
-import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
-import org.apache.eventmesh.dashboard.common.model.metadata.RuntimeMetadata;
 import org.apache.eventmesh.dashboard.console.function.report.ReportHandlerManage;
 import org.apache.eventmesh.dashboard.console.function.report.annotation.ReportMeta;
 import org.apache.eventmesh.dashboard.console.function.report.iotdb.IotDBReportEngine;
@@ -62,9 +57,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.alibaba.druid.pool.DruidDataSource;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,7 +72,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** 真实 Kafka、JMX 与 IoTDB 的采集及入库回归。 */
+/** 真实 MySQL、Kafka、JMX 与 IoTDB 的采集及入库回归。 */
 public class KafkaCollectLiveTest {
 
     private static final List<Class<?>> MODELS = List.of(KafkaClusterMetrics.class, KafkaTopicMetrics.class,
@@ -86,11 +86,11 @@ public class KafkaCollectLiveTest {
         String group = topic + "-buyer's-group";
         String database = "collect_test_kafka_" + token;
         Properties kafka = new Properties();
-        kafka.put("bootstrap.servers", System.getProperty("kafka.collect.bootstrap", "127.0.0.1:19092"));
+        kafka.put("bootstrap.servers", requiredAddress("kafka.collect.bootstrap"));
         kafka.put("request.timeout.ms", "5000");
         kafka.put("default.api.timeout.ms", "10000");
         Class.forName("org.apache.iotdb.jdbc.IoTDBDriver");
-        String address = System.getProperty("kafka.collect.iotdb.address", "127.0.0.1:6667");
+        String address = requiredAddress("kafka.collect.iotdb.address");
         try (AdminClient admin = AdminClient.create(kafka);
             Connection root = DriverManager.getConnection("jdbc:iotdb://" + address + "/?sql_dialect=table", "root", "root")) {
             try (Statement statement = root.createStatement()) {
@@ -133,7 +133,7 @@ public class KafkaCollectLiveTest {
                 source.setMaxActive(4);
                 source.setMaxWait(5000);
                 source.init();
-                verifyPipeline(source, topic, group);
+                verifyPipelineWithMetadata(source, topic, group, token);
             } finally {
                 try {
                     if (createdGroup) {
@@ -154,8 +154,44 @@ public class KafkaCollectLiveTest {
         }
     }
 
+    private void verifyPipelineWithMetadata(DruidDataSource source, String topic, String group, String token) throws Exception {
+        String address = requiredAddress("kafka.collect.mysql.address");
+        String user = System.getProperty("kafka.collect.mysql.user", "root");
+        String password = System.getProperty("kafka.collect.mysql.password", "codex_test_pw");
+        String database = "kafka_pipeline_test_" + token;
+        String options = "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        try (Connection root = DriverManager.getConnection("jdbc:mysql://" + address + "/" + options, user, password);
+            Statement statement = root.createStatement()) {
+            statement.execute("create database " + database);
+            try (DruidDataSource metadataSource = new DruidDataSource()) {
+                metadataSource.setUrl("jdbc:mysql://" + address + "/" + database + options);
+                metadataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+                metadataSource.setUsername(user);
+                metadataSource.setPassword(password);
+                metadataSource.setInitialSize(1);
+                metadataSource.setMaxActive(2);
+                metadataSource.init();
+                // 原测试直接构造元数据，无法验证数据库同步能否注册采集任务。
+                KafkaMetadataLiveTest.createMetadata(metadataSource);
+                verifyPipeline(source, metadataSource, topic, group);
+            } finally {
+                statement.execute("drop database " + database);
+            }
+        }
+    }
+
+    private String requiredAddress(String name) {
+        // 默认地址可能指向用户正在使用的服务，Live 测试必须显式指定实例。
+        String address = System.getProperty(name);
+        if (address == null || address.isBlank()) {
+            throw new IllegalArgumentException("Explicit test address is required: " + name);
+        }
+        return address;
+    }
+
     @SuppressWarnings("unchecked")
-    private void verifyPipeline(DruidDataSource source, String topic, String group) throws Exception {
+    private void verifyPipeline(DruidDataSource source, DruidDataSource metadataSource, String topic, String group) throws Exception {
         IotDBReportEngine engine = new IotDBReportEngine();
         ReflectionTestUtils.setField(engine, "dataSource", source);
         ReportHandlerManage reports = new ReportHandlerManage();
@@ -167,33 +203,24 @@ public class KafkaCollectLiveTest {
                 ReflectionTestUtils.invokeMethod(reports, "handler", type);
                 engine.createReport(type.getAnnotation(ReportMeta.class).reportName());
             }
-            ClusterMetadata cluster = new ClusterMetadata();
-            cluster.setId(1L);
-            cluster.setOrganizationId(1L);
-            cluster.setName("live-test-cluster");
-            cluster.setClusterType(ClusterType.STORAGE_KAFKA_CLUSTER);
-            cluster.setStatus(1L);
-            cluster.setIsDelete(0);
-            RuntimeMetadata broker = new RuntimeMetadata();
-            broker.setId(2L);
-            broker.setClusterId(1L);
-            broker.setName("live-test-broker");
-            broker.setClusterType(ClusterType.valueOf(System.getProperty("kafka.collect.node.type", "STORAGE_KAFKA_RAFT")));
-            broker.setHost(System.getProperty("kafka.collect.host", "127.0.0.1"));
-            broker.setPort(Integer.getInteger("kafka.collect.port", 19092));
-            broker.setJmxPort(Integer.getInteger("kafka.collect.jmx.port", 19999));
-            broker.setStatus(1L);
-            broker.setIsDelete(0);
-            CollectMetadata configuration = new CollectMetadata();
-            configuration.setId(3L);
-            configuration.setClusterId(1L);
-            configuration.setClusterType(ClusterType.STORAGE_KAFKA_CLUSTER);
-            configuration.setCollectType(CollectType.EVENTMESH);
-            configuration.setStatus(1L);
-            configuration.setEnable(true);
+            reports.setDataSource(metadataSource);
             collect.setReportHandlerManage(reports);
             collect.init();
-            collect.handlerData(List.of(cluster), List.of(broker), List.of(configuration));
+            Logger logger = (Logger) LoggerFactory.getLogger(CollectManage.class);
+            ListAppender<ILoggingEvent> syncLogs = new ListAppender<>();
+            syncLogs.start();
+            logger.addAppender(syncLogs);
+            try {
+                collect.syncData();
+                // 同步异常会被记录并捕获，测试需要同时检查错误日志。
+                assertTrue(syncLogs.list.stream().noneMatch(event -> event.getLevel().isGreaterOrEqual(Level.ERROR)),
+                    () -> "Metadata synchronization logged errors: " + syncLogs.list.stream()
+                        .filter(event -> event.getLevel().isGreaterOrEqual(Level.ERROR))
+                        .map(ILoggingEvent::getFormattedMessage).toList());
+            } finally {
+                logger.detachAppender(syncLogs);
+                syncLogs.stop();
+            }
             org.apache.tomcat.util.threads.ThreadPoolExecutor pool =
                 (org.apache.tomcat.util.threads.ThreadPoolExecutor) ReflectionTestUtils.getField(collect, "threadPoolExecutor");
             AtomicReference<Throwable> failure = new AtomicReference<>();

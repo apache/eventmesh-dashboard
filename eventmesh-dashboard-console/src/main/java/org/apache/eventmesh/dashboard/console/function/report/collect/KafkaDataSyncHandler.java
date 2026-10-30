@@ -20,37 +20,24 @@ package org.apache.eventmesh.dashboard.console.function.report.collect;
 import org.apache.eventmesh.dashboard.console.function.report.ReportEngine;
 import org.apache.eventmesh.dashboard.console.function.report.collect.padding.PaddingService;
 import org.apache.eventmesh.dashboard.console.function.report.iotdb.IotDBReportEngine;
-import org.apache.eventmesh.dashboard.console.function.report.model.base.ClusterId;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Kafka 样本复制后再归还采集缓冲，沿用现有报表引擎入库。 */
+/** Kafka 写入复用公共批次处理，保留 IoTDB 参数绑定的时间和值语义。 */
 final class KafkaDataSyncHandler extends DataSyncHandler {
 
-    private final PaddingService paddingService;
-
-    private final ReportEngine reportEngine;
-
     KafkaDataSyncHandler(PaddingService paddingService, ReportEngine reportEngine) {
-        this.paddingService = paddingService;
-        this.reportEngine = reportEngine;
+        this.setPaddingService(paddingService);
+        this.setReportEngine(reportEngine);
     }
 
     @Override
-    public void padding(DataSyncHandlerWrapper wrapper) {
-        Map<Class<?>, List<Object>> samples = new HashMap<>();
-        for (RestoreData result : wrapper.restoreDataList) {
-            result.getDataMap().forEach((type, values) -> samples.computeIfAbsent(type, key -> new ArrayList<>()).addAll(values));
-            result.restore();
-        }
-        samples.values().forEach(values -> values.forEach(value -> paddingService.padding((ClusterId) value)));
-        if (reportEngine instanceof IotDBReportEngine iotdb) {
+    protected void write(ReportEngine engine, Map<Class<?>, List<Object>> samples) {
+        if (engine instanceof IotDBReportEngine iotdb) {
             new KafkaReportWriter(iotdb).insert(samples);
         } else {
-            reportEngine.batchInsertByClass(samples);
+            super.write(engine, samples);
         }
     }
 }

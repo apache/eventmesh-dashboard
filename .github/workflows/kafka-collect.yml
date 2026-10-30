@@ -89,7 +89,8 @@ jobs:
         run: >-
           ./mvnw -B -pl eventmesh-dashboard-console -am -Pkafka-collect-tests
           -Dkafka.collect.bootstrap=127.0.0.1:9092 -Dkafka.collect.port=9092
-          -Dkafka.collect.jmx.port=9999 -DfailIfNoTests=false test
+          -Dkafka.collect.jmx.port=9999 -Dkafka.collect.mysql.address=127.0.0.1:13306
+          -Dkafka.collect.iotdb.address=127.0.0.1:6667 -DfailIfNoTests=false test
       - name: Require the real collection test report
         run: |
           python3 - <<'PY'

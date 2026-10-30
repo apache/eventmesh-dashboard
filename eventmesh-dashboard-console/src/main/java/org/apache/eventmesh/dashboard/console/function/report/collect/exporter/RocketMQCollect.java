@@ -126,12 +126,13 @@ public class RocketMQCollect extends AbstractCollect {
             }
         }
 
-        private void close() {
+        // 关闭与写入共用短临界区，避免迟到回调在检查状态后写入下一轮缓冲。
+        private synchronized void close() {
             this.closed = true;
         }
 
         /** 每次追加样本前检查本轮状态，已关闭则放弃本次写入。 */
-        private void setData(OrganizationId data) {
+        private synchronized void setData(OrganizationId data) {
             if (this.closed) {
                 return;
             }

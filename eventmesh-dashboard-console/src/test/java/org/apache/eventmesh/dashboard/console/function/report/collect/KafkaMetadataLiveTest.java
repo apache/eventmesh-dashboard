@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +49,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doAnswer;
@@ -59,7 +60,10 @@ public class KafkaMetadataLiveTest {
 
     @Test
     public void mysqlMetadataRegistersAndDisablesKafkaCollectors() throws Exception {
-        String address = System.getProperty("kafka.collect.mysql.address", "127.0.0.1:13306");
+        String address = System.getProperty("kafka.collect.mysql.address");
+        if (address == null || address.isBlank()) {
+            throw new IllegalArgumentException("Set kafka.collect.mysql.address to an isolated test instance");
+        }
         String user = System.getProperty("kafka.collect.mysql.user", "root");
         String password = System.getProperty("kafka.collect.mysql.password", "codex_test_pw");
         String database = "kafka_metadata_test_" + UUID.randomUUID().toString().replace("-", "");
@@ -83,7 +87,7 @@ public class KafkaMetadataLiveTest {
         }
     }
 
-    private void createMetadata(DruidDataSource source) throws Exception {
+    static void createMetadata(DruidDataSource source) throws Exception {
         String schema = Files.readString(Path.of("src/main/resources/eventmesh-dashboard.sql"));
         try (Connection connection = source.getConnection(); Statement statement = connection.createStatement()) {
             for (String table : new String[] {"cluster", "runtime", "`collect`"}) {
@@ -130,8 +134,8 @@ public class KafkaMetadataLiveTest {
         }).when(engine).batchInsertByClass(anyMap());
         reports.setReportEngine(engine);
         manager.setReportHandlerManage(reports);
-        manager.setKafkaDataSource(source);
-        assertNull(ReflectionTestUtils.getField(manager, "dataSource"));
+        manager.setDataSource(source);
+        assertSame(source, ReflectionTestUtils.getField(manager, "dataSource"));
         manager.init();
         try {
             manager.syncData();
@@ -152,6 +156,32 @@ public class KafkaMetadataLiveTest {
             assertTrue(delivered.await(20, TimeUnit.SECONDS));
             assertTrue(samples.contains(KafkaClusterMetrics.class));
             assertTrue(samples.contains(KafkaBrokerTrafficMetrics.class));
+
+            try (Connection connection = source.getConnection(); Statement statement = connection.createStatement()) {
+                statement.execute("insert into runtime "
+                    + "(id, organization_id, cluster_id, cluster_type, name, host, port, version, jmx_port, trusteeship_type, "
+                    + "first_to_whom, replication_type, deploy_status_type, kubernetes_cluster_id, create_script_content, "
+                    + "resources_config_id, deploy_script_id) values "
+                    + "(25, 1, 21, 'STORAGE_ROCKETMQ_BROKER', 'invalid-jmx', INET_ATON('127.0.0.3'), 9876, '5', 'invalid', "
+                    + "'SELF', 'NOT', 'NOT', 'NOT', 103, '', '', 0)");
+            }
+            CollectManage isolated = new CollectManage();
+            isolated.setDataSource(source);
+            Object synchronization = ReflectionTestUtils.getField(isolated, "syncAndHandlerData");
+            LocalDateTime before = (LocalDateTime) ReflectionTestUtils.getField(synchronization, "localDateTime");
+            try {
+                // 非法节点不应阻断同一批次中有效节点和集群，但失败批次必须重试。
+                isolated.syncData();
+                assertEquals(2, tasks(isolated).size());
+                assertEquals(before, ReflectionTestUtils.getField(synchronization, "localDateTime"));
+                try (Connection connection = source.getConnection(); Statement statement = connection.createStatement()) {
+                    statement.executeUpdate("update runtime set is_delete = 1 where id = 25");
+                }
+                isolated.syncData();
+                assertTrue(((LocalDateTime) ReflectionTestUtils.getField(synchronization, "localDateTime")).isAfter(before));
+            } finally {
+                ((ExecutorService) ReflectionTestUtils.getField(isolated, "threadPoolExecutor")).shutdownNow();
+            }
         } finally {
             ((ExecutorService) ReflectionTestUtils.getField(manager, "threadPoolExecutor")).shutdownNow();
             ((ExecutorService) ReflectionTestUtils.getField(reports, "scheduledExecutorService")).shutdownNow();

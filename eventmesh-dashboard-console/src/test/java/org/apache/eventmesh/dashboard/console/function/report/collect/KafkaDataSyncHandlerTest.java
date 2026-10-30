@@ -22,8 +22,10 @@ import org.apache.eventmesh.dashboard.common.model.metadata.CollectMetadata;
 import org.apache.eventmesh.dashboard.console.function.report.ReportEngine;
 import org.apache.eventmesh.dashboard.console.function.report.collect.exporter.KafkaAdminCollect;
 import org.apache.eventmesh.dashboard.console.function.report.collect.padding.PaddingService;
+import org.apache.eventmesh.dashboard.console.function.report.iotdb.IotDBReportEngine;
 import org.apache.eventmesh.dashboard.console.function.report.model.kafka.KafkaClusterMetrics;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +34,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.alibaba.druid.pool.DruidDataSource;
+
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -43,6 +49,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class KafkaDataSyncHandlerTest {
 
@@ -80,6 +87,19 @@ public class KafkaDataSyncHandlerTest {
         CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
         assertEquals(64, written.size());
         verify(engine, times(64)).batchInsertByClass(anyMap());
+    }
+
+    @Test
+    public void failedIotdbWriteStillReleasesCollectorBuffer() throws Exception {
+        IotDBReportEngine engine = new IotDBReportEngine();
+        DruidDataSource source = mock(DruidDataSource.class);
+        when(source.getConnection()).thenThrow(new SQLException("write failed"));
+        ReflectionTestUtils.setField(engine, "dataSource", source);
+        KafkaDataSyncHandler handler = new KafkaDataSyncHandler(mock(PaddingService.class), engine);
+        RestoreData result = result(7L);
+
+        assertThrows(IllegalStateException.class, () -> handler.getDataSyncHandlerWrapper(1).sync(result));
+        assertTrue(result.getDataMap().isEmpty());
     }
 
     @Test

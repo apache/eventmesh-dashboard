@@ -126,9 +126,9 @@ public class ReportHandlerManage {
     @Setter
     private boolean enable = true;
 
-    /** Kafka 采集使用现有数据源读取集群与节点配置。 */
-    public void setKafkaDataSource(DruidDataSource dataSource) {
-        this.collectManage.setKafkaDataSource(dataSource);
+    /** 统一采集任务使用应用数据源读取集群与节点配置。 */
+    public void setDataSource(DruidDataSource dataSource) {
+        this.collectManage.setDataSource(dataSource);
     }
 
     public void init() {

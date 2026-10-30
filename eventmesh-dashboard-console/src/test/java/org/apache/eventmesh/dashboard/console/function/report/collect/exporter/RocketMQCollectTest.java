@@ -596,6 +596,85 @@ public class RocketMQCollectTest {
         }
     }
 
+    @Test
+    public void closeWaitsForAnAlreadyStartedSampleBeforeNextRound() throws Exception {
+        DefaultRemotingClient client = Mockito.mock(DefaultRemotingClient.class);
+        SDKManage sdk = Mockito.mock(SDKManage.class);
+        RuntimeMetadata runtime = runtime();
+        var writing = new java.util.concurrent.CountDownLatch(1);
+        var releaseWrite = new java.util.concurrent.CountDownLatch(1);
+        var firstWrite = new java.util.concurrent.atomic.AtomicBoolean(true);
+        RocketMQCollect collector = new RocketMQCollect() {
+            @Override
+            protected void setData(org.apache.eventmesh.dashboard.console.function.report.model.base.OrganizationId data) {
+                if (firstWrite.compareAndSet(true, false)) {
+                    writing.countDown();
+                    try {
+                        Assertions.assertTrue(releaseWrite.await(5, java.util.concurrent.TimeUnit.SECONDS));
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new IllegalStateException(e);
+                    }
+                }
+                super.setData(data);
+            }
+        };
+        var cluster = new org.apache.eventmesh.dashboard.common.model.metadata.ClusterMetadata();
+        cluster.setId(runtime.getClusterId());
+        cluster.setOrganizationId(7L);
+        cluster.setClusterType(runtime.getClusterType());
+        collector.setRuntimeMetadata(runtime);
+        collector.setClusterMetadata(cluster);
+        Mockito.when(sdk.getClient(SDKTypeEnum.ADMIN, runtime.getUnique())).thenReturn(client);
+        var calls = new java.util.concurrent.LinkedBlockingQueue<Call>();
+        Mockito.doAnswer(invocation -> {
+            if (!failBrokerRoot(invocation.getArgument(0), invocation.getArgument(2))) {
+                calls.add(new Call(invocation.getArgument(0), invocation.getArgument(2)));
+            }
+            return null;
+        }).when(client).invokeAsync(Mockito.any(), Mockito.anyLong(), Mockito.any());
+        var wrapper = Mockito.mock(org.apache.eventmesh.dashboard.console.function.report.collect.DataSyncHandler.DataSyncHandlerWrapper.class);
+        var collectingThread = new java.util.concurrent.atomic.AtomicReference<Thread>();
+        var executor = new java.util.concurrent.ThreadPoolExecutor(2, 2, 0L, java.util.concurrent.TimeUnit.SECONDS,
+            new java.util.concurrent.ArrayBlockingQueue<>(4),
+            new com.google.common.util.concurrent.ThreadFactoryBuilder().setNameFormat("rocket-round-%d").build(),
+            new java.util.concurrent.ThreadPoolExecutor.AbortPolicy());
+        Runnable collect = () -> {
+            collectingThread.set(Thread.currentThread());
+            try (var mocked = Mockito.mockStatic(SDKManage.class)) {
+                mocked.when(SDKManage::getInstance).thenReturn(sdk);
+                collector.collect(0, wrapper);
+            }
+        };
+        try {
+            var first = executor.submit(collect);
+            Call root = calls.poll(2, java.util.concurrent.TimeUnit.SECONDS);
+            Assertions.assertNotNull(root);
+            var callback = executor.submit(() -> reply(root.callback(), ResponseCode.SUCCESS,
+                "{\"topicConfigTable\":{\"orders\":{}}}".getBytes(StandardCharsets.UTF_8)));
+            Assertions.assertTrue(writing.await(2, java.util.concurrent.TimeUnit.SECONDS));
+            collectingThread.get().interrupt();
+            Assertions.assertThrows(java.util.concurrent.TimeoutException.class,
+                () -> first.get(500, java.util.concurrent.TimeUnit.MILLISECONDS), "closing must wait for the in-progress sample");
+            releaseWrite.countDown();
+            callback.get(2, java.util.concurrent.TimeUnit.SECONDS);
+            first.get(2, java.util.concurrent.TimeUnit.SECONDS);
+
+            var second = executor.submit(collect);
+            Call next = calls.poll(2, java.util.concurrent.TimeUnit.SECONDS);
+            Assertions.assertNotNull(next);
+            reply(next.callback(), ResponseCode.SUCCESS, "{\"topicConfigTable\":{}}".getBytes(StandardCharsets.UTF_8));
+            second.get(2, java.util.concurrent.TimeUnit.SECONDS);
+            var capture = org.mockito.ArgumentCaptor.forClass(org.apache.eventmesh.dashboard.console.function.report.collect.RestoreData.class);
+            Mockito.verify(wrapper, Mockito.times(2)).sync(capture.capture());
+            Assertions.assertEquals(1L, rows(capture.getAllValues().get(0).getDataMap(), RocketmqTopicNumber.class).get(0).getValue());
+            Assertions.assertEquals(0L, rows(capture.getAllValues().get(1).getDataMap(), RocketmqTopicNumber.class).get(0).getValue());
+        } finally {
+            releaseWrite.countDown();
+            executor.shutdownNow();
+        }
+    }
+
     /** Offset regressions deliberately keep their callback queues independent of the new Broker roots. */
     private boolean failBrokerRoot(RemotingCommand request, InvokeCallback callback) {
         if (request.getCode() == RequestCode.GET_BROKER_CONFIG || request.getCode() == RequestCode.GET_BROKER_RUNTIME_INFO
