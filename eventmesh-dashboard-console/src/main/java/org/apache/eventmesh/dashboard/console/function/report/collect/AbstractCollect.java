@@ -66,6 +66,16 @@ public abstract class AbstractCollect implements Collect {
             clusterMetadata.getClusterType(), Objects.isNull(runtimeMetadata) ? "null" : runtimeMetadata.getId());
     }
 
+    // 节点迁移或停用后，按任务原有集群归属清理，避免影响其他集群。
+    final boolean belongsToCluster(Long clusterId) {
+        return this.clusterMetadata != null && clusterId != null && Objects.equals(this.clusterMetadata.getId(), clusterId);
+    }
+
+    final boolean belongsToDifferentCluster(Long clusterId) {
+        return this.clusterMetadata != null && this.clusterMetadata.getId() != null && clusterId != null
+            && !this.belongsToCluster(clusterId);
+    }
+
     public synchronized void restore(RestoreData restoreData) {
         if (this.backup == null) {
             this.backup = restoreData;

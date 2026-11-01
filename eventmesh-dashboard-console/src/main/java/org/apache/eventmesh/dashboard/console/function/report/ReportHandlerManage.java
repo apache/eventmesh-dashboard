@@ -55,6 +55,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.google.common.base.CaseFormat;
 
 import lombok.Getter;
@@ -124,6 +125,11 @@ public class ReportHandlerManage {
 
     @Setter
     private boolean enable = true;
+
+    /** 统一采集任务使用应用数据源读取集群与节点配置。 */
+    public void setDataSource(DruidDataSource dataSource) {
+        this.collectManage.setDataSource(dataSource);
+    }
 
     public void init() {
         this.handlerConfig();

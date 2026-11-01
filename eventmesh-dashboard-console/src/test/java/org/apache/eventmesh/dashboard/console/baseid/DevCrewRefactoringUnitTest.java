@@ -166,12 +166,13 @@ public class DevCrewRefactoringUnitTest {
         RuntimeMetadata otherState = runtime(33L, 20L, "other-state", 2L, 0);
         manager.handlerData(List.of(), List.of(active, stopped, deleted, otherState), List.of());
 
-        Map<Long, Map<String, RuntimeMetadata>> runtimeRows =
-            (Map<Long, Map<String, RuntimeMetadata>>) ReflectionTestUtils.getField(manager, "runtimeMetadataMap");
-        assertTrue(runtimeRows.get(20L).containsKey("active"));
-        assertFalse(runtimeRows.get(20L).containsKey("stopped"));
-        assertFalse(runtimeRows.get(20L).containsKey("deleted"));
-        assertTrue(runtimeRows.get(20L).containsKey("other-state"));
+        Map<Long, Map<Long, RuntimeMetadata>> runtimeRows =
+            (Map<Long, Map<Long, RuntimeMetadata>>) ReflectionTestUtils.getField(manager, "runtimeMetadataMap");
+        // 节点缓存改为 ID 键后，仍验证启用、停用、删除及其他状态的保留行为。
+        assertTrue(runtimeRows.get(20L).containsKey(30L));
+        assertFalse(runtimeRows.get(20L).containsKey(31L));
+        assertFalse(runtimeRows.get(20L).containsKey(32L));
+        assertTrue(runtimeRows.get(20L).containsKey(33L));
 
         cluster.setStatus(0L);
         manager.handlerData(List.of(cluster), List.of(), List.of());
@@ -241,17 +242,18 @@ public class DevCrewRefactoringUnitTest {
     private static void assertCollectIsRemoved(Long status, Integer isDelete) {
         CollectManage manager = new CollectManage();
         CollectMetadata existing = collect(20L, 90L, 1L, 0);
-        CollectMetadata incoming = collect(20L, 91L, status, isDelete);
+        // 停用事件与已缓存的配置必须使用同一配置 ID。
+        CollectMetadata incoming = collect(20L, 90L, status, isDelete);
         String key = "CollectMetadata-" + incoming.getId();
         Map<Long, CollectMetadata> metadata =
             (Map<Long, CollectMetadata>) ReflectionTestUtils.getField(manager, "collectMetadataMap");
         Map<String, Collect> executing = (Map<String, Collect>) ReflectionTestUtils.getField(manager, "executeingCollectMap");
-        metadata.put(20L, existing);
+        metadata.put(existing.getId(), existing);
         executing.put(key, org.mockito.Mockito.mock(Collect.class));
 
         manager.handlerData(List.of(), List.of(), List.of(incoming));
 
-        assertFalse("stopped/deleted collect remains cached", metadata.containsKey(20L));
+        assertFalse("stopped/deleted collect remains cached", metadata.containsKey(existing.getId()));
         assertFalse("stopped/deleted collector remains executable", executing.containsKey(key));
     }
 

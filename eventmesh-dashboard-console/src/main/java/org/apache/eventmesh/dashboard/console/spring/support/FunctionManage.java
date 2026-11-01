@@ -51,6 +51,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.druid.pool.DruidDataSource;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -94,6 +96,9 @@ public class FunctionManage {
     @Autowired
     private DBRemotingResultHook dbRemotingResultHook;
 
+    @Autowired(required = false)
+    private DruidDataSource dataSource;
+
     @Value("${function.enabled:false}")
     private boolean enabled;
 
@@ -106,6 +111,8 @@ public class FunctionManage {
         ReportHandlerManage reportHandlerManage = new ReportHandlerManage();
         reportHandlerManage.setReportConfig(functionConfig.getReportConfig());
         reportHandlerManage.setEnable(functionConfig.isEnabledReport());
+        // 采集任务共用元数据同步；原同步入口需要应用数据源才能读取集群配置。
+        reportHandlerManage.setDataSource(dataSource);
         reportHandlerManage.init();
         return reportHandlerManage;
     }

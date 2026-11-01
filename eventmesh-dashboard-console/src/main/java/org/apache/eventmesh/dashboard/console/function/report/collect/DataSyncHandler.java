@@ -66,7 +66,12 @@ public class DataSyncHandler {
         }));
         // TODO 这是是否有性能问题
         classCollectListMap.values().forEach(list -> list.forEach(value -> paddingService.padding((ClusterId) value)));
-        reportEngine.batchInsertByClass(classCollectListMap);
+        this.write(reportEngine, classCollectListMap);
+    }
+
+    // 复用公共批次整理，允许 Kafka 使用适合 IoTDB 的参数绑定写入。
+    protected void write(ReportEngine engine, Map<Class<?>, List<Object>> samples) {
+        engine.batchInsertByClass(samples);
     }
 
     static class CollectList<T> extends AbstractList<T> {
