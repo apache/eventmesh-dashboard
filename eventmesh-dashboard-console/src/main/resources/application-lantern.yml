@@ -1,0 +1,15 @@
+# 开启鉴权后，通过 Dubbo injvm 调用本地 DBAuthentication。
+lantern:
+  authenticationConfig:
+    enable: ${DASHBOARD_API_AUTH_ENABLED:false}
+    dubboLocalServiceName: DBAuthentication
+    authenticationFlowConfig:
+      systemId: ${DASHBOARD_AUTH_SYSTEM_ID:}
+      includePaths:
+        - /user/cluster/queryClusterByOrganizationIdAndType
+      tokenSpot: header
+      tokenName: Authorization
+  local:
+    jdbc-url: jdbc:mysql://127.0.0.1:13316/lantern_v2?useSSL=false&allowPublicKeyRetrieval=true&connectTimeout=3000&socketTimeout=3000
+    username: lantern_test
+    password: lantern_test

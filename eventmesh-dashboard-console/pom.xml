@@ -35,9 +35,59 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <decoration.version>0.1.21</decoration.version>
+        <dubbo.version>3.2.16</dubbo.version>
     </properties>
 
     <dependencies>
+        <!-- 引入 Provider 普通 JAR，通过 Lantern profile 装配本地 Bean。 -->
+        <dependency>
+            <groupId>cn.lampup</groupId>
+            <artifactId>lantern-service-core-provider</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <!-- 本地 Bean 不加载 Provider 的配置中心和监控端点；数据源版本沿用 Console。 -->
+                <exclusion>
+                    <groupId>com.alibaba.boot</groupId>
+                    <artifactId>nacos-config-spring-boot-starter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.alibaba.boot</groupId>
+                    <artifactId>nacos-config-spring-boot-actuator</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-actuator-autoconfigure</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>druid</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-reload4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>cn.lampup</groupId>
+            <artifactId>lantern-plugins-springmvc</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.dubbo</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-reload4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!-- EventMesh Dashboard modules -->
         <dependency>
             <groupId>org.apache.eventmesh.dashboard</groupId>
@@ -106,6 +156,12 @@
             <version>1.6.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo</artifactId>
+            <version>${dubbo.version}</version>
+        </dependency>
+
         <!-- GitHub laohu springmvc(contain spring boot starter)-->
         <dependency>
             <groupId>io.github.githublaohu</groupId>
@@ -114,7 +170,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.dubbo</groupId>
-                    <artifactId>dubbo-spring-boot-starter</artifactId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -123,7 +179,13 @@
         <dependency>
             <groupId>cn.lampup</groupId>
             <artifactId>decoration-core</artifactId>
-            <version>0.1.21</version>
+            <version>${decoration.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.lampup</groupId>
+            <artifactId>decoration-javax</artifactId>
+            <version>${decoration.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -237,12 +299,46 @@
                     <excludes>
                         <exclude>**/org/apache/eventmesh/dashboard/console/integration/**/*.java</exclude>
                         <exclude>**/org/apache/eventmesh/dashboard/console/EventMeshDashboardApplicationTest.java</exclude>
+                        <exclude>**/org/apache/eventmesh/dashboard/console/lantern/LanternLocalBeanLiveTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
         </plugins>
     </build>
     <profiles>
+        <profile>
+            <id>lantern-tests</id>
+            <properties>
+                <lantern.test.excludes>**/*LiveTest.java</lantern.test.excludes>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <testIncludes combine.self="override">
+                                <testInclude>**/lantern/**/*.java</testInclude>
+                            </testIncludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <testFailureIgnore>false</testFailureIgnore>
+                            <failIfNoTests>true</failIfNoTests>
+                            <includes combine.self="override">
+                                <include>**/lantern/**/*Test.java</include>
+                            </includes>
+                            <excludes combine.self="override">
+                                <exclude>${lantern.test.excludes}</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>state-mutation</id>
             <properties>

@@ -1,0 +1,5 @@
+# 与 lantern profile 一起启用，注册 Lantern 原有的 Redis 查询 Bean。
+lantern:
+  local:
+    redis-url: redis://127.0.0.1:16379/0
+    redis-namespace: eventmesh-dashboard
