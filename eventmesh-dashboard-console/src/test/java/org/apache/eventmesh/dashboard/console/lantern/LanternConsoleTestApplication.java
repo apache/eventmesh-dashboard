@@ -17,12 +17,13 @@
 
 package org.apache.eventmesh.dashboard.console.lantern;
 
-import org.apache.eventmesh.dashboard.console.spring.LanternLocalConfiguration;
+import org.apache.ibatis.annotations.Mapper;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
 
 /**
  * 隔离宿主业务数据源，通过依赖的真实自动配置发现加载 Lantern。
@@ -31,6 +32,12 @@ import org.springframework.context.annotation.Import;
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class,
     excludeName = "com.lamp.decoration.core.spring.DecorationAutoConfiguration")
-@Import(LanternLocalConfiguration.class)
 class LanternConsoleTestApplication {
+
+    @Configuration(proxyBeanMethods = false)
+    @Profile("lantern")
+    @MapperScan(basePackages = "org.apache.eventmesh.dashboard.console.mapper", annotationClass = Mapper.class,
+        sqlSessionFactoryRef = "sqlSessionFactory")
+    static class BusinessMapperScan {
+    }
 }

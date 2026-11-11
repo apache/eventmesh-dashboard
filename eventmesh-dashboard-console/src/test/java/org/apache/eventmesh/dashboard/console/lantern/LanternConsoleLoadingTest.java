@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Map;
 
+import org.apache.dubbo.config.spring.reference.ReferenceBeanManager;
 import org.apache.eventmesh.dashboard.console.controller.MetricsController;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
@@ -64,12 +65,18 @@ class LanternConsoleLoadingTest {
     @Test
     void loadsWithExplicitlyDisabledFeatures() {
         this.assertDisabled("lantern.loginConfig.enable=false", "lantern.authenticationConfig.enable=false",
-            "server.port=9898", "lantern.handlerRedisMap.unreachable=redis://127.0.0.1:1/0");
+            "server.port=9898");
     }
 
     @Test
     void serverPortDoesNotEnableLantern() {
         this.assertDisabled("server.port=9898");
+    }
+
+    @Test
+    void disabledAuthenticationDoesNotRegisterDatabaseOrDubboServices() {
+        this.assertDisabled("lantern.authenticationConfig.enable=false",
+            "lantern.authenticationConfig.defaultAuthenticationService.authenticationServiceName=lanternDubboAuthentication");
     }
 
     private void assertDisabled(String... properties) {
@@ -83,6 +90,7 @@ class LanternConsoleLoadingTest {
                 assertThat(context).hasNotFailed().hasSingleBean(LanternAuthenticationSupportConfigure.class)
                     .doesNotHaveBean("healthEndpoint")
                     .doesNotHaveBean(AuthenticationService.class)
+                    .doesNotHaveBean(ReferenceBeanManager.class)
                     .doesNotHaveBean(AuthenticationManager.class).doesNotHaveBean(HandlerService.class)
                     .doesNotHaveBean(AuthenticationInterceptor.class).doesNotHaveBean(LanternSpringMVCBehavior.class)
                     .doesNotHaveBean(LanternAuthenticationUserMethodArgumentResolver.class);
