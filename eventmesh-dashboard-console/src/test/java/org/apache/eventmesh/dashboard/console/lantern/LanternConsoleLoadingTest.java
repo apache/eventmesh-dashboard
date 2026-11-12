@@ -20,6 +20,7 @@
 package org.apache.eventmesh.dashboard.console.lantern;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -34,6 +35,8 @@ import org.apache.eventmesh.dashboard.console.controller.MetricsController;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -50,6 +53,7 @@ import com.lamp.lantern.plugins.core.authentication.AuthenticationManager;
 import com.lamp.lantern.plugins.api.auth.AuthenticationService;
 import com.lamp.lantern.plugins.core.login.HandlerService;
 import com.lamp.lantern.plugins.springmvc.autoconfigure.LanternAuthenticationSupportConfigure;
+import com.lamp.lantern.plugins.springmvc.autoconfigure.LanternProperties;
 import com.lamp.lantern.plugins.springmvc.support.AuthenticationInterceptor;
 import com.lamp.lantern.plugins.springmvc.support.LanternAuthenticationUserMethodArgumentResolver;
 import com.lamp.lantern.plugins.springmvc.support.LanternRequestResponseBodyMethodProcessor;
@@ -77,6 +81,43 @@ class LanternConsoleLoadingTest {
     void disabledAuthenticationDoesNotRegisterDatabaseOrDubboServices() {
         this.assertDisabled("lantern.authenticationConfig.enable=false",
             "lantern.authenticationConfig.defaultAuthenticationService.authenticationServiceName=lanternDubboAuthentication");
+    }
+
+    @Test
+    void dependencyAloneDoesNotLoadLanternWithoutComponentScanning() {
+        new WebApplicationContextRunner()
+            .withInitializer(new ConfigDataApplicationContextInitializer())
+            .withUserConfiguration(NoLanternScanConfiguration.class)
+            .withPropertyValues("spring.profiles.active=lantern-loading-test", "lantern.authenticationConfig.enable=true")
+            .run(context -> {
+                assertThat(context).hasNotFailed()
+                    .doesNotHaveBean(LanternAuthenticationSupportConfigure.class)
+                    .doesNotHaveBean(LanternProperties.class)
+                    .doesNotHaveBean(AuthenticationManager.class)
+                    .doesNotHaveBean(ReferenceBeanManager.class);
+                assertThat(context.getEnvironment().getProperty("dubbo.protocol.name")).isNull();
+            });
+    }
+
+    @Test
+    void explicitAuthenticationServiceDoesNotLoadLocalDatabaseDefaults() {
+        new WebApplicationContextRunner()
+            .withInitializer(new ConfigDataApplicationContextInitializer())
+            .withUserConfiguration(LanternConsoleTestApplication.class)
+            .withBean("customAuthentication", AuthenticationService.class, () -> mock(AuthenticationService.class))
+            .withPropertyValues("spring.profiles.active=lantern-loading-test", "lantern.authenticationConfig.enable=true",
+                "lantern.authenticationConfig.defaultAuthenticationService.authenticationServiceName=customAuthentication",
+                "lantern.authenticationConfig.authenticationType=USER",
+                "lantern.authenticationConfig.authenticationFlowConfig.tokenSpot=header",
+                "lantern.authenticationConfig.authenticationFlowConfig.tokenName=Authorization",
+                "lantern.authenticationConfig.authenticationFlowConfig.includePaths[0]=/custom-probe")
+            .run(context -> {
+                assertThat(context).hasNotFailed().hasSingleBean(LanternProperties.class)
+                    .hasSingleBean(AuthenticationManager.class)
+                    .doesNotHaveBean("DBAuthentication").doesNotHaveBean(ReferenceBeanManager.class);
+                assertThat(context.getEnvironment().getProperty("dubbo.protocol.name")).isNull();
+                assertThat(context.getEnvironment().getProperty("spring.sql.init.mode")).isNull();
+            });
     }
 
     private void assertDisabled(String... properties) {
@@ -107,6 +148,12 @@ class LanternConsoleLoadingTest {
                 mvc.perform(post("/lantern-smoke").contentType(MediaType.APPLICATION_JSON).content("{\"message\":\"ok\"}"))
                     .andExpect(status().isOk()).andExpect(content().json("{\"message\":\"ok\"}"));
             });
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class,
+        excludeName = "com.lamp.decoration.core.spring.DecorationAutoConfiguration")
+    static class NoLanternScanConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)

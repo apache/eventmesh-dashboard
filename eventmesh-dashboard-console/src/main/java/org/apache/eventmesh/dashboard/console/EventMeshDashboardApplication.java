@@ -30,7 +30,11 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+    "org.apache.eventmesh.dashboard.console",
+    "com.lamp.lantern.plugins.springmvc.autoconfigure",
+    "com.lamp.lantern.service.core.provider.autoconfigure"
+})
 @MapperScan(basePackages = "org.apache.eventmesh.dashboard.console.mapper", annotationClass = Mapper.class,
     sqlSessionFactoryRef = "sqlSessionFactory")
 @EnableScheduling

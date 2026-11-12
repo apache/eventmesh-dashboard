@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.lamp.lantern.plugins.api.auth.AuthenticationData;
 import com.lamp.lantern.plugins.api.auth.AuthenticationService;
 import com.lamp.lantern.plugins.api.auth.AuthenticationPolicyService;
+import com.lamp.lantern.plugins.springmvc.autoconfigure.LanternProperties;
 
 import java.sql.Connection;
 import java.util.UUID;
@@ -70,7 +71,8 @@ class LanternLocalBeanLiveTest {
     @Test
     void initializesLanternTablesAndSharesTheBusinessConnectionPoolAndSessionFactory() throws Exception {
         String token = UUID.randomUUID().toString();
-        try (ConfigurableApplicationContext app = this.start("--spring.profiles.active=lantern");
+        try (ConfigurableApplicationContext app = this.start("--spring.profiles.active=lantern",
+            "--dubbo.application.name=lantern-scan-host");
             Connection connection = app.getBean(DataSource.class).getConnection()) {
             JdbcTemplate jdbc = new JdbcTemplate(new SingleConnectionDataSource(connection, true));
             assertThat(jdbc.queryForList("SELECT TABLE_NAME FROM information_schema.tables WHERE TABLE_SCHEMA=DATABASE()", String.class))
@@ -81,6 +83,8 @@ class LanternLocalBeanLiveTest {
             try {
                 assertThat(app.getBeansOfType(DataSource.class)).containsOnlyKeys("businessDataSource");
                 assertThat(app.getBeansOfType(RedisConnectionFactory.class)).isEmpty();
+                assertThat(app.getBeansOfType(LanternProperties.class)).hasSize(1);
+                assertThat(app.getEnvironment().getProperty("dubbo.application.name")).isEqualTo("lantern-scan-host");
                 assertThat(app.getBean(DataSource.class)).isInstanceOf(DruidDataSource.class);
                 assertThat(app.getBeansOfType(SqlSessionFactory.class)).hasSize(1);
                 SqlSessionFactory businessSessionFactory = app.getBean(SqlSessionFactory.class);

@@ -23,13 +23,18 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
 
 /**
- * 隔离宿主业务数据源，通过依赖的真实自动配置发现加载 Lantern。
+ * 隔离宿主业务数据源，通过与启动类相同的配置包扫描加载 Lantern。
  * 隔离 Decoration 的响应包装，直接断言认证与标准 MVC 的响应。
  */
 @Configuration(proxyBeanMethods = false)
+@ComponentScan(basePackages = {
+    "com.lamp.lantern.plugins.springmvc.autoconfigure",
+    "com.lamp.lantern.service.core.provider.autoconfigure"
+})
 @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class,
     excludeName = "com.lamp.decoration.core.spring.DecorationAutoConfiguration")
 class LanternConsoleTestApplication {
