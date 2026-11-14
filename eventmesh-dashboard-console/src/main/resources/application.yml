@@ -19,7 +19,7 @@ spring:
   application:
     name: eventmesh-dashboard
   profiles:
-    active: dev
+    active: dev,lantern
 
 logging:
   config: classpath:logback.xml

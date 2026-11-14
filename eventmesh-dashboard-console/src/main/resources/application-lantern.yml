@@ -1,0 +1,31 @@
+# Token 读取及数据库初始化使用 Lantern 内置默认配置。
+lantern:
+  authenticationConfig:
+    enable: true
+    authenticationFlowConfig:
+      systemId: "915"
+      includePaths:
+        - /user/cluster/queryClusterByOrganizationIdAndType
+
+# 用户可在此覆盖 Lantern 的 Dubbo 默认值，当前使用本地调用。
+dubbo:
+  application:
+    # 默认跟随 Dashboard 应用名，也可改为固定名称。
+    name: ${spring.application.name:eventmesh-dashboard}
+    qos-enable: false
+    metadata-service-protocol: injvm
+  registry:
+    address: N/A
+  protocol:
+    name: injvm
+    serialization: fastjson2
+  provider:
+    scope: local
+    group: lantern-authentication
+  consumer:
+    scope: local
+    # 调整服务组时，需与 provider.group 保持一致。
+    group: lantern-authentication
+    retries: 0
+    parameters:
+      serialization: fastjson2
